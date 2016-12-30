@@ -452,8 +452,8 @@ public class Rapid extends Action {
 						// check the user password
 						if (security.checkUserPassword(appSecurityRequest, rapidRequest.getUserName(), rapidRequest.getUserPassword())) {
 							
-							// check the users permission to design this application
-							boolean adminPermission = security.checkUserRole(appSecurityRequest, com.rapid.server.Rapid.DESIGN_ROLE);
+							// check the users permission to admin this application
+							boolean adminPermission = security.checkUserRole(appSecurityRequest, com.rapid.server.Rapid.ADMIN_ROLE);
 							
 							// if app is rapid do a further check
 							if (adminPermission && "rapid".equals(application.getId())) adminPermission = application.getSecurityAdapter().checkUserRole(appSecurityRequest, com.rapid.server.Rapid.SUPER_ROLE);
