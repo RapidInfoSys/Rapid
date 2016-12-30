@@ -549,7 +549,7 @@ public class Rapid extends RapidHttpServlet {
 										if (forTesting) {
 											
 											// if the user has Rapid Design for this application, (or Rpaid Super if this is the rapid app)
-											if (security.checkUserRole(rapidRequest, Rapid.DESIGN_ROLE) && (!app.getId().equals("rapid") || security.checkUserRole(rapidRequest, Rapid.SUPER_ROLE))) {
+											if (security.checkUserRole(getAppsRequest, Rapid.DESIGN_ROLE) && (!app.getId().equals("rapid") || security.checkUserRole(rapidRequest, Rapid.SUPER_ROLE))) {
 												
 												// loop the versions
 												for (Application version :	getApplications().getVersions(app.getId()).sort()) {
