@@ -786,6 +786,15 @@ select:focus option {
     border-color: #BABABA;
   }
 }
+
+/* Responsive radio */
+.r-radio {
+  margin-top: 10px;
+}
+
+.r-checkbox {
+  margin-top: 10px;
+}
 	    ]]>
 	    </css>
 	   

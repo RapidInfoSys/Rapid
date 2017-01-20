@@ -876,6 +876,15 @@ select:disabled {
     border-color: #BABABA;
   }
 }
+
+/* Responsive radio */
+.r-radio {
+  margin-top: 10px;
+}
+
+.r-checkbox {
+  margin-top: 10px;
+}
 	    ]]>
 	    </css>
 	   

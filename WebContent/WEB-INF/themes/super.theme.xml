@@ -834,6 +834,15 @@ select:disabled:hover {
     color: #73A7BB;
   }
 }
+
+/* Responsive radio */
+.r-radio {
+  margin-top: 10px;
+}
+
+.r-checkbox {
+  margin-top: 10px;
+}
 	    ]]>
 	    </css>
 	   

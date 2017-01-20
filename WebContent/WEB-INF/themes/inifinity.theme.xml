@@ -716,6 +716,15 @@ input[type=radio]:focus:before {
     border-color: #8C8C8C;
   }
 }
+
+/* Responsive radio */
+.r-radio {
+  margin-top: 10px;
+}
+
+.r-checkbox {
+  margin-top: 10px;
+}
 	    ]]>
 	    </css>
 	   
