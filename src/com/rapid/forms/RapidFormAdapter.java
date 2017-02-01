@@ -25,6 +25,8 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 
 package com.rapid.forms;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,7 +46,8 @@ public class RapidFormAdapter extends FormAdapter {
 	private static final String NEXT_FORM_ID = "nextFormId";
 	private static final String USER_FORM_PAGE_VARIABLE_VALUES = "userFormPageVariableValues";
 	private static final String USER_FORM_PAGE_CONTROL_VALUES = "userFormPageControlValues";
-	private static final String USER_FORM_COMPLETE_VALUES = "userFormCompleteValues";	
+	private static final String USER_FORM_COMPLETE_VALUES = "userFormCompleteValues";
+	private static final String USER_FORM_SUBMIT_DETAILS = "userFormSubmitDetails";
 		
 	// constructor
 
@@ -251,9 +254,43 @@ public class RapidFormAdapter extends FormAdapter {
 	
 	// submit the form - for the RapidFormAdapter nothing special happens, more sophisticated ones will write to databases, webservices, etc
 	@Override
-	public SubmissionDetails submitForm(RapidRequest rapidRequest) throws Exception {	
-		// simple submission details
-		return new SubmissionDetails("Form submitted", null);
+	public SubmissionDetails submitForm(RapidRequest rapidRequest) throws Exception {
+		// get the servlet context
+		ServletContext servletContext = rapidRequest.getRapidServlet().getServletContext();
+		// get all submitted details
+		Map<String,SubmissionDetails> submissionDetails = (Map<String, SubmissionDetails>) servletContext.getAttribute(USER_FORM_SUBMIT_DETAILS);
+		// if null
+		if (submissionDetails == null) {
+			// instantiate
+			submissionDetails = new HashMap<String, SubmissionDetails>();
+			// add to session
+			servletContext.setAttribute(USER_FORM_SUBMIT_DETAILS, submissionDetails);
+		}
+		// simple submission detail
+		SubmissionDetails submissionDetail = new SubmissionDetails("Form submitted", rapidRequest.getRapidServlet().getLocalDateTimeFormatter().format(new Date()));
+		// get the form id
+		String formId = getFormId(rapidRequest);		
+		// add to collection
+		submissionDetails.put(formId, submissionDetail);
+		// return
+		return submissionDetail;
+	}
+	
+	@Override
+	public String getFormSubmittedDate(RapidRequest rapidRequest, String formId) throws Exception {	
+		// get the servlet context
+		ServletContext servletContext = rapidRequest.getRapidServlet().getServletContext();
+		// get all submitted details
+		Map<String,SubmissionDetails> submissionDetails = (Map<String, SubmissionDetails>) servletContext.getAttribute(USER_FORM_SUBMIT_DETAILS);
+		// if null
+		if (submissionDetails != null) {
+			// get the form submission details
+			SubmissionDetails submissionDetail = submissionDetails.get(formId);
+			// if we got some
+			if (submissionDetail != null) return submissionDetail.getDateTime();
+		}
+		// didn't find anything
+		return null;		
 	}
 
 	// nothing to do here
