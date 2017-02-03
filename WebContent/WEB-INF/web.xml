@@ -147,6 +147,18 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
     <url-pattern>/soa</url-pattern>
   </servlet-mapping>
   
+  <servlet>
+    <description>This serlvet provides the Safety functionality</description>
+    <description>Safety</description>
+    <display-name>Safety</display-name>
+    <servlet-name>Safety</servlet-name>
+    <servlet-class>com.rapid.server.Safety</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Safety</servlet-name>
+    <url-pattern>/safety</url-pattern>
+  </servlet-mapping>
+  
   <!-- These parameters are for local date / time formats -->
   
   <context-param>
