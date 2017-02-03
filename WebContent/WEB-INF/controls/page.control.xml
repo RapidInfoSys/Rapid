@@ -3,7 +3,7 @@
 
 <!-- 
 
-Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -199,14 +199,16 @@ function Event_error(eventName, controlId, ex) {
                                                  
 /* Loading */
 
-div.loading {
+div.loadingCover {
 	position: absolute;
+}
+
+div.loading {
 	background-color: black;
 	opacity:0.2;
 	filter:alpha(opacity=20); 
 	text-align: center;
 	vertical-align: middle;
-	display: none;
 }
 
 span.loading {

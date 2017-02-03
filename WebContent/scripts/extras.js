@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -84,11 +84,11 @@ $.fn.extend({
     return this;
   },
   showLoading: function() {
-	 if (this[0] && this.is(":visible")) {
-		var loadingCover = $("div[data-id=" + this.attr("id") + "]");
+	 var loadingCover = $("div.loadingCover[data-id=" + this.attr("id") + "]");
+	 if (this[0] && this.is(":visible")) {		
 		if (!loadingCover[0]) {
-			this.after("<div class='loading' data-id='" + this.attr("id") + "'></div><span class='loading' data-id='" + this.attr("id") + "'></span>");
-			loadingCover = $("div[data-id=" + this.attr("id") + "]");
+			$("body").append("<div class='loadingCover' data-id='" + this.attr("id") + "'><div class='loading'></div><span class='loading'></span></div>");
+			loadingCover = $("div.loadingCover[data-id=" + this.attr("id") + "]");
 		}				
 		loadingCover.css({
 			left: this.offset().left,
@@ -96,18 +96,23 @@ $.fn.extend({
 			width: this.outerWidth(),
 			height: this.outerHeight()
 		}).show();
-		if (this.outerWidth() > 0) {
-			var image = loadingCover.next();
+		loadingCover.children("div").css({
+			height: this.outerHeight()
+		});
+		if (this.width() > 0) {
+			var image = loadingCover.children("span");
 			image.css({
-				left: this.offset().left + (this.outerWidth() - image.outerWidth())/2,
-				top: this.offset().top + (this.outerHeight() - image.outerHeight())/2
+				left: (this.outerWidth() - image.outerWidth())/2,
+				top: (this.outerHeight() - image.outerHeight())/2
 			}).show();
 		}
+	 } else {
+		loadingCover.hide();
 	 }
 	 return this;
   },
   hideLoading: function() {
-	  if (this[0]) $("body").find("div[data-id=" + this.attr("id") + "]").hide().next().hide();	
+	  if (this[0]) $("div.loadingCover[data-id=" + this.attr("id") + "]").hide();	
 	  return this;
   },
   hideDialogue: function(reload) {	  
