@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2014 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -102,13 +102,13 @@ function scrollMapToSelectedControl(scrollPage) {
 }
 
 // rebuild the page map
-function buildPageMap() {	
+function buildPageMap(force) {	
 	// get the map div
 	var map = $("#pageMap");
 	// unregister all listener
 	removeMapListeners();
-	// only if visible
-	if (map.is(":visible")) {
+	// only if visible or forced
+	if (map.is(":visible") || force) {
 		// get the list
 		var list = $("#pageMapList");
 		// empty the current list

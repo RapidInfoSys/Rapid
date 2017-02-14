@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -2337,15 +2337,22 @@ function doPaste(control, _parent) {
 
 // a function for animating the hide/show headers
 function toggleHeader(ev) {
-	var header = $(this);
+	// get the header
+	var header = $(this);	
+	// get the type
+	var type = header.attr("id");
+	// get the contents which is the next element
 	var contents = header.next();
+	// if we are about to show the map rebuild it, as it won't have been updated whilst hidden
+	if (type == "controlsMap" && !contents.is(":visible")) buildPageMap(true);	
+	// slide toggle contents
 	contents.slideToggle( 500, function() {
 		if (contents.is(":visible")) {
 			header.children("img.headerToggle").attr("src","images/triangleUpWhite_8x8.png");						
 		} else {
 			header.children("img.headerToggle").attr("src","images/triangleDownWhite_8x8.png");
 		}
-		switch (header.attr("id")) {
+		switch (type) {
 		case "stylesHeader" :
 			_stylesHidden = !contents.is(":visible");
 			break;
