@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -945,8 +945,13 @@ public abstract class FormAdapter {
 			String maxPageId = formDetails.getMaxPageId();			
 			// check we got something
 			if (maxPageId == null) {
-				// fine if the first page
-				if (pageId.equals(pages.get(0).getId())) check = true;
+				// fine if the first or start page
+				if (pageId.equals(pages.get(0).getId()) || pageId.equals(application.getStartPageId())) {
+					// we're allowed
+					check = true;
+					// update max page
+					setMaxPage(rapidRequest, formDetails, pageId);
+				}
 			} else {
 				// check we got some pages
 				if (pages != null) {
