@@ -1,0 +1,1 @@
+FOR /d /r . %d IN (_backups) DO @IF EXIST "%d" rd /s /q "%d"
