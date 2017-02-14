@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <securityAdapter xmlVersion="1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../schemas/securityAdapter.xsd">
   <type>form</type>
-  <name>Forms</name>
+  <name>Public</name>
   <class>com.rapid.security.FormSecurityAdapter</class>
   <canManageRoles>true</canManageRoles>
   <canManageUsers>true</canManageUsers>
