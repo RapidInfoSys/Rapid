@@ -226,8 +226,11 @@ public class Pages {
 		if (isForm) {
 			// get the page order object
 			Map<String,Integer> pageOrders = _application.getPageOrders();
-			// if there is one - there should be! - set it up with sequential page order, rather than alphabetical
-			if (pageOrders != null) pageOrders.put(pageId, pageOrders.size());
+			// if there is one - there should be!
+			if (pageOrders != null) {
+				// if this page does not have an entry in the orders put it at the end
+				if (!pageOrders.containsKey(pageId)) pageOrders.put(pageId, pageOrders.size());
+			}
 		}
 	}
 	
