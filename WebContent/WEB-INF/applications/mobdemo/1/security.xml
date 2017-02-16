@@ -17,6 +17,13 @@
         <roles>RapidDesign</roles>
     </users>
     <users>
+        <description>Design user</description>
+        <deviceDetails></deviceDetails>
+        <name>design</name>
+        <password>design</password>
+        <roles>RapidDesign</roles>
+    </users>
+    <users>
         <description>Unprivileged user</description>
         <name>user</name>
         <password>user</password>

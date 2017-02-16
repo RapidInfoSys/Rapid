@@ -17,8 +17,10 @@
         <roles>RapidDesign</roles>
     </users>
     <users>
-        <description>Public form user</description>
-        <name>test</name>
-        <password>test4</password>
+        <description>Design user</description>
+        <deviceDetails></deviceDetails>
+        <name>design</name>
+        <password>design</password>
+        <roles>RapidDesign</roles>
     </users>
 </security>
