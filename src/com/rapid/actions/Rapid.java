@@ -769,13 +769,13 @@ public class Rapid extends Action {
 				// password check
 				if (security.checkUserPassword(rapidActionRequest, rapidRequest.getUserName(), rapidRequest.getUserPassword())) {
 
-					// check the users permission to design this application
-					boolean designPermission = security.checkUserRole(rapidActionRequest, com.rapid.server.Rapid.DESIGN_ROLE);
+					// check the users permission to admin this application
+					boolean adminPermission = security.checkUserRole(rapidActionRequest, com.rapid.server.Rapid.ADMIN_ROLE);
 
 					// if app is rapid do a further check
-					if (designPermission && "rapid".equals(app.getId())) designPermission = app.getSecurityAdapter().checkUserRole(rapidActionRequest, com.rapid.server.Rapid.SUPER_ROLE);
+					if (adminPermission && "rapid".equals(app.getId())) adminPermission = app.getSecurityAdapter().checkUserRole(rapidActionRequest, com.rapid.server.Rapid.SUPER_ROLE);
 
-					if (designPermission) {
+					if (adminPermission) {
 
 						// add the name
 						result.put("name", app.getName());
@@ -2222,15 +2222,15 @@ public class Rapid extends Action {
 					// update the user
 					security.updateUser(rapidRequest, user);
 				} else {
+					// get the old password
+					String oldPassword = user.getPassword();
 					// update the password
 					user.setPassword(password);
 					// update the user
 					security.updateUser(rapidRequest, user);
 					// update the session password as well if we are changing our own password (this is required especially when changing the rapid app password)
 					if (user.getName().equals(rapidRequest.getSessionAttribute(RapidFilter.SESSION_VARIABLE_USER_NAME))) rapidRequest.setUserPassword(password);
-					// get the old password
-					String oldPassword = user.getPassword();
-					// if there is one
+					// if there is an old password - should always be
 					if (oldPassword != null) {
 						// get all applications
 						Applications applications = rapidRequest.getRapidServlet().getApplications();
@@ -2242,21 +2242,24 @@ public class Rapid extends Action {
 							for (String version : versions.keySet()) {
 								// get this version
 								Application v = applications.get(id, version);
-								// get it's security adapter
-								SecurityAdapter s = v.getSecurityAdapter();
-								// recreate the rapidRequest with the selected version (so app parameters etc are available from the app in the rapidRequest)
-								rapidRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), v);
-								// override the standard request user
-								rapidRequest.setUserName(userName);
-								// check the user password
-								if (s.checkUserPassword(rapidRequest, userName, oldPassword)) {
-									// get this user
-									User u = s.getUser(rapidRequest);
-									// set user password
-									u.setPassword(password);
-									// update user
-									s.updateUser(rapidRequest, u);
-								} // password match check
+								// we have updated the password in the selected app already so no need to do it again
+								if (!(app.getId().equals(v.getId()) && app.getVersion().equals(v.getVersion()))) {
+									// get this app versions security adapter
+									SecurityAdapter s = v.getSecurityAdapter();
+									// recreate the rapidRequest with the selected version (so app parameters etc are available from the app in the rapidRequest)
+									rapidRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), v);
+									// override the standard request user
+									rapidRequest.setUserName(userName);
+									// check the user had permission to the app with their old password
+									if (s.checkUserPassword(rapidRequest, userName, oldPassword)) {
+										// get this user
+										User u = s.getUser(rapidRequest);
+										// set new user password
+										u.setPassword(password);
+										// update user
+										s.updateUser(rapidRequest, u);
+									} // password match check
+								} // ignore app version updated already
 							} // version loop
 						} // app id loop
 					} // password check

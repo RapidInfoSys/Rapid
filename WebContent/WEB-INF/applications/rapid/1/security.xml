@@ -23,4 +23,12 @@
         <password>design</password>
         <roles>RapidDesign</roles>
     </users>
+    <users>
+        <description>Test</description>
+        <deviceDetails></deviceDetails>
+        <name>test</name>
+        <password>test4</password>
+        <roles>RapidAdmin</roles>
+        <roles>RapidDesign</roles>
+    </users>
 </security>

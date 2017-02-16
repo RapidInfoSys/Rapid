@@ -16,4 +16,9 @@
         <roles>RapidAdmin</roles>
         <roles>RapidDesign</roles>
     </users>
+    <users>
+        <description>Public form user</description>
+        <name>test</name>
+        <password>test4</password>
+    </users>
 </security>
