@@ -8,9 +8,9 @@ gareth.edwards@rapid-is.co.uk
 This file is part of the Rapid Application Platform
 
 Rapid is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as 
-published by the Free Software Foundation, either version 3 of the 
-License, or (at your option) any later version. The terms require you 
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version. The terms require you
 to include the original copyright, and the license notice in all redistributions.
 
 This program is distributed in the hope that it will be useful,
@@ -50,24 +50,24 @@ import com.rapid.soa.SOASchema.SOASchemaElement;
 import com.rapid.soa.SOASchema.SOASchemaException;
 
 public interface SOADataReader {
-		
+
 	// interface methods
-	
+
 	public SOAData read(String string) throws SOAReaderException;
-	
-	public SOAData read(InputStream stream) throws SOAReaderException; 
-	
+
+	public SOAData read(InputStream stream) throws SOAReaderException;
+
 	public String getAuthentication();
-		
-		
+
+
 	// exception class
-	
+
 	public class SOAReaderException extends Exception {
-		
+
 		private static final long serialVersionUID = 1010L;
-		
+
 		Exception _ex;
-		
+
 		public SOAReaderException(Exception ex) {
 			_ex = ex;
 		}
@@ -86,55 +86,55 @@ public interface SOADataReader {
 		public Throwable getCause() {
 			return _ex;
 		}
-		
+
 	}
-		
+
 	// implementing classes
-	
+
 	/*
-	 *  SOAXMLReader 
-	 * 
+	 *  SOAXMLReader
+	 *
 	 *  Overrides SOAXMLContentHandler to build the SOA as the XML is parsed
-	 *  
+	 *
 	 */
-	
+
 	public class SOAXMLReader implements SOADataReader {
-		
+
 		// Not sure this class is threadsafe useful guide: http://stackoverflow.com/questions/3439485/java-and-xml-jaxp-what-about-caching-and-thread-safety
-				
-		private SAXParserFactory _spf;		    
+
+		private SAXParserFactory _spf;
 		private SAXParser _saxParser;
 		private XMLReader _xmlReader;
 		private SOAXMLContentHandler _soaXMLContentHandler;
 		private static String _authentication;
-							
+
 		private static class SOAXMLContentHandler implements ContentHandler {
-		
+
 			private SOASchema _soaSchema;
 			private int _currentColumn,  _currentRow, _previousColumn;
-			private SOAElement _currentElement;		
+			private SOAElement _currentElement;
 			private String _root, _currentElementId;
 			private boolean _rootFound, _ignoreHeader;
-			
+
 			private List<String> _columnElementIds = new ArrayList<String>();
 			private List<Integer> _columnRows = new ArrayList<Integer>();
 			private List<SOAElement> _columnParents = new ArrayList<SOAElement>();
-						
+
 			public SOAXMLContentHandler(SOASchema soaSchema, String root) {
 				// retain the schema
 				_soaSchema = soaSchema;
 				// retain the root, we'll check it on start
-				_root = root;				
+				_root = root;
 			}
-			
+
 			public SOAElement getRootElement() {
 				return _currentElement;
 			}
-			
+
 			public SOASchema getSOASchema() {
 				return _soaSchema;
 			}
-			
+
 			@Override
 			public void characters(char[] chars, int start, int length) throws SAXException {
 				// only if we have a current element
@@ -142,7 +142,7 @@ public interface SOADataReader {
 					// instantiate a string using the char array we've been given
 					String value = new String(chars, start, length).trim();
 					if (value.length() > 0) _authentication = value;
-				} else if (_currentElement != null) {				
+				} else if (_currentElement != null) {
 					// instantiate a string using the char array we've been given
 					String value = new String(chars, start, length);
 					// get any current value
@@ -157,18 +157,18 @@ public interface SOADataReader {
 					}
 				}
 			}
-			
+
 			@Override
 			public void startDocument() throws SAXException {
 				// reset all our counters when we first start the document
 				_currentColumn = 0;
 				_currentRow = 0;
-				_currentElement = null;		
+				_currentElement = null;
 				_currentElementId = "";
-				_previousColumn = -1;		
+				_previousColumn = -1;
 				_columnElementIds.clear();
 				_columnRows.clear();
-				_columnParents.clear();	
+				_columnParents.clear();
 				_ignoreHeader = false;
 				_authentication = null;
 				// check whether we got a root for us to start at
@@ -193,7 +193,7 @@ public interface SOADataReader {
 				_columnElementIds.clear();
 				_columnRows.clear();
 				_columnParents.clear();
-				
+
 				// if we have a schema
 				if (_soaSchema != null) {
 					// try and validate it
@@ -203,101 +203,105 @@ public interface SOADataReader {
 						throw new SAXException(ex);
 					}
 				}
-								
+
 			}
-			
+
 			@Override
 			public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
-				
-				// ignore all elements pertaining to the envelope				
+
+				// ignore all elements pertaining to the envelope
 				if ("http://schemas.xmlsoap.org/soap/envelope/".equals(uri)) {
-					
+
 					// if this is the header element start the header ignore
 					if ("Header".equals(localName)) _ignoreHeader = true;
-					
+
 				} else if (!_ignoreHeader) {
-										
+
 					// if we haven't found the root we want yet
 					if (!_rootFound) {
 						// check both local and qualified names for if this is the root we want
-						if (localName.equals(_root) || qName.equals(_root)) _rootFound = true;
+						if (localName.equals(_root) || qName.equals(_root)) {
+							_rootFound = true;
+							// reset the current column to 0 in case the root we want is not the first child
+							_currentColumn = 0;
+						}
 					}
-					
+
 					// if we've found our root!
 					if (_rootFound) {
-						
+
 						// make a new branch for this element
 						_currentElement = new SOAElement(localName);
-																																			 																								
+
 						// reset or resume the row counter if the column is different
 						if (_previousColumn == _currentColumn) {
-							_currentRow ++;							
-						} else {	
-							
+							_currentRow ++;
+						} else {
+
 							// add a branch id for this column if required
 							if (_currentColumn > _columnElementIds.size() - 1) {
 								// check root or further down
 								if (_currentColumn == 0) {
 									// root is simple
-									_columnElementIds.add("0");							
+									_columnElementIds.add("0");
 								} else {
 									// other columns are the most recent parent with an extra 0
 									_columnElementIds.add(_columnElementIds.get(_currentColumn - 1) + ".0");
-								}								
+								}
 							}
-							
+
 							// if we've not seen this column before
 							if (_currentColumn > _columnParents.size() - 1) {
 								// add a parent node
-								_columnParents.add(_currentElement);	
-							} 
-							
+								_columnParents.add(_currentElement);
+							}
+
 							// add row counter for this column if required
 							if (_currentColumn > _columnRows.size() - 1) {
-								// add a counter for the number of rows for this column 
-								_columnRows.add(0);	
+								// add a counter for the number of rows for this column
+								_columnRows.add(0);
 								// reset row counter
 								_currentRow = 0;
 							} else {
 								// fetch in the current row for this column and inc
 								_currentRow = _columnRows.get(_currentColumn) + 1;
 							}
-																					
+
 							// remember this column
 							_previousColumn = _currentColumn;
 						}
-																								 								 
+
 						// if not root add this element as a child to the parent is the prior column
 						if (_currentColumn == 0) {
-							
+
 							_currentElementId = "0";
-							
+
 						} else {
-							
+
 							// get the parent of this column
 							SOAElement parentElement = _columnParents.get(_currentColumn - 1);
 							// set parent of this branch
 							_currentElement.setParentElement(parentElement);
 							// add this child node to its parent for cross reference
 							parentElement.addChildElement(_currentElement);
-																																
+
 							// set the current branch id from the parent
 							_currentElementId = _columnElementIds.get(_currentColumn - 1);
 							// inc the current branch id if not an array
 							if (!parentElement.getIsArray()) _currentElementId += "." + _currentRow;
-							
+
 							// retain the current branch id
-							_columnElementIds.set(_currentColumn, _currentElementId);					
+							_columnElementIds.set(_currentColumn, _currentElementId);
 							// retain the current row
-							_columnRows.set(_currentColumn, _currentRow);					
+							_columnRows.set(_currentColumn, _currentRow);
 							// retain the parent of this column
 							_columnParents.set(_currentColumn, _currentElement);
-							
+
 						}
-						
+
 						// get the parent element
 						SOAElement parentElement = _currentElement.getParentElement();
-						
+
 						// if we have a parent for this column already (a proxy for whether it's the second or more peer)
 						if (parentElement != null) {
 							// if parent is not an array already
@@ -307,38 +311,38 @@ public interface SOADataReader {
 									// if the element at this column has the same name as what we had previously for the column
 									if (localName.equals(_columnParents.get(_currentColumn).getName())) {
 										// if the name is the same as the first element
-										if (localName.equals(parentElement.getChildElements().get(0).getName())) {										
+										if (localName.equals(parentElement.getChildElements().get(0).getName())) {
 											// set array flag to true
 											parentElement.setIsArray(true);
 										}
 									}
 								}
-							} else {							
+							} else {
 								// anything that ends in "Array" is an array
 								if (localName.endsWith("Array") || qName.endsWith("Array")) _currentElement.setIsArray(true);
 							}
 						}
-												
+
 						// inc the column
-						_currentColumn ++;	
-						
+						_currentColumn ++;
+
 					} // root found
-																												
+
 				} // not soap envelope
-								
+
 			}
-															
+
 			private SOASchemaElement getSchemaElementById(String id, String elementName) {
-				
+
 				// retrieve the schema for this element
 				SOASchemaElement schemaElement = _soaSchema.getElementById(id);
-				
+
 				// check we got one
 				if (schemaElement != null) {
-					
-					// if the name's are different 
+
+					// if the name's are different
 					if (!elementName.equals(schemaElement.getName())) {
-			
+
 						// assume this element does not have minOccurs="0"
 						boolean minOccursZero = false;
 						// check restrictions
@@ -354,94 +358,94 @@ public interface SOADataReader {
 									// we're done
 									break;
 								}
-								
+
 							}
-							
+
 						}
 						// if the element at this position had minOccurs=0
 						if (minOccursZero) {
-																												
+
 							// fetch the parent element
 							SOAElement parentElement =  _columnParents.get(_currentColumn - 1);
-							
+
 							// get the current element index from the id
 							int index = getIdIndex(id);
-							
+
 							// add an empty element to represent the optional one
 							parentElement.addChildElement(index, new SOAElement(schemaElement.getName()));
-														
+
 							// increment the index and add back to make the new id
 							String nextId = incId(id);
-							
+
 							// update the list with this position
 							_columnElementIds.set(_currentColumn, nextId);
-																					
+
 							// fetch the next element
 							schemaElement = getSchemaElementById(nextId, elementName);
-							
+
 						}
-						
+
 					}
-					
+
 				}
-				
+
 				return schemaElement;
-				
+
 			}
-			
+
 			@Override
 			public void endElement(String uri, String localName, String qName) throws SAXException {
-						
+
 				// ignore all elements pertaining to the envelope
-				
+
 				if ("http://schemas.xmlsoap.org/soap/envelope/".equals(uri)) {
-					
+
 					// if this is the end of the header element we can now stop ignoring it
 					if ("Header".equals(localName)) _ignoreHeader = false;
-					
+
 				} else if (!_ignoreHeader) {
-				
-					// go back one column 
+
+					// go back one column
 					_currentColumn --;
-					
-					// validate this element if this column is the root or above and there is a schema 
+
+					// validate this element if this column is the root or above and there is a schema
 					if (_currentColumn >= 0 && _soaSchema != null) {
-						
+
 						// retrieve the last branch id for this column
 						String currentElementId = _columnElementIds.get(_currentColumn);
-						
+
 						SOASchemaElement schemaElement = getSchemaElementById(currentElementId, localName);
-											
+
 						// check we found one
 						if (schemaElement != null) {
-							
+
 							// retrieve the element
 							SOAElement element = _columnParents.get(_currentColumn);
-							
+
 							// validate against last branch in this column
-							try {								
+							try {
 								// try and validate it
 								schemaElement.validate(element);
 							} catch (SOASchemaException e) {
 								throw new SAXException(e);
 							}
-							
+
 							// close the array if required
 							if (schemaElement.getIsArray()) element.closeArray();
-							
+
 						} else {
 							throw new SAXException("Element \"" + localName + "\" not recognised at column " + (_currentColumn + 1) + ", row " + (_currentRow + 1));
 						}
-						
+
 					}
-					
+
 				}
-																													
+
 			}
 
 			@Override
 			public void startPrefixMapping(String prefix, String uri) throws SAXException {}
-			
+
 			@Override
 			public void endPrefixMapping(String prefix) throws SAXException {}
 
@@ -455,12 +459,12 @@ public interface SOADataReader {
 			public void setDocumentLocator(Locator locator) {}
 
 			@Override
-			public void skippedEntity(String name) throws SAXException {}			
-			
+			public void skippedEntity(String name) throws SAXException {}
+
 		}
 
 		protected static String incId(String id) {
-			
+
 			int seperatorPos = id.lastIndexOf(".");
 			if (seperatorPos > 0) {
 				int newIndex = Integer.parseInt(id.substring(seperatorPos + 1)) + 1;
@@ -469,18 +473,18 @@ public interface SOADataReader {
 				int newId = Integer.parseInt(id) + 1;
 				return Integer.toString(newId);
 			}
-			
+
 		}
-		
+
 		protected static int getIdIndex(String id) {
-			
+
 			int seperatorPos = id.lastIndexOf(".");
 			if (seperatorPos > 0) {
 				return Integer.parseInt(id.substring(seperatorPos + 1));
 			} else {
 				return Integer.parseInt(id);
 			}
-			
+
 		}
 
 		private void init(SOASchema soaSchema, String root) throws ParserConfigurationException, SAXException {
@@ -488,97 +492,99 @@ public interface SOADataReader {
 			_spf.setNamespaceAware(true);
 			_saxParser = _spf.newSAXParser();
 			_soaXMLContentHandler = new SOAXMLContentHandler(soaSchema, root);
-			_xmlReader = _saxParser.getXMLReader();		
+			_xmlReader = _saxParser.getXMLReader();
 			_xmlReader.setContentHandler(_soaXMLContentHandler);
 		}
-		
+
 		// constructors
-		
+
 		public SOAXMLReader() throws ParserConfigurationException, SAXException {
 			init(null, null);
 		}
-		
+
 		public SOAXMLReader(SOASchema soaSchema) throws ParserConfigurationException, SAXException {
 			init(soaSchema, null);
 		}
-		
+
 		public SOAXMLReader(String root) throws ParserConfigurationException, SAXException {
 			init(null, root);
 		}
-		
+
 		public SOAXMLReader(SOASchema soaSchema, String root) throws ParserConfigurationException, SAXException {
 			init(soaSchema, root);
 		}
-		
+
 		// public methods
-								
+
+		@Override
 		public SOAData read(String xmlString) throws SOAReaderException {
-			
+
 			try {
-				
+
 				// parse xml document through reader, so it's navigation goes through our overridden content handler
 				_xmlReader.parse(new InputSource(new ByteArrayInputStream(xmlString.getBytes())));
-				
+
 			} catch (Exception ex) {
-				
+
 				throw new SOAReaderException(ex);
-				
+
 			}
-			
+
 			// return a datatree based on the current branch which will now be the root
 			return new SOAData(_soaXMLContentHandler.getRootElement(), _soaXMLContentHandler.getSOASchema());
-			
+
 		}
-		
+
+		@Override
 		public SOAData read(InputStream xmlStream) throws SOAReaderException {
-			
+
 			try {
-				
+
 				// parse xml document through reader, so it's navigation goes through our overridden content handler
 				_xmlReader.parse(new InputSource(xmlStream));
-				
+
 			} catch (Exception ex) {
-				
+
 				throw new SOAReaderException(ex);
-				
+
 			}
-			
+
 			// return a datatree based on the current branch which will now be the root
 			return new SOAData(_soaXMLContentHandler.getRootElement(), _soaXMLContentHandler.getSOASchema());
-			
+
 		}
 
 		@Override
 		public String getAuthentication() {
 			return _authentication;
 		}
-		
+
 	}
-	
+
 	/*
-	 *  SOAJSONReader 
-	 * 
+	 *  SOAJSONReader
+	 *
 	 *  Overrides JSONTokener and JSONObject to build the SOA as the JSON is parsed
-	 *  
+	 *
 	 */
-		
+
 	public class SOAJSONReader implements SOADataReader {
-		
+
 		private static SOASchema _soaSchema;
-		
+
 		private int _currentColumn;
 		private int _currentRow;
-		private SOAElement _currentElement;		
+		private SOAElement _currentElement;
 		private String _currentElementId;
 		private int _previousColumn;
 		private String _currentKey;
-		
+
 		private ArrayList<String> _columnElementIds = new ArrayList<String>();
 		private ArrayList<Integer> _columnRows = new ArrayList<Integer>();
 		private ArrayList<SOAElement> _columnParents = new ArrayList<SOAElement>();
-		
+
 		protected static String incId(String id) {
-			
+
 			int seperatorPos = id.lastIndexOf(".");
 			if (seperatorPos > 0) {
 				int newIndex = Integer.parseInt(id.substring(seperatorPos + 1)) + 1;
@@ -587,102 +593,102 @@ public interface SOADataReader {
 				int newId = Integer.parseInt(id) + 1;
 				return Integer.toString(newId);
 			}
-			
+
 		}
-		
+
 		protected static int getIdIndex(String id) {
-			
+
 			int seperatorPos = id.lastIndexOf(".");
 			if (seperatorPos > 0) {
 				return Integer.parseInt(id.substring(seperatorPos + 1));
 			} else {
 				return Integer.parseInt(id);
 			}
-			
+
 		}
-								
+
 		private void newElement(boolean isParentArray) {
-									
+
             // make a new branch for this element
-			_currentElement = new SOAElement(_currentKey);																		
-															 																								
+			_currentElement = new SOAElement(_currentKey);
+
 			// reset or resume the row counter if the column is different
 			if (_previousColumn == _currentColumn) {
 				_currentRow ++;
-			} else {							
+			} else {
 				// add a branch id for this column if required
 				if (_currentColumn > _columnElementIds.size() - 1) {
 					// check root or further down
 					if (_currentColumn == 0) {
 						// root is simple
-						_columnElementIds.add("0");							
+						_columnElementIds.add("0");
 					} else {
 						// other columns are the most recent parent with an extra 0
 						_columnElementIds.add(_columnElementIds.get(_currentColumn - 1) + ".0");
-					}						
+					}
 				}
-				
+
 				// add row counter for this column if required
 				if (_currentColumn > _columnRows.size() - 1) {
-					// add a counter for the number of rows for this column 
-					_columnRows.add(0);	
+					// add a counter for the number of rows for this column
+					_columnRows.add(0);
 					// reset row counter
 					_currentRow = 0;
 				} else {
 					// fetch in the current row for this column and inc
 					_currentRow = _columnRows.get(_currentColumn) + 1;
 				}
-				
+
 				// add a parent node for this column if required
-				if (_currentColumn > _columnParents.size() - 1) _columnParents.add(_currentElement);	
-				
+				if (_currentColumn > _columnParents.size() - 1) _columnParents.add(_currentElement);
+
 				// remember this column
 				_previousColumn = _currentColumn;
 			}
-																					 								 
+
 			// if not root add this element as a child to the parent is the prior column
 			if (_currentColumn == 0) {
 				_currentElementId = "0";
 			} else {
-				
+
 				// get the parent of this column
 				SOAElement parentElement = _columnParents.get(_currentColumn - 1);
 				// set parent of this branch
 				_currentElement.setParentElement(parentElement);
 				// add this child node to its parent for cross reference
 				parentElement.addChildElement(_currentElement);
-																													
+
 				// set the current branch id from the parent
 				_currentElementId = _columnElementIds.get(_currentColumn - 1) + "." + _currentRow;
-				
+
 				// retain the current branch id
-				_columnElementIds.set(_currentColumn, _currentElementId);					
+				_columnElementIds.set(_currentColumn, _currentElementId);
 				// retain the current row
-				_columnRows.set(_currentColumn, _currentRow);					
+				_columnRows.set(_currentColumn, _currentRow);
 				// retain the parent of this column
 				_columnParents.set(_currentColumn, _currentElement);
-				
+
 				// update parent branch if this is an array member (slightly different from in the xml)
 				if (isParentArray) {
 					parentElement.setIsArray(true);
 					parentElement.closeArray();
 				}
-				
-			} 								
-																																											            			           
+
+			}
+
 		}
-		
+
 		private SOASchemaElement getSchemaElementById(String id, String elementName) {
-			
+
 			// retrieve the schema for this element
 			SOASchemaElement schemaElement = _soaSchema.getElementById(id);
-			
+
 			// check we got one
 			if (schemaElement != null) {
-				
-				// if the name's are different 
+
+				// if the name's are different
 				if (!elementName.equals(schemaElement.getName())) {
-		
+
 					// assume this element does not have minOccurs="0"
 					boolean minOccursZero = false;
 					// check restrictions
@@ -698,43 +704,43 @@ public interface SOADataReader {
 								// we're done
 								break;
 							}
-							
+
 						}
-						
+
 					}
 					// if the element at this position had minOccurs=0
 					if (minOccursZero) {
-																											
+
 						// fetch the parent element
 						SOAElement parentElement =  _columnParents.get(_currentColumn - 1);
-						
+
 						// get the current element index from the id
 						int index = getIdIndex(id);
-						
+
 						// add an empty element to represent the optional one
 						parentElement.addChildElement(index, new SOAElement(schemaElement.getName()));
-													
+
 						// increment the index and add back to make the new id
 						String nextId = incId(id);
-						
+
 						// update the list with this position
 						_columnElementIds.set(_currentColumn, nextId);
-																				
+
 						// fetch the next element
 						schemaElement = getSchemaElementById(nextId, elementName);
-						
+
 					}
-					
+
 				}
-				
+
 			}
-			
+
 			return schemaElement;
-			
+
 		}
-		
+
 		private void validateElement(String localName) throws JSONException {
-			
+
 			if (_soaSchema != null) {
 				// retrieve the last branch id for this column
 				String currentElementId = _columnElementIds.get(_currentColumn);
@@ -752,18 +758,18 @@ public interface SOADataReader {
 					throw new JSONException("Key \"" + localName + "\" not recognised at column " + (_currentColumn + 1) + ", row " + (_currentRow + 1));
 				}
 			}
-			
+
 		}
-		
+
 		// JSON library overridden classes for fast-fail parsing
-		
+
 		public class SOAJSONTokener extends JSONTokener {
-			
+
 			/*
-			* we extend nextValue with overridden JSONObect and JSONArray 
+			* we extend nextValue with overridden JSONObect and JSONArray
 			* we also need access to their putOnce methods when called recursively
 			*/
-			
+
 			@Override
 			public Object nextValue() throws JSONException {
 		        char c = this.nextClean();
@@ -772,13 +778,13 @@ public interface SOADataReader {
 		        switch (c) {
 		            case '"':
 		            case '\'':
-		            	string = this.nextString(c);		            	
+		            	string = this.nextString(c);
 		                return string;
 		            case '{':
-		                this.back();		                
+		                this.back();
 		                return new SOAJSONObject(this);
 		            case '[':
-		                this.back();		                
+		                this.back();
 		                return new SOAJSONArray(this);
 		        }
 
@@ -800,36 +806,36 @@ public interface SOADataReader {
 
 		        string = sb.toString().trim();
 		        if ("".equals(string)) throw this.syntaxError("Missing value");
-		        
+
 		        return JSONObject.stringToValue(string);
 		    }
-			
+
 			public SOAJSONTokener(String string) {
 				super(string);
 			}
-			
+
 			public SOAJSONTokener(InputStream stream) throws JSONException {
 				super(stream);
 			}
-			
+
 		}
-				
+
 		public class SOAJSONObject extends JSONObject {
-									
+
 			public SOAElement getRootElement() {
-				if (_columnParents.size() > 0) return _columnParents.get(0); 
+				if (_columnParents.size() > 0) return _columnParents.get(0);
 				return null;
 			}
-			
+
 			// override the putOnce as it signals a JSONObject has finished being created so we can set its value and validate it
-			
+
 			@Override
 			public JSONObject putOnce(String key, Object value) throws JSONException {
-				
+
 				//System.out.println(key + " : " + value.getClass().getSimpleName());
-				
+
 				if (value.getClass().equals(String.class)) _currentElement.setValue((String) value);
-																				
+
 		        if (key != null && value != null) {
 		            if (this.opt(key) != null) {
 		                throw new JSONException("Duplicate key \"" + key + "\"");
@@ -838,18 +844,18 @@ public interface SOADataReader {
 		        }
 		        return this;
 		    }
-									
-			// we extend the constructor so we can make a TreeElement as soon as the key is identified 					
-												
+
+			// we extend the constructor so we can make a TreeElement as soon as the key is identified
+
 			public SOAJSONObject(JSONTokener x) throws JSONException {
 
 				if (x.nextClean() != '{') throw x.syntaxError("A JSONObject text must begin with '{'");
-												
+
 				char c;
 		        String key;
-		        		        
+
 		        while (true) {
-		        	
+
 		            c = x.nextClean();
 		            switch (c) {
 		            case 0:
@@ -863,45 +869,45 @@ public interface SOADataReader {
 
 		            // The key is followed by ':'.
 		            c = x.nextClean();
-		            if (c != ':') throw x.syntaxError("Expected a ':' after a key");	
-		            
+		            if (c != ':') throw x.syntaxError("Expected a ':' after a key");
+
 		            //--------------------------------------- This code is particular to creating the SOA -----------------------------------
-		            
+
 		            // retain the current key here
 		            _currentKey = key;
-		            
+
 		            // create a new branch for this key (reused in TreeElementJSONArray)
 		            newElement(false);
-		            
+
 		            // inc the column
 					_currentColumn ++;
-		            
+
 		            // get the next object (this can create new columns)
 		            Object o = x.nextValue();
-		           
+
 		            // special types need casting
-		            if (o instanceof Integer) {		
-		            	int i = (Integer) o;		
-		            	o = Integer.toString(i);		
-		            } else  if (o instanceof Double) {		
-		            	Double d = (Double) o;		
-		            	o = Double.toString(d);		
-		            } else if (o instanceof Boolean) {		
-		            	Boolean b = (Boolean) o;		
-		            	o = Boolean.toString(b);		
+		            if (o instanceof Integer) {
+		            	int i = (Integer) o;
+		            	o = Integer.toString(i);
+		            } else  if (o instanceof Double) {
+		            	Double d = (Double) o;
+		            	o = Double.toString(d);
+		            } else if (o instanceof Boolean) {
+		            	Boolean b = (Boolean) o;
+		            	o = Boolean.toString(b);
 		            }
-		            
+
 		            // dec the column
 					_currentColumn --;
-					
-		            // validate the current branch 
-		            validateElement(key);		            		            
-					
+
+		            // validate the current branch
+		            validateElement(key);
+
 					//--------------------------------------- End of code particular to creating the SOA -----------------------------------
-		            
+
 		            // add the object
 		            this.putOnce(key, o);
-		            
+
 		            // Pairs are separated by ','.
 		            switch (x.nextClean()) {
 		            case ';':
@@ -916,19 +922,19 @@ public interface SOADataReader {
 		            }
 		        }
 			}
-			
+
 		}
-		
+
 		public class SOAJSONArray extends JSONArray {
-			
+
 			// we extend the contructor so we can make our own special array branches
-			
+
 			public SOAJSONArray(JSONTokener x) throws JSONException {
 				super();
-				
+
 				// mark the current branch as an array
 				_currentElement.setIsArray(true);
-				
+
 		        if (x.nextClean() != '[') {
 		            throw x.syntaxError("A JSONArray text must start with '['");
 		        }
@@ -940,29 +946,29 @@ public interface SOADataReader {
 		                    put(JSONObject.NULL);
 		                } else {
 		                    x.back();
-		                    
+
 		                    //--------------------------------------- This code is particular to creating the SOA -----------------------------------
-		                    		            
+
 		                    // create a new branch for this key (reused in TreeElementJSONObject)
 				            newElement(true);
-				            
+
 		                    // inc the column
 							_currentColumn ++;
-				            
+
 				            // get the next object (this can create new columns)
 				            Object o = x.nextValue();
-				            				            				            				            				            
+
 				            // dec the column
 							_currentColumn --;
-							
-							// validate the current branch 
+
+							// validate the current branch
 				            validateElement(_currentKey);
-							
+
 							// put any string values back in the relevant column
-							if (o.getClass().equals(String.class)) _columnParents.get(_currentColumn).setValue((String) o);				            
-		                    
+							if (o.getClass().equals(String.class)) _columnParents.get(_currentColumn).setValue((String) o);
+
 							//--------------------------------------- End of code particular to creating the SOA -----------------------------------
-		                    		                    		                    
+
 		                }
 		                switch (x.nextClean()) {
 		                case ',':
@@ -977,76 +983,76 @@ public interface SOADataReader {
 		            }
 		        }
 		    }
-			
+
 		}
-		
+
 		// Constructors
-		
+
 		public SOAJSONReader() {}
-		
+
 		public SOAJSONReader(SOASchema dataTreeSchema) {
 			_soaSchema = dataTreeSchema;
 		}
-				
-		
+
+
 		private void reset() {
-			
+
 			// reset all our counters when we first start the read
 			_currentColumn = 0;
 			_currentRow = 0;
-			_currentElement = null;		
+			_currentElement = null;
 			_currentElementId = "";
-			_previousColumn = -1;		
+			_previousColumn = -1;
 			_columnElementIds.clear();
 			_columnRows.clear();
-			_columnParents.clear();	
-			
+			_columnParents.clear();
+
 		}
-		
+
 		@Override
 		public SOAData read(String string) throws SOAReaderException {
-			
+
 			reset();
-						
+
 			SOAElement rootElement;
-			
+
 			try {
-				
-				SOAJSONObject dataTreeJSONObject = new SOAJSONObject(new SOAJSONTokener(string));	
-				
+
+				SOAJSONObject dataTreeJSONObject = new SOAJSONObject(new SOAJSONTokener(string));
+
 				rootElement = dataTreeJSONObject.getRootElement();
-				
+
 			} catch (Exception e) {
-				
+
 				throw new SOAReaderException(e);
-				
+
 			}
-			
+
 			return new SOAData(rootElement, _soaSchema);
-			
+
 		}
-		
+
 		@Override
 		public SOAData read(InputStream stream) throws SOAReaderException {
-			
+
 			reset();
-			
+
 			SOAElement rootElement;
-			
+
 			try {
-				
-				SOAJSONObject dataTreeJSONObject = new SOAJSONObject(new SOAJSONTokener(stream));	
-				
+
+				SOAJSONObject dataTreeJSONObject = new SOAJSONObject(new SOAJSONTokener(stream));
+
 				rootElement = dataTreeJSONObject.getRootElement();
-				
+
 			} catch (Exception e) {
-				
+
 				throw new SOAReaderException(e);
-				
+
 			}
-			
+
 			return new SOAData(rootElement, _soaSchema);
-			
+
 		}
 
 		@Override
@@ -1054,10 +1060,10 @@ public interface SOADataReader {
 			return null;
 		}
 
-		
-		
+
+
 	}
-	
-	
-	
+
+
+
 }
