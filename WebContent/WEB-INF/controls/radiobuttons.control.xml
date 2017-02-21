@@ -154,7 +154,7 @@ if (this.buttons || this.valueList) {
 		// get the button
 		var button = buttons[i];
 		// get the label
-		var label = button.label;
+		var label = "<span>" + button.label + "</span>";
 		// if valueList
 		if (this.valueList) label = button.text;
 		var value = (codes ? button.value : label);
