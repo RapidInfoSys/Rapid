@@ -223,10 +223,12 @@ if (this.buttons || this.valueList) {
 		// get the button
 		var button = buttons[i];
 		// get the label
-		var label = "<span>" + button.label + "</span>";
+		var label = button.label;
 		// if valueList
 		if (this.valueList) label = button.text;
 		var value = (codes ? button.value : label);
+		// wrap the label in spans for FF styling
+		label = "<span>" + label + "</span>";
 		radiobuttonHtml += "<div class='" + (this.inline ? "r-radioInline" : "form-group") + "'> <div class='check-radio'> <label for='" + this.id + i  + "'>";
 		if (this.buttonposition == 'R') radiobuttonHtml += label;
 		radiobuttonHtml += "<input type='radio' name='" + (this.group ? escapeApos(this.group) : this.id) + "' id='" + this.id + i + "' value='" + escapeApos(value) + "' " + (this.value == value ? "checked='checked'" :  "") + "></input>";
