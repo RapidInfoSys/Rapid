@@ -8,9 +8,9 @@ gareth.edwards@rapid-is.co.uk
 This file is part of the Rapid Application Platform
 
 Rapid is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as 
-published by the Free Software Foundation, either version 3 of the 
-License, or (at your option) any later version. The terms require you 
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version. The terms require you
 to include the original copyright, and the license notice in all redistributions.
 
 This program is distributed in the hope that it will be useful,
@@ -35,14 +35,14 @@ import com.rapid.server.RapidRequest;
 public class FormSecurityAdapter extends RapidSecurityAdapter {
 
 	// constructor
-	
+
 	public FormSecurityAdapter(ServletContext servletContext, Application application) throws SecurityException,IllegalArgumentException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
 		// call the super constructor
 		super(servletContext, application);
 	}
-	
+
 	// overrides
-	
+
 	@Override
 	public User getUser(RapidRequest rapidRequest) throws SecurityAdapaterException {
 		// first try and get the user with the super method
@@ -55,8 +55,15 @@ public class FormSecurityAdapter extends RapidSecurityAdapter {
 
 	@Override
 	public boolean checkUserPassword(RapidRequest rapidRequest,	String userName, String password) throws SecurityAdapaterException {
+		// get the action
+		String action = rapidRequest.getActionName();
+		// if there was one
+		if (action != null) {
+			// if this is an import we want to check the password properly so a fail will add the current user to the app
+			if ("import".equals(action)) return super.checkUserPassword(rapidRequest, userName, password);
+		}
 		// everyone is allowed
 		return true;
 	}
-						
+
 }
