@@ -208,7 +208,7 @@ return $("#" + id).find("select").val();
 	    <setDataJavaScript>
 	        <![CDATA[
 if (data !== undefined) {
-	var control = $("#" + id);
+	var control = $("#" + id).find("select");
 	if (data == null) {
 		if (!field) control.children().remove();
 	} else {
