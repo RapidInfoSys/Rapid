@@ -98,8 +98,13 @@ function checkPagePanelFooter() {
 			$("body").css("min-height","0");
 			var fh = footer.height();
 			if (fh > 0) _stickyFooterHeight = fh;
-			var body = $(document.body);
-			if (body.height() + body.offset().top + _stickyFooterHeight < $(window).height()) {
+			var body = $(document.body);			
+			var bh = 0;
+			body.children("div.r-panel:visible").each(function(){
+ 				bh += $(this).height();
+			});
+			bh = Math.max(bh,body.height());			
+			if (bh + body.offset().top + _stickyFooterHeight < $(window).height()) {
 				// Add sticky footer
 				footer.addClass("pagePanelStickyFooter");
 			}	else {
