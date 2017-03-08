@@ -1889,6 +1889,8 @@ function loadPage() {
 	
 }
 
+
+
 // this function removes properties that create circular references from the control tree when saving
 function getDataObject(object) {
 	// make a new empty object
@@ -1919,6 +1921,51 @@ function getDataObject(object) {
 	}
 	// return our safe object
 	return o;	
+}
+
+// this function returns the start and end html of child controls
+function getRoleControl(control, html) {
+	// an object to store the details at this level
+	var roleControl = {};
+	// record our html
+	roleControl.html = html;
+	// record our html length
+	roleControl.length = roleControl.html.length;
+	// assume no child start
+	var childStart = -1;
+	// assume no child length
+	var childLength = 0;
+	// get any children
+	var childControls = control.childControls;
+	// if we have some
+	if (childControls && childControls.length > 0) {
+		// add a child collection to this object
+		roleControl.children = [];
+		// loop the children
+		for (var i in childControls) {
+			// get the child at this position
+			var childControl = childControls[i];
+			// if there was one
+			if (childControl) {
+				// process the child iteratively
+				var childRoleControl = getRoleControl(childControl, childControl.object.prop('outerHTML')); 
+				// add it to the child collection of this object
+				roleControl.children.push(childRoleControl);
+				// if we've not recorded a child yet
+				if (childStart < 0) {
+					// find where this child starts
+					childStart = roleControl.html.indexOf(childRoleControl.html);					
+				}
+				// record the total length of children
+				childLength += childRoleControl.html.length;
+			}		
+		}		
+	}
+	// record the child start
+	roleControl.childStart = childStart;
+	// record the combined child length
+	roleControl.childLength = childLength;
+	return roleControl;
 }
 
 // the page can't be strigified as is so remove the objects with the above iterative function and send that
@@ -1975,143 +2022,84 @@ function getSavePageData() {
 					
 	// get the roles from the app
 	var roles = _version.roles;	
-	// get all possible combinations of the roles in this page
-    var combinations = []; 
-    
-    // show message
-	$("#rapid_P11_C7_").html("Checking roles");
-    
-	// if this application has any explicit roles, we need to build the possible combinations
-	if (pageRoles.length > 0) {
-				
-	 	// left shift 1 by length to raise to power of length
-	    var quantity = 1 << pageRoles.length; 
-	 	// loop the powered length
-	    for (var i = 1; i < quantity; i++) {
-	    	// combinations of this length
-	        var combination = []; 
-	    	// check each item
-	        for (var j = 0; j < pageRoles.length; j++) {
-	        	// binary and
-	            if (i & (1 << j)) combination.push(pageRoles[j]);	            
-	        }
-	        if (combination.length !== 0) combinations.push(combination);	        
-	    }
-	    		
-		// sort the combinations
-	    combinations.sort( function(a, b) {
-			// a and b are each a list of job roles
-			if (a.length == b.length) {
-				// loop the items
-				for (var i = 0; i < a.length; i ++) {
-					// retrieve the individual roles
-					var aRole = a[i];
-					var bRole = b[i];
-					// get the min length
-					var l = Math.min(aRole.length, bRole.length);
-					// loop the chars
-					for (var j = 0; j < l; j++) {
-						// get the chars
-						var aChar = aRole.charAt(j);
-						var bChar = bRole.charAt(j);
-						// if different return
-						if (aChar != bChar) return aChar - bChar; 
-					}
-					// if we got all the way here use length of string
-					return aRole.length - bRole.length;
-				}
-			} else {
-				// return the difference in length
-				return b.length - a.length;
-			}
-		});
-	    	    		
-	}
 	
-	// add a combination to represent a user with no roles
-	combinations.push([]);
-	
-	// add an array to the page object for the each role combination html
-    pageObject.rolesHtml = [];
-    
     // show message
 	$("#rapid_P11_C7_").html("Generating html");
-    
-    // for each combination
-    for (var i in combinations) {
-    	
-    	// get the combination
-    	var combination = combinations[i];
-    	
-    	// get a fresh set of all the controls (as new html will have been added in the regeneration between combinations)
-    	controls = getControls();
-    	// get a fresh role controls array
-    	var roleControls = [];
-    	    	    	
-    	// loop them looking for roles, and pre-save functions to run 
-    	for (var j in controls) {    		
-    		// get the control
-    		var control = controls[j];
-    		// check for roles
-    		if (control.roles && control.roles.length > 0) {
-    			// remember this control has roles
-    			roleControls.push(control);
-    		}
-    		// check for a pre-save function
-    		if (control._save) {
-    			control._save();
-    		}
-    	}
-    	
-    	// loop only the controls that have roles, removing them if no role in this combination
-    	for (var j in roleControls) {
-    		// get an instance of the control
-    		var roleControl = roleControls[j];
-    		// assume we don't have the role in this combination
-    		var gotRole = false;
-    		// loop the controls roles (should be smaller than combination roles)
-    		for (var k in roleControl.roles) {
-    			// loop the combination
-	    		for (var l in combination) {
-	    			// if a role in the control is present in the combination
-	    			if (roleControl.roles[k] == combination[l]) {
-	    				// remember we've got the role
-	    				gotRole = true;
-	    				// exit the combination loop
-	    				break;
-	    			}
-	    		}
-	    		// exit the control role loop if we found the role earlier
-	    		if (gotRole) break;
-    		}
-    		// remove the control if we don't have a role for it in this combination
-    		if (!gotRole) roleControl._remove();	    		
-    	}
-    	
-    	// add the html for this security role combination to the pageObject rolesHtml property
-    	pageObject.rolesHtml.push( { roles : combination, html :  _page.object.html() });
-    	    	
-    	// remove any dialogues or components
-    	$("#dialogues").children().remove();
-    	// empty the child controls collection
-    	_page.childControls = [];
-    	// remove the child controls from the page
-    	_page.object.children().remove();
-    		    	
-    	// loop the current page childControls and re-create
-    	for (var j = 0; j < pageObject.childControls.length; j++) {
-    		// get an instance of the control properties (which is what we really need from the JSON)
-    		var control = pageObject.childControls[j];
-    		// create and add (using the undo routine)
-    		_page.childControls.push( loadControl(control, _page, true, false, true));
-    	}
-    	// arrange any non-visible controls
-    	arrangeNonVisibleControls();
-    		    		    	
-    }
-    
-    // add the page html this is used by the designer and is always the html for the combination with the most roles
-	pageObject.htmlBody = pageObject.rolesHtml[0].html;
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	
+	/*
+	
+	// create an array to hold role controls
+	var roleControls = [];
+	    	    	
+	// loop them looking for roles, and pre-save functions to run 
+	for (var j in controls) {    		
+		// get the control
+		var control = controls[j];
+		// check for roles
+		if (control.roles && control.roles.length > 0) {
+			// remember this control has roles
+			roleControls.push(control);
+		}
+		// check for a pre-save function
+		if (control._save) {
+			control._save();
+		}
+	}
+	*/
+		
+	/*
+	
+	// if there are controls with roles
+	if (roleControls.length > 0) {
+		
+		// an array of controls that are only visible if there are roles, and their html
+		var roleControlsHtml = [];
+		
+		// loop only the controls that have roles, removing them if no role in this combination
+		for (var i in roleControls) {
+			// get an instance of the control
+			var roleControl = roleControls[i];
+			// retain just the roles and the outer html
+			roleControlsHtml.push({roles:roleControl.roles, html:roleControl.object.prop('outerHTML')});
+		}
+		
+		// an array of page parts
+		var rolePageParts = [];
+		// position is 0
+		var pos = 0;
+		
+		// loop the role control html
+		for (var i in roleControlsHtml) {
+			// get the control html
+			var controlHtml = roleControlsHtml[i].html;
+			// find the start of the control html in the page html
+			var start = pageHtml.indexOf(controlHtml);
+			// if the position is behind the start, get everything between the two
+			if (pos < start) rolePageParts.push({html:pageHtml.substr(pos, start - pos)});
+			// retain the html and roles
+			rolePageParts.push({html: controlHtml, roles:roleControlsHtml[i].roles});
+			// update pos
+			pos = start + controlHtml.length;
+		}
+		// if we've not reached the end of the page, add it
+		if (pos < pageHtml.length) rolePageParts.push({html:pageHtml.substr(pos)});
+		
+		// add to the page object
+		pageObject.rolePageParts = rolePageParts;
+		
+	}
+	
+	*/
+	
+	// get the page save html - do this before getting individual control html
+	var pageHtml = _page.object.html().trim();
+	
+	// add the page html this is used by the designer and is always the html for the combination with the most roles - the replace removes starting and ending line breaks
+	pageObject.htmlBody = pageHtml;
+	
+	pageObject.pageRoleControlHtml = getRoleControl(_page, pageHtml);
 	
 	// add the pages if their order has been changed
 	if (_pageOrderChanged) pageObject.pages = _pages;
