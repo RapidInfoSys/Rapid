@@ -33,6 +33,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -93,7 +94,7 @@ public class Page {
 	public static final int FORM_PAGE_TYPE_ERROR = 2;
 	public static final int FORM_PAGE_TYPE_SAVED = 3;
 
-	// a class for retaining page html for a set of user roles
+	// a class for retaining page html for a set of user roles - this structure is now depreciated as of Rapid 2.3.5.2 in favour of a more efficient tree structure
 	public static class RoleHtml {
 
 		// instance variables
@@ -115,6 +116,49 @@ public class Page {
 		public RoleHtml(List<String> roles, String html) {
 			_roles = roles;
 			_html = html;
+		}
+
+	}
+
+	// a class for retaining control html that has user roles
+	public static class RoleControlHtml {
+
+		// instance variables
+
+		private String _startHtml, _endHtml;
+		private List<String> _roles;
+		private List<RoleControlHtml> _children;
+
+		// properties
+
+		public String getStartHtml() { return _startHtml; }
+		public void setStartHtml(String startHtml) { _startHtml = startHtml; }
+
+		public String getEndHtml() { return _endHtml; }
+		public void setEndHtml(String endHtml) { _endHtml = endHtml; }
+
+		public List<String> getRoles() { return _roles; }
+		public void setRoles(List<String> roles) { _roles = roles; }
+
+		public List<RoleControlHtml> getChildren() { return _children; }
+		public void setChildren(List<RoleControlHtml> children) { _children = children; }
+
+		// constructors
+		public RoleControlHtml() {}
+
+		public RoleControlHtml(JSONObject jsonRoleControlHtml) throws JSONException {
+			_startHtml = jsonRoleControlHtml.optString("startHtml", null);
+			_endHtml = jsonRoleControlHtml.optString("endHtml", null);
+			JSONArray jsonRoles = jsonRoleControlHtml.optJSONArray("roles");
+			if (jsonRoles != null) {
+				_roles = new ArrayList<String>();
+				for (int i = 0; i < jsonRoles.length(); i++) _roles.add(jsonRoles.getString(i));
+			}
+			JSONArray jsonChildren = jsonRoleControlHtml.optJSONArray("children");
+			if (jsonChildren != null) {
+				_children = new ArrayList<RoleControlHtml>();
+				for (int i = 0; i < jsonChildren.length(); i++) _children.add( new RoleControlHtml(jsonChildren.getJSONObject(i)));
+			}
 		}
 
 	}
@@ -157,6 +201,7 @@ public class Page {
 	private List<Style> _styles;
 	private List<String> _controlTypes, _actionTypes, _sessionVariables, _roles;
 	private List<RoleHtml> _rolesHtml;
+	private RoleControlHtml _roleControlHtml;
 	private List<Condition> _visibilityConditions;
 	private String _conditionsType;
 	private Lock _lock;
@@ -239,9 +284,13 @@ public class Page {
 	public List<String> getRoles() { return _roles; }
 	public void setRoles(List<String> roles) { _roles = roles; }
 
-	// session variables used by this page (navigation actions are expected to pass them in)
+	// list of different page html for different possible role combinations - this is depreciated from Rapid 2.3.5.3
 	public List<RoleHtml> getRolesHtml() { return _rolesHtml; }
 	public void setRolesHtml(List<RoleHtml> rolesHtml) { _rolesHtml = rolesHtml; }
+
+	// page html for different possible role combinations - this is depreciated from Rapid 2.3.5.3
+	public RoleControlHtml getRoleControlHtml() { return _roleControlHtml; }
+	public void setRoleControlHtml(RoleControlHtml roleControlHtml) { _roleControlHtml = roleControlHtml; }
 
 	// any lock that might be on this page
 	public Lock getLock() { return _lock; }
@@ -1425,6 +1474,51 @@ public class Page {
 
 	}
 
+	// this function interatively checks permission and writes control role html
+	private void writeRoleControlHtml(Writer writer, List<String> userRoles, RoleControlHtml roleControlHtml) throws IOException {
+		// if we have a roleControlHtml
+		if (roleControlHtml != null) {
+			// assume we haven't passed
+			boolean passed = false;
+			// check if it has roles
+			if (roleControlHtml.getRoles() == null) {
+				//  no roles it passes
+				passed = true;
+			} else {
+				// loop the control roles first - likely to be smaller
+				for (String controlRole : roleControlHtml.getRoles()) {
+					// loop the user roles
+					for (String userRole : userRoles) {
+						// if they match
+						if (controlRole.equalsIgnoreCase(userRole)) {
+							// we've passed
+							passed = true;
+							// don't check any further
+							break;
+						}
+					}
+					// don't loop further if passed
+					if (passed) break;
+				}
+			}
+			// if we passed
+			if (passed) {
+				// write the start html if there is any
+				if (roleControlHtml.getStartHtml() != null) writer.write(roleControlHtml.getStartHtml());
+				// if there are children
+				if (roleControlHtml.getChildren() != null) {
+					// loop the children
+					for (RoleControlHtml childRoleControlHtml  : roleControlHtml.getChildren()) {
+						// print them
+						writeRoleControlHtml(writer, userRoles, childRoleControlHtml);
+					}
+				}
+				// write the end html if there is any
+				if (roleControlHtml.getEndHtml() != null) writer.write(roleControlHtml.getEndHtml());
+			} // control roles check
+		} // roleControlHtml check
+	}
+
 	// this routine produces the entire page
 	public void writeHtml(RapidHttpServlet rapidServlet, HttpServletResponse response, RapidRequest rapidRequest,  Application application, User user, Writer writer, boolean designerLink) throws JSONException, IOException, RapidLoadingException {
 
@@ -1676,59 +1770,97 @@ public class Page {
 				// a reference for the body html
 				String bodyHtml = null;
 
-				// get the users roles
-				List<String> userRoles = user.getRoles();
+				// check we have _rolesHtml - this has been depreciated since 2.3.5.3 but older page files may still have it this way
+				if (_rolesHtml != null) {
 
-				// check we have userRoles and htmlRoles
-				if (userRoles != null && _rolesHtml != null) {
+					// get the users roles
+					List<String> userRoles = user.getRoles();
 
-					// loop each roles html entry
-					for (RoleHtml roleHtml : _rolesHtml) {
+					if (userRoles != null) {
 
-						// get the roles from this combination
-						List<String> roles = roleHtml.getRoles();
+						// loop each roles html entry
+						for (RoleHtml roleHtml : _rolesHtml) {
 
-						// assume not roles are required (this will be updated if roles are present)
-						int rolesRequired = 0;
+							// get the roles from this combination
+							List<String> roles = roleHtml.getRoles();
 
-						// keep a running count for the roles we have
-						int gotRoleCount = 0;
+							// assume not roles are required (this will be updated if roles are present)
+							int rolesRequired = 0;
 
-						// if there are roles to check
-						if (roles != null) {
+							// keep a running count for the roles we have
+							int gotRoleCount = 0;
 
-							// update how many roles we need our user to have
-							rolesRequired = roles.size();
+							// if there are roles to check
+							if (roles != null) {
 
-							// check whether we need any roles and that our user has any at all
-							if (rolesRequired > 0) {
-								// check the user has as many roles as this combination requires
-								if (userRoles.size() >= rolesRequired) {
-									// loop the roles we need for this combination
-									for (String role : roleHtml.getRoles()) {
-										// check this role
-										if (userRoles.contains(role)) {
-											// increment the got role count
-											gotRoleCount ++;
-										} // increment the count of required roles
+								// update how many roles we need our user to have
+								rolesRequired = roles.size();
 
-									} // loop roles
+								// check whether we need any roles and that our user has any at all
+								if (rolesRequired > 0) {
+									// check the user has as many roles as this combination requires
+									if (userRoles.size() >= rolesRequired) {
+										// loop the roles we need for this combination
+										for (String role : roleHtml.getRoles()) {
+											// check this role
+											if (userRoles.contains(role)) {
+												// increment the got role count
+												gotRoleCount ++;
+											} // increment the count of required roles
 
-								} // user has enough roles to bother checking this combination
+										} // loop roles
 
-							} // if any roles are required
+									} // user has enough roles to bother checking this combination
 
-						} // add roles to check
+								} // if any roles are required
 
-						// if we have all the roles we need
-						if (gotRoleCount == rolesRequired) {
-							// use this html
-							bodyHtml = roleHtml.getHtml();
-							// no need to check any further
-							break;
-						}
+							} // add roles to check
 
-					} // html role combo loop
+							// if we have all the roles we need
+							if (gotRoleCount == rolesRequired) {
+								// use this html
+								bodyHtml = roleHtml.getHtml();
+								// no need to check any further
+								break;
+							}
+
+						} // html role combo loop
+
+					} // got userRoles
+
+				} else {
+
+					// check if this page has role control html
+					if (_roleControlHtml == null) {
+
+						// set this to the whole html body
+						bodyHtml = _htmlBody;
+
+					} else {
+
+						// get the users roles
+						List<String> userRoles = user.getRoles();
+
+						// if the user has roles
+						if (userRoles != null) {
+							// if the application is live
+							if (application.getStatus() == Application.STATUS_LIVE) {
+								// write straight to the page writer
+								writeRoleControlHtml(writer, userRoles, _roleControlHtml);
+								// set bodyHtml to empty string indicating we had permission
+								bodyHtml = "";
+							} else {
+								// make a StringWriter
+								StringWriter swriter = new StringWriter();
+								// write straight to the StringWriter
+								writeRoleControlHtml(swriter, userRoles, _roleControlHtml);
+								// set bodyHtml to what what written so it will be pretty printed
+								bodyHtml = swriter.toString();
+							}
+
+						} // user has roles
+
+					} // this page has role control html
 
 				} // if our users have roles and we have different html for roles
 
@@ -1740,13 +1872,16 @@ public class Page {
 
 				} else {
 
-					// check the status of the application
-					if (application.getStatus() == Application.STATUS_DEVELOPMENT) {
-						// pretty print
-						writer.write(Html.getPrettyHtml(bodyHtml.trim()));
-					} else {
-						// no pretty print
-						writer.write(bodyHtml.trim());
+					// check there is something to write - will be an empty string if already written by newer user roles code
+					if (bodyHtml.length() > 0) {
+						// check the status of the application
+						if (application.getStatus() == Application.STATUS_DEVELOPMENT) {
+							// pretty print
+							writer.write(Html.getPrettyHtml(bodyHtml.trim()));
+						} else {
+							// no pretty print
+							writer.write(bodyHtml.trim());
+						}
 					}
 
 					// close the form

@@ -75,6 +75,7 @@ import com.rapid.core.Control;
 import com.rapid.core.Event;
 import com.rapid.core.Page;
 import com.rapid.core.Page.Lock;
+import com.rapid.core.Page.RoleControlHtml;
 import com.rapid.core.Pages.PageHeader;
 import com.rapid.core.Pages.PageHeaders;
 import com.rapid.core.Theme;
@@ -1085,6 +1086,7 @@ public class Designer extends RapidHttpServlet {
 								// if we got one trim it and retain in page
 								if (htmlBody != null) newPage.setHtmlBody(htmlBody.trim());
 
+								/*
 								// look in the JSON for rolehtml
 								JSONArray jsonRolesHtml = jsonPage.optJSONArray("rolesHtml");
 								// if we found some
@@ -1119,6 +1121,12 @@ public class Designer extends RapidHttpServlet {
 									// add it to the page
 									newPage.setRolesHtml(rolesHtml);
 								}
+								*/
+
+								// look in the JSON for rolehtml
+								JSONObject jsonRoleControlHtml = jsonPage.optJSONObject("roleControlHtml");
+								// if we found some add it to the page
+								if (jsonRoleControlHtml != null) newPage.setRoleControlHtml(new RoleControlHtml(jsonRoleControlHtml));
 
 								// fetch a copy of the old page (if there is one)
 								Page oldPage = application.getPages().getPage(getServletContext(), newPage.getId());

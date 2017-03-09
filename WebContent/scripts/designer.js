@@ -1889,9 +1889,7 @@ function loadPage() {
 	
 }
 
-
-
-// this function removes properties that create circular references from the control tree when saving
+// this function removes properties that create circular references from the control tree when saving as well as moving empty events (those without actions)
 function getDataObject(object) {
 	// make a new empty object
 	var o = {};
@@ -1911,7 +1909,18 @@ function getDataObject(object) {
 					// make an array
 					o[i] = [];
 					// loop to clean up childControls
-					for (var j in p) o[i].push(getDataObject(p[j]));								
+					for (var j in p) {
+						// if this is the events collection
+						if (i == "events") {
+							// get the event
+							var event = p[j];
+							// only store event if there are actions
+							if (event.actions && event.actions.length > 0) o[i].push(getDataObject(event));
+						} else {
+							// store child
+							o[i].push(getDataObject(p[j]));								
+						}
+					}
 				} else {
 					// simple copy
 					o[i] = p;
@@ -1923,48 +1932,79 @@ function getDataObject(object) {
 	return o;	
 }
 
-// this function returns the start and end html of child controls
+// this function creates a tree of html that is depedent on roles. Html from child nodes that have no roles is brought into the parent
 function getRoleControl(control, html) {
 	// an object to store the details at this level
 	var roleControl = {};
-	// record our html
-	roleControl.html = html;
-	// record our html length
-	roleControl.length = roleControl.html.length;
-	// assume no child start
-	var childStart = -1;
-	// assume no child length
-	var childLength = 0;
+	// record any roles
+	if (control.roles && control.roles.length > 0) roleControl.roles = control.roles;
+	// assume no children have roles
+	var gotChildRoles = false;
 	// get any children
 	var childControls = control.childControls;
 	// if we have some
 	if (childControls && childControls.length > 0) {
-		// add a child collection to this object
-		roleControl.children = [];
+		// a child collection for this object
+		var roleControlChildren = [];
 		// loop the children
 		for (var i in childControls) {
 			// get the child at this position
 			var childControl = childControls[i];
 			// if there was one
 			if (childControl) {
+				// check for a pre-save function
+	    		if (childControl._save) childControl._save();
 				// process the child iteratively
-				var childRoleControl = getRoleControl(childControl, childControl.object.prop('outerHTML')); 
-				// add it to the child collection of this object
-				roleControl.children.push(childRoleControl);
-				// if we've not recorded a child yet
-				if (childStart < 0) {
-					// find where this child starts
-					childStart = roleControl.html.indexOf(childRoleControl.html);					
+				var childRoleControl = getRoleControl(childControl, childControl.object.prop('outerHTML'));
+				// if the child role control has roles remember this here to stop merging later
+				if (childRoleControl.roles || childRoleControl.gotChildRoles) gotChildRoles = true;
+				// if we still have no roles but we have a child in the collection
+				if (!gotChildRoles && roleControlChildren.length > 0) {
+					// append this child's html to the child before
+					roleControlChildren[0].startHtml += childRoleControl.startHtml;
+				} else {
+					// add the child role control to our collection in case we need it later
+					roleControlChildren.push(childRoleControl);
 				}
-				// record the total length of children
-				childLength += childRoleControl.html.length;
-			}		
-		}		
-	}
-	// record the child start
-	roleControl.childStart = childStart;
-	// record the combined child length
-	roleControl.childLength = childLength;
+				// retain whether any child has roles
+				roleControl.gotChildRoles = gotChildRoles;
+			} // child control check
+		} // child control loop
+		// if  children have roles
+		if (gotChildRoles) {			
+			// retain all children for checking
+			roleControl.children = roleControlChildren;
+			// check there is at least 1 child control
+			if (roleControlChildren.length > 0) {
+				// get the first child
+				var firstChild = roleControlChildren[0];
+				// if it has start html
+				if (firstChild.startHtml) {
+					// determine our start from the first child start
+					var startPos = html.indexOf(firstChild.startHtml);
+					// if we got something set our start
+					if (startPos > 0) roleControl.startHtml = html.substr(0, startPos);
+				}
+				// determine the last child
+				var lastChild = roleControlChildren[roleControlChildren.length - 1];
+				// determine the last child end html (there might not be one)
+				var endHtml = (lastChild.endHtml ? lastChild.endHtml : lastChild.startHtml);
+				// if there was endHtml
+				if (endHtml) {
+					// determine the position of the end
+					var endPos = html.indexOf(endHtml);
+					// if we got one set our end string
+					if (endPos > 0) roleControl.endString = html.substr(endPos + endHtml.length);
+				}
+			}
+		} else {
+			// no child roles so we can use the entire html which will contain the children and not have to check their roles any further
+			roleControl.startHtml = html;
+		}
+	} else {
+		// no children to subsume html from set our html to the whole thing
+		roleControl.startHtml = html;
+	} // child control check
 	return roleControl;
 }
 
@@ -1980,8 +2020,8 @@ function getSavePageData() {
 
 	// get all of the controls
 	var controls = getControls();
-	// create a list of roles used on this page
-	var pageRoles = [];
+	// assume this page has no roles
+	var pageRoles = false;
 	
 	// show message
 	$("#rapid_P11_C7_").html("Checking controls");
@@ -1990,26 +2030,8 @@ function getSavePageData() {
 	for (var i in controls) {
 		// get the control
 		var control = controls[i];
-		// check for any roles
-		if (control.roles) {			
-			// loop the control's roles
-			for (var j in control.roles) {
-				// assume we don'y know about this role yet
-				var gotRole = false;
-				// loop the known roles
-				for (var k in pageRoles) {
-					// if we do known about the control 
-					if (control.roles[j] == pageRoles[k]) {
-						// record that we know
-						gotRole = true;
-						// stop looping
-						break;
-					}					
-				}
-				// if we've not seen this control retain it in the known collection
-				if (!gotRole) pageRoles.push(control.roles[j]);
-			}
-		}
+		// set roles to true if there are some
+		if (control.roles && control.roles.length > 0) pageRoles = true;
 		// check for a get details function
 		if (control._getDetails) {
 			// run the get details function
@@ -2020,78 +2042,8 @@ function getSavePageData() {
 	// get a page object based on the page "control" (this creates a single property array called childControls)
 	var pageObject = getDataObject(_page);
 					
-	// get the roles from the app
-	var roles = _version.roles;	
-	
     // show message
 	$("#rapid_P11_C7_").html("Generating html");
-	
-	//////////////////////////////////////////////////////////////////////////////////////////////
-	
-	/*
-	
-	// create an array to hold role controls
-	var roleControls = [];
-	    	    	
-	// loop them looking for roles, and pre-save functions to run 
-	for (var j in controls) {    		
-		// get the control
-		var control = controls[j];
-		// check for roles
-		if (control.roles && control.roles.length > 0) {
-			// remember this control has roles
-			roleControls.push(control);
-		}
-		// check for a pre-save function
-		if (control._save) {
-			control._save();
-		}
-	}
-	*/
-		
-	/*
-	
-	// if there are controls with roles
-	if (roleControls.length > 0) {
-		
-		// an array of controls that are only visible if there are roles, and their html
-		var roleControlsHtml = [];
-		
-		// loop only the controls that have roles, removing them if no role in this combination
-		for (var i in roleControls) {
-			// get an instance of the control
-			var roleControl = roleControls[i];
-			// retain just the roles and the outer html
-			roleControlsHtml.push({roles:roleControl.roles, html:roleControl.object.prop('outerHTML')});
-		}
-		
-		// an array of page parts
-		var rolePageParts = [];
-		// position is 0
-		var pos = 0;
-		
-		// loop the role control html
-		for (var i in roleControlsHtml) {
-			// get the control html
-			var controlHtml = roleControlsHtml[i].html;
-			// find the start of the control html in the page html
-			var start = pageHtml.indexOf(controlHtml);
-			// if the position is behind the start, get everything between the two
-			if (pos < start) rolePageParts.push({html:pageHtml.substr(pos, start - pos)});
-			// retain the html and roles
-			rolePageParts.push({html: controlHtml, roles:roleControlsHtml[i].roles});
-			// update pos
-			pos = start + controlHtml.length;
-		}
-		// if we've not reached the end of the page, add it
-		if (pos < pageHtml.length) rolePageParts.push({html:pageHtml.substr(pos)});
-		
-		// add to the page object
-		pageObject.rolePageParts = rolePageParts;
-		
-	}
-	
-	*/
 	
 	// get the page save html - do this before getting individual control html
 	var pageHtml = _page.object.html().trim();
@@ -2099,7 +2051,25 @@ function getSavePageData() {
 	// add the page html this is used by the designer and is always the html for the combination with the most roles - the replace removes starting and ending line breaks
 	pageObject.htmlBody = pageHtml;
 	
-	pageObject.pageRoleControlHtml = getRoleControl(_page, pageHtml);
+	// if there are roles use our iterative function to create the optimised role-dependent html sections
+	if (pageRoles) pageObject.roleControlHtml = getRoleControl(_page, pageHtml);
+	
+	// remove any dialogues or components
+	$("#dialogues").children().remove();
+	// empty the child controls collection
+	_page.childControls = [];
+	// remove the child controls from the page
+	_page.object.children().remove();
+	
+	// loop the current page childControls and re-create (this restores anything removed by the saved functions)
+	for (var j = 0; j < pageObject.childControls.length; j++) {
+		// get an instance of the control properties (which is what we really need from the JSON)
+		var control = pageObject.childControls[j];
+		// create and add (using the undo routine)
+		_page.childControls.push( loadControl(control, _page, true, false, true));
+	}
+	// arrange any non-visible controls
+	arrangeNonVisibleControls();
 	
 	// add the pages if their order has been changed
 	if (_pageOrderChanged) pageObject.pages = _pages;
