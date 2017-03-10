@@ -1951,9 +1951,7 @@ function getRoleControl(control, html) {
 			// get the child at this position
 			var childControl = childControls[i];
 			// if there was one
-			if (childControl) {
-				// check for a pre-save function
-	    		if (childControl._save) childControl._save();
+			if (childControl) {				
 				// process the child iteratively
 				var childRoleControl = getRoleControl(childControl, childControl.object.prop('outerHTML'));
 				// if the child role control has roles remember this here to stop merging later
@@ -2037,6 +2035,11 @@ function getSavePageData() {
 			// run the get details function
 			control.details = control._getDetails.apply(control, []);
 		}
+		// check for a pre-save function
+		if (control._save) {
+			// runf the pre-save function
+			control._save();
+		}
 	}
 	
 	// get a page object based on the page "control" (this creates a single property array called childControls)
@@ -2051,8 +2054,14 @@ function getSavePageData() {
 	// add the page html this is used by the designer and is always the html for the combination with the most roles - the replace removes starting and ending line breaks
 	pageObject.htmlBody = pageHtml;
 	
-	// if there are roles use our iterative function to create the optimised role-dependent html sections
-	if (pageRoles) pageObject.roleControlHtml = getRoleControl(_page, pageHtml);
+	// if there are roles in the page
+	if (pageRoles) {
+		// use our iterative function to create the optimised role-dependent html sections
+		pageObject.roleControlHtml = getRoleControl(_page, pageHtml);
+	} else {
+		// empty the role control html to clean up anything that might be hanging around
+		pageObject.roleControlHtml = null;
+	}
 	
 	// remove any dialogues or components
 	$("#dialogues").children().remove();
