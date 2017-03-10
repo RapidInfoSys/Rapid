@@ -1942,6 +1942,8 @@ function getRoleControl(control, html) {
 	var gotChildRoles = false;
 	// get any children
 	var childControls = control.childControls;
+	// assume no child html length - this is used to determin any end html
+	var childHtmlLength = 0;
 	// if we have some
 	if (childControls && childControls.length > 0) {
 		// a child collection for this object
@@ -1951,23 +1953,27 @@ function getRoleControl(control, html) {
 			// get the child at this position
 			var childControl = childControls[i];
 			// if there was one
-			if (childControl) {				
+			if (childControl) {
+				// get the child html
+				var childHtml = childControl.object.prop('outerHTML');
+				// append the length
+				childHtmlLength += childHtml.length;
 				// process the child iteratively
-				var childRoleControl = getRoleControl(childControl, childControl.object.prop('outerHTML'));
-				// if the child role control has roles remember this here to stop merging later
-				if (childRoleControl.roles || childRoleControl.gotChildRoles) gotChildRoles = true;
-				// if we still have no roles but we have a child in the collection
-				if (!gotChildRoles && roleControlChildren.length > 0) {
-					// append this child's html to the child before
-					roleControlChildren[0].startHtml += childRoleControl.startHtml;
+				var childRoleControl = getRoleControl(childControl, childHtml);
+				// if this child has no roles and there is a child before it in the collection also without roles
+				if (!childRoleControl.roles && !childRoleControl.gotChildRoles && roleControlChildren.length > 0 && !roleControlChildren[roleControlChildren.length - 1].roles && !roleControlChildren[roleControlChildren.length - 1].gotChildRoles) {
+					// append this child's start html to the child before
+					roleControlChildren[roleControlChildren.length - 1].startHtml += childRoleControl.startHtml;
 				} else {
 					// add the child role control to our collection in case we need it later
 					roleControlChildren.push(childRoleControl);
 				}
-				// retain whether any child has roles
-				roleControl.gotChildRoles = gotChildRoles;
+				// if the child role control has roles remember this here to stop merging later
+				if (childRoleControl.roles || childRoleControl.gotChildRoles) gotChildRoles = true;
 			} // child control check
-		} // child control loop
+		} // child control loop		
+		// retain whether any child has roles
+		roleControl.gotChildRoles = gotChildRoles;
 		// if  children have roles
 		if (gotChildRoles) {			
 			// retain all children for checking
@@ -1976,10 +1982,12 @@ function getRoleControl(control, html) {
 			if (roleControlChildren.length > 0) {
 				// get the first child
 				var firstChild = roleControlChildren[0];
+				// assume the start position is 0
+				var startPos = 0;
 				// if it has start html
 				if (firstChild.startHtml) {
 					// determine our start from the first child start
-					var startPos = html.indexOf(firstChild.startHtml);
+					startPos = html.indexOf(firstChild.startHtml);
 					// if we got something set our start
 					if (startPos > 0) roleControl.startHtml = html.substr(0, startPos);
 				}
@@ -1987,12 +1995,15 @@ function getRoleControl(control, html) {
 				var lastChild = roleControlChildren[roleControlChildren.length - 1];
 				// determine the last child end html (there might not be one)
 				var endHtml = (lastChild.endHtml ? lastChild.endHtml : lastChild.startHtml);
-				// if there was endHtml
+				// if there was endHtml and 
 				if (endHtml) {
 					// determine the position of the end
-					var endPos = html.indexOf(endHtml);
-					// if we got one set our end string
-					if (endPos > 0) roleControl.endString = html.substr(endPos + endHtml.length);
+					var endPos = startPos + childHtmlLength;
+					// if we got one and there are characters remaining set our end string
+					if (endPos > 0 && endPos < html.length) {
+						var controlEndHtml = html.substr(endPos);
+						if (controlEndHtml) roleControl.endHtml = controlEndHtml; 
+					}
 				}
 			}
 		} else {
