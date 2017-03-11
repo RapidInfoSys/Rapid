@@ -225,6 +225,14 @@ input.date {
 	    	    </contents>
 	    	</resource>
 	    	
+	    	<resource>
+	    	    <type>javascript</type>
+	    	    <contents>
+var date_quickISORegex = /^\d{4}-\d{2}-\d{2}/;
+var date_quickOracleRegex = /^\d{1,2}-[a-zA-Z]{3}-\d{4}/;     
+	    	    </contents>	    	    
+	    	</resource>
+	    	
 	    </resources>
 	    
 	    <getHtmlFunction>
@@ -303,13 +311,27 @@ if (data != null && data !== undefined) {
 }
 // get control container
 var control = $("#" + id);
+// trigger the change here
 if (changeEvents) control.trigger("change");
 // update control to input
 control = control.find("input");
-// try iso dates first, as returned from SOAP webservices
+
 try {
-	var date = $.datepicker.parseDate( "yy-mm-dd", value);
-	control.datepicker("setDate",date);
+
+	var d = value;
+	
+	if (date_quickISORegex.test(value)) {
+	
+		d = $.datepicker.parseDate("yy-mm-dd", value.substr(0, 10));
+	
+	} else if (date_quickOracleRegex.test(value)) {
+	
+		d = $.datepicker.parseDate("dd-M-yy", value.substr(0, 11));
+	
+	}
+
+	control.datepicker("setDate", d);
+	
 } catch (ex) {
 	control.datepicker("setDate",value);
 }
@@ -386,12 +408,14 @@ $( "#" + id ).find("input").datepicker({
     constrainInput: true,
     onChangeMonthYear: function(year, month, inst) {
     	try {
-    		var dp = $(this);
-	    	var d = dp.datepicker("getDate");
-	    	if (d) {
-		      	d.setMonth(month-1);
-		      	d.setFullYear(year);
-		      	dp.datepicker("setDate", d);
+    		if (inst && inst.input.val()) {    		
+    			var dp = $(this);
+	    		var d = dp.datepicker("getDate");
+	    		if (d) {
+		      		d.setMonth(month-1);
+		      		d.setFullYear(year);
+		      		dp.datepicker("setDate", d);
+				}
 			}
 		} catch(ex){}
     }
