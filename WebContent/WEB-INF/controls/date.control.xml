@@ -321,14 +321,12 @@ $( "#" + id ).datepicker({
     constrainInput: true,
     onChangeMonthYear: function(year, month, inst) {
     	try {
-    		if (inst && inst.input.val()) {    		
-    			var dp = $(this);
-	    		var d = dp.datepicker("getDate");
-	    		if (d) {
-		      		d.setMonth(month-1);
-		      		d.setFullYear(year);
-		      		dp.datepicker("setDate", d);
-				}
+    		if (inst && inst.currentDay && inst.input.val() && $(inst.dpDiv).is(':visible')) {
+	    		var d = new Date();
+	    		d.setDate(inst.currentDay);
+		      	d.setMonth(month-1);
+		      	d.setFullYear(year);
+		      	$(this).datepicker("setDate", d);				
 			}
 		} catch(ex){}
     }
