@@ -190,11 +190,18 @@ div.tabsPanel.selected {
   border: 8px solid #5A7DBA;
 }
 
+input, textarea {
+  color: #555;
+  font-size: 16px;
+  font-weight:bold;
+}
+
 input {
   outline: none;
   border: 2px solid #38B132;
   padding: 5px 10px;
   border-radius: 4px;
+  color: black;
 }
 
 input:focus {
@@ -213,6 +220,7 @@ textarea {
   border: 2px solid #CCC;
   outline: none;
   padding: 5px 10px;
+  color: black;
 }
 
 textarea:hover {
