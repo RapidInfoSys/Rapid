@@ -579,6 +579,11 @@ function rebuildHtml(control) {
 			} catch(ex) {
 				alert("rebuildJavaScript failed for " + control.type + ". " + ex);
 			}
+		} else if (control.type == "page") {
+			// remove all current style classes
+			_page.object.removeAttr("class");
+			// if there ones to add, loop and add
+			if (control.classes) for (var i in control.classes) _page.object.attr("class", control.classes[i]);
 		} else if (control._parent) {
 			// get the new html
 			var html = control._getHtml();
@@ -604,7 +609,7 @@ function rebuildHtml(control) {
 			}			
 			// attach the new object
 			control.object = object; 
-		}
+		} 
 						
 		// if our control looks like a non visible
 		if (control.object && control.object.is(".nonVisibleControl")) {

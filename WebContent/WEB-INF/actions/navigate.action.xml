@@ -207,7 +207,7 @@ function Action_navigate(url, dialogue, id) {
 		           	}   
 		           	
 		           	// if this is the login page go to the real thing, requesting to come back to this location
-            		if (bodyHtml.indexOf("<form name=\"login\" id=\"RapidLogin\">") > 0) window.location = "login.jsp?requestPath=" + window.location; 
+            		if (bodyHtml.indexOf("<form name=\"login\" id=\"RapidLogin\"") > 0) window.location = "login.jsp?requestPath=" + window.location; 
             	
             		// get a reference to the document for the entire height and width     	
 		           	var doc = $(document);

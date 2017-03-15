@@ -1024,10 +1024,24 @@ public class Designer extends RapidHttpServlet {
 								// add the events if we found one
 								if (jsonEvents != null) newPage.setEvents(Control.getEvents(this, jsonEvents));
 
-								// look in the JSON for a styles array
+								// look in the JSON for a style array
 								JSONArray jsonStyles = jsonPage.optJSONArray("styles");
-								// if there were styles
+								// if there were styles get and save
 								if (jsonStyles != null) newPage.setStyles(Control.getStyles(this, jsonStyles));
+
+								// look in the JSON for a style classes array
+								JSONArray jsonStyleClasses = jsonPage.optJSONArray("classes");
+								// if there were style classes
+								if (jsonStyleClasses != null) {
+									// start with empty string
+									String styleClasses = "";
+									// loop array and build classes list
+									for (int i = 0; i < jsonStyleClasses.length(); i++) styleClasses += jsonStyleClasses.getString(i) + " ";
+									// trim for good measure
+									styleClasses = styleClasses.trim();
+									// store if something there
+									if (styleClasses.length() > 0) newPage.setBodyStyleClasses(styleClasses);
+								}
 
 								// if there are child controls from the page loop them and add to the pages control collection
 								JSONArray jsonControls = jsonPage.optJSONArray("childControls");
@@ -1086,44 +1100,7 @@ public class Designer extends RapidHttpServlet {
 								// if we got one trim it and retain in page
 								if (htmlBody != null) newPage.setHtmlBody(htmlBody.trim());
 
-								/*
-								// look in the JSON for rolehtml
-								JSONArray jsonRolesHtml = jsonPage.optJSONArray("rolesHtml");
-								// if we found some
-								if (jsonRolesHtml != null) {
-									// instantiate the roles html collection
-									ArrayList<Page.RoleHtml> rolesHtml = new ArrayList<Page.RoleHtml>();
-									// loop the entries
-									for (int i =0; i < jsonRolesHtml.length(); i++) {
-										// get the entry
-										JSONObject jsonRoleHtml = jsonRolesHtml.getJSONObject(i);
-										// retain the html
-										String html = jsonRoleHtml.optString("html");
-										// trim it if there is one
-										if (html != null) html = html.trim();
-										// create an array to hold the roles
-										ArrayList<String> roles = new ArrayList<String>();
-										// get the roles
-										JSONArray jsonRoles = jsonRoleHtml.optJSONArray("roles");
-										// if we got some
-										if (jsonRoles != null) {
-											// loop them
-											for (int j = 0; j < jsonRoles.length(); j++) {
-												// get the role
-												String role = jsonRoles.getString(j);
-												// add it to the roles collections
-												roles.add(role);
-											}
-										}
-										// create and add a new roleHtml  object
-										rolesHtml.add(new Page.RoleHtml(roles, html));
-									}
-									// add it to the page
-									newPage.setRolesHtml(rolesHtml);
-								}
-								*/
-
-								// look in the JSON for rolehtml
+								// look in the JSON for roleControlhtml
 								JSONObject jsonRoleControlHtml = jsonPage.optJSONObject("roleControlHtml");
 								// if we found some add it to the page
 								if (jsonRoleControlHtml != null) newPage.setRoleControlHtml(new RoleControlHtml(jsonRoleControlHtml));

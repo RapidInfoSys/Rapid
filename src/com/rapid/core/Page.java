@@ -193,7 +193,7 @@ public class Page {
 	// instance variables
 
 	private int _xmlVersion, _formPageType;
-	private String _id, _name, _title, _label, _description, _createdBy, _modifiedBy, _htmlBody, _cachedHeadLinks, _cachedHeadCSS, _cachedHeadReadyJS, _cachedHeadJS;
+	private String _id, _name, _title, _label, _description, _createdBy, _modifiedBy, _htmlBody, _bodyStyleClasses, _cachedHeadLinks, _cachedHeadCSS, _cachedHeadReadyJS, _cachedHeadJS;
 	private boolean _simple;
 	private Date _createdDate, _modifiedDate;
 	private List<Control> _controls, _reCaptchaControls;
@@ -263,6 +263,10 @@ public class Page {
 	// the html for this page
 	public String getHtmlBody() { return _htmlBody; }
 	public void setHtmlBody(String htmlBody) { _htmlBody = htmlBody; }
+
+	// any style classes for this pages body element
+	public String getBodyStyleClasses() { return _bodyStyleClasses; }
+	public void setBodyStyleClasses(String bodyStyleClasses) { _bodyStyleClasses = bodyStyleClasses; }
 
 	// the child controls of the page
 	public List<Control> getControls() { return _controls; }
@@ -1751,7 +1755,7 @@ public class Page {
 		    	writer.write("  </head>\n");
 
 				// start the body
-		    	writer.write("  <body id='" + _id + "' style='visibility:hidden;'>\n");
+		    	writer.write("  <body id='" + _id + "' style='visibility:hidden;'" + (_bodyStyleClasses == null ? "" : " class='" + _bodyStyleClasses + "'") + ">\n");
 
 		    	// if there was a theme
 		    	if (theme != null) {
