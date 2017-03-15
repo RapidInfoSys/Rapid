@@ -2647,7 +2647,10 @@ function logicConditionValue(cell, action, key, conditionIndex, valueId) {
 	if (key == "visibilityConditions") {
 		options = getPageVisibilityOptions(value.id);
 	} else {
-		options = getInputOptions(value.id);
+		// if this is a form add the form options
+		if (_version.isForm) options = getFormValueOptions(value.id);
+		// add the regular input options
+		options += getInputOptions(value.id);
 	}
 	
 	table.append("<tr><td>" + (valueId == "value1" ? "Item 1" : "Item 2") + "</td><td><select>" + options + "</select></td></tr>");

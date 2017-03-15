@@ -28,8 +28,6 @@ package com.rapid.actions;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletContext;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -39,6 +37,7 @@ import com.rapid.core.Action;
 import com.rapid.core.Application;
 import com.rapid.core.Control;
 import com.rapid.core.Page;
+import com.rapid.forms.FormAdapter;
 import com.rapid.server.RapidHttpServlet;
 import com.rapid.server.RapidRequest;
 
@@ -67,13 +66,30 @@ public class Logic extends Action {
 			_field = jsonValue.optString("field");
 		}
 
-		public String getArgument(ServletContext servletContext, Application application, Page page) {
+		public String getArgument(RapidRequest rapidRequest, Application application, Page page) {
 			// assume null
 			String arg = "null";
 			// if id is set
 			if (_id != null) {
-				// use the system-wide method
-				arg = Control.getDataJavaScript(servletContext, application, page, _id, _field);
+				// assume no value
+				String value = null;
+				// if the control is not in the page
+				if (page.getControl(_id) == null) {
+					// get any form adapter
+					FormAdapter formAdapter = application.getFormAdapter();
+					// if there was one
+					if (formAdapter != null) {
+						// look for a value
+						try { value = formAdapter.getFormControlValue(rapidRequest, formAdapter.getFormId(rapidRequest), _id); } catch (Exception e) {}
+					}
+				}
+				// use the system-wide method if no form value
+				if (value == null) {
+					arg = Control.getDataJavaScript(rapidRequest.getRapidServlet().getServletContext(), application, page, _id, _field);
+				} else {
+					arg = "'" + value.replace("'", "\'") + "'";
+				}
+
 			}
 			// return it
 			return arg;
@@ -116,14 +132,14 @@ public class Logic extends Action {
 		}
 
 		// methods
-		public String getJavaScript(ServletContext servletContext, Application application, Page page) {
+		public String getJavaScript(RapidRequest rapidRequest, Application application, Page page) {
 			String js = "false";
 			// check we have everything we need to make a condition
 			if (_value1 != null && _operation != null && _value2 != null) {
 				// get the left side
-				String leftSide = _value1.getArgument(servletContext, application, page);
+				String leftSide = _value1.getArgument(rapidRequest, application, page);
 				// get the right side
-				String rightSide = _value2.getArgument(servletContext, application, page);
+				String rightSide = _value2.getArgument(rapidRequest, application, page);
 				// construct the condition simply
 				js = leftSide + " " + _operation + " " + rightSide;
 				// assume no brackets required
@@ -267,7 +283,7 @@ public class Logic extends Action {
 				// loop them
 				for (int i = 0; i < _conditions.size(); i++) {
 					// add the condition
-					conditionsJavaScript += _conditions.get(i).getJavaScript(rapidRequest.getRapidServlet().getServletContext(), application, page);
+					conditionsJavaScript += _conditions.get(i).getJavaScript(rapidRequest, application, page);
 					// if there is going to be another condition
 					if (i < _conditions.size() - 1) {
 						// add the separator

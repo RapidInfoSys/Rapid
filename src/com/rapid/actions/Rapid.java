@@ -269,25 +269,14 @@ public class Rapid extends Action {
 		// check there is one
 		if (security != null) {
 
-			// get the current user's record from the adapter
+			// update the request action to stop the default form adapter creating the wrong user
+			rapidRequest.setActionName("newapp");
+
+			// get the current user's record from the adapter (a centralised adapter may have them already)
 			User user = security.getUser(rapidRequest);
 
-			// assume we don't need a new user
-			boolean newUserRequired = false;
-
-			// if user is null
+			// if user is null - for example the default
 			if (user == null) {
-				// we need a new one
-				newUserRequired = true;
-			} else {
-				// get the current user's name
-				String userName = rapidRequest.getUserName();
-				// we also need a new one if the names don't match (the forms adapter can return "public")
-				if (!userName.equals(user.getName())) newUserRequired = true;
-			}
-
-			// if we didn't get a user from the security adapter or the one we got had a different name (the form security adapter will return "public")
-			if (newUserRequired) {
 				// get the rapid application
 				Application rapidApplication = rapidServlet.getApplications().get("rapid");
 				// get the user object from rapid application

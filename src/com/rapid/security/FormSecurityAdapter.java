@@ -47,8 +47,8 @@ public class FormSecurityAdapter extends RapidSecurityAdapter {
 	public User getUser(RapidRequest rapidRequest) throws SecurityAdapaterException {
 		// first try and get the user with the super method
 		User user = super.getUser(rapidRequest);
-		// if that didn't find anyone set to a password-less user from the session / connection adapter
-		if (user == null) user = new User(rapidRequest.getUserName(),"Public form user","");
+		// if that didn't find anyone set to a password-less user from the session / connection adapter, unless new app
+		if (user == null && !"newapp".equals(rapidRequest.getActionName())) user = new User(rapidRequest.getUserName(),"Public form user","");
 		// return
 		return user;
 	}
