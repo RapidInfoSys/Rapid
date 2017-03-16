@@ -279,7 +279,14 @@ function Control(controlType, parentControl, jsonControl, loadComplexObjects, pa
 			if (_version.id == "rapid") this.id = "rapid_" + this.id;
 			
 			// if required set a name for this control, using our store of numbers of this control type
-			if (!controlClass.noDefaultName) this.name = controlClass.name + " " + _controlNumbers[controlClass.type];	
+			if (!controlClass.noDefaultName) {
+				// get the name
+				var name = controlClass.name;
+				// if this is a responsive control trim the responsive and initial letter
+				if (name.indexOf("Responsive ") == 0) name = name.substr(11,1).toUpperCase() + name.substr(12);
+				// set the name and number
+				this.name = name + " " + _controlNumbers[controlClass.type];	
+			}
 			
 			// if the control class has properties set them here
 			if (controlClass.properties) {

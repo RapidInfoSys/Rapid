@@ -68,6 +68,13 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <helpHtml>Only allows the viewing of the panel based on the type of privileges a user has.</helpHtml>
 	        </property>
 	        
+	        <property>
+	            <key>hidden</key>
+	            <name>Hidden</name>
+	            <changeValueJavaScript>checkbox</changeValueJavaScript>
+	            <helpHtml>Whether the panel hidden when the page first loads.</helpHtml>
+	        </property>
+	        
 	    </properties>
 	    
 	    <getHtmlFunction>
@@ -97,7 +104,9 @@ if (style && style.indexOf("min-height:15px;") > -1 && this.childControls && thi
 		// remove empty style
 		this.object.removeAttr("style");
 	}
-}	        
+}
+// hide if hidden
+if (this.hidden) this.object.hide();	        
 	        ]]>
 	    </saveJavaScript>
 	    
