@@ -3,7 +3,7 @@
 
 <!-- 
 
-Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -28,8 +28,8 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 
 	<control>
 	    
-	    <type>responsivepanel</type>
-	    <name>Responsive panel</name>
+	    <type>responsivetext</type>
+	    <name>Responsive text</name>
 	    <image>images/responsivepanel_24x24.png</image>
 	    <category>Responsive controls</category>
 	    <helpHtml>A version of the panel control that offers responsive design through the use of a set of dropdowns. The different values will alter the width of the panel, along with all of the controls within, depending on the page size. Pages are broken into grids 12 columns wide.</helpHtml>
@@ -40,7 +40,6 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    
 	    <canUserAdd>true</canUserAdd>
 	    <canUserMove>true</canUserMove>
-	    <canUserInsert>true</canUserInsert>
 	    <canUserAddPeers>true</canUserAddPeers>
 	    
 	    <properties>
@@ -55,24 +54,38 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	        <property>
 	            <key>text</key>
 	            <name>Text</name>
-	            <setConstructValueFunction>return ""</setConstructValueFunction>
+	            <setConstructValueFunction>return "Text"</setConstructValueFunction>
 	            <changeValueJavaScript>bigtext</changeValueJavaScript>
 	            <refreshHtml>true</refreshHtml>
-	            <helpHtml>Inputs text into the panel.</helpHtml>
+	            <helpHtml>Sets the content of the control.</helpHtml>
 	        </property>
 	             
 	        <property>
-	            <key>roles</key>
-	            <name>User roles</name>
-	            <changeValueJavaScript>roles</changeValueJavaScript>
-	            <helpHtml>Only allows the viewing of the panel based on the type of privileges a user has.</helpHtml>
+	            <key>format</key>
+	            <name>Format</name>
+	            <setConstructValueFunction>return "N";</setConstructValueFunction>
+	            <changeValueJavaScript>select</changeValueJavaScript>
+	            <getValuesFunction>
+	                <![CDATA[
+return [{"value":"N","text":"None"},{"value":"P","text":"Paragraph"},{"value":"BF","text":"Line break"},{"value":"H1","text":"Header 1"},{"value":"H2","text":"Header 2"},{"value":"H3","text":"Header 3"},{"value":"H4","text":"Header 4"},{"value":"H5","text":"Header 5"}];
+					]]>
+	            </getValuesFunction>
+	            <refreshHtml>true</refreshHtml>
+	            <helpHtml>Enables the text to have a different type of html applied.</helpHtml>
 	        </property>
 	        
-	        <property>
-	            <key>hidden</key>
-	            <name>Hidden</name>
-	            <changeValueJavaScript>checkbox</changeValueJavaScript>
-	            <helpHtml>Tick this to have the panel hidden when the page first loads.</helpHtml>
+	       	<property>
+	            <key>labelFor</key>
+	            <name>Label for</name>
+	             <changeValueJavaScript>select</changeValueJavaScript>
+	            <getValuesFunction>
+	                 <![CDATA[
+	                // return the list of all controls on the page with the one for this action selected
+	                return "<option value=''>Please select...</option>" + getControlOptions(this.control);
+	               	]]>
+	            </getValuesFunction>
+	            <refreshHtml>true</refreshHtml>
+	            <helpHtml>Label for is used to associate a text element to any other named control on the page. This is especially useful for validation.</helpHtml>
 	        </property>
 	        
 	         <property>
@@ -147,6 +160,31 @@ return [{value:"", text:"Please select..."}, {value:"lg-1", text:"1/12"}, {value
 	    
 	    <getHtmlFunction>
 	        <![CDATA[
+// return the html for adding to our parent object	 
+var text = this.text;
+if (!text) text = "&nbsp;"
+var open = "span";
+var close = "span";       
+switch (this.format) {
+	case "BR" :
+		open = "br><span";
+	break;
+	case "P" :  case "H1": case "H2": case "H3": case "H4": case "H5" : 
+		open = close = this.format.toLowerCase();		
+	break; 
+}
+var labelFor = "";
+if (this.labelFor) {
+	labelFor = "for='" + this.labelFor + "' ";
+	if (open == "span") {
+		open = "label";
+		close = "label";
+	} else {
+		open = "label><" + open;
+		close = close + "></label";
+	}
+}
+
 // get the style classes for this control
 classes = getStyleClasses(this);
 
@@ -157,7 +195,7 @@ if (this.medium) classes += " col-" + this.medium;
 if (this.large) classes += " col-" + this.large;
 
 // return our html for adding to our parent object
-return "<div id='" + this.id + "' class='r-panel" + classes + "'" + (this.text ? "" : " style='min-height:15px;'") + ">" + this.text + "</div>";
+return "<" + open + " id='" + this.id + "' " + labelFor + " class='r-text" + classes + "'" + (this.text ? "" : " style='min-height:15px;'") + ">" + text + "</" + close + ">";
 	        ]]>
 	    </getHtmlFunction>
 	    
@@ -178,10 +216,39 @@ if (style && style.indexOf("min-height:15px;") > -1 && this.childControls && thi
 		this.object.removeAttr("style");
 	}
 }
-// hide if hidden
-if (this.hidden) this.object.hide();
 	        ]]>
 	    </saveJavaScript>
+	    
+	    	    <getDataFunction>
+	        <![CDATA[
+return $("#" + id).html();
+			]]>
+	    </getDataFunction>
+	    
+	    <setDataJavaScript>
+	        <![CDATA[
+var control = $("#" + id);	        
+if (data != null && data !== undefined) {	
+	data = makeDataObject(data, field);
+	if (data.rows && data.rows[0]) {	        		
+		if (field && data.fields) {
+			for (var i in data.fields) {
+				if (data.fields[i] && data.fields[i].toLowerCase() == field.toLowerCase()) {
+					control.html(data.rows[0][i]);
+					break;
+				}
+			}
+		} else {
+			control.html(data.rows[0][0]);
+		}
+	} else {
+		control.html("");
+	}
+} else {
+	control.html("");
+}
+			]]>
+	    </setDataJavaScript>
 	    
 	    <events>
 	        <event>

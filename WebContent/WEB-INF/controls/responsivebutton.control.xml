@@ -111,6 +111,7 @@ return ["none","circle","circle-o","square","square-o"];
 	        <property>
 	            <key>extraSmall</key>
 	            <name>Extra small width</name>
+	            <setConstructValueFunction>return "xs-1"</setConstructValueFunction>
 	            <changeValueJavaScript>select</changeValueJavaScript>
 	            <getValuesFunction>
 	                <![CDATA[
