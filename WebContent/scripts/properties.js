@@ -125,7 +125,7 @@ function showProperties(control) {
 		// get a reference to the table
 		var propertiesTable = propertiesPanel.children().last().children().last();
 		// add the properties header
-		propertiesTable.append("<tr><td class='propertyHeader'><h3>" + controlClass.name + "</h3></td><td>&nbsp;</tr></tr>");
+		propertiesTable.append("<tr><td colspan='2' class='propertyHeader'><h3>" + controlClass.name + "</h3></td></tr>");
 		// if there is helpHtml
 		if (controlClass.helpHtml) {
 			// add a help icon after the title

@@ -121,7 +121,7 @@ function showValidation(control) {
 			// get a reference to the table
 			var validationTable = validationPanel.children().last().children().last();
 			// add a heading for the event
-			validationTable.append("<tr><td><h3>Validation</h3><img id='" + control.id + "helpVal' class='validationHelp' src='images/help_16x16.png' /></td><td>&nbsp;</td></tr>");
+			validationTable.append("<tr><td colspan='2'><h3>Validation</h3><img id='" + control.id + "helpVal' class='validationHelp' src='images/help_16x16.png' /></td></tr>");
 			// add the help listener
 			addHelp(control.id + "helpVal",true,true,_validationHelpHtml);
 			// add a small break
