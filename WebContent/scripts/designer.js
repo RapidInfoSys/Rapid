@@ -2872,6 +2872,9 @@ $(document).ready( function() {
     	}
 	});
 	
+	// applications header clicked on
+	$("#applicationsHeader").click( toggleHeader );
+	
 	// load version
 	$("#versionSelect").change( function() {
     	// load the selected app and its pages in the drop down 

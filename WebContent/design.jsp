@@ -134,39 +134,46 @@ if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRe
 					<button id="appAdminNewTab" class="buttonRight buttonImage" title="Open the Rapid Admin screen in a new tab"><img src="images/triangleRightWhite_8x8.png" /></button>
 				</div>
 				
-				<h2>Application<img id="helpApplication" class="headerHelp" src="images/help_16x16.png" /></h2>
-				<select id="appSelect">
-					<!-- Applications are added here as options the designer loads -->
-				</select>
-				
-				<h2>Version<img id="helpVersion" class="headerHelp" src="images/help_16x16.png" /></h2>
-				<select id="versionSelect">
-					<!-- Application versions are added here as options the designer loads -->
-				</select>					
-				
-				<h2><img id="pagePrev" class="pageNav pageNavDisabled" src="images/triangleLeftWhite_8x8.png" title="previous page" />Page<img id="pageNext" class="pageNav pageNavDisabled" src="images/triangleRightWhite_8x8.png" title="next page" /><img id="helpPage" class="headerHelp" src="images/help_16x16.png" /></h2>
-				<select id="pageSelect">
-					<!-- Pages are added here as options the designer loads -->
-				</select>
-				
-				<div id="pageLock">
-					<h3>This page is locked for editing</h3>
+				<h2 id="applicationsHeader">Application
+					<img class="headerToggle" src="images/triangleUpWhite_8x8.png" />
+					<img id="helpApplication" class="headerHelp" src="images/help_16x16.png" />
+				</h2>
+					
+				<div id="controlApplications">
+					
+					<select id="appSelect">
+						<!-- Applications are added here as options the designer loads -->
+					</select>
+					
+					<h2>Version<img id="helpVersion" class="headerHelp" src="images/help_16x16.png" /></h2>
+					<select id="versionSelect">
+						<!-- Application versions are added here as options the designer loads -->
+					</select>					
+					
+					<h2><img id="pagePrev" class="pageNav pageNavDisabled" src="images/triangleLeftWhite_8x8.png" title="previous page" />Page<img id="pageNext" class="pageNav pageNavDisabled" src="images/triangleRightWhite_8x8.png" title="next page" /><img id="helpPage" class="headerHelp" src="images/help_16x16.png" /></h2>
+					<select id="pageSelect">
+						<!-- Pages are added here as options the designer loads -->
+					</select>
+					
+					<div id="pageLock">
+						<h3>This page is locked for editing</h3>
+					</div>
+					
+					<div class="buttons">				
+						<button id="pageEdit" class="buttonLeft buttonRight" title="View and edit the page properties">properties</button>
+					</div>		
+									
+					<div class="buttons">
+						<button id="pageNew" class="buttonLeft" title="Create a new page for this application">new</button>
+						<button id="pageSave" class="" title="Save this page">save</button>
+						<button id="pageView" class="" title="View this page in the application">view</button><button id="pageViewNewTab" class="buttonRight buttonImage"  title="View this page in a new tab"><img src="images/triangleRightWhite_8x8.png" /></button>
+					</div>	
+							
+					<div class="buttons">
+						<button id="undo" class="buttonLeft" disabled="disabled" title="Undo changes">undo</button>
+						<button id="redo" class="buttonRight" disabled="disabled" title="Redo changes">redo</button>
+					</div>
 				</div>
-				
-				<div class="buttons">				
-					<button id="pageEdit" class="buttonLeft buttonRight" title="View and edit the page properties">properties</button>
-				</div>		
-								
-				<div class="buttons">
-					<button id="pageNew" class="buttonLeft" title="Create a new page for this application">new</button>
-					<button id="pageSave" class="" title="Save this page">save</button>
-					<button id="pageView" class="" title="View this page in the application">view</button><button id="pageViewNewTab" class="buttonRight buttonImage"  title="View this page in a new tab"><img src="images/triangleRightWhite_8x8.png" /></button>
-				</div>	
-						
-				<div class="buttons">
-					<button id="undo" class="buttonLeft" disabled="disabled" title="Undo changes">undo</button>
-					<button id="redo" class="buttonRight" disabled="disabled" title="Redo changes">redo</button>
-				</div>	
 								
 				<div id="controlControls" style="margin-top:0;margin-bottom:-3px;">
 					<h2 id="controlsHeader">Controls

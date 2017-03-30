@@ -165,7 +165,7 @@ hr {
 	display:none;
 }
 
-#controlsHeader {
+#applicationsHeader, #controlsHeader {
 	cursor: pointer;
 }
 
