@@ -8,9 +8,9 @@ gareth.edwards@rapid-is.co.uk
 This file is part of the Rapid Application Platform
 
 RapidSOA is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as 
-published by the Free Software Foundation, either version 3 of the 
-License, or (at your option) any later version. The terms require you 
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version. The terms require you
 to include the original copyright, and the license notice in all redistributions.
 
 This program is distributed in the hope that it will be useful,
@@ -37,124 +37,122 @@ import javax.servlet.ServletContext;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.rapid.core.Action;
 import com.rapid.core.Application;
+import com.rapid.core.Application.DatabaseConnection;
 import com.rapid.core.Control;
 import com.rapid.core.Page;
 import com.rapid.core.Parameter;
-import com.rapid.core.Application.DatabaseConnection;
 import com.rapid.data.ConnectionAdapter;
 import com.rapid.data.DataFactory;
 import com.rapid.data.DataFactory.Parameters;
 import com.rapid.server.ActionCache;
 import com.rapid.server.RapidHttpServlet;
 import com.rapid.server.RapidRequest;
-import com.rapid.server.SOA;
 
 
 public class Database extends Action {
-	
+
 	// details of the query (inputs, sql, outputs)
 	public static class Query {
-		
+
 		private ArrayList<Parameter> _inputs, _outputs;
 		private String _sql;
 		private boolean _multiRow;
 		private int _databaseConnectionIndex;
-		
+
 		public ArrayList<Parameter> getInputs() { return _inputs; }
 		public void setInputs(ArrayList<Parameter> inputs) { _inputs = inputs; }
-		
+
 		public ArrayList<Parameter> getOutputs() { return _outputs; }
 		public void setOutputs(ArrayList<Parameter> outputs) { _outputs = outputs; }
-		
+
 		public String getSQL() { return _sql; }
 		public void setSQL(String sql) { _sql = sql; }
-		
+
 		public boolean getMultiRow() { return _multiRow; }
 		public void setMultiRow(boolean multiRow) { _multiRow = multiRow; }
-		
+
 		public int getDatabaseConnectionIndex() { return _databaseConnectionIndex; }
 		public void setDatabaseConnectionIndex(int databaseConnectionIndex) { _databaseConnectionIndex = databaseConnectionIndex; }
-		
+
 		public Query() {};
 		public Query(ArrayList<Parameter> inputs, ArrayList<Parameter> outputs, String sql, boolean multiRow, int databaseConnectionIndex) {
 			_inputs = inputs;
 			_outputs = outputs;
 			_sql = sql;
 			_multiRow = multiRow;
-			_databaseConnectionIndex = databaseConnectionIndex;			
+			_databaseConnectionIndex = databaseConnectionIndex;
 		}
-				
+
 	}
-	
+
 	// static variables
 	private static Logger _logger = LogManager.getLogger(Database.class);
-	
+
 	// instance variables
-	
+
 	private Query _query;
 	private boolean _showLoading;
 	private List<Database> _childDatabaseActions;
 	private List<Action> _successActions, _errorActions, _childActions;
 
 	// properties
-	
+
 	public Query getQuery() { return _query; }
 	public void setQuery(Query query) { _query = query; }
-	
+
 	public boolean getShowLoading() { return _showLoading; }
 	public void setShowLoading(boolean showLoading) { _showLoading = showLoading; }
-	
+
 	public List<Database> getChildDatabaseActions() { return _childDatabaseActions; }
 	public void setChildDatabaseActions(List<Database> childDatabaseActions) { _childDatabaseActions = childDatabaseActions; };
-	
+
 	public List<Action> getSuccessActions() { return _successActions; }
 	public void setSuccessActions(List<Action> successActions) { _successActions = successActions; }
-	
+
 	public List<Action> getErrorActions() { return _errorActions; }
 	public void setErrorActions(List<Action> errorActions) { _errorActions = errorActions; }
-		
+
 	// constructors
-	
+
 	// used by jaxb
 	public Database() { super(); }
 	// used by designer
-	public Database(RapidHttpServlet rapidServlet, JSONObject jsonAction) throws Exception { 
+	public Database(RapidHttpServlet rapidServlet, JSONObject jsonAction) throws Exception {
 		// call the super parameterless constructor which sets the xml version
 		super();
-		// save all key/values from the json into the properties 
+		// save all key/values from the json into the properties
 		for (String key : JSONObject.getNames(jsonAction)) {
 			// add all json properties to our properties, except for query
 			if (!"query".equals(key) && !"showLoading".equals(key) && !"childDatabaseActions".equals(key) && !"successActions".equals(key) && !"errorActions".equals(key)  && !"childActions".equals(key)) addProperty(key, jsonAction.get(key).toString());
-		} 
-		
+		}
+
 		// try and build the query object
 		JSONObject jsonQuery = jsonAction.optJSONObject("query");
-		
+
 		// check we got one
 		if (jsonQuery != null) {
-			// get the parameters						
+			// get the parameters
 			ArrayList<Parameter> inputs = getParameters(jsonQuery.optJSONArray("inputs"));
 			ArrayList<Parameter> outputs = getParameters(jsonQuery.optJSONArray("outputs"));
 			String sql = jsonQuery.optString("SQL");
 			boolean multiRow = jsonQuery.optBoolean("multiRow");
-			int databaseConnectionIndex = jsonQuery.optInt("databaseConnectionIndex");			
+			int databaseConnectionIndex = jsonQuery.optInt("databaseConnectionIndex");
 			// make the object
 			_query = new Query(inputs, outputs, sql, multiRow, databaseConnectionIndex);
 		}
-		
+
 		// look for showLoading
 		_showLoading = jsonAction.optBoolean("showLoading");
-		
+
 		// grab any successActions
 		JSONArray jsonChildDatabaseActions = jsonAction.optJSONArray("childDatabaseActions");
-		// if we had some 
+		// if we had some
 		if (jsonChildDatabaseActions != null) {
 			// instantiate collection
 			_childDatabaseActions = new ArrayList<Database>();
@@ -166,19 +164,19 @@ public class Database extends Action {
 				_childDatabaseActions.add(new Database(rapidServlet, jsonChildDatabaseAction));
 			}
 		}
-		
+
 		// grab any successActions
 		JSONArray jsonSuccessActions = jsonAction.optJSONArray("successActions");
 		// if we had some instantiate our collection
 		if (jsonSuccessActions != null) _successActions = Control.getActions(rapidServlet, jsonSuccessActions);
-				
+
 		// grab any errorActions
 		JSONArray jsonErrorActions = jsonAction.optJSONArray("errorActions");
 		// if we had some instantiate our collection
 		if (jsonErrorActions != null) _errorActions = Control.getActions(rapidServlet, jsonErrorActions);
-						
+
 	}
-	
+
 	// this is used to get both input and output parameters
 	private ArrayList<Parameter> getParameters(JSONArray jsonParameters) throws JSONException {
 		// prepare return
@@ -201,33 +199,33 @@ public class Database extends Action {
 		// return
 		return parameters;
 	}
-		
+
 	// overrides
-	
+
 	@Override
-	public List<Action> getChildActions() {			
+	public List<Action> getChildActions() {
 		// initialise and populate on first get
 		if (_childActions == null) {
 			// our list of all child actions
 			_childActions = new ArrayList<Action>();
 			// add child success actions
 			if (_successActions != null) {
-				for (Action action : _successActions) _childActions.add(action);			
+				for (Action action : _successActions) _childActions.add(action);
 			}
 			// add child error actions
 			if (_errorActions != null) {
-				for (Action action : _errorActions) _childActions.add(action);			
+				for (Action action : _errorActions) _childActions.add(action);
 			}
 		}
-		return _childActions;	
+		return _childActions;
 	}
-	
+
 	public String getLoadingJS(Page page, List<Parameter> parameters, boolean show) {
 		String js = "";
 		// check there are parameters
-		if (parameters != null) {			
+		if (parameters != null) {
 			// loop the output parameters
-			for (int i = 0; i < parameters.size(); i++) {					
+			for (int i = 0; i < parameters.size(); i++) {
 				// get the parameter
 				Parameter output = parameters.get(i);
 				// get the control the data is going into
@@ -236,42 +234,42 @@ public class Database extends Action {
 				if (control != null) {
 					if ("grid".equals(control.getType())) {
 						if (show) {
-							js += "  $('#" + control.getId() + "').showLoading();\n";						
+							js += "  $('#" + control.getId() + "').showLoading();\n";
 						} else {
 							js += "  $('#" + control.getId() + "').hideLoading();\n";
 						}
 					}
 				}
 			}
-			
+
 		}
 		return js;
 	}
-	
+
 	// private function to get inputs into the query object, reused by child database actions
 	private String getInputsJavaScript(ServletContext servletContext, Application application, Page page, Query query) {
-		
+
 		// assume it'll be an empty string
 		String js = "";
-		
+
 		// if there is a query
 		if (query != null) {
-			
+
 			// get the inputs from the query
 			ArrayList<Parameter> inputs = query.getInputs();
-			
+
 			// if we were given some
 			if (inputs != null) {
-				
+
 				// check there is at least one
 				if (inputs.size() > 0) {
-					
+
 					// open the array
 					js += "[";
-				
+
 					// if this is a multirow query
 					if (query.getMultiRow()) {
-																							
+
 						// loop the inputs
 						for (int i = 0; i < inputs.size(); i++) {
 							// get the parameter
@@ -280,7 +278,7 @@ public class Database extends Action {
 							String itemId = parameter.getItemId();
 							// if there was an id
 							if (itemId != null) {
-								
+
 								// get any parameter field
 								String field = parameter.getField();
 								// if there was one
@@ -290,23 +288,23 @@ public class Database extends Action {
 									// check if there was one
 									js += "'" + field + "'";
 								}
-								
+
 								// add comma if not last item
 								if (i < inputs.size() - 1) js += ", ";
-								
+
 							} // got item
-							
+
 						} // loop inputs
-						
+
 						// get the first itemId (this is the only one visible to the users)
 						String sourceItemId = inputs.get(0).getItemId();
-						
+
 						// close array and add the field-less get data for the first item the first parameter
 						js += "], '" + sourceItemId + "', " + Control.getDataJavaScript(servletContext, application, page, sourceItemId, null);
-										
+
 					} else {
-					
-						// loop them					
+
+						// loop them
 						for (int i = 0; i < inputs.size(); i++) {
 							// get the parameter
 							Parameter parameter = inputs.get(i);
@@ -316,59 +314,59 @@ public class Database extends Action {
 							String itemField = parameter.getField();
 							// if there was an id
 							if (itemId != null) {
-								
+
 								// add the input item
-								js += "{id: '" + itemId + (itemField == null || "".equals(itemField) ? "" : "." + itemField)  + "', value:" + Control.getDataJavaScript(servletContext, application, page, itemId, itemField) + "}";								
+								js += "{id: '" + itemId + (itemField == null || "".equals(itemField) ? "" : "." + itemField)  + "', value:" + Control.getDataJavaScript(servletContext, application, page, itemId, itemField) + "}";
 								// add comma if not last item
 								if (i < inputs.size() - 1) js += ", ";
-								
+
 							} // got item
-							
+
 						} // loop inputs
-						
+
 						// close the array
 						js += "]";
-																		
+
 					} // multi row check
-															
+
 				} // inputs > 0
-				
+
 			} // got inputs
-			
+
 		} // got query
-		
+
 		// if we got no inputs set to null
 		if (!js.startsWith("[")) js = "null";
-				
+
 		// return
 		return js;
 	}
-	
+
 	@Override
 	public String getJavaScript(RapidRequest rapidRequest, Application application, Page page, Control control, JSONObject jsonDetails) throws Exception {
-		
+
 		String js = "";
-		
+
 		if (_query != null) {
-			
+
 			// get the rapid servlet
 			RapidHttpServlet rapidServlet = rapidRequest.getRapidServlet();
-									
+
 			// get the sequence for this action requests so long-running early ones don't overwrite fast later ones (defined in databaseaction.xml)
 			js += "var sequence = getDatabaseActionSequence('" + getId() + "');\n";
-			
+
 			// open the js function to get the input data
 			js += "var data = getDatabaseActionInputData(" + _query.getMultiRow() + ", ";
-			
+
 			// get the inputs
 			js += getInputsJavaScript(rapidServlet.getServletContext(), application, page, _query);
-			
+
 			// close the js function to get the input data
 			js += ");\n";
-			
+
 			// drop in the query variable used to collect the inputs, and hold the sequence
 			js += "var query = { data: data, sequence: sequence };\n";
-									
+
 			// look for any _childDatabaseActions
 			if (_childDatabaseActions != null) {
 				// if there are some
@@ -388,60 +386,60 @@ public class Database extends Action {
 						// close the function
 						js += ");\n";
 						// create object
-						js += "var childQuery" + i + " = { data: childData" + i + ", index: " + (i - 1) + " };\n";										
+						js += "var childQuery" + i + " = { data: childData" + i + ", index: " + (i - 1) + " };\n";
 						// add to query
-						js += "query.childQueries.push(childQuery" + i + ");\n";			
+						js += "query.childQueries.push(childQuery" + i + ");\n";
 						// increment the counter
 						i ++;
 					}
 				}
 			}
-						
+
 			// control can be null when the action is called from the page load
 			String controlParam = "";
 			if (control != null) controlParam = "&c=" + control.getId();
-						
+
 			// get the outputs
 			ArrayList<Parameter> outputs = _query.getOutputs();
-			
+
 			// instantiate the jsonDetails if required
 			if (jsonDetails == null) jsonDetails = new JSONObject();
 			// look for a working page in the jsonDetails
 			String workingPage = jsonDetails.optString("workingPage", null);
 			// look for an offline page in the jsonDetails
 			String offlinePage = jsonDetails.optString("offlinePage", null);
-			
+
 			// get the js to hide the loading (if applicable)
 			if (_showLoading) js += getLoadingJS(page, outputs, true);
-						
+
 			// stringify the query
 			js += "query = JSON.stringify(query);\n";
-			
+
 			// open the ajax call
 			js += "$.ajax({ url : '~?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + page.getId() + controlParam + "&act=" + getId() + "', type: 'POST', contentType: 'application/json', dataType: 'json',\n";
 			js += "  data: query,\n";
 			js += "  error: function(server, status, message) {\n";
-			
+
 			// if there is a working page
 			if (workingPage != null) {
-				// remove any working page dialogue 
+				// remove any working page dialogue
 				js += "    $('#" + workingPage + "dialogue').remove();\n";
 				// remove any working page dialogue cover
 				js += "    $('#" + workingPage + "cover').remove();\n";
 				// remove the working page so as not to affect actions further down the tree
 			}
-			
+
 			// hide the loading javascript (if applicable)
 			if (_showLoading) js += "      " + getLoadingJS(page, outputs, false);
-							
+
 			// this avoids doing the errors if the page is unloading or the back button was pressed
 			js += "    if (server.readyState > 0) {\n";
-			
+
 			// retain if error actions
 			boolean errorActions = false;
-			
+
 			// prepare a default error hander we'll show if no error actions, or pass to child actions for them to use
-			String defaultErrorHandler = "alert('Error with database action : ' + server.responseText||message);";			
+			String defaultErrorHandler = "alert('Error with database action : ' + server.responseText||message);";
 			// if we have an offline page
 			if (offlinePage != null) {
 				// update defaultErrorHandler to navigate to offline page
@@ -449,9 +447,9 @@ public class Database extends Action {
 				// remove the offline page so we don't interfere with actions down the three
 				jsonDetails.remove("offlinePage");
 			}
-			
+
 			// add any error actions
-			if (_errorActions != null) {				
+			if (_errorActions != null) {
 				// count the actions
 				int i = 0;
 				// loop the actions
@@ -459,36 +457,36 @@ public class Database extends Action {
 					// retain that we have custom error actions
 					errorActions = true;
 					// if this is the last error action add in the default error handler
-					if (i == _errorActions.size() - 1) jsonDetails.put("defaultErrorHandler", defaultErrorHandler);						
+					if (i == _errorActions.size() - 1) jsonDetails.put("defaultErrorHandler", defaultErrorHandler);
 					// add the js
 					js += "       " + action.getJavaScript(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n       ") + "\n";
 					// if this is the last error action and the default error handler is still present, remove it so it isn't sent down the success path
-					if (i == _errorActions.size() - 1 && jsonDetails.optString("defaultErrorHandler", null) != null) jsonDetails.remove("defaultErrorHandler");	
+					if (i == _errorActions.size() - 1 && jsonDetails.optString("defaultErrorHandler", null) != null) jsonDetails.remove("defaultErrorHandler");
 					// increase the count
 					i++;
 				}
 			}
 			// add default error handler if none in collection
 			if (!errorActions) js += "        " + defaultErrorHandler + "\n";
-						
+
 			// close unloading check
 			js += "    }\n";
-			
+
 			// close error actions
 			js += "  },\n";
-			
+
 			// open success function
 			js += "  success: function(data) {\n";
-									
+
 			// hide the loading javascript (if applicable)
 			if (_showLoading) js += "  " + getLoadingJS(page, outputs, false);
-									
+
 			// check there are outputs
 			if (outputs != null) {
 				// open if data check
 				js += "    if (data) {\n";
 				// the outputs array we're going to make
-				String jsOutputs = "";				
+				String jsOutputs = "";
 				// loop the output parameters
 				for (int i = 0; i < outputs.size(); i++) {
 					// get the parameter
@@ -499,7 +497,7 @@ public class Database extends Action {
 					String[] idParts = outputId.split("\\.");
 					// if there is more than 1 part we are dealing with set properties, for now just update the output id
 					if (idParts.length > 1) outputId = idParts[0];
-					
+
 					// get the control the data is going into
 					Control outputControl = page.getControl(outputId);
 					// assume we found it
@@ -511,33 +509,33 @@ public class Database extends Action {
 						// set page control to false
 						pageControl = false;
 					}
-					// check we got one					
+					// check we got one
 					if (outputControl == null) {
 						js += "      // output not found for " + outputId + "\n";
 					} else {
-						
+
 						// get any details we may have
 						String details = outputControl.getDetailsJavaScript(application, page);
-						
+
 						// if there are two parts this is a property
 						if (idParts.length > 1) {
-							
+
 							// if we have some details
 							if (details != null) {
 								// if this is a page control
 								if (pageControl) {
 									// the details will already be in the page so we can use the short form
 									details = outputControl.getId() + "details";
-								} 
+								}
 							}
-							
+
 							// get the property from the second id part
 							String property = idParts[1];
 							// append the set property call
 							js += "      setProperty_" + outputControl.getType() +  "_" + property + "(ev,'" + outputControl.getId() + "','" + output.getField() + "'," + details + ",data);\n";
-							
+
 						} else {
-							
+
 							// set to empty string or clean up
 							if (details == null) {
 								details = "";
@@ -545,7 +543,7 @@ public class Database extends Action {
 								details = ", details: " + details;
 							}
 							// append the javascript outputs
-							jsOutputs += "{id: '" + outputControl.getId() + "', type: '" + outputControl.getType() + "', field: '" + output.getField() + "'" + details + "},";				
+							jsOutputs += "{id: '" + outputControl.getId() + "', type: '" + outputControl.getType() + "', field: '" + output.getField() + "'" + details + "},";
 						} // property / control check
 					} // control found check
 				} // outputs loop
@@ -555,86 +553,89 @@ public class Database extends Action {
 					jsOutputs = jsOutputs.substring(0, jsOutputs.length() - 1);
 					// add the outputs property
 					js += "      var outputs = [" + jsOutputs + "];\n";
-					// send them them and the data to the database action				
+					// send them them and the data to the database action
 					js += "      Action_database(ev,'" + getId() + "', data, outputs);\n";
 				} // outputs js length check
 				// close if data check
-				js += "    }\n";		
-			} // outputs null check				
-			
+				js += "    }\n";
+			} // outputs null check
+
 			// if there is a working page (from the details)
 			if (workingPage != null) {
-				// remove any working page dialogue 
+				// remove any working page dialogue
 				js += "    $('#" + workingPage + "dialogue').remove();\n";
 				// remove any working page dialogue cover
 				js += "    $('#" + workingPage + "cover').remove();\n";
 				// remove the working page so as not to affect actions further down the tree
 				jsonDetails.remove("workingPage");
 			}
-			
+
 			// add any success actions
-			if (_successActions != null) {							
+			if (_successActions != null) {
 				for (Action action : _successActions) {
 					js += "     " + action.getJavaScript(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n       ") + "\n";
 				}
 			}
-										
+
 			// close success function
 			js += "  }\n";
-			
+
 			// close ajax call
 			js += "});";
 		}
-				
-		// return what we built			
+
+		// return what we built
 		return js;
 	}
-	
-	
+
+
 	public JSONObject doQuery(RapidRequest rapidRequest, JSONObject jsonAction, Application application, DataFactory df) throws Exception {
-		
+
 		// place holder for the object we're going to return
 		JSONObject jsonData = null;
-		
+
 		// retrieve the sql
 		String sql = _query.getSQL();
-		
+
 		// only if there is some sql is it worth going further
 		if (sql != null) {
-			
+
+			// merge in any application parameters
+			sql = application.insertParameters(rapidRequest.getRapidServlet().getServletContext(), sql);
+
 			// get any json inputs
 			JSONObject jsonInputData = jsonAction.optJSONObject("data");
-			
+
 			// initialise the parameters list
 			ArrayList<Parameters> parametersList = new ArrayList<Parameters>();
-			
+
 			// populate the parameters from the inputs collection (we do this first as we use them as the cache key due to getting values from the session)
 			if (_query.getInputs() == null) {
-				
+
 				// just add an empty parameters member if no inputs
 				parametersList.add(new Parameters());
-				
+
 			} else {
-				
+
 				// if there is input data
 				if (jsonInputData != null) {
-					
+
 					// get any input fields
 					JSONArray jsonFields = jsonInputData.optJSONArray("fields");
 					// get any input rows
 					JSONArray jsonRows = jsonInputData.optJSONArray("rows");
-					
+
 					// if we have fields and rows
 					if (jsonFields != null && jsonRows != null) {
-						
+
 						// loop the input rows (only the top row if not multirow)
 						for (int i = 0; i < jsonRows.length() && (_query.getMultiRow() || i == 0); i ++) {
-							
+
 							// get this jsonRow
 							JSONArray jsonRow = jsonRows.getJSONArray(i);
 							// make the parameters for this row
 							Parameters parameters = new Parameters();
-							
+
 							// loop the query inputs
 							for (Parameter input : _query.getInputs()) {
 								// get the input id
@@ -652,13 +653,13 @@ public class Database extends Action {
 										for (int j = 0; j < jsonFields.length(); j++) {
 											// get the id from the fields
 											String jsonId = jsonFields.optString(j);
-											// if the id we want matches this one 
+											// if the id we want matches this one
 											if (id.toLowerCase().equals(jsonId.toLowerCase())) {
 												// get the value
 												value = jsonRow.optString(j,null);
 												// no need to keep looking
 												break;
-											}																												
+											}
 										}
 									}
 								}
@@ -667,150 +668,150 @@ public class Database extends Action {
 								// add the parameter
 								parameters.add(value);
 							}
-							
+
 							// add the parameters to the list
 							parametersList.add(parameters);
-							
+
 						} // row loop
-																		
+
 					} // input fields and rows check
-					
+
 				} // input data check
-				
+
 			} // query inputs check
-			
+
 			// placeholder for the action cache
 			ActionCache actionCache = rapidRequest.getRapidServlet().getActionCache();
-				
+
 			// if an action cache was found
 			if (actionCache != null) {
-				
+
 				// log that we found action cache
 				_logger.debug("Database action cache found");
-				
+
 				// attempt to fetch data from the cache
 				jsonData = actionCache.get(application.getId(), getId(), parametersList.toString());
-				
+
 			}
-			
+
 			// if there isn't a cache or no data was retrieved
 			if (jsonData == null) {
-				
+
 				try {
-					
+
 					// instantiate jsonData
 					jsonData = new JSONObject();
 					// fields collection
-					JSONArray jsonFields = new JSONArray();						
+					JSONArray jsonFields = new JSONArray();
 					// rows collection can start initialised
 					JSONArray jsonRows = new JSONArray();
-																							
+
 					// trim the sql
 					sql = sql.trim();
-					
+
 					// check the verb
 					if (sql.toLowerCase().startsWith("select") || sql.toLowerCase().startsWith("with")) {
-						
+
 						// set readonly to true (makes for faster querying)
 						df.setReadOnly(true);
-														
+
 						// loop the parameterList getting a result set for each parameters (input row)
 						for (Parameters parameters : parametersList) {
-							
+
 							// get the result set!
 							ResultSet rs = df.getPreparedResultSet(rapidRequest, sql, parameters);
-							
+
 							// get it's meta data for the field names
 							ResultSetMetaData rsmd = rs.getMetaData();
-							
+
 							// got fields indicator
 							boolean gotFields = false;
-							
+
 							// loop the result set
 							while (rs.next()) {
-								
+
 								// initialise the row
 								JSONArray jsonRow = new JSONArray();
-								
+
 								// loop the columns
 								for (int i = 0; i < rsmd.getColumnCount(); i++) {
 									// add the field name to the fields collection if not done yet
 									if (!gotFields) jsonFields.put(rsmd.getColumnLabel(i + 1));
 									// get the column type
 									int columnType = rsmd.getColumnType(i + 1);
-									// add the data to the row according to it's type	
+									// add the data to the row according to it's type
 									switch (columnType) {
-									case (Types.NUMERIC) : 
+									case (Types.NUMERIC) :
 										jsonRow.put(rs.getDouble(i + 1));
 									break;
-									case (Types.INTEGER) : 
+									case (Types.INTEGER) :
 										jsonRow.put(rs.getInt(i + 1));
 									break;
 									case (Types.BIGINT) :
 										jsonRow.put(rs.getLong(i + 1));
 									break;
-									case (Types.FLOAT) : 
+									case (Types.FLOAT) :
 										jsonRow.put(rs.getFloat(i + 1));
 									break;
-									case (Types.DOUBLE) : 
+									case (Types.DOUBLE) :
 										jsonRow.put(rs.getDouble(i + 1));
 									break;
 									default :
 										jsonRow.put(rs.getString(i + 1));
-									}						
+									}
 								}
 								// add the row to the rows collection
 								jsonRows.put(jsonRow);
 								// remember we now have our fields
 								gotFields = true;
-								
+
 							}
-							
+
 							// close the record set
 							rs.close();
-							
+
 						}
-																		
+
 					} else {
-						
+
 						// assume rows affected is 0
 						int rows = 0;
-						
+
 						// sql check
 						if (sql.length() > 0) {
-						
+
 							// perform update for all incoming parameters (one parameters collection for each row)
 							for (Parameters parameters : parametersList) {
 								rows += df.getPreparedUpdate(rapidRequest, sql, parameters);
 							}
-							
-							// add a psuedo field 
+
+							// add a psuedo field
 							jsonFields.put("rows");
-							
+
 							// create a row array
 							JSONArray jsonRow = new JSONArray();
 							// add the rows updated
 							jsonRow.put(rows);
 							// add the row we just made
 							jsonRows.put(jsonRow);
-							
+
 						}
-																	
+
 					}
-					
+
 					// add the fields to the data object
 					jsonData.put("fields", jsonFields);
 					// add the rows to the data object
 					jsonData.put("rows", jsonRows);
-															
+
 					// check for any child database actions
 					if (_childDatabaseActions != null) {
 						// if there really are some
-						if (_childDatabaseActions.size() > 0) {																					
+						if (_childDatabaseActions.size() > 0) {
 							// get any child data
-							JSONArray jsonChildQueries = jsonAction.optJSONArray("childQueries");						
+							JSONArray jsonChildQueries = jsonAction.optJSONArray("childQueries");
 							// if there was some
-							if (jsonChildQueries != null) {							
+							if (jsonChildQueries != null) {
 								// loop
 								for (int i = 0; i < jsonChildQueries.length(); i++) {
 									// fetch the data
@@ -821,7 +822,7 @@ public class Database extends Action {
 									Database childDatabaseAction = _childDatabaseActions.get(index);
 									// get the resultant child data
 									JSONObject jsonChildData = childDatabaseAction.doQuery(rapidRequest, jsonChildAction, application, df);
-																											
+
 									// a map for indexes of matching fields between our parent and child
 									Map<Integer,Integer> fieldsMap = new HashMap<Integer,Integer>();
 									// the child fields
@@ -839,14 +840,14 @@ public class Database extends Action {
 												if (field != null && childField != null) {
 													// check for match
 													if (field.toLowerCase().equals(childField.toLowerCase())) fieldsMap.put(j, k);
-												}											
-											}										
+												}
+											}
 										}
 									}
-									
+
 									// add a field for the results of this child action
 									jsonFields.put("childAction" + (i + 1));
-									
+
 									// if matching fields
 									if (fieldsMap.size() > 0) {
 										// an object with a null value for when there is no match
@@ -875,7 +876,7 @@ public class Database extends Action {
 														if (jsonRow.length() > l) parentValue = jsonRow.get(l);
 														// child value
 														Object childValue = null;
-														if (jsonChildRow.length() > l) childValue= jsonChildRow.get(fieldsMap.get(l));	
+														if (jsonChildRow.length() > l) childValue= jsonChildRow.get(fieldsMap.get(l));
 														// non null check
 														if (parentValue != null && childValue != null) {
 															// a string we will concert the child value to
@@ -907,14 +908,14 @@ public class Database extends Action {
 																childString = Boolean.toString((Boolean) childValue);
 															}
 															// non null check
-															if (parentString != null && childString != null) {																
+															if (parentString != null && childString != null) {
 																// do the match!
 																if (parentString.equals(childString)) matches++;
-															}															
-														} // values non null														
+															}
+														} // values non null
 													} // field map loop
 													// if we got some matches for all the fields add this row to the subset
-													if (matches == fieldsMap.size()) jsonChildRowsSubset.put(jsonChildRow);													
+													if (matches == fieldsMap.size()) jsonChildRowsSubset.put(jsonChildRow);
 												} // child row loop
 												// if our child subset has rows in it
 												if (jsonChildRowsSubset.length() > 0) {
@@ -930,9 +931,9 @@ public class Database extends Action {
 													// add an empty cell
 													jsonRow.put(nullObject);
 												}
-											} // parent row loop											
+											} // parent row loop
 										} // jsonChildRows null check
-									} else {																			
+									} else {
 										// loop the parent rows
 										for (int j = 0; j < jsonRows.length(); j++) {
 											// get the row
@@ -941,20 +942,20 @@ public class Database extends Action {
 											jsonRow.put(jsonChildData);
 										}
 									} // matching fields check
-									
+
 								} // jsonChildQueries loop
-							} // jsonChildQueries null check		 					
-						} // _childDatabaseActions size > 0																		
+							} // jsonChildQueries null check
+						} // _childDatabaseActions size > 0
 					} // _childDatabaseActions not null
-					
+
 					// cache if in use
 					if (actionCache != null) actionCache.put(application.getId(), getId(), parametersList.toString(), jsonData);
-																		
+
 				} catch (Exception ex) {
-					
+
 					// log the error
 					_logger.error(ex);
-					
+
 					// close the data factory and silently fail
 					try { df.close(); } catch (Exception ex2) {}
 
@@ -964,65 +965,65 @@ public class Database extends Action {
 					} else {
 						_logger.debug("Error not shown to user due to cache : " + ex.getMessage());
 					}
-					
+
 				} // jsonData not null
-														
+
 			} // jsonData == null
-			
+
 		} // got sql
-		
+
 		return jsonData;
-		
+
 	}
-	
+
 	@Override
 	public JSONObject doAction(RapidRequest rapidRequest, JSONObject jsonAction) throws Exception {
-		
+
 		// This code could be optimised to only return required data, according to the outputs collection
 		_logger.trace("Database action : " + jsonAction);
-		
+
 		// fetch the application
 		Application application = rapidRequest.getApplication();
-		
+
 		// fetch the page
 		Page page = rapidRequest.getPage();
-		
+
 		// fetch in the sequence
 		int sequence = jsonAction.optInt("sequence",1);
-				
+
 		// place holder for the object we're going to return
 		JSONObject jsonData = null;
-										
-		// only if there is a query object, application, and page				
+
+		// only if there is a query object, application, and page
 		if (_query != null && application != null && page != null) {
-			
+
 			// get the relevant connection
 			DatabaseConnection databaseConnection = application.getDatabaseConnections().get(_query.getDatabaseConnectionIndex());
-			
+
 			// get the connection adapter
-			ConnectionAdapter ca = databaseConnection.getConnectionAdapter(rapidRequest.getRapidServlet().getServletContext(), application);			
-							
+			ConnectionAdapter ca = databaseConnection.getConnectionAdapter(rapidRequest.getRapidServlet().getServletContext(), application);
+
 			// instantiate a data factory with autocommit = false;
 			DataFactory df = new DataFactory(ca, false);
-			
+
 			// use the reusable do query function (so child database actions can use it as well)
 			jsonData = doQuery(rapidRequest, jsonAction, application, df);
-			
+
 			// commit the data factory transaction
 			df.commit();
 			// close the data factory
 			df.close();
-																			
+
 		} // got query, app, and page
-		
+
 		// if it's null instantiate one
 		if (jsonData == null) jsonData = new JSONObject();
-		
+
 		// add it back to the data object we're returning
 		jsonData.put("sequence", sequence);
-											
+
 		return jsonData;
-		
+
 	}
-	
+
 }

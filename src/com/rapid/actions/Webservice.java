@@ -524,6 +524,10 @@ public class Webservice extends Action {
 				String body = _request.getBody().trim();
 				// remove prolog if present
 				if (body.indexOf("\"?>") > 0) body = body.substring(body.indexOf("\"?>") + 3).trim();
+
+				// merge in any application parameters
+				body = application.insertParameters(rapidRequest.getRapidServlet().getServletContext(), body);
+
 				// check number of parameters
 				int pCount = Strings.occurrences(body, "?");
 				// throw error if incorrect
