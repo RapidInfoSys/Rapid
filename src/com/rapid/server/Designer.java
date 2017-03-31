@@ -1174,7 +1174,12 @@ public class Designer extends RapidHttpServlet {
 
 								if (jsonOutputs != null) outputs = jsonOutputs.length();
 
+								// get the sql
 								String sql = jsonQuery.getString("SQL");
+								
+								// merge in any parameters
+								sql = application.insertParameters(getServletContext(), sql);
+								
 								// some jdbc drivers need the line breaks removing before they'll work properly - here's looking at you MS SQL Server!
 								sql = sql.replace("\n", " ");
 
