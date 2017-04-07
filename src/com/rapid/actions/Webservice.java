@@ -595,13 +595,13 @@ public class Webservice extends Action {
 
 					// set the content type and action header accordingly
 					if ("SOAP".equals(_request.getType())) {
-						connection.setRequestProperty("Content-Type", "text/xml");
+						connection.setRequestProperty("Content-Type", "text/xml; charset=UTF-8");
 						connection.setRequestProperty("SOAPAction", action);
 					} else if ("JSON".equals(_request.getType())) {
-						connection.setRequestProperty("Content-Type", "application/json");
+						connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
 						if (action.length() > 0) connection.setRequestProperty("Action", action);
 					} else if ("XML".equals(_request.getType())) {
-						connection.setRequestProperty("Content-Type", "text/xml");
+						connection.setRequestProperty("Content-Type", "text/xml; charset=UTF-8");
 						// if there is an action
 						if (action.length() > 0) {
 							// if it's one of the special restful verbs
