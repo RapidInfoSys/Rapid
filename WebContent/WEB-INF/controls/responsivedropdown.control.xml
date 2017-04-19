@@ -287,6 +287,15 @@ return "#" + this.id;
 var	data = makeDataObject(data, field);
 var control = $("#" + id).find("select");
 if (data && data.rows) {
+	var foundField = false;
+	for (var i in data.fields) {
+		if (field && data.fields[i] && field.toLowerCase() == data.fields[i].toLowerCase()) {
+			control.val(data.rows[0][i]);
+			foundField = true;
+			break;
+		}
+	}
+	if (!foundField) control.val(data.rows[0][0]);
 	control.val(data.rows[0][0]);
 } else {
 	control.val("");
