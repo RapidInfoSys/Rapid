@@ -285,7 +285,7 @@ return "#" + this.id;
 	            <setPropertyJavaScript>
 	                <![CDATA[
 var	data = makeDataObject(data, field);
-var control = $("#" + id);
+var control = $("#" + id).find("select");
 if (data && data.rows) {
 	control.val(data.rows[0][0]);
 } else {
