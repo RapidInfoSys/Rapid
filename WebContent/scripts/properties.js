@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -3799,6 +3799,41 @@ function getPageControlsBulkCopies(datacopyAction, input) {
 	
 }
 
+function getDataCopyFieldFromControl(id) {
+	// assume empty string
+	var field = "";
+	// get control
+	var control = getControlById(id);
+	// if we got one
+	if (control) {
+		// start with the name
+		field = control.name;
+		// if there are enough letters
+		if (field.length > 3) {
+			// loop the letters from 3rd
+			for (var i = 2; i < field.length - 1; i ++) {
+				// get first upper case letter
+				if (field[i] == field[i].toUpperCase()) {
+					// get rest of field
+					var f = field.substring(i + 1);
+					// if would all be upper case
+					if (f == f.toUpperCase()) {
+						// lower case the lot
+						field = field.substring(i).toLowerCase();
+					} else {
+						// change first letter to lower case and use the rest
+						field = field[i].toLowerCase() + f;
+					}
+					// we're done
+					break;
+				}
+			}
+		}		
+	}
+	// return
+	return field;
+}
+
 function Property_datacopyCopies(cell, datacopyAction, property, details) {
 
 	// only if datacopyAction type is bulk
@@ -3819,7 +3854,7 @@ function Property_datacopyCopies(cell, datacopyAction, property, details) {
 		var text = "";
 		
 		// add a header
-		table.append("<tr><td><b>Source</b><button class='titleButton sources' title='Add all page controls as sources'><span>&#xf055;</span></button></td><td><b>Source field</b></td><td><b>Destination</b><button class='titleButton destinations' title='Add all page controls as destinations'><span>&#xf055;</span></button></td><td><b>Destination field</b></td><td colspan='2'><b>Copy type</b></td></tr>");
+		table.append("<tr><td><b>Source</b><button class='titleButton setSources' title='Set all sources to the same as the top one'><span>&#xf063;</span></button><button class='titleButton sources' title='Add all page controls as sources'><span>&#xf055;</span></button></td><td><b>Source field</b><button class='titleButton sourceFields' title='Derive source field from destination control name'><span>&#xf021;</span></button></td><td><b>Destination</b><button class='titleButton setDestinations' title='Set all destinations to the same as the top one'><span>&#xf063;</span></button><button class='titleButton destinations' title='Add all page controls as destinations'><span>&#xf055;</span></button></td><td><b>Destination field</b><button class='titleButton destinationFields' title='Derive destination field from source control name'><span>&#xf021;</span></button></td><td colspan='2'><b>Copy type</b><button class='titleButton swap' title='Swap all source and destinations'><span>&#xf0ec;</span></button></td></tr>");
 			
 		// add sources listener
 		addListener( table.find("button.sources").click( {cell:cell, datacopyAction:datacopyAction, property:property}, function(ev) {
@@ -3829,7 +3864,37 @@ function Property_datacopyCopies(cell, datacopyAction, property, details) {
 			getPageControlsBulkCopies(ev.data.datacopyAction, true);
 			// refresh
 			Property_datacopyCopies(ev.data.cell, ev.data.datacopyAction, ev.data.property); 
-		}));	
+		}));
+		
+		// set sources listener
+		addListener( table.find("button.setSources").click( {cell:cell, datacopyAction:datacopyAction, property:property}, function(ev) {			
+			// get the data copies
+			var dataCopies = ev.data.datacopyAction[ev.data.property.key];
+			// if there are 2 or more copies
+			if (dataCopies && dataCopies.length > 1) {
+				// add an undo snapshot
+				addUndo();
+				// loop all other sources and set
+				for (var i = 1; i < dataCopies.length; i++) dataCopies[i].source = dataCopies[0].source;
+				// refresh
+				Property_datacopyCopies(ev.data.cell, ev.data.datacopyAction, ev.data.property); 
+			}						
+		}));
+		
+		// set source fields listener
+		addListener( table.find("button.sourceFields").click( {cell:cell, datacopyAction:datacopyAction, property:property}, function(ev) {			
+			// get the data copies
+			var dataCopies = ev.data.datacopyAction[ev.data.property.key];
+			// if there are copies
+			if (dataCopies && dataCopies.length > 0) {
+				// add an undo snapshot
+				addUndo();
+				// loop all copies sources and set
+				for (var i = 0; i < dataCopies.length; i++) dataCopies[i].sourceField = getDataCopyFieldFromControl(dataCopies[i].destination);
+				// refresh
+				Property_datacopyCopies(ev.data.cell, ev.data.datacopyAction, ev.data.property); 
+			}						
+		}));
 		
 		// add destinations listener
 		addListener( table.find("button.destinations").click( {cell:cell, datacopyAction:datacopyAction, property:property}, function(ev) {
@@ -3839,7 +3904,62 @@ function Property_datacopyCopies(cell, datacopyAction, property, details) {
 			getPageControlsBulkCopies(ev.data.datacopyAction, false);
 			// refresh
 			Property_datacopyCopies(ev.data.cell, ev.data.datacopyAction, ev.data.property); 
-		}));	
+		}));
+		
+		// set destinations listener
+		addListener( table.find("button.setDestinations").click( {cell:cell, datacopyAction:datacopyAction, property:property}, function(ev) {			
+			// get the data copies
+			var dataCopies = ev.data.datacopyAction[ev.data.property.key];
+			// if there are 2 or more copies
+			if (dataCopies && dataCopies.length > 1) {
+				// add an undo snapshot
+				addUndo();
+				// loop all other sources and set
+				for (var i = 1; i < dataCopies.length; i++) dataCopies[i].destination = dataCopies[0].destination;
+				// refresh
+				Property_datacopyCopies(ev.data.cell, ev.data.datacopyAction, ev.data.property); 
+			}						
+		}));
+		
+		// set destination fields listener
+		addListener( table.find("button.destinationFields").click( {cell:cell, datacopyAction:datacopyAction, property:property}, function(ev) {			
+			// get the data copies
+			var dataCopies = ev.data.datacopyAction[ev.data.property.key];
+			// if there are copies
+			if (dataCopies && dataCopies.length > 0) {
+				// add an undo snapshot
+				addUndo();
+				// loop all copies sources and set
+				for (var i = 0; i < dataCopies.length; i++) dataCopies[i].destinationField = getDataCopyFieldFromControl(dataCopies[i].source);
+				// refresh
+				Property_datacopyCopies(ev.data.cell, ev.data.datacopyAction, ev.data.property); 
+			}						
+		}));
+		
+		// set swap listener
+		addListener( table.find("button.swap").click( {cell:cell, datacopyAction:datacopyAction, property:property}, function(ev) {			
+			// get the data copies
+			var dataCopies = ev.data.datacopyAction[ev.data.property.key];
+			// if there are copies
+			if (dataCopies && dataCopies.length > 0) {
+				// add an undo snapshot
+				addUndo();
+				// loop all copies sources and swap
+				for (var i = 0; i < dataCopies.length; i++) {
+					// store current source
+					var source = dataCopies[i].source;
+					var sourceField = dataCopies[i].sourceField;
+					// overwrite source with destination
+					dataCopies[i].source = dataCopies[i].destination;
+					dataCopies[i].sourceField = dataCopies[i].destinationField;
+					// set destination from original source
+					dataCopies[i].destination = source;
+					dataCopies[i].destinationField = sourceField;
+				}
+				// refresh
+				Property_datacopyCopies(ev.data.cell, ev.data.datacopyAction, ev.data.property); 
+			}						
+		}));
 		
 		// show current choices (with delete and move)
 		for (var i = 0; i < dataCopies.length; i++) {
