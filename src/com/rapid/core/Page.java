@@ -194,7 +194,7 @@ public class Page {
 
 	private int _xmlVersion, _formPageType;
 	private String _id, _name, _title, _label, _description, _createdBy, _modifiedBy, _htmlBody, _bodyStyleClasses, _cachedHeadLinks, _cachedHeadCSS, _cachedHeadReadyJS, _cachedHeadJS;
-	private boolean _simple;
+	private boolean _simple, _hideHeaderFooter;
 	private Date _createdDate, _modifiedDate;
 	private List<Control> _controls, _reCaptchaControls;
 	private List<Event> _events;
@@ -243,6 +243,10 @@ public class Page {
 	// simple pages do not have any events and can be used in page panels without dynamically loading them via ajax
 	public boolean getSimple() { return _simple; }
 	public void setSimple(boolean simple) { _simple = simple; }
+	
+	// whether to hide any theme header / footer
+	public boolean getHideHeaderFooter() { return _hideHeaderFooter; }
+	public void setHideHeaderFooter(boolean hideHeaderFooter) { _hideHeaderFooter = hideHeaderFooter; }
 
 	// the user that created this page (or archived page)
 	public String getCreatedBy() { return _createdBy; }
@@ -1757,8 +1761,8 @@ public class Page {
 				// start the body
 		    	writer.write("  <body id='" + _id + "' style='visibility:hidden;'" + (_bodyStyleClasses == null ? "" : " class='" + _bodyStyleClasses + "'") + ">\n");
 
-		    	// if there was a theme
-		    	if (theme != null) {
+		    	// if there was a theme and we're not hiding the header / footer
+		    	if (theme != null && !_hideHeaderFooter) {
 		    		// get any header html
 		    		String headerHtml = theme.getHeaderHtml();
 		    		// write the header html if there is something to write
@@ -1981,8 +1985,8 @@ public class Page {
 
 		} // design link check
 
-		// if there was a theme
-    	if (theme != null) {
+		// if there was a theme and we're not hiding the header / footer
+    	if (theme != null && !_hideHeaderFooter) {
     		// get any header html
     		String footerHtml = theme.getFooterHtml();
     		// write the header html if there is something to write

@@ -91,6 +91,15 @@ return [[0,"Normal"],[1,"Submission confirmation"],[2,"Submission error"],[3,"Sa
 	        </property>
 	        
 	        <property>
+	            <key>hideHeaderFooter</key>
+	            <name>Hide header / footer</name>
+	            <setConstructValueFunction>return false;</setConstructValueFunction>
+	            <changeValueJavaScript>checkbox</changeValueJavaScript>
+	            <refreshHtml>true</refreshHtml>
+	            <helpHtml>Whether or not to exclude any theme header or footer in this page</helpHtml>
+	        </property>
+	        
+	        <property>
 	            <key>roles</key>
 	            <name>User roles</name>
 	            <changeValueJavaScript>roles</changeValueJavaScript>

@@ -580,6 +580,7 @@ public class Designer extends RapidHttpServlet {
 									jsonPage.put("title", page.getTitle());
 									jsonPage.put("label", page.getLabel());
 									jsonPage.put("simple", page.getSimple());
+									jsonPage.put("hideHeaderFooter", page.getHideHeaderFooter());
 									// get a list of page session variables
 									List<String> pageSessionVariables = page.getSessionVariables();
 									// add them if there are some
@@ -797,6 +798,7 @@ public class Designer extends RapidHttpServlet {
 										out.print("Title\t" + page.getTitle() + "\n");
 										out.print("Description\t" + page.getDescription() + "\n");
 										out.print("Simple\t" + page.getSimple() + "\n");
+										out.print("HideHeaderFooter\t" + page.getHideHeaderFooter() + "\n");
 									}
 
 									// print the page events details
@@ -1018,6 +1020,7 @@ public class Designer extends RapidHttpServlet {
 								newPage.setLabel(jsonPage.optString("label"));
 								newPage.setDescription(jsonPage.optString("description"));
 								newPage.setSimple(jsonPage.optBoolean("simple"));
+								newPage.setHideHeaderFooter(jsonPage.optBoolean("hideHeaderFooter"));
 
 								// look in the JSON for an event array
 								JSONArray jsonEvents = jsonPage.optJSONArray("events");

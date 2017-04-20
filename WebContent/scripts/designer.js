@@ -420,12 +420,14 @@ function removeHeaderAndFooter() {
 	}
 }
 
-//  put them back!
+//  put them back - unless page property says otherwise
 function addHeaderAndFooter() {
-	// add any theme header
-	if (_page.headerHtml) _page.object.prepend(_page.headerHtml);
-	// add any theme footer
-	if (_page.footerHtml) _page.object.append(_page.footerHtml);
+	if (!_page.hideHeaderFooter) {
+		// add any theme header
+		if (_page.headerHtml) _page.object.prepend(_page.headerHtml);
+		// add any theme footer
+		if (_page.footerHtml) _page.object.append(_page.footerHtml);
+	}
 }
 
 // this function returns a control's height after taking into account floating children
@@ -2624,7 +2626,7 @@ $(document).ready( function() {
 			    		head.append("<style type=\"text/css\">" + page.css + "</style>");
 	     	
 			    		// add any page header html
-			    		_page.object.prepend(_page.headerHtml);
+			    		if (!_page.hideHeaderFooter) _page.object.prepend(_page.headerHtml);
 			    		
 			        	// if we have childControls
 			        	if (childControls) {
@@ -2638,7 +2640,7 @@ $(document).ready( function() {
 			        	}
 			        	
 			        	// add any page footer html
-			    		_page.object.append(_page.footerHtml);
+			        	if (!_page.hideHeaderFooter) _page.object.append(_page.footerHtml);
 			        	
 			        	// get all of the stylesheets (we might be using pagepanels where the styling )
 						var styleSheets = _pageIframe[0].contentWindow.document.styleSheets;
