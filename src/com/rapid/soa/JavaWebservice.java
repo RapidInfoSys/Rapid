@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2015 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -170,6 +170,7 @@ public class JavaWebservice extends Webservice {
 	}
 			
 	// private variables
+	private boolean _requestCached, _responseCached;
 	private String _className;
 	private Logger _logger;
 	private Map<String, ElementProperty> _elementProperties;
@@ -218,13 +219,14 @@ public class JavaWebservice extends Webservice {
 	}
 	
 	// what is the simple type
-	private static int getSimpleType(Class c) {		
+	private static int getSimpleType(Class c) {
+		String simpleName = c.getSimpleName();
 		int type = SOASchema.STRING;
-		if (c.getSimpleName().equals("boolean")) { type = SOASchema.BOOLEAN; }
-		else if (c.getSimpleName().equals("Date")) { type = SOASchema.DATE; }
-		else if (c.getSimpleName().equals("Timestamp")) { type = SOASchema.DATETIME; }
-		else if (c.getSimpleName().equals("float") || c.getSimpleName().equals("Float")) { type = SOASchema.DECIMAL; }
-		else if (c.getSimpleName().equals("int") || c.getSimpleName().equals("Integer")) { type = SOASchema.INTEGER; }		 						
+		if (simpleName.equalsIgnoreCase("boolean")) { type = SOASchema.BOOLEAN; }
+		else if (simpleName.equalsIgnoreCase("date")) { type = SOASchema.DATE; }
+		else if (simpleName.equalsIgnoreCase("timestamp")) { type = SOASchema.DATETIME; }
+		else if (simpleName.equalsIgnoreCase("float")) { type = SOASchema.DECIMAL; }
+		else if (simpleName.equalsIgnoreCase("int") || simpleName.equalsIgnoreCase("Integer")) { type = SOASchema.INTEGER; }		 						
 		return type;		
 	}
 	
@@ -327,8 +329,11 @@ public class JavaWebservice extends Webservice {
 			}			
 		});
 		
-		// cache element properties them for when we produce the output
-		_childElementProperties.put(c.getCanonicalName(), elementProperties);
+		// get the class name for looking up this class
+		String className = c.getCanonicalName();
+		
+		// cache element properties for when we produce the output
+		_childElementProperties.put(className, elementProperties);
 						
 		// the list we're making
 		List<SOASchemaElement> elements = new ArrayList<SOASchemaElement>();
@@ -493,8 +498,11 @@ public class JavaWebservice extends Webservice {
 			if (childElements != null) {
 				if (childElements.size() > 0) {
 					
+					// get the class name for looking up this class
+					String className = c.getCanonicalName();
+					
 					// get the element properties
-					List<ElementProperty> properties =  _childElementProperties.get(c.getCanonicalName());
+					List<ElementProperty> properties = _childElementProperties.get(className);
 					
 					// check we got some
 					if (properties != null) {
@@ -502,14 +510,11 @@ public class JavaWebservice extends Webservice {
 						// loop them
 						for (ElementProperty childElementProperty : properties) {
 							
-							// lower case the name
-							String childElementName = childElementProperty.getName().toLowerCase();
-							
 							// loop the childElements
 							for (SOAElement childElement : childElements) {
 								
 								// match?
-								if (childElementName.equals(childElement.getName())) {
+								if (childElementProperty.getName().equalsIgnoreCase(childElement.getName())) {
 									
 									// get the string value
 									String stringValue =  childElement.getValue();
@@ -517,8 +522,8 @@ public class JavaWebservice extends Webservice {
 									// place holder for the final value
 									Object value = null;
 									
-									// get the child object object type
-									int simpleType = getSimpleType(o.getClass());
+									// get the child object class type
+									int simpleType = getSimpleType(childElementProperty.getElementClass());
 									
 									// get the string value based on type
 									switch (simpleType) {
@@ -592,14 +597,16 @@ public class JavaWebservice extends Webservice {
 		
 		// get the class
 		Class c = object.getClass();
+		// get the class name for looking up this class
+		String className = c.getCanonicalName();
 		// get the class SOA properties if not provided
-		ElementProperty properties  = _elementProperties.get(c.getCanonicalName());
+		ElementProperty properties  = _elementProperties.get(className);
 		// place holder for the element
 		SOAElement element = null;
 				
 		if (properties == null) {
 			
-			element = new SOAElement(properties.getElementName(), "Properties for " + c.getCanonicalName() + " not found!");
+			element = new SOAElement(c.getSimpleName(), "Properties for " + c.getCanonicalName() + " not found!");
 			
 		} else {
 			
@@ -734,12 +741,14 @@ public class JavaWebservice extends Webservice {
 	public SOASchema getRequestSchema() {
 		// useful for debugging
 		//_requestSchema = null;
-		if (_requestSchema == null) {
+		if (_requestSchema == null || !_requestCached) {
 			try {
 				// get the request class
 				Class requestClass = getRequestClass();
 				// if we have one make a schema from it
 				if (requestClass != null) _requestSchema = getClassSchema(requestClass);
+				// update that it is now cached - this allows anything passed in from JAXB to be overrwritten
+				_requestCached = true;
 			} catch (Exception ex) {
 				_logger.error("Error creating request schema for Java webservice", ex);
 			}
@@ -751,7 +760,7 @@ public class JavaWebservice extends Webservice {
 	public SOASchema getResponseSchema() {
 		// useful for debugging
 		//_responseSchema = null;
-		if (_responseSchema == null) {
+		if (_responseSchema == null || !_responseCached) {
 			try {
 				// get the request class
 				Class requestClass = getRequestClass();
@@ -763,6 +772,8 @@ public class JavaWebservice extends Webservice {
 					Class responseClass = responseMethod.getReturnType();
 					// now make a schema from it
 					_responseSchema = getClassSchema(responseClass);
+					// update that it is now cached - this allows anything passed in from JAXB to be overrwritten
+					_responseCached = true;
 				}
 			} catch (Exception ex) {
 				_logger.error("Error creating response schema for Java webservice", ex);
