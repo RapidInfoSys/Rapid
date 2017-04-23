@@ -70,18 +70,10 @@ $.extend({
 // extend JQuery object methods
 $.fn.extend({
   enable: function() {
-	  this.removeAttr("disabled");
-	  if (!this.is("input")) {
-		  this.find("input").removeAttr("disabled");
-	  }
-    return this;
+	return this.removeAttr("disabled").find("input,select,textarea").removeAttr("disabled");  
   },
   disable: function() {
-	  this.attr("disabled","disabled");
-	  if (!this.is("input")) {
-		  this.find("input").attr("disabled","disabled");
-	  }
-    return this;
+	return this.attr("disabled","disabled").find("input,select,textarea").attr("disabled","disabled");
   },
   showLoading: function() {
 	 var loadingCover = $("div.loadingCover[data-id=" + this.attr("id") + "]");
