@@ -2987,7 +2987,11 @@ $(document).ready( function() {
 			        	// reload the pages as the order may have changed, but keep the current one selected
 			        	loadPages(_page.id, false);		        	
 			        	// enable close button
-			        	$("#rapid_P11_C10_").enable().focus();			        	
+			        	$("#rapid_P11_C10_").enable().focus();
+			        	// auto close after 1 second
+			        	window.setTimeout(function() {
+			        		hideDialogue();
+			        	}, 1000);
 			        }
 				});
 				
