@@ -159,6 +159,7 @@ return "<option value=''>Please select...</option>" + getInputOptions(this.dataS
 	            <key>dataCopies</key>
 	            <name>Bulk data copies</name>
 	            <changeValueJavaScript>datacopyCopies</changeValueJavaScript>
+	            <refreshProperties>true</refreshProperties>
 	            <helpHtml>Enables the use of mass data copying. Useful for when large quantities of data needs to be transferred from one location to another within your Rapid application. Similar to normal data copies, it is possible to select a source and source field, a destination and destination field, and the type of copying that is to be carried out.</helpHtml>
 	        </property>
 	        

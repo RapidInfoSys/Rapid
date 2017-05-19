@@ -179,6 +179,12 @@ div.propertyDialogue {
 	min-width: 25px;
 }
 
+.propertyAction, .dialogueClose {
+	cursor:pointer;
+	color: #00e;
+	text-decoration: underline;
+}
+
 .dialogueTable {
 	width:100%;
 	border-collapse: collapse;

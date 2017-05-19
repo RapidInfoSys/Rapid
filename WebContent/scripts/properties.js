@@ -352,12 +352,13 @@ function getDialogue(cell, propertyObject, property, details, width, title, opti
 				dialogue.css("min-width", width);
 			}
 		}
+		
 		// add a close link
-		var close = dialogue.append("<b class='dialogueTitle' style='float:left;margin-top:-5px;'>" + title + "</b><a href='#' class='dialogueClose' style='float:right;margin-top:-5px;'>close</a></div>").children().last();
+		var close = dialogue.append("<b class='dialogueTitle' style='float:left;margin-top:-5px;'>" + title + "</b><span class='dialogueClose' style='float:right;margin-top:-5px;'>close</span></div>").children().last();
 	
 		// add the close listener (it's put in the listener collection above)
 		addListener(close.click({dialogueId: dialogueId}, function(ev) {
-			
+				
 			// get this dialogue
 			var dialogue = $("#" + ev.data.dialogueId);
 			
@@ -378,14 +379,15 @@ function getDialogue(cell, propertyObject, property, details, width, title, opti
 				}
 				
 			});
-						
+					
 			// remove this dialogue
 			dialogue.remove();
 			
 			// call an update on the master property to set the calling cell text
 			updateProperty(cell, propertyObject, property, details, propertyObject[property.key]);
 
-		}));			
+		}));
+		
 		// add an options table
 		dialogue.append("<br/><table class='dialogueTable'><tbody></tbody></table>");
 	}	
@@ -732,10 +734,10 @@ function Property_fields(cell, action, property, details) {
 	addReorder(fields, table.find("img.reorder"), function() { Property_fields(cell, action, property); });
 		
 	// append add
-	table.append("<tr><td colspan='3'><a href='#'>add...</a></td></tr>");
+	table.append("<tr><td colspan='3'><span class='propertyAction'>add...</span></td></tr>");
 	
 	// add listener
-	addListener( table.find("a").click( function (ev) {
+	addListener( table.find("span.propertyAction").click( function (ev) {
 		// add a field
 		fields.push("");
 		// refresh dialogue
@@ -846,10 +848,10 @@ function Property_galleryImages(cell, gallery, property, details) {
 	addReorder(images, table.find("img.reorder"), function() { rebuildHtml(gallery); Property_galleryImages(cell, gallery, property); });
 	
 	// append add
-	table.append("<tr><td colspan='3'><a href='#'>add...</a></td></tr>");
+	table.append("<tr><td colspan='3'><span class='propertyAction'>add...</span></td></tr>");
 	
 	// add listener
-	addListener( table.find("a").click( function (ev) {
+	addListener( table.find("span.propertyAction").click( function (ev) {
 		// add an image
 		images.push({url:""});
 		// refresh dialogue
@@ -1641,7 +1643,7 @@ function Property_childActionsForType(cell, propertyObject, property, details) {
 			if (actions.length > 0) table.append("<tr><td colspan='2'></td></tr>");
 			
 			// add an add dropdown
-			var addAction = table.append("<tr><td colspan='2'><a href='#' style='float:left;'>add...</a></td></tr>").children().last().children().last().children().last();
+			var addAction = table.append("<tr><td colspan='2'><span class='propertyAction' style='float:left;'>add...</span></td></tr>").find("span.propertyAction").last();
 			
 			addListener( addAction.click( { cell: cell, propertyObject : propertyObject, property : property, details: details }, function(ev) {
 				// initialise this action
@@ -1664,7 +1666,7 @@ function Property_childActionsForType(cell, propertyObject, property, details) {
 			// if there is a _copyAction of the same type
 			if (_copyAction && _copyAction.type == details.type) {
 				// add a paste link
-				var pasteAction = addAction.after("<a href='#' style='float:right;margin-right:5px;'>paste...</a>").next();
+				var pasteAction = addAction.after("<span class='propertyAction' style='float:right;margin-right:5px;'>paste...</span>").next();
 				// add a listener
 				addListener( pasteAction.click({ cell: cell, propertyObject : propertyObject, property : property, details: details }, function(ev){
 					
@@ -1795,9 +1797,9 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 	// if multi row and at least one input
 	if (query.multiRow && query.inputs.length > 0) {
 		// add the add input linke
-		inputsTable.append("<tr><td style='padding:0px;' colspan='2'><a href='#' style='padding-left:5px;'>add input</a></td><td>&nbsp;</td></tr>");
+		inputsTable.append("<tr><td style='padding:0px;' colspan='2'><span class='propertyAction' style='padding-left:5px;'>add input</span></td><td>&nbsp;</td></tr>");
 		// find the input add
-		var inputAdd = inputsTable.find("tr").last().children().first().children("a");
+		var inputAdd = inputsTable.find("span.propertyAction").last();
 		// listener to add input
 		addListener( inputAdd.click( {cell: cell, propertyObject: propertyObject, property: property, details: details}, function(ev) {
 			// get the input parameters
@@ -2221,9 +2223,9 @@ function Property_pageSessionVariables(cell, page, property, details, textOnly) 
 			}
 				
 			// have an add row
-			table.append("<tr><td colspan='2'><a href='#'>add...</a></td></tr>");
+			table.append("<tr><td colspan='2'><span class='propertyAction'>add...</span></td></tr>");
 			// get a reference to the add
-			var add = table.find("tr").last().children().last().children().last();
+			var add = table.find("span.propertyAction").last();
 			// add a listener
 			addListener( add.click( {cell: cell, page: page, property: property, details: details}, function(ev) {
 				// add an undo snapshot
@@ -2512,9 +2514,9 @@ function Property_radiobuttons(cell, control, property, details) {
 		}
 			
 		// have an add row
-		table.append("<tr><td colspan='" + (control.codes ? "3" : "2") + "'><a href='#'>add...</a></td></tr>");
+		table.append("<tr><td colspan='" + (control.codes ? "3" : "2") + "'><span class='propertyAction'>add...</span></td></tr>");
 		// get a reference to the add
-		var add = table.find("tr").last().children().last().children().last();
+		var add = table.find("span.propertyAction").last();
 		// add a listener
 		addListener( add.click( {cell: cell, control: control, property: property, details: details}, function(ev) {
 			// add a blank option
@@ -2807,9 +2809,9 @@ function Property_logicConditions(cell, action, property, details) {
 	}
 				
 	// add add
-	table.append("<tr><td colspan='4'><a href='#'>add...</a></td></tr>");
+	table.append("<tr><td colspan='4'><span class='propertyAction'>add...</span></td></tr>");
 	// add listener
-	table.find("a").last().click( function(ev) {
+	table.find("span.propertyAction").last().click( function(ev) {
 		// instatiate if need be
 		if (!action[property.key]) action[property.key] = [];
 		// add new condition
@@ -2922,9 +2924,9 @@ function Property_options(cell, control, property, details) {
 		});
 			
 		// have an add row
-		table.append("<tr><td colspan='" + (control.codes ? "3" : "2") + "'><a href='#'>add...</a></td></tr>");
+		table.append("<tr><td colspan='" + (control.codes ? "3" : "2") + "'><span class='propertyAction'>add...</span></td></tr>");
 		// get a reference to the add
-		var add = table.find("tr").last().children().last().children().last();
+		var add = table.find("span.propertyAction").last();
 		// add a listener
 		addListener( add.click( {cell: cell, control: control, property: property, details: details}, function(ev) {
 			// add a blank option
@@ -3238,9 +3240,9 @@ function Property_gridColumns(cell, grid, property, details) {
 	});
 	
 	// have an add row
-	table.append("<tr><td colspan='5'><a href='#'>add...</a></td></tr>");
+	table.append("<tr><td colspan='5'><span class='propertyAction'>add...</span></td></tr>");
 	// get a reference to the add
-	var add = table.find("tr").last().children().last().children().last();
+	var add = table.find("span.propertyAction").last();
 	// add a listener
 	addListener( add.click( {cell: cell, grid: grid, property: property, details: details}, function(ev) {
 		// add a blank option
@@ -3397,9 +3399,9 @@ function Property_controlHints(cell, hints, property, details) {
 	});
 		
 	// have an add row
-	table.append("<tr><td colspan='4'><a href='#'>add...</a></td></tr>");
+	table.append("<tr><td colspan='4'><span class='propertyAction'>add...</span></td></tr>");
 	// get a reference to the add
-	var add = table.find("tr").last().children().last().children().last();
+	var add = table.find("span.propertyAction").last();
 	// add a listener
 	addListener( add.click( {cell: cell, hints: hints, property: property, details: details}, function(ev) {
 		// instantiate array if need be
@@ -4043,9 +4045,9 @@ function Property_datacopyCopies(cell, datacopyAction, property, details) {
 		});
 		
 		// add the add
-		table.append("<tr><td colspan='8'><a href='#' style='margin-left:5px;'>add...</a></td></tr>");
+		table.append("<tr><td colspan='8'><span class='propertyAction' style='margin-left:5px;'>add...</span></td></tr>");
 		// find the add
-		var destinationAdd = table.find("a").last();
+		var destinationAdd = table.find("span.propertyAction").last();
 		// listener to add output
 		addListener( destinationAdd.click( {cell: cell, datacopyAction: datacopyAction, property: property, details: details}, function(ev) {
 			// initialise array if need be
