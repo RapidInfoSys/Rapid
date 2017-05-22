@@ -93,7 +93,7 @@ return ["false","true"];
 	         <property>
 	            <key>extraSmall</key>
 	            <name>Extra small width</name>
-	            <setConstructValueFunction>return "xs-1"</setConstructValueFunction>
+	            <setConstructValueFunction>return "xs-12"</setConstructValueFunction>
 	            <changeValueJavaScript>select</changeValueJavaScript>
 	            <getValuesFunction>
 	                <![CDATA[
