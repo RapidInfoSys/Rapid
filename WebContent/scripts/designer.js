@@ -862,7 +862,7 @@ function getRolesOptions(selectRole, ignoreRoles) {
 }
 
 // different system properties for inputs
-var _systemValues = ["app id","app version","page id","user name","online","mobile","mobile version","true","false","null","field"];
+var _systemValues = ["app id","app version","page id","page name","page title","user name","online","mobile","mobile version","true","false","null","field"];
 
 //this function returns system values
 function getSystemValueOptions(selectId) {

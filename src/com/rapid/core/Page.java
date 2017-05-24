@@ -1159,6 +1159,8 @@ public class Page {
 			stringBuilder.append("var _appVersion = '" + application.getVersion() + "';\n");
 		}
 		stringBuilder.append("var _pageId = '" + _id + "';\n");
+		stringBuilder.append("var _pageName = '" + _name + "';\n");
+		stringBuilder.append("var _pageTitle = '" + _title + "';\n");
 		// this flag indicates if the Rapid Mobile client is regaining the foreground
 		stringBuilder.append("var _mobileResume = false;\n");
 		// this flag indicates if any controls are loading asynchronously and the page load method can't be called

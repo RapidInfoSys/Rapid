@@ -467,6 +467,16 @@ public class Control {
 						// whether rapid mobile is present
 						return "_pageId";
 
+					} else if ("page name".equals(type)) {
+
+						// whether rapid mobile is present
+						return "_pageName";
+
+					} else if ("page title".equals(type)) {
+
+						// whether rapid mobile is present
+						return "_pageTitle";
+
 					} else if ("mobile".equals(type)) {
 
 						// whether rapid mobile is present
