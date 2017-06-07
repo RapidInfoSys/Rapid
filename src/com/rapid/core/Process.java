@@ -32,9 +32,11 @@ public abstract class Process extends Thread {
 	public abstract void doProcess();
 	
 	// protected methods
-	protected Applications getApplications() {
-		return (Applications) _servletContext.getAttribute("applications");
-	}
+	
+	protected ServletContext getServletContext() { return _servletContext; }	
+	protected String getProcessName() { return _name; }
+	protected int getInterval() { return _interval; }
+	protected Applications getApplications() { return (Applications) _servletContext.getAttribute("applications");	}
 	
 	// override methods
 	@Override
