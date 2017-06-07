@@ -184,6 +184,7 @@ function getGridDataStoreData(id, details) {
 		break;
 		case "S" :
 			dataString = sessionStorage[_appId + id];
+		break;
 		case "P" :
 			dataString = window[_appId + "datastore"];			
 		break;
@@ -197,8 +198,9 @@ function saveGridDataStoreData(id, details, data) {
 		case "L" :
 			localStorage[_appId + id] = JSON.stringify(data);
 		break;
-		case "S" :
+		case "S" :		
 			sessionStorage[_appId + id] = JSON.stringify(data);
+		break;
 		case "P" :
 			window[_appId + "datastore"] = JSON.stringify(data);
 		break;
