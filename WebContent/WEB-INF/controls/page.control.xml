@@ -121,10 +121,10 @@ return [[0,"Normal"],[1,"Submission confirmation"],[2,"Submission error"],[3,"Sa
 	        </property>
 	        
 	        <property>
-	            <key>notes</key>
-	            <name>Notes</name>
+	            <key>comments</key>
+	            <name>Comments</name>
 	            <changeValueJavaScript>bigtext</changeValueJavaScript>
-	            <helpHtml>Sets additional notes for the page. These notes are more private than the description. Notes left here can be useful for other developers that may use your app.</helpHtml>
+	            <helpHtml>Sets additional comments for the page. These are more private than the description. Comments left here can be useful for other developers that may work on your app.</helpHtml>
 	        </property>
 	        
 	        <property>
