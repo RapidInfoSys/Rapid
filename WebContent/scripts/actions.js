@@ -474,8 +474,12 @@ function showAction(actionsTable, action, collection, refreshFunction) {
 	var properties = actionClass.properties;
 	// check
 	if (properties) {
-		// (if a single it's a class not an array due to JSON class conversionf from xml)
-		if ($.isArray(properties.property)) properties = properties.property; 
+		// (if a single it's a class not an array due to JSON class conversion from xml)
+		if ($.isArray(properties.property)) {
+			properties = properties.property; 
+		} else {
+			properties = [properties.property];
+		}
 		// add a comments property to the end, if not there already
 		if (properties.length > 0 && properties[properties.length - 1].key != "comments")	properties.push({"key":"comments","name":"Comments","changeValueJavaScript":"bigtext","helpHtml":"Comments left here can be useful for other developers that may work on your app."});
 		// loop them
