@@ -28,8 +28,11 @@ package com.rapid.utils;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.StringReader;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -55,9 +58,14 @@ public class XML {
 
 	public static Document openDocument(File file) throws ParserConfigurationException, SAXException, IOException {
 
+		InputStream inputStream = new FileInputStream(file);
+        Reader reader = new InputStreamReader(inputStream,"UTF-8");
+        InputSource is = new InputSource(reader);
+        is.setEncoding("UTF-8");
+
 		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-        Document document = docBuilder.parse (file);
+        Document document = docBuilder.parse (is);
 
         return document;
 

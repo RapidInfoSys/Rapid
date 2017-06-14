@@ -28,7 +28,6 @@ package com.rapid.core;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
@@ -2028,10 +2027,8 @@ public class Application {
 			String appCopyXML = Strings.getString(appCopyFile);
 			// replace all app/version references
 			appCopyXML = appCopyXML.replace("/" + _id + "/" + _version + "/", "/" + newId + "/" + newVersion + "/");
-			// save it back
-			FileWriter fs = new FileWriter(appCopyFile);
-			fs.write(appCopyXML);
-			fs.close();
+			// save it back to it's new location
+			Strings.saveString(appCopyXML, appCopyFile);
 
 			// look for a security.xml file
 			File appSecurityFile = new File(getConfigFolder(servletContext) + "/security.xml");
