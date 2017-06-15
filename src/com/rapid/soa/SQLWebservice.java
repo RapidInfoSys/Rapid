@@ -161,7 +161,7 @@ public class SQLWebservice extends Webservice {
 								dateFormatter = rapidRequest.getRapidServlet().getXMLDateTimeFormatter();
 								Timestamp timeStamp = rs.getTimestamp(fieldName);
 								if (timeStamp != null) {
-									date = new Date(rs.getTimestamp(fieldName).getTime());
+									date = new Date(timeStamp.getTime());
 									elementValue = dateFormatter.format(date);
 								}
 								break;
