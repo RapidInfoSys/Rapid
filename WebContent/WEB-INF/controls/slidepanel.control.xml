@@ -164,14 +164,10 @@ function sizeSlidePanelCover() {
 }	                
 	                
 //JQuery is ready! 
-$(document).ready( function() {
-	
-	$(window).resize(function(ex) {
-	
-		sizeSlidePanelCover();
-       	      		
-	});
-	
+$(document).ready( function() {	
+	$(window).resize(function(ex) {	
+		sizeSlidePanelCover();       	      		
+	});	
 });		                
 	                ]]>
 	            </contents>
@@ -264,8 +260,10 @@ childControls.splice(childControls.length - 1, 1);
 // insert us above the last one
 childControls.splice(childControls.length - 1, 0, this);
 
+// get a reference to the iFrame window
+var w = _pageIframe[0].contentWindow;
 // resize the panel cover
-sizeSlidePanelCover();
+w.sizeSlidePanelCover();
 
 	        ]]>	   	        
 	    </pushedJavaScript>
