@@ -2208,7 +2208,7 @@ public class Rapid extends Action {
 
 				// if password is different from the mask
 				if ("********".equals(password)) {
-					// update the user
+					// just update the user
 					security.updateUser(rapidRequest, user);
 				} else {
 					// get the old password
@@ -2221,43 +2221,46 @@ public class Rapid extends Action {
 					if (user.getName().equals(rapidRequest.getSessionAttribute(RapidFilter.SESSION_VARIABLE_USER_NAME))) rapidRequest.setUserPassword(password);
 					// if there is an old password - should always be
 					if (oldPassword != null) {
-						// get all applications
-						Applications applications = rapidRequest.getRapidServlet().getApplications();
-						// loop them
-						for (String id : applications.getIds()) {
-							// get their versions
-							Versions versions = applications.getVersions(id);
-							// loop the versions
-							for (String version : versions.keySet()) {
-								// get this version
-								Application v = applications.get(id, version);
-								// we have updated the password in the selected app already so no need to do it again
-								if (!(app.getId().equals(v.getId()) && app.getVersion().equals(v.getVersion()))) {
-									// get this app versions security adapter
-									SecurityAdapter s = v.getSecurityAdapter();
-									// recreate the rapidRequest with the selected version (so app parameters etc are available from the app in the rapidRequest)
-									rapidRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), v);
-									// override the standard request user
-									rapidRequest.setUserName(userName);
-									// check the user had permission to the app with their old password
-									if (s.checkUserPassword(rapidRequest, userName, oldPassword)) {
-										// get this user
-										User u = s.getUser(rapidRequest);
-										// safety check for if we found one
-										if (u == null) {
-											// log that it passed password check but can't be found
-											rapidRequest.getRapidServlet().getLogger().debug("User " + userName + " passed password check for " + app.getId() + "/" + app.getVersion() + " but now can't be found for password update");
-										} else {
-											// set new user password
-											u.setPassword(password);
-											// update user
-											s.updateUser(rapidRequest, u);
-										}
-									} // password match check
-								} // ignore app version updated already
-							} // version loop
-						} // app id loop
-					} // password check
+						// only if the new password is different from the old one
+						if (password.equals(oldPassword)) {
+							// get all applications
+							Applications applications = rapidRequest.getRapidServlet().getApplications();
+							// loop them
+							for (String id : applications.getIds()) {
+								// get their versions
+								Versions versions = applications.getVersions(id);
+								// loop the versions
+								for (String version : versions.keySet()) {
+									// get this version
+									Application v = applications.get(id, version);
+									// we have updated the password in the selected app already so no need to do it again
+									if (!(app.getId().equals(v.getId()) && app.getVersion().equals(v.getVersion()))) {
+										// get this app versions security adapter
+										SecurityAdapter s = v.getSecurityAdapter();
+										// recreate the rapidRequest with the selected version (so app parameters etc are available from the app in the rapidRequest)
+										rapidRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), v);
+										// override the standard request user
+										rapidRequest.setUserName(userName);
+										// check the user had permission to the app with their old password
+										if (s.checkUserPassword(rapidRequest, userName, oldPassword)) {
+											// get this user
+											User u = s.getUser(rapidRequest);
+											// safety check for if we found one
+											if (u == null) {
+												// log that it passed password check but can't be found
+												rapidRequest.getRapidServlet().getLogger().debug("User " + userName + " passed password check for " + app.getId() + "/" + app.getVersion() + " but now can't be found for password update");
+											} else {
+												// set new user password
+												u.setPassword(password);
+												// update user
+												s.updateUser(rapidRequest, u);
+											}
+										} // password match check
+									} // ignore app version updated already
+								} // version loop
+							} // app id loop
+						} // old password different from new
+					} // old password null check
 				} // password provided
 
 				// if we are updating the rapid application we have used checkboxes for the Rapid Admin and Rapid Designer roles
