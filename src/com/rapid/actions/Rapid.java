@@ -2243,10 +2243,16 @@ public class Rapid extends Action {
 									if (s.checkUserPassword(rapidRequest, userName, oldPassword)) {
 										// get this user
 										User u = s.getUser(rapidRequest);
-										// set new user password
-										u.setPassword(password);
-										// update user
-										s.updateUser(rapidRequest, u);
+										// safety check for if we found one
+										if (u == null) {
+											// log that it passed password check but can't be found
+											rapidRequest.getRapidServlet().getLogger().debug("User " + userName + " passed password check for " + app.getId() + "/" + app.getVersion() + " but now can't be found for password update");
+										} else {
+											// set new user password
+											u.setPassword(password);
+											// update user
+											s.updateUser(rapidRequest, u);
+										}
 									} // password match check
 								} // ignore app version updated already
 							} // version loop
