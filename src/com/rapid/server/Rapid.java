@@ -361,26 +361,42 @@ public class Rapid extends RapidHttpServlet {
 								// if the page we're about to write is the page we asked for (visibility rules might move us on a bit)
 								if (pageId.equals(rapidRequest.getPage().getId())) {
 
-									// create a writer
-									PrintWriter out = response.getWriter();
+									// get any if-none-match - no caching must be set to true in web.xml for this to be sent
+									String ifNoneMatch = request.getHeader("If-None-Match");
 
-									// assume we require the designer link
-									boolean designerLink = true;
+									// if difference from ETag (including null)
+									if (page.getETag().equals(ifNoneMatch)) {
 
-									// set designer link to false if action is dialogue
-									if ("dialogue".equals(rapidRequest.getActionName())) designerLink = false;
+										// send a 304 - not modified
+										response.setStatus(304);
 
-									// set the response type
-									response.setContentType("text/html");
+									} else {
 
-									// write the page html
-									page.writeHtml(this, response, rapidRequest, app, user, out, designerLink);
+										// add the etag
+										response.addHeader("ETag", page.getETag());
 
-									// close the writer
-									out.close();
+										// create a writer
+										PrintWriter out = response.getWriter();
 
-									// flush the writer
-									out.flush();
+										// assume we require the designer link
+										boolean designerLink = true;
+
+										// set designer link to false if action is dialogue
+										if ("dialogue".equals(rapidRequest.getActionName())) designerLink = false;
+
+										// set the response type
+										response.setContentType("text/html");
+
+										// write the page html
+										page.writeHtml(this, response, rapidRequest, app, user, out, designerLink);
+
+										// close the writer
+										out.close();
+
+										// flush the writer
+										out.flush();
+
+									}
 
 									// if we have a form adapter and form details
 									if (formAdapter != null && formDetails != null) {

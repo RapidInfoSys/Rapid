@@ -193,7 +193,7 @@ public class Page {
 	// instance variables
 
 	private int _xmlVersion, _formPageType;
-	private String _id, _name, _title, _label, _description, _createdBy, _modifiedBy, _htmlBody, _bodyStyleClasses, _cachedHeadLinks, _cachedHeadCSS, _cachedHeadReadyJS, _cachedHeadJS;
+	private String _id, _name, _title, _label, _description, _createdBy, _modifiedBy, _htmlBody, _bodyStyleClasses, _cachedHeadLinks, _cachedHeadCSS, _cachedHeadReadyJS, _cachedHeadJS, _eTag;
 	private boolean _simple, _hideHeaderFooter;
 	private Date _createdDate, _modifiedDate;
 	private List<Control> _controls, _reCaptchaControls;
@@ -243,7 +243,7 @@ public class Page {
 	// simple pages do not have any events and can be used in page panels without dynamically loading them via ajax
 	public boolean getSimple() { return _simple; }
 	public void setSimple(boolean simple) { _simple = simple; }
-	
+
 	// whether to hide any theme header / footer
 	public boolean getHideHeaderFooter() { return _hideHeaderFooter; }
 	public void setHideHeaderFooter(boolean hideHeaderFooter) { _hideHeaderFooter = hideHeaderFooter; }
@@ -312,11 +312,16 @@ public class Page {
 	public String getConditionsType() { return _conditionsType; }
 	public void setConditionsType(String conditionsType) { _conditionsType = conditionsType; }
 
+	// the etag used to send 304 not modified if caching is turned off
+	public String getETag() { return _eTag; }
+
 	// constructor
 
 	public Page() {
 		// set the xml version
 		_xmlVersion = XML_VERSION;
+		// set the eTag
+		_eTag = Long.toString(new Date().getTime());
 	}
 
 	// instance methods
