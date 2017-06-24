@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -2288,13 +2288,16 @@ public class Application {
 					// loop them
 					for (Resource resource : _resources) {
 						// check they're any of our file types
-						if (resource.getType() == Resource.JAVASCRIPTFILE || resource.getType() == Resource.CSSFILE || resource.getType() == Resource.FILE) {
+						if (resource.getType() == Resource.JAVASCRIPTFILE || resource.getType() == Resource.CSSFILE || resource.getType() == Resource.JAVASCRIPTLINK || resource.getType() == Resource.CSSLINK || resource.getType() == Resource.FILE) {
 							// get a file object for them
 							File resourceFile = new File(rapidServlet.getServletContext().getRealPath("") + "/" + resource.getContent());
-							// get the path from the file name
-							String path = Files.getPath(resource.getContent());
-							// add as zip source
-							zipSources.add(resourceFile, path);
+							// if file exists
+							if (resourceFile.exists()) {
+								// get the path from the file name
+								String path = Files.getPath(resource.getContent());
+								// add as zip source
+								zipSources.add(resourceFile, path);
+							}
 						}
 					}
 				}
