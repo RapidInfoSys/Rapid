@@ -135,7 +135,14 @@ if (data != null && data !== undefined) {
 control.val(value);
 if (changeEvents) control.trigger("change");    
 			]]>
-	    </setDataJavaScript>	    	    
+	    </setDataJavaScript>
+	    
+	    <events>
+	        <event>
+	            <type>change</type>
+	            <name>Change</name>
+	        </event>	              	        
+	    </events> 	    
 	    
 	    <designLinkJQuery>
 	        <![CDATA[
