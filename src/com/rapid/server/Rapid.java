@@ -66,11 +66,8 @@ public class Rapid extends RapidHttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	// these are held here and referred to globally
-<<<<<<< HEAD
-	public static final String VERSION = "2.3.5.3"; // the master version of this Rapid server instance
-=======
+
 	public static final String VERSION = "2.4.1"; // the master version of this Rapid server instance
->>>>>>> refs/remotes/origin/workflow
 	public static final String MOBILE_VERSION = "1"; // the mobile version. update it if you want all mobile devices to run app updates on their next version check
 	public static final String DESIGN_ROLE = "RapidDesign";
 	public static final String WORKFLOW_ROLE = "RapidWorkflow";

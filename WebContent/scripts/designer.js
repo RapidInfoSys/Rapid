@@ -777,7 +777,6 @@ function getControls(childControls, controls) {
 		}		
 	}	
 	return controls;
-<<<<<<< HEAD
 }
 
 // this function returns a set of options for a dropdown using the current set of pages
@@ -1117,8 +1116,6 @@ function getValueListsOptions(selected) {
 		}
 	}
 	return valueLists;
-=======
->>>>>>> refs/remotes/origin/workflow
 }
 
 // move the border and show properties and actions

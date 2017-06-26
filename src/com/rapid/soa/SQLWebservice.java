@@ -159,16 +159,11 @@ public class SQLWebservice extends Webservice {
 								break;
 							case SOASchema.DATETIME :
 								dateFormatter = rapidRequest.getRapidServlet().getXMLDateTimeFormatter();
-<<<<<<< HEAD
 								Timestamp timeStamp = rs.getTimestamp(fieldName);
 								if (timeStamp != null) {
 									date = new Date(timeStamp.getTime());
 									elementValue = dateFormatter.format(date);
 								}
-=======
-								date = rs.getDate(fieldName);
-								if (date != null) elementValue = dateFormatter.format(date);
->>>>>>> refs/remotes/origin/workflow
 								break;
 							default:
 								elementValue = rs.getString(fieldName);

@@ -172,12 +172,9 @@ public abstract class SecurityAdapter {
 		public String getDescription() { return _description; }
 		public void setDescription(String description) { _description = description; }
 
-<<<<<<< HEAD
-=======
 		public String getEmail() { return _email; }
 		public void setEmail(String email) { _email = email; }
 
->>>>>>> refs/remotes/origin/workflow
 		@XmlJavaTypeAdapter( EncryptedXmlAdapter.class )
 		public String getPassword() { return _password; }
 		public void setPassword(String password) { _password = password; }
@@ -193,11 +190,7 @@ public abstract class SecurityAdapter {
 			_userRoles = new UserRoles();
 		}
 
-<<<<<<< HEAD
-		public User(String name, String description, String password, String deviceDetails, UserRoles roles) {
-=======
 		public User(String name, String description, String email, String password, String deviceDetails, UserRoles roles) {
->>>>>>> refs/remotes/origin/workflow
 			_name = name;
 			_description = description;
 			_email = email;
@@ -206,10 +199,6 @@ public abstract class SecurityAdapter {
 			_userRoles = roles;
 		}
 
-<<<<<<< HEAD
-		public User(String name, String description, String password, UserRoles roles) {
-			this(name, description, password, null, roles);
-=======
 		public User(User user) {
 			_name = user.getName();
 			_description = user.getDescription();
@@ -217,25 +206,12 @@ public abstract class SecurityAdapter {
 			_password = user.getPassword();
 			_deviceDetails = user.getDeviceDetails();
 			_userRoles = user.getRoles();
->>>>>>> refs/remotes/origin/workflow
 		}
 
-<<<<<<< HEAD
-		public User(String name, String description, String password, String deviceDetails) {
-			this(name, description, password, deviceDetails, new UserRoles());
-=======
 		public User(String name, String description, String email, String password, String deviceDetails) {
 			this(name, description, email, password, deviceDetails, new UserRoles());
->>>>>>> refs/remotes/origin/workflow
 		}
 
-<<<<<<< HEAD
-		public User(String name, String description, String password) {
-			this(name, description, password, null, new UserRoles());
-		}
-
-=======
->>>>>>> refs/remotes/origin/workflow
 		// public methods
 
 		public boolean checkDevice(RapidRequest rapidRequest) {

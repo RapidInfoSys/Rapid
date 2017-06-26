@@ -43,7 +43,6 @@ import org.json.JSONObject;
 
 import com.rapid.core.Action;
 import com.rapid.core.Application;
-import com.rapid.core.Application.DatabaseConnection;
 import com.rapid.core.Control;
 import com.rapid.core.Page;
 import com.rapid.core.Parameter;
@@ -54,10 +53,6 @@ import com.rapid.data.DatabaseConnection;
 import com.rapid.server.ActionCache;
 import com.rapid.server.RapidHttpServlet;
 import com.rapid.server.RapidRequest;
-<<<<<<< HEAD
-
-=======
->>>>>>> refs/remotes/origin/workflow
 
 public class Database extends Action {
 
@@ -604,12 +599,9 @@ public class Database extends Action {
 		// only if there is some sql is it worth going further
 		if (sql != null) {
 
-<<<<<<< HEAD
 			// merge in any application parameters
 			sql = application.insertParameters(rapidRequest.getRapidServlet().getServletContext(), sql);
 
-=======
->>>>>>> refs/remotes/origin/workflow
 			// get any json inputs
 			JSONObject jsonInputData = jsonAction.optJSONObject("data");
 
