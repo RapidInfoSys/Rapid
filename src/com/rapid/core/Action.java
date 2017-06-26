@@ -113,7 +113,7 @@ public abstract class Action {
 		
 	// this method can be overridden to check the xml versions, and upgrade any xml nodes representing specific actions before the xml document is unmarshalled
 	public Node upgrade(Node actionNode) { return actionNode; }
-			
+				
 	@Override
 	public String toString() { return getClass().getName() + " - " + getId(); }
 			

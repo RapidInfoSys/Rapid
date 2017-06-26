@@ -152,7 +152,7 @@ hr {
 	width: 100%;
 }
 
-#pageLock {
+#pageLock, #flowLock {
 	display:none;
 	color: white;
     padding: 0 10px;
@@ -161,7 +161,7 @@ hr {
     margin-top: 10px;
 }
 
-#controlControls {
+#controlControls, #actionActions {
 	display:none;
 }
 
@@ -169,7 +169,7 @@ hr {
 	cursor: pointer;
 }
 
-#controlsList h3 {
+#controlsList h3, #actionsList h3 {
 	clear: left;
 	text-transform: uppercase;
     font-size: 12px;
@@ -201,14 +201,14 @@ hr {
 	cursor: auto;
 }
 
-ul.design-controls {
+ul.design-controls, ul.design-actions {
 	margin-top: 0px;
 	margin-bottom: 0px;
 	padding-left: 0px;
 	text-align: left;
 }
 
-li.design-control {
+li.design-control, li.design-action {
 	display: block;
 	cursor: pointer;
 	width: 25px;
@@ -224,32 +224,24 @@ li.design-control {
 	text-align: center;	
 	border-radius: 3px;
 	min-height: 24px;
-	background: #e9e9e9;
-	background: -moz-linear-gradient(top,  #e9e9e9 0%, #eeeeee 20%, #d9d9d9 100%);
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#e9e9e9), color-stop(20%,#eeeeee), color-stop(100%,#d9d9d9));
-	background: -webkit-linear-gradient(top,  #e9e9e9 0%,#eeeeee 20%,#d9d9d9 100%);
-	background: -o-linear-gradient(top,  #e9e9e9 0%,#eeeeee 20%,#d9d9d9 100%);
-	background: -ms-linear-gradient(top,  #e9e9e9 0%,#eeeeee 20%,#d9d9d9 100%);
-	background: linear-gradient(to bottom,  #e9e9e9 0%,#eeeeee 20%,#d9d9d9 100%);
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e9e9e9', endColorstr='#d9d9d9',GradientType=0 );
-	-webkit-box-shadow: 0 -1px 1px rgba(0,0,0,0.2) inset,0 1px 1px rgba(255,255,255,0.8) inset,1px 2px 2px -1px rgba(0,0,0,0.3);
-	-moz-box-shadow: 0 -1px 1px rgba(0,0,0,0.2) inset,0 1px 1px rgba(255,255,255,0.8) inset,1px 2px 2px -1px rgba(0,0,0,0.3);
+	background: #666;
+	background: -moz-linear-gradient(top,  #666 0%, #494949 100%);
+	background: -webkit-linear-gradient(top,  #666 0%,#494949 100%);
+	background: linear-gradient(to bottom,  #666 0%,#494949 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#666', endColorstr='#494949',GradientType=0 );
 	box-shadow: 0 -1px 1px rgba(0,0,0,0.2) inset,0 1px 1px rgba(255,255,255,0.8) inset,1px 2px 2px -1px rgba(0,0,0,0.3);
 }
 
-li.design-control:hover {
+li.design-control:hover, li.design-action:hover {
 	background-color: #ddd;
-	background: #d9d9d9;
-	background: -moz-linear-gradient(top,  #d9d9d9 0%, #dddddd 20%, #b9b9b9 100%);
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#d9d9d9), color-stop(20%,#dddddd), color-stop(100%,#b9b9b9));
-	background: -webkit-linear-gradient(top,  #d9d9d9 0%,#dddddd 20%,#b9b9b9 100%);
-	background: -o-linear-gradient(top,  #d9d9d9 0%,#dddddd 20%,#b9b9b9 100%);
-	background: -ms-linear-gradient(top,  #d9d9d9 0%,#dddddd 20%,#b9b9b9 100%);
-	background: linear-gradient(to bottom,  #d9d9d9 0%,#dddddd 20%,#b9b9b9 100%);
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d9d9d9', endColorstr='#b9b9b9',GradientType=0 );
+	background: #500000;
+	background: -moz-linear-gradient(top,  #b80101 0%, #500000 100%);
+	background: -webkit-linear-gradient(top,  #b80101 0%,#500000 100%);
+	background: linear-gradient(to bottom,  #b80101 0%,#500000 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b80101', endColorstr='#500000',GradientType=0 );
 }
 
-.design-control img {
+.design-control img, .design-action img {
 	display: block;
 	margin: auto;
 	max-width: 24px;
@@ -263,7 +255,7 @@ li.design-control:hover {
 	pointer-events: none;
 }
 
-.design-control span {
+.design-control span, .design-action span {
 	display: block;
 	width: 100px;
 	text-align: center;
@@ -1130,24 +1122,6 @@ input[type=checkbox]:checked:after {
   transform: rotate(45deg);
 }
 
-li.design-control {
-  background: #494949;
-  background: transparent linear-gradient(#666, #494949);
-  filter: none;
-}
-
-li.design-control:hover {
-  background: #500000;
-  background: transparent linear-gradient(#B80101, #500000);
-  filter: none;
-}
-
-li.design-control:active {
-  background: #292929;
-  background: transparent linear-gradient(#292929, #121212);
-  filter: none;
-}
-
 h2, #controlPanelVersion, #controlsList h3 {
   color: white;
 }
@@ -1212,4 +1186,110 @@ select:hover {
 	background: -ms-linear-gradient(#B80101, #500000);
 	background: -webkit-linear-gradient(#B80101, #500000);
 	background: transparent linear-gradient(#B80101, #500000);
+}
+
+#flowCanvas {
+	background-color: white;
+	text-align:center;
+	padding:20px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	display:none;
+}
+
+.flow .action {
+    border: 1px solid #346789;
+    box-shadow: 2px 2px 19px #aaa;
+    -o-box-shadow: 2px 2px 19px #aaa;
+    -webkit-box-shadow: 2px 2px 19px #aaa;
+    -moz-box-shadow: 2px 2px 19px #aaa;
+    -moz-border-radius: 0.5em;
+    border-radius: 0.5em;
+    opacity: 0.8;
+    /*
+    width: 80px;
+    height: 80px;
+    line-height: 80px;
+    */
+    cursor: pointer;
+    text-align: center;
+    z-index: 20;
+    position: absolute;
+    background-color: #eeeeef;
+    color: black;
+    font-family: helvetica, sans-serif;
+    padding: 0.5em;
+    font-size: 0.9em;
+    -webkit-transition: -webkit-box-shadow 0.15s ease-in;
+    -moz-transition: -moz-box-shadow 0.15s ease-in;
+    -o-transition: -o-box-shadow 0.15s ease-in;
+    transition: box-shadow 0.15s ease-in;
+}
+
+.flow .action:hover {
+    box-shadow: 2px 2px 19px #444;
+    -o-box-shadow: 2px 2px 19px #444;
+    -webkit-box-shadow: 2px 2px 19px #444;
+    -moz-box-shadow: 2px 2px 19px #444;
+    opacity: 0.6;
+}
+
+.flow .action span {
+	display: inline-block;
+	vertical-align: middle;
+	line-height: normal;
+	margin:20px;
+}
+
+.flow .active {
+    border: 1px dotted green;
+}
+
+.flow .hover {
+    border: 1px dotted red;
+}
+
+.flow .jtk-connector {
+    z-index: 4;
+}
+
+.flow .jtk-endpoint, .endpointTargetLabel, .endpointSourceLabel {
+    z-index: 21;
+    cursor: pointer;
+}
+
+.flow .aLabel {
+    background-color: white;
+    padding: 0.4em;
+    font: 12px sans-serif;
+    color: #444;
+    z-index: 21;
+    border: 1px dotted gray;
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+.flow .aLabel.jtk-hover {
+    background-color: #5C96BC;
+    color: white;
+    border: 1px solid white;
+}
+
+.flow.jtk-connected {
+    border: 1px solid green;
+}
+
+.jtk-drag {
+    outline: 4px solid pink !important;
+}
+
+path, .jtk-endpoint {
+    cursor: pointer;
+}
+
+.jtk-overlay {
+    background-color:transparent;
 }

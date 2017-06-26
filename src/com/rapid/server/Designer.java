@@ -68,6 +68,7 @@ import org.w3c.dom.NodeList;
 import com.rapid.actions.Logic.Condition;
 import com.rapid.core.Action;
 import com.rapid.core.Application;
+<<<<<<< HEAD
 import com.rapid.core.Application.DatabaseConnection;
 import com.rapid.core.Application.ValueList;
 import com.rapid.core.Applications.Versions;
@@ -82,6 +83,23 @@ import com.rapid.core.Theme;
 import com.rapid.data.ConnectionAdapter;
 import com.rapid.data.DataFactory;
 import com.rapid.data.DataFactory.Parameters;
+=======
+import com.rapid.core.Application.ValueList;
+import com.rapid.core.Applications.Versions;
+import com.rapid.core.Control;
+import com.rapid.core.Event;
+import com.rapid.core.Page;
+import com.rapid.core.Page.Lock;
+import com.rapid.core.Pages.PageHeader;
+import com.rapid.core.Pages.PageHeaders;
+import com.rapid.core.Theme;
+import com.rapid.core.Workflow;
+import com.rapid.core.Workflows;
+import com.rapid.data.ConnectionAdapter;
+import com.rapid.data.DataFactory;
+import com.rapid.data.DataFactory.Parameters;
+import com.rapid.data.DatabaseConnection;
+>>>>>>> refs/remotes/origin/workflow
 import com.rapid.security.SecurityAdapter;
 import com.rapid.security.SecurityAdapter.Role;
 import com.rapid.security.SecurityAdapter.User;
@@ -562,6 +580,10 @@ public class Designer extends RapidHttpServlet {
 
 							} else {
 
+<<<<<<< HEAD
+=======
+								// the JSON array of pages we are going to return
+>>>>>>> refs/remotes/origin/workflow
 								JSONArray jsonPages = new JSONArray();
 
 								String startPageId = "";
@@ -580,7 +602,10 @@ public class Designer extends RapidHttpServlet {
 									jsonPage.put("title", page.getTitle());
 									jsonPage.put("label", page.getLabel());
 									jsonPage.put("simple", page.getSimple());
+<<<<<<< HEAD
 									jsonPage.put("hideHeaderFooter", page.getHideHeaderFooter());
+=======
+>>>>>>> refs/remotes/origin/workflow
 									// get a list of page session variables
 									List<String> pageSessionVariables = page.getSessionVariables();
 									// add them if there are some
@@ -687,6 +712,84 @@ public class Designer extends RapidHttpServlet {
 
 							}
 
+<<<<<<< HEAD
+=======
+						} else if ("getFlows".equals(actionName)) {
+
+							// the JSON array of workflows we are going to return
+							JSONArray jsonFlows = new JSONArray();
+
+							// the JSON workflow we are going to return
+							JSONObject jsonFlow = new JSONObject();
+
+							// give it an id and a name
+							jsonFlow.put("id", "1");
+							jsonFlow.put("name", "Test");
+
+							// add it to the array
+							jsonFlows.put(jsonFlow);
+
+							// print it to the output
+							output = jsonFlows.toString();
+
+							// send as json response
+							sendJsonOutput(response, output);
+
+						} else if ("getFlowVersions".equals(actionName)) {
+
+							// the JSON array of workflows we are going to return
+							JSONArray jsonFlows = new JSONArray();
+
+							// the JSON workflow we are going to return
+							JSONObject jsonFlow = new JSONObject();
+
+							// give it an id and a name
+							jsonFlow.put("version", "1");
+							jsonFlow.put("status", "0");
+
+							// the JSON array of workflows we are going to return
+							JSONArray jsonActions = new JSONArray();
+
+							JSONArray jsonAllActions = getJsonActions();
+							// loop all actions for now
+							for (int i = 0; i < jsonAllActions.length(); i++) {
+								// get all action
+								JSONObject jsonAllAction =  jsonAllActions.getJSONObject(i);
+								// if it is allowed in workflow
+								if (jsonAllAction.optBoolean("canUseWorkflow")) {
+									JSONObject jsonAction = new JSONObject();
+									jsonAction.put("type", jsonAllActions.getJSONObject(i).getString("type"));
+									jsonActions.put(jsonAction);
+								}
+							}
+
+							jsonFlow.put("actions",jsonActions);
+
+							// add it to the array
+							jsonFlows.put(jsonFlow);
+
+							// print it to the output
+							output = jsonFlows.toString();
+
+							// send as json response
+							sendJsonOutput(response, output);
+
+						} else if ("getFlow".equals(actionName)) {
+
+							// the JSON workflow we are going to return
+							JSONObject jsonFlow = new JSONObject();
+
+							// give it an id and a name
+							jsonFlow.put("id", "1");
+							jsonFlow.put("name", "Test");
+
+							// print it to the output
+							output = jsonFlow.toString();
+
+							// send as json response
+							sendJsonOutput(response, output);
+
+>>>>>>> refs/remotes/origin/workflow
 						} else if ("checkApp".equals(actionName)) {
 
 							String appName = request.getParameter("name");
@@ -750,6 +853,32 @@ public class Designer extends RapidHttpServlet {
 
 							}
 
+<<<<<<< HEAD
+=======
+						} else if ("checkWorkflow".equals(actionName)) {
+
+							String name = request.getParameter("name");
+
+							if (name != null) {
+
+								// retain whether we have an app with this name
+								boolean exists = false;
+
+								// get the workflows
+								Workflows workflows = getWorkflows();
+								// look for this on
+								Workflow workflow = workflows.get(Files.safeName(name));
+								// if we got one
+								if (workflow != null) exists = true;
+
+								// set the output
+								output = Boolean.toString(exists);
+								// send response as json
+								sendJsonOutput(response, output);
+
+							}
+
+>>>>>>> refs/remotes/origin/workflow
 						} else if ("pages".equals(actionName) || "summary".equals(actionName) || "detail".equals(actionName)) {
 
 							// set response as text
@@ -1020,18 +1149,26 @@ public class Designer extends RapidHttpServlet {
 								newPage.setLabel(jsonPage.optString("label"));
 								newPage.setDescription(jsonPage.optString("description"));
 								newPage.setSimple(jsonPage.optBoolean("simple"));
+<<<<<<< HEAD
 								newPage.setHideHeaderFooter(jsonPage.optBoolean("hideHeaderFooter"));
+=======
+>>>>>>> refs/remotes/origin/workflow
 
 								// look in the JSON for an event array
 								JSONArray jsonEvents = jsonPage.optJSONArray("events");
 								// add the events if we found one
 								if (jsonEvents != null) newPage.setEvents(Control.getEvents(this, jsonEvents));
 
+<<<<<<< HEAD
 								// look in the JSON for a style array
+=======
+								// look in the JSON for a styles array
+>>>>>>> refs/remotes/origin/workflow
 								JSONArray jsonStyles = jsonPage.optJSONArray("styles");
 								// if there were styles get and save
 								if (jsonStyles != null) newPage.setStyles(Control.getStyles(this, jsonStyles));
 
+<<<<<<< HEAD
 								// look in the JSON for a style classes array
 								JSONArray jsonStyleClasses = jsonPage.optJSONArray("classes");
 								// if there were style classes
@@ -1046,6 +1183,8 @@ public class Designer extends RapidHttpServlet {
 									if (styleClasses.length() > 0) newPage.setBodyStyleClasses(styleClasses);
 								}
 
+=======
+>>>>>>> refs/remotes/origin/workflow
 								// if there are child controls from the page loop them and add to the pages control collection
 								JSONArray jsonControls = jsonPage.optJSONArray("childControls");
 								if (jsonControls != null) {
@@ -1103,10 +1242,47 @@ public class Designer extends RapidHttpServlet {
 								// if we got one trim it and retain in page
 								if (htmlBody != null) newPage.setHtmlBody(htmlBody.trim());
 
+<<<<<<< HEAD
 								// look in the JSON for roleControlhtml
 								JSONObject jsonRoleControlHtml = jsonPage.optJSONObject("roleControlHtml");
 								// if we found some add it to the page
 								if (jsonRoleControlHtml != null) newPage.setRoleControlHtml(new RoleControlHtml(jsonRoleControlHtml));
+=======
+								// look in the JSON for rolehtml
+								JSONArray jsonRolesHtml = jsonPage.optJSONArray("rolesHtml");
+								// if we found some
+								if (jsonRolesHtml != null) {
+									// instantiate the roles html collection
+									ArrayList<Page.RoleHtml> rolesHtml = new ArrayList<Page.RoleHtml>();
+									// loop the entries
+									for (int i =0; i < jsonRolesHtml.length(); i++) {
+										// get the entry
+										JSONObject jsonRoleHtml = jsonRolesHtml.getJSONObject(i);
+										// retain the html
+										String html = jsonRoleHtml.optString("html");
+										// trim it if there is one
+										if (html != null) html = html.trim();
+										// create an array to hold the roles
+										ArrayList<String> roles = new ArrayList<String>();
+										// get the roles
+										JSONArray jsonRoles = jsonRoleHtml.optJSONArray("roles");
+										// if we got some
+										if (jsonRoles != null) {
+											// loop them
+											for (int j = 0; j < jsonRoles.length(); j++) {
+												// get the role
+												String role = jsonRoles.getString(j);
+												// add it to the roles collections
+												roles.add(role);
+											}
+										}
+										// create and add a new roleHtml  object
+										rolesHtml.add(new Page.RoleHtml(roles, html));
+									}
+									// add it to the page
+									newPage.setRolesHtml(rolesHtml);
+								}
+>>>>>>> refs/remotes/origin/workflow
 
 								// fetch a copy of the old page (if there is one)
 								Page oldPage = application.getPages().getPage(getServletContext(), newPage.getId());
@@ -1177,7 +1353,10 @@ public class Designer extends RapidHttpServlet {
 
 								if (jsonOutputs != null) outputs = jsonOutputs.length();
 
+<<<<<<< HEAD
 								// get the sql
+=======
+>>>>>>> refs/remotes/origin/workflow
 								String sql = jsonQuery.getString("SQL");
 								
 								// merge in any parameters
@@ -1537,7 +1716,11 @@ public class Designer extends RapidHttpServlet {
 														// get the current user from the Rapid application
 														User rapidUser = rapidSecurity.getUser(rapidRequest);
 														// create a new user based on the Rapid user
+<<<<<<< HEAD
 														user = new User(userName, rapidUser.getDescription(), rapidUser.getPassword());
+=======
+														user = new User(rapidUser);
+>>>>>>> refs/remotes/origin/workflow
 														// add the new user
 														security.addUser(rapidRequest, user);
 													}

@@ -497,40 +497,6 @@ function getControlHeight(control, childLevel) {
 	return height;
 
 }
-
-/*
-  
-// controls that are preceeded by floating ones are actually lower then offset().top reports we want to add the heights  
-function getFloatHeight(control, parentLevel) {
-	var height = 0;
-	if (!parentLevel) parentLevel = 0;
-	var index = control.object.index();
-	if (!control.object.is(".nonVisibleControl") && control._parent && parentLevel < 2) {
-		parentLevel ++;
-		if (index == 0) height += getFloatHeight(control._parent,parentLevel);
-		var floatLeftHeight = 0;
-		var floatRightHeight = 0;
-		if (index > 0 && control._parent.childControls && index <  control._parent.childControls.length) {			
-			// get the object
-			var o = control._parent.childControls[index-1].object;
-			// if we got one
-			if (o) {
-				// check for a left float the same amount left as the parent
-				if (o.css("float") == "left") {
-					floatLeftHeight += o.height() + toPixels(o.css("margin-top")) + toPixels(o.css("margin-bottom"));
-				}
-				// check for a right float the same amount right as the parent
-				if (o.css("float") == "right") {
-					floatRightHeight += o.height() + toPixels(o.css("margin-top")) + toPixels(o.css("margin-bottom"));
-				}			
-			}
-		}
-		height = Math.max(height,floatLeftHeight, floatRightHeight);
-	}
-	return height;
-}
-
-*/
  
 // this function is useful for calling from the JavaScript terminal to find out why certain objects have not been found
 function debuggMouseControl(ev, childControls) {	
@@ -811,6 +777,7 @@ function getControls(childControls, controls) {
 		}		
 	}	
 	return controls;
+<<<<<<< HEAD
 }
 
 // this function returns a set of options for a dropdown using the current set of pages
@@ -1150,6 +1117,8 @@ function getValueListsOptions(selected) {
 		}
 	}
 	return valueLists;
+=======
+>>>>>>> refs/remotes/origin/workflow
 }
 
 // move the border and show properties and actions

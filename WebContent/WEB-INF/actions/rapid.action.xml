@@ -45,6 +45,7 @@ return [
  ["GETAPPS","Get applications"],
  ["GETVERSIONS","Get versions"],
  ["GETVERSION","Get version"],
+ ["GETWORKFLOW","Get workflow"],
  ["GETDBCONN","Get database connection details"],
  ["GETSOA","Get soa webservice details"],
  ["GETSEC","Get security details"],  
@@ -74,6 +75,8 @@ return [
  ["DUPAPP","Duplicate application version"],
  ["NEWVERSION","New application version"],
  ["DELVERSION","Delete application version"], 
+ ["NEWWORKFLOW","New workflow"],
+ ["DELWORKFLOW","Delete workflow"], 
  ["NEWPAGE","New page"],
  ["DELPAGE","Delete page"],
  ["NEWDBCONN","New database connection"],
@@ -87,7 +90,7 @@ return [
  ["DELUSER","Delete user"],
  ["NEWUSERROLE","New user role"],
  ["DELUSERROLE","Delete user role"],
- ["SAVEUSER","Save user descrition, password, device, and roles"],
+ ["SAVEUSER","Save user description, email, password, device, and roles"],
  ["NEWPARAM","New parameter"],
  ["DELPARAM","Delete parameter"],
  ["SAVEPARAM","Save parameter"],
@@ -191,6 +194,17 @@ function Action_rapid(ev, appId, pageId, controlId, actionId, actionType, rapidA
 				data = { actionType: actionType, appId: appId, version: version };	
 				callback = function(data) {
 					setData_dataStore(ev, 'rapid_P0_C1072_', null, {storageType:"S"}, data);
+				};
+			} else {
+				return false;
+			}
+		break;
+		case "GETWORKFLOW" :		
+			var wfId = $("#rapid_P0_C2079_").val();
+			if (wfId) {
+				data = { actionType: actionType, wfId: wfId, appId: "rapid" };	
+				callback = function(data) {
+					setData_dataStore(ev, 'rapid_P0_C2310_', null, {storageType:"S"}, data);
 				};
 			} else {
 				return false;
@@ -459,6 +473,28 @@ function Action_rapid(ev, appId, pageId, controlId, actionId, actionType, rapidA
 			callback = function(response) {
 				location.reload();
 			}; 			
+		break;
+		case "NEWWORKFLOW" :
+			data = {
+				actionType: actionType,
+				appId: "rapid",
+				version: "1",
+				name: $("#rapid_P19_C7").val(),
+				title: $("#rapid_P19_C11").val(),
+				description: $("#rapid_P19_C15").val()
+			}
+			callback = function(response) {
+				window.location = "~?a=rapid&p=P0&wfId=" + response.wfId;
+			}; 
+		break;
+		case "DELWORKFLOW" :		
+			data = { 
+				actionType: actionType, 
+				id: $("#rapid_P0_C2079_").val() 
+			};	
+			callback = function() {
+				window.location = "~?a=rapid&p=P0&wfId=";
+			}; 			
 		break;				
 		case "NEWPAGE" :	
 			data = {
@@ -557,7 +593,8 @@ function Action_rapid(ev, appId, pageId, controlId, actionId, actionType, rapidA
 					appId: "rapid", 
 					version : _appVersion, 
 					userName: $("#rapid_P16_C8_").val(), 
-					description: $("#rapid_P16_C13_").val() , 
+					description: $("#rapid_P16_C13_").val() ,
+					email: $("#rapid_P16_C63_").val() ,  
 					password: $("#rapid_P16_C17_").val(), 
 					deviceDetails: $("#rapid_P16_C57_").val(),
 					useAdmin: getData_checkbox(ev, "rapid_P16_C38_"),
@@ -568,7 +605,8 @@ function Action_rapid(ev, appId, pageId, controlId, actionId, actionType, rapidA
 					appId: $("#rapid_P0_C43").val(), 
 					version: $("#rapid_P0_C1044_").val(), 
 					userName: $("#rapid_P6_C7").val(), 
-					description: $("#rapid_P6_C42_").val() , 
+					description: $("#rapid_P6_C42_").val(), 
+					email: $("#rapid_P6_C77_").val(),
 					password: $("#rapid_P6_C18").val(),
 					deviceDetails: $("#rapid_P6_C70_").val(),
 					useAdmin: getData_checkbox(ev, "rapid_P6_C65_"),
@@ -612,11 +650,16 @@ function Action_rapid(ev, appId, pageId, controlId, actionId, actionType, rapidA
 		break;
 		case "SAVEUSER" :	
 			if (rapidApp) {
-				data = { actionType: actionType, appId: "rapid", version: _appVersion, userName: $("#rapid_P0_C834_").text(), 
-				description: $("#rapid_P0_C838_").val(),	password: $("#rapid_P0_C843_").val(), deviceDetails: $("#rapid_P0_C1453_").val(), 
-				useAdmin: getData_checkbox(ev, "rapid_P0_C879_"), useDesign: getData_checkbox(ev, "rapid_P0_C880_") }; 
+				data = { actionType: actionType, appId: "rapid", version: _appVersion, 
+					userName: $("#rapid_P0_C834_").text(), 	description: $("#rapid_P0_C838_").val(), email: $("#rapid_P0_C2061_").val(), 
+					password: $("#rapid_P0_C843_").val(), deviceDetails: $("#rapid_P0_C1453_").val(), 
+					useAdmin: getData_checkbox(ev, "rapid_P0_C879_"), useDesign: getData_checkbox(ev, "rapid_P0_C880_") 
+				}; 
 			} else {
-				data = { actionType: actionType, appId: $("#rapid_P0_C43").val(), version: $("#rapid_P0_C1044_").val(), userName: $("#rapid_P0_C216").find("tr.rowSelect").children().first().html(), description: $("#rapid_P0_C717_").val(), password: $("#rapid_P0_C231").val(), deviceDetails: $("#rapid_P0_C1444_").val() };
+				data = { actionType: actionType, appId: $("#rapid_P0_C43").val(), version: $("#rapid_P0_C1044_").val(), 
+					userName: $("#rapid_P0_C216").find("tr.rowSelect").children().first().html(), description: $("#rapid_P0_C717_").val(), email: $("#rapid_P0_C2068_").val(),
+					password: $("#rapid_P0_C231").val(), deviceDetails: $("#rapid_P0_C1444_").val() 
+				};
 				callback = function() {
 					// fake an adapter change
 					$("#rapid_P0_C81").change(); 

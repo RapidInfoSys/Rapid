@@ -31,9 +31,11 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
         <type>logic</type>
         <name>Logic</name>
 	    <class>com.rapid.actions.Logic</class>
+	    <image>images/logic_24x24.png</image>
 	    <helpHtml>This action allows you to contest certain outcomes and have different success or fail actions occur as a result. Multiple success and failure actions can be stacked inside one another and a variety of different conditions can be tested against, making this action a very powerful and flexible tool to use in a variety of different ways, such as only displaying a page if visibility rules are met.</helpHtml>
 	    
 	    <addToNewApplications>true</addToNewApplications>
+	    <canUseWorkflow>true</canUseWorkflow>
 	    	    	    	    
 	    <properties>
 	        
@@ -57,6 +59,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <key>trueActions</key>
 	            <name>Actions if true</name>
 	            <changeValueJavaScript>childActions</changeValueJavaScript>
+	            <workflowOutput>true</workflowOutput>
 	            <helpHtml>Defines the actions to be carried out if the above condition is true.</helpHtml>
 	        </property>
 	        
@@ -64,6 +67,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <key>falseActions</key>
 	            <name>Actions if false</name>
 	            <changeValueJavaScript>childActions</changeValueJavaScript>
+	            <workflowOutput>true</workflowOutput>
 	            <helpHtml>Defines the actions to be carried out if the above condition is false.</helpHtml>
 	        </property>
 	            

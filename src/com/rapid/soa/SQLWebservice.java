@@ -31,10 +31,10 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
 import com.rapid.core.Application;
-import com.rapid.core.Application.DatabaseConnection;
 import com.rapid.data.ConnectionAdapter;
 import com.rapid.data.DataFactory;
 import com.rapid.data.DataFactory.Parameters;
+import com.rapid.data.DatabaseConnection;
 import com.rapid.server.RapidRequest;
 import com.rapid.soa.SOASchema.SOASchemaElement;
 
@@ -159,11 +159,16 @@ public class SQLWebservice extends Webservice {
 								break;
 							case SOASchema.DATETIME :
 								dateFormatter = rapidRequest.getRapidServlet().getXMLDateTimeFormatter();
+<<<<<<< HEAD
 								Timestamp timeStamp = rs.getTimestamp(fieldName);
 								if (timeStamp != null) {
 									date = new Date(timeStamp.getTime());
 									elementValue = dateFormatter.format(date);
 								}
+=======
+								date = rs.getDate(fieldName);
+								if (date != null) elementValue = dateFormatter.format(date);
+>>>>>>> refs/remotes/origin/workflow
 								break;
 							default:
 								elementValue = rs.getString(fieldName);

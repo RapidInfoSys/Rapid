@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2015 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -50,10 +50,14 @@ import com.rapid.core.Parameter;
 import com.rapid.data.ConnectionAdapter;
 import com.rapid.data.DataFactory;
 import com.rapid.data.DataFactory.Parameters;
+import com.rapid.data.DatabaseConnection;
 import com.rapid.server.ActionCache;
 import com.rapid.server.RapidHttpServlet;
 import com.rapid.server.RapidRequest;
+<<<<<<< HEAD
 
+=======
+>>>>>>> refs/remotes/origin/workflow
 
 public class Database extends Action {
 
@@ -600,9 +604,12 @@ public class Database extends Action {
 		// only if there is some sql is it worth going further
 		if (sql != null) {
 
+<<<<<<< HEAD
 			// merge in any application parameters
 			sql = application.insertParameters(rapidRequest.getRapidServlet().getServletContext(), sql);
 
+=======
+>>>>>>> refs/remotes/origin/workflow
 			// get any json inputs
 			JSONObject jsonInputData = jsonAction.optJSONObject("data");
 

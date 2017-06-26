@@ -278,8 +278,13 @@ public class RapidSecurityAdapter extends SecurityAdapter {
 		String userName = user.getName();
 		// users to remove - their may be more than one for legacy reasons
 		List<User> removeUsers = new ArrayList<User>();
+<<<<<<< HEAD
 		// loop the users looking for anyone with the same name as the current user
 		for (User u : users) if (u.getName().equalsIgnoreCase(userName)) {
+=======
+		// loop the roles returning true as soon as there's a match
+		for (User u : users) if (user.getName().equals(userName)) {
+>>>>>>> refs/remotes/origin/workflow
 			// remember to remove this user
 			removeUsers.add(u);
 		}

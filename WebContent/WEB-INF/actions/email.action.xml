@@ -1,99 +1,89 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<actions xmlVersion="1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../schemas/action.xsd">
+<actions xmlVersion="1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="../schemas/action.xsd">
 
-<!-- 
+	<!-- Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems gareth.edwards@rapid-is.co.uk 
+		This file is part of the Rapid Application Platform Rapid is free software: 
+		you can redistribute it and/or modify it under the terms of the GNU General 
+		Public License as published by the Free Software Foundation, either version 
+		3 of the License, or (at your option) any later version. The terms require 
+		you to include the original copyright, and the license notice in all redistributions. 
+		This program is distributed in the hope that it will be useful, but WITHOUT 
+		ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+		FOR A PARTICULAR PURPOSE.See the GNU General Public License for more details. 
+		You should have received a copy of the GNU General Public License in a file 
+		named "COPYING".If not, see <http://www.gnu.org/licenses/>. -->
 
-Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems
+	<action>
 
-gareth.edwards@rapid-is.co.uk
+		<type>email</type>
+		<name>Email</name>
+		<class>com.rapid.actions.Email</class>
+		<image>images/email_24x24.png</image>
+		<helpHtml>Emails can only be sent with a valid from and to address.</helpHtml>
 
+		<addToNewApplications>true</addToNewApplications>
+		<canUseWorkflow>true</canUseWorkflow>
 
-This file is part of the Rapid Application Platform
+		<properties>
 
-Rapid is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version. The terms require you to include
-the original copyright, and the license notice in all redistributions.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
-
- -->
- 
-     <action>
-    
-        <type>email</type>
-        <name>Email</name>
-	    <class>com.rapid.actions.Email</class>
-	    <helpHtml>This action defines the details when sending a form. Emails can only be sent with a valid from and to address.</helpHtml>
-	    
-	    <addToNewApplications>true</addToNewApplications>
-	        	
-	    <properties>
-	    	
-        <property>
-            <key>from</key>
-            <name>From address source</name>
-            <changeValueJavaScript>select</changeValueJavaScript>
-            <getValuesFunction>
-                <![CDATA[
+			<property>
+				<key>from</key>
+				<name>From address source</name>
+				<changeValueJavaScript>select</changeValueJavaScript>
+				<getValuesFunction>
+<![CDATA[
 return "<option value=''>Please select...</option>" + getInputOptions(this.to);
-                    ]]>
-            </getValuesFunction>
-            <helpHtml>Address that the email will be from. Valid email addresses are needed otherwise the email will not be sent.</helpHtml>
-        </property>
-        
-        <property>
-	            <key>fromField</key>
-	            <name>From address field</name>
-	            <changeValueJavaScript>text</changeValueJavaScript>
-	            <getValuesFunction>return "";</getValuesFunction>
-	            <helpHtml>Allows you to manually enter an email from address. Multiple addresses can be specified by separating with commas or semi-colons. Valid email addresses are needed otherwise the email will not be sent.</helpHtml>
-	     </property>
-	    	
-	    <property>
-            <key>to</key>
-            <name>To address source</name>
-            <changeValueJavaScript>select</changeValueJavaScript>
-            <getValuesFunction>
-                <![CDATA[
+]]>
+</getValuesFunction>
+				<helpHtml>Address that the email will be from. Valid email addresses are needed otherwise the email will not be sent.</helpHtml>
+			</property>
+
+			<property>
+				<key>fromField</key>
+				<name>From address field</name>
+				<changeValueJavaScript>text</changeValueJavaScript>
+				<getValuesFunction>return "";</getValuesFunction>
+				<helpHtml>Allows you to manually enter an email from address. Multiple addresses can be specified by separating with commas or semi-colons. Valid email addresses are needed otherwise the email will not be sent.</helpHtml>
+			</property>
+
+			<property>
+				<key>to</key>
+				<name>To address source</name>
+				<changeValueJavaScript>select</changeValueJavaScript>
+				<getValuesFunction>
+<![CDATA[
 return "<option value=''>Please select...</option>" + getInputOptions(this.to);
-                    ]]>
-            </getValuesFunction>
-            <helpHtml>Address that the email will be to. Valid email addresses are needed otherwise the email will not be sent.</helpHtml>
-        </property>
-        
-        <property>
-	            <key>toField</key>
-	            <name>To address field</name>
-	            <changeValueJavaScript>text</changeValueJavaScript>
-	            <getValuesFunction>return "";</getValuesFunction>
-	            <helpHtml>Allows you to manually enter an email to address. Multiple addresses can be specified by separating with commas or semi-colons. Valid email addresses are needed otherwise the email will not be sent.</helpHtml>
-	     </property>
-	     	     
-	     <property>
-	            <key>emailType</key>
-	            <name>Type</name>
-	            <setConstructValueFunction>return "text";</setConstructValueFunction>
-	            <changeValueJavaScript>select</changeValueJavaScript>
-	            <getValuesFunction>return ["text","html"];</getValuesFunction>
-	            <helpHtml>Defines whether the email will be sent as plain text or HTML.</helpHtml>
-	        </property>
-	        
-	        <property>
-	            <key>content</key>
-	            <name>Content</name>
-	            <changeValueJavaScript>emailContent</changeValueJavaScript>
-	            <refreshProperties>true</refreshProperties>
-	            <helpHtml>Specifies the email subject and body. Data from your app can be referenced inside the body and will be displayed when using ?. If you need a ? before the control reference it can be escaped using \.</helpHtml>
-	        </property>
-	    	
-	    </properties>
-     </action>
+]]>
+				</getValuesFunction>
+				<helpHtml>Address that the email will be to. Valid email addresses are needed otherwise the email will not be sent.</helpHtml>
+			</property>
+
+			<property>
+				<key>toField</key>
+				<name>To address field</name>
+				<changeValueJavaScript>text</changeValueJavaScript>
+				<getValuesFunction>return "";</getValuesFunction>
+				<helpHtml>Allows you to manually enter an email to address. Multiple addresses can be specified by separating with commas or semi-colons. Valid email addresses are needed otherwise the email will not be sent.</helpHtml>
+			</property>
+
+			<property>
+				<key>emailType</key>
+				<name>Type</name>
+				<setConstructValueFunction>return "text";</setConstructValueFunction>
+				<changeValueJavaScript>select</changeValueJavaScript>
+				<getValuesFunction>return ["text","html"];</getValuesFunction>
+				<helpHtml>Defines whether the email will be sent as plain text or HTML.</helpHtml>
+			</property>
+
+			<property>
+				<key>content</key>
+				<name>Content</name>
+				<changeValueJavaScript>emailContent</changeValueJavaScript>
+				<refreshProperties>true</refreshProperties>
+				<helpHtml>Specifies the email subject and body. Data from your app can be referenced inside the body and will be displayed when using ?. If you need a ? before the control reference it can be escaped using \.</helpHtml>
+			</property>
+
+		</properties>
+	</action>
 </actions>

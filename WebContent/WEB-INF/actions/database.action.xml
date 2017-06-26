@@ -31,9 +31,11 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
         <type>database</type>
         <name>Database</name>
 	    <class>com.rapid.actions.Database</class>
+	    <image>images/database_24x24.png</image>
 	    <helpHtml>This action enables manual input for SQL. In order for this to function correctly a database connection must be established. Testing the SQL can display any errors you may have in your code. Input fields are controls present on the page and can be represented by a ?, one in your code for each input. The output field acts as the destination for your data. More options can be set as well, such as displaying a loading animation during execution and success actions.</helpHtml>
 	    
 	    <addToNewApplications>true</addToNewApplications>
+	    <canUseWorkflow>true</canUseWorkflow>
 	    	    	    	    
 	    <properties>
 	        
@@ -41,7 +43,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <key>query</key>
 	            <name>Query</name>
 	            <changeValueJavaScript>databaseQuery</changeValueJavaScript>
-	            <refreshProperties>true</refreshProperties>
+	            <refreshProperties>true</refreshProperties>	            
 	            <helpHtml>Enables you to define a database query. SQL can be entered within the text area and selected inputs and outputs can be chosen. There is also a capability to test your SQL against a specified database connection.</helpHtml>
 	        </property>
 	          
@@ -56,6 +58,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <key>childDatabaseActions</key>
 	            <name>Child actions</name>
 	            <changeValueJavaScript>databaseChildActions</changeValueJavaScript>
+	            <workflowOutput>true</workflowOutput>
 	            <helpHtml>Enables for further database queries to be defined for child databases.</helpHtml>
 	        </property>
 	        
@@ -63,6 +66,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <key>successActions</key>
 	            <name>Success actions</name>
 	            <changeValueJavaScript>childActions</changeValueJavaScript>
+	            <workflowOutput>true</workflowOutput>
 	            <helpHtml>Sets what events occur upon a successful query to the database.</helpHtml>
 	        </property>
 	        
@@ -70,6 +74,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <key>errorActions</key>
 	            <name>Error actions</name>
 	            <changeValueJavaScript>childActions</changeValueJavaScript>
+	            <workflowOutput>true</workflowOutput>
 	            <helpHtml>Sets what events occur upon an unsuccessful query to the database.</helpHtml>
 	        </property>
 	         

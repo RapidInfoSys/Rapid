@@ -51,7 +51,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
@@ -68,7 +67,7 @@ import org.xml.sax.SAXException;
 
 import com.rapid.core.Page.Lock;
 import com.rapid.core.Pages.PageHeader;
-import com.rapid.data.ConnectionAdapter;
+import com.rapid.data.DatabaseConnection;
 import com.rapid.forms.FormAdapter;
 import com.rapid.forms.RapidFormAdapter;
 import com.rapid.security.RapidSecurityAdapter;
@@ -79,7 +78,6 @@ import com.rapid.server.RapidHttpServlet;
 import com.rapid.server.RapidRequest;
 import com.rapid.soa.Webservice;
 import com.rapid.utils.Files;
-import com.rapid.utils.JAXB.EncryptedXmlAdapter;
 import com.rapid.utils.Minify;
 import com.rapid.utils.Strings;
 import com.rapid.utils.XML;
@@ -141,85 +139,6 @@ public class Application {
 		@Override
 		public Throwable getCause() {
 			return _cause;
-		}
-
-	}
-
-	// the details of a database connection (WebService is defined in its own class as its extendable)
-	public static class DatabaseConnection {
-
-		// instance variables
-
-		String _name, _driverClass, _connectionString, _connectionAdapterClass, _userName, _password;
-		ConnectionAdapter _connectionAdapter;
-
-		// properties
-
-		public String getName() { return _name; }
-		public void setName(String name) { _name = name; }
-
-		public String getDriverClass() { return _driverClass; }
-		public void setDriverClass(String driverClass) { _driverClass = driverClass; }
-
-		public String getConnectionString() { return _connectionString; }
-		public void setConnectionString(String connectionString) { _connectionString = connectionString; }
-
-		public String getConnectionAdapterClass() { return _connectionAdapterClass; }
-		public void setConnectionAdapterClass(String connectionAdapterClass) { _connectionAdapterClass = connectionAdapterClass; }
-
-		public String getUserName() { return _userName; }
-		public void setUserName(String userName) { _userName = userName; }
-
-		@XmlJavaTypeAdapter( EncryptedXmlAdapter.class )
-		public String getPassword() { return _password; }
-		public void setPassword(String password) { _password = password; }
-
-		// constructors
-		public DatabaseConnection() {};
-		public DatabaseConnection(ServletContext servletContext, Application application, String name, String driverClass, String connectionString, String connectionAdapterClass, String userName, String password) {
-			_name = name;
-			_driverClass = driverClass;
-			_connectionString = application.insertParameters(servletContext, connectionString);
-			_connectionAdapterClass = connectionAdapterClass;
-			_userName = userName;
-			_password = password;
-		}
-
-		// instance methods
-
-		// get the connection adapter, instantiating only if null as this is quite expensive
-		public synchronized ConnectionAdapter getConnectionAdapter(ServletContext servletContext, Application application) throws ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
-
-			// only if the connection adapter has not already been initialised
-			if (_connectionAdapter == null) {
-				// get our class
-				Class classClass = Class.forName(_connectionAdapterClass);
-				// initialise a constructor
-				Constructor constructor = classClass.getConstructor(ServletContext.class, String.class, String.class, String.class, String.class);
-				// initialise the class
-				_connectionAdapter = (ConnectionAdapter) constructor.newInstance(
-						servletContext,
-						_driverClass,
-						application.insertParameters(servletContext, _connectionString),
-						_userName,
-						_password) ;
-			}
-
-			return _connectionAdapter;
-
-		}
-
-		// set the connection adapter to null to for it to be re-initialised
-		public synchronized void reset() throws SQLException {
-			// close it first
-			close();
-			// set it to null
-			_connectionAdapter = null;
-		}
-
-		// set the connection adapter to null to for it to be re-initialised
-		public synchronized void close() throws SQLException  {
-			if (_connectionAdapter != null) _connectionAdapter.close();
 		}
 
 	}
@@ -756,7 +675,7 @@ public class Application {
 	public List<String> getControlTypes() { return _controlTypes; }
 	public void setControlTypes(List<String> controlTypes) { _controlTypes = controlTypes; }
 
-	// control types used in this application
+	// action types used in this application
 	public List<String> getActionTypes() { return _actionTypes; }
 	public void setActionTypes(List<String> actionTypes) { _actionTypes = actionTypes; }
 
@@ -2363,7 +2282,7 @@ public class Application {
 		// get the logger
 		Logger logger = (Logger) servletContext.getAttribute("logger");
 		// closing
-		logger.debug("Closing " + _id + "/" + _version + "...");
+		logger.debug("Closing application " + _id + "/" + _version + "...");
 		// if we got some
 		if (_databaseConnections != null) {
 			// loop them
@@ -2375,7 +2294,7 @@ public class Application {
 					// log
 					logger.debug("Closed " + databaseConnection.getName());
 				} catch (SQLException ex) {
-					logger.error("Error closing database connection " + databaseConnection.getName() + " for " + _id + "/" + _version, ex);
+					logger.error("Error closing database connection " + databaseConnection.getName() + " for application " + _id + "/" + _version, ex);
 				}
 			}
 		}
@@ -2387,7 +2306,7 @@ public class Application {
 				// log
 				logger.debug("Closed form adapter");
 			} catch (Exception ex) {
-				logger.error("Error closing form adapter for " + _id + "/" + _version, ex);
+				logger.error("Error closing form adapter for application " + _id + "/" + _version, ex);
 			}
 		}
 	}

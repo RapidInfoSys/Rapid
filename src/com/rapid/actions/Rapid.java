@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -50,7 +50,6 @@ import org.xml.sax.SAXException;
 
 import com.rapid.core.Action;
 import com.rapid.core.Application;
-import com.rapid.core.Application.DatabaseConnection;
 import com.rapid.core.Application.Parameter;
 import com.rapid.core.Application.RapidLoadingException;
 import com.rapid.core.Application.Resource;
@@ -64,8 +63,11 @@ import com.rapid.core.Email;
 import com.rapid.core.Page;
 import com.rapid.core.Pages.PageHeader;
 import com.rapid.core.Theme;
+import com.rapid.core.Workflow;
+import com.rapid.core.Workflows;
 import com.rapid.data.ConnectionAdapter;
 import com.rapid.data.DataFactory;
+import com.rapid.data.DatabaseConnection;
 import com.rapid.security.SecurityAdapter;
 import com.rapid.security.SecurityAdapter.Role;
 import com.rapid.security.SecurityAdapter.Roles;
@@ -282,7 +284,7 @@ public class Rapid extends Action {
 				// get the user object from rapid application
 				User rapidUser = rapidApplication.getSecurityAdapter().getUser(rapidRequest);
 				// create a new user based on the current user
-				user = new User(rapidUser.getName(), rapidUser.getDescription(), rapidUser.getPassword(), rapidUser.getDeviceDetails());
+				user = new User(rapidUser);
 				// add the new user to the new application
 				security.addUser(rapidRequest, user);
 			}
@@ -293,6 +295,50 @@ public class Rapid extends Action {
 		}
 
 		return newApp;
+
+	}
+
+	private Workflow createWorkflow(RapidHttpServlet rapidServlet, RapidRequest rapidRequest, String name, String title, String description) throws IllegalArgumentException, SecurityException, JAXBException, IOException, JSONException, InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, SecurityAdapaterException, ParserConfigurationException, XPathExpressionException, RapidLoadingException, SAXException {
+
+		String newId = Files.safeName(name).toLowerCase();
+
+		Workflow newWorkflow = new Workflow();
+
+		// populate the bare-minimum of properties
+		newWorkflow.setId(newId);
+		newWorkflow.setName(name);
+		newWorkflow.setTitle(title);
+		newWorkflow.setDescription(description);
+		newWorkflow.setCreatedBy(rapidRequest.getUserName());
+		newWorkflow.setCreatedDate(new Date());
+
+		// initialise the list of actions
+		List<String> actionTypes = new ArrayList<String>();
+
+		// get the JSONArray of actions
+		JSONArray jsonActionTypes = rapidServlet.getJsonActions();
+
+		// if there were some
+		if (jsonActionTypes != null) {
+			// loop them
+			for (int i = 0; i < jsonActionTypes.length(); i++) {
+				// get the action
+				JSONObject jsonActionType = jsonActionTypes.getJSONObject(i);
+				// add to list if addToNewApplications is set
+				if (jsonActionType.optBoolean("canUseWorkflow")) actionTypes.add(jsonActionType.getString("type"));
+			}
+		}
+
+		// sort them again, just to be sure
+		Collections.sort(actionTypes);
+
+		// assign the list to the application
+		newWorkflow.setActionTypes(actionTypes);
+
+		// save the application to file
+		newWorkflow.save(rapidServlet, rapidRequest, false);
+
+		return newWorkflow;
 
 	}
 
@@ -382,7 +428,7 @@ public class Rapid extends Action {
 		js += "  };\n";
 
 		// write error actions variable
-		js += "  var errorCallback = function(server, status, error) {\n";
+		js += "  var errorCallback = function(server, status, message) {\n";
 		// check whether is an error handling routin
 		boolean gotErrorHandler = false;
 		// check error actions
@@ -485,211 +531,226 @@ public class Rapid extends Action {
 
 				} // app loop
 
-				// add the actions to the result
+				// add the applications to the result
 				result.put("applications", jsonApps);
 
-				// if there was at least one app
-				if (jsonApps.length() > 0) {
+				// fetch the workflows
+				JSONArray jsonWorkflows = new JSONArray();
+				// loop the workflows
+				for (String id : rapidServlet.getWorkflows().getIds()) {
+					// get the workflow
+					Workflow workflow = rapidServlet.getWorkflows().get(id);
+					// create a json object
+					JSONObject jsonWorkflow = new JSONObject();
+					// add the details we want
+					jsonWorkflow.put("value", workflow.getId());
+					jsonWorkflow.put("text", workflow.getName() + " - " + workflow.getTitle());
+					// add the object to the collection
+					jsonWorkflows.put(jsonWorkflow);
+				}
 
-					// fetch the database drivers
-					JSONArray jsonDatabaseDrivers = rapidServlet.getJsonDatabaseDrivers();
-					// check we have some database drivers
-					if (jsonDatabaseDrivers != null) {
-						// prepare the database driver collection we'll send
-						JSONArray jsonDrivers = new JSONArray();
-						// loop what we have
-						for (int i = 0; i < jsonDatabaseDrivers.length(); i++) {
-							// get the item
-							JSONObject jsonDatabaseDriver = jsonDatabaseDrivers.getJSONObject(i);
-							// make a simpler send item
-							JSONObject jsonDriver = new JSONObject();
-							// add type
-							jsonDriver.put("value", jsonDatabaseDriver.get("class"));
-							// add name
-							jsonDriver.put("text", jsonDatabaseDriver.get("name"));
-							// add to collection
-							jsonDrivers.put(jsonDriver);
-						}
-						// add the database drivers to the result
-						result.put("databaseDrivers", jsonDrivers);
+				// add the workflows to the result
+				result.put("workflows", jsonWorkflows);
+
+
+				// fetch the database drivers
+				JSONArray jsonDatabaseDrivers = rapidServlet.getJsonDatabaseDrivers();
+				// check we have some database drivers
+				if (jsonDatabaseDrivers != null) {
+					// prepare the database driver collection we'll send
+					JSONArray jsonDrivers = new JSONArray();
+					// loop what we have
+					for (int i = 0; i < jsonDatabaseDrivers.length(); i++) {
+						// get the item
+						JSONObject jsonDatabaseDriver = jsonDatabaseDrivers.getJSONObject(i);
+						// make a simpler send item
+						JSONObject jsonDriver = new JSONObject();
+						// add type
+						jsonDriver.put("value", jsonDatabaseDriver.get("class"));
+						// add name
+						jsonDriver.put("text", jsonDatabaseDriver.get("name"));
+						// add to collection
+						jsonDrivers.put(jsonDriver);
 					}
+					// add the database drivers to the result
+					result.put("databaseDrivers", jsonDrivers);
+				}
 
-					// fetch the connection adapters
-					JSONArray jsonConnectionAdapters = rapidServlet.getJsonConnectionAdapters();
-					// check we have some database drivers
-					if (jsonConnectionAdapters != null) {
-						// prepare the database driver collection we'll send
-						JSONArray jsonAdapters = new JSONArray();
-						// loop what we have
-						for (int i = 0; i < jsonConnectionAdapters.length(); i++) {
-							// get the item
-							JSONObject jsonConnectionAdapter = jsonConnectionAdapters.getJSONObject(i);
-							// make a simpler send item
-							JSONObject jsonSendAdapter = new JSONObject();
-							// add type
-							jsonSendAdapter.put("value", jsonConnectionAdapter.get("class"));
-							// add name
-							jsonSendAdapter.put("text", jsonConnectionAdapter.get("name"));
-							// add to collection
-							jsonAdapters.put(jsonSendAdapter);
-						}
-						// add the database drivers to the result
-						result.put("connectionAdapters", jsonAdapters);
-					}
-
-					// fetch the security adapters
-					JSONArray jsonSecurityAdapters = rapidServlet.getJsonSecurityAdapters();
-					// check we have some security adapters
-					if (jsonSecurityAdapters != null) {
-						// prepare the security adapter collection we'll send
-						JSONArray jsonAdapters = new JSONArray();
-						// loop what we have
-						for (int i = 0; i < jsonSecurityAdapters.length(); i++) {
-							// get the item
-							JSONObject jsonSecurityAdapter = jsonSecurityAdapters.getJSONObject(i);
-							// make a simpler send item
-							JSONObject jsonSendAdapter = new JSONObject();
-							// add type
-							jsonSendAdapter.put("value", jsonSecurityAdapter.get("type"));
-							// add name
-							jsonSendAdapter.put("text", jsonSecurityAdapter.get("name"));
-							// add canManageRoles
-							jsonSendAdapter.put("canManageRoles", jsonSecurityAdapter.get("canManageRoles"));
-							// add canManageUsers
-							jsonSendAdapter.put("canManageUsers", jsonSecurityAdapter.get("canManageUsers"));
-							// add canManageUserRoles
-							jsonSendAdapter.put("canManageUserRoles", jsonSecurityAdapter.get("canManageUserRoles"));
-							// add to collection
-							jsonAdapters.put(jsonSendAdapter);
-						}
-						// add the security adapters to the result
-						result.put("securityAdapters", jsonAdapters);
-					}
-
-					// fetch the form adapters
-					JSONArray jsonFormAdapters = rapidServlet.getJsonFormAdapters();
-					// prepare the collection we'll send
+				// fetch the connection adapters
+				JSONArray jsonConnectionAdapters = rapidServlet.getJsonConnectionAdapters();
+				// check we have some database drivers
+				if (jsonConnectionAdapters != null) {
+					// prepare the database driver collection we'll send
 					JSONArray jsonAdapters = new JSONArray();
-					// create an entry for no form adapter
-					JSONObject jsonSendAdapter = new JSONObject();
-					// no value
-					jsonSendAdapter.put("value", "");
-					// None as text
-					jsonSendAdapter.put("text", "Please select...");
-					// add the None member first
-					jsonAdapters.put(jsonSendAdapter);
-					// check we have some database drivers
-					if (jsonFormAdapters != null) {
-						// loop what we have
-						for (int i = 0; i < jsonFormAdapters.length(); i++) {
-							// get the item
-							JSONObject jsonAdapter = jsonFormAdapters.getJSONObject(i);
-							// make a simpler send item
-							 jsonSendAdapter = new JSONObject();
-							// add type
-							jsonSendAdapter.put("value", jsonAdapter.get("type"));
-							// add name
-							jsonSendAdapter.put("text", jsonAdapter.get("name"));
-							// add to collection
-							jsonAdapters.put(jsonSendAdapter);
-						}
-						// add the database drivers to the result
-						result.put("formAdapters", jsonAdapters);
+					// loop what we have
+					for (int i = 0; i < jsonConnectionAdapters.length(); i++) {
+						// get the item
+						JSONObject jsonConnectionAdapter = jsonConnectionAdapters.getJSONObject(i);
+						// make a simpler send item
+						JSONObject jsonSendAdapter = new JSONObject();
+						// add type
+						jsonSendAdapter.put("value", jsonConnectionAdapter.get("class"));
+						// add name
+						jsonSendAdapter.put("text", jsonConnectionAdapter.get("name"));
+						// add to collection
+						jsonAdapters.put(jsonSendAdapter);
 					}
+					// add the database drivers to the result
+					result.put("connectionAdapters", jsonAdapters);
+				}
 
-					// prepare the collection we'll send
-					JSONArray jsonThemes = new JSONArray();
-					// create an entry for no template
-					JSONObject jsonTheme = new JSONObject();
-					// no value
-					jsonTheme.put("value", "");
-					// None as text
-					jsonTheme.put("text", "None");
-					// add the None member first
-					jsonThemes.put(jsonTheme);
-					// get the themes
-					List<Theme> themes = rapidServlet.getThemes();
-					// check we have some
-					if (themes != null) {
-						// loop what we have
-						for (Theme theme : themes) {
-							// make a simpler send item
-							jsonTheme = new JSONObject();
-							// add type
-							jsonTheme.put("value", theme.getType());
-							// add name
-							jsonTheme.put("text", theme.getName());
-							// add to collection
-							jsonThemes.put(jsonTheme);
-						}
-						// add the database drivers to the result
-						result.put("themes", jsonThemes);
+				// fetch the security adapters
+				JSONArray jsonSecurityAdapters = rapidServlet.getJsonSecurityAdapters();
+				// check we have some security adapters
+				if (jsonSecurityAdapters != null) {
+					// prepare the security adapter collection we'll send
+					JSONArray jsonAdapters = new JSONArray();
+					// loop what we have
+					for (int i = 0; i < jsonSecurityAdapters.length(); i++) {
+						// get the item
+						JSONObject jsonSecurityAdapter = jsonSecurityAdapters.getJSONObject(i);
+						// make a simpler send item
+						JSONObject jsonSendAdapter = new JSONObject();
+						// add type
+						jsonSendAdapter.put("value", jsonSecurityAdapter.get("type"));
+						// add name
+						jsonSendAdapter.put("text", jsonSecurityAdapter.get("name"));
+						// add canManageRoles
+						jsonSendAdapter.put("canManageRoles", jsonSecurityAdapter.get("canManageRoles"));
+						// add canManageUsers
+						jsonSendAdapter.put("canManageUsers", jsonSecurityAdapter.get("canManageUsers"));
+						// add canManageUserRoles
+						jsonSendAdapter.put("canManageUserRoles", jsonSecurityAdapter.get("canManageUserRoles"));
+						// add to collection
+						jsonAdapters.put(jsonSendAdapter);
 					}
+					// add the security adapters to the result
+					result.put("securityAdapters", jsonAdapters);
+				}
 
-					// process the actions and only send the name and type
-					JSONArray jsonSendActions = new JSONArray();
-					JSONArray jsonActions = rapidServlet.getJsonActions();
-					for (int i = 0; i < jsonActions.length(); i++) {
-						JSONObject jsonSysAction = jsonActions.getJSONObject(i);
-						// do not send the rapid action
-						if (!"rapid".equals(jsonSysAction.getString("type"))) {
-							JSONObject jsonSendAction = new JSONObject();
-							jsonSendAction.put("name", jsonSysAction.get("name"));
-							jsonSendAction.put("type", jsonSysAction.get("type"));
-							jsonSendAction.put("helpHtml", jsonSysAction.optString("helpHtml"));
-							jsonSendActions.put(jsonSendAction);
-						}
+				// fetch the form adapters
+				JSONArray jsonFormAdapters = rapidServlet.getJsonFormAdapters();
+				// prepare the collection we'll send
+				JSONArray jsonAdapters = new JSONArray();
+				// create an entry for no form adapter
+				JSONObject jsonSendAdapter = new JSONObject();
+				// no value
+				jsonSendAdapter.put("value", "");
+				// None as text
+				jsonSendAdapter.put("text", "Please select...");
+				// add the None member first
+				jsonAdapters.put(jsonSendAdapter);
+				// check we have some database drivers
+				if (jsonFormAdapters != null) {
+					// loop what we have
+					for (int i = 0; i < jsonFormAdapters.length(); i++) {
+						// get the item
+						JSONObject jsonAdapter = jsonFormAdapters.getJSONObject(i);
+						// make a simpler send item
+						 jsonSendAdapter = new JSONObject();
+						// add type
+						jsonSendAdapter.put("value", jsonAdapter.get("type"));
+						// add name
+						jsonSendAdapter.put("text", jsonAdapter.get("name"));
+						// add to collection
+						jsonAdapters.put(jsonSendAdapter);
 					}
-					// add the actions to the result
-					result.put("actions", jsonSendActions);
+					// add the database drivers to the result
+					result.put("formAdapters", jsonAdapters);
+				}
 
-					// process the controls and only send the name and type for canUserAdd
-					JSONArray jsonSendControls = new JSONArray();
-					JSONArray jsonControls = rapidServlet.getJsonControls();
-					for (int i = 0; i < jsonControls.length(); i++) {
-						JSONObject jsonSysControl = jsonControls.getJSONObject(i);
-						// only present controls users can add
-						if (jsonSysControl.optBoolean("canUserAdd")) {
-							JSONObject jsonSendControl = new JSONObject();
-							jsonSendControl.put("name", jsonSysControl.getString("name"));
-							jsonSendControl.put("type", jsonSysControl.getString("type"));
-							jsonSendControl.put("helpHtml", jsonSysControl.optString("helpHtml"));
-							jsonSendControls.put(jsonSendControl);
-						}
+				// prepare the collection we'll send
+				JSONArray jsonThemes = new JSONArray();
+				// create an entry for no template
+				JSONObject jsonTheme = new JSONObject();
+				// no value
+				jsonTheme.put("value", "");
+				// None as text
+				jsonTheme.put("text", "None");
+				// add the None member first
+				jsonThemes.put(jsonTheme);
+				// get the themes
+				List<Theme> themes = rapidServlet.getThemes();
+				// check we have some
+				if (themes != null) {
+					// loop what we have
+					for (Theme theme : themes) {
+						// make a simpler send item
+						jsonTheme = new JSONObject();
+						// add type
+						jsonTheme.put("value", theme.getType());
+						// add name
+						jsonTheme.put("text", theme.getName());
+						// add to collection
+						jsonThemes.put(jsonTheme);
 					}
-					// add the controls to the result
-					result.put("controls", jsonSendControls);
+					// add the database drivers to the result
+					result.put("themes", jsonThemes);
+				}
 
-					// add the devices
-					result.put("devices", rapidServlet.getDevices());
+				// process the actions and only send the name and type
+				JSONArray jsonSendActions = new JSONArray();
+				JSONArray jsonActions = rapidServlet.getJsonActions();
+				for (int i = 0; i < jsonActions.length(); i++) {
+					JSONObject jsonSysAction = jsonActions.getJSONObject(i);
+					// do not send the rapid action
+					if (!"rapid".equals(jsonSysAction.getString("type"))) {
+						JSONObject jsonSendAction = new JSONObject();
+						jsonSendAction.put("name", jsonSysAction.get("name"));
+						jsonSendAction.put("type", jsonSysAction.get("type"));
+						jsonSendAction.put("helpHtml", jsonSysAction.optString("helpHtml"));
+						jsonSendActions.put(jsonSendAction);
+					}
+				}
+				// add the actions to the result
+				result.put("actions", jsonSendActions);
 
-					// create a json object for our email settings
-					JSONObject jsonEmail = new JSONObject();
-					// get the email settings object
-					Email email = Email.getEmailSettings();
-					// if not null
-					if (email != null) {
-						// add email settings properties
-						jsonEmail.put("enabled", email.getEnabled());
-						jsonEmail.put("host", email.getHost());
-						jsonEmail.put("port", email.getPort());
-						jsonEmail.put("security", email.getSecurity());
-						jsonEmail.put("userName", email.getUserName());
-						// for password use ******** or empty string if not set
-						if (email.getPassword() == null) {
+				// process the controls and only send the name and type for canUserAdd
+				JSONArray jsonSendControls = new JSONArray();
+				JSONArray jsonControls = rapidServlet.getJsonControls();
+				for (int i = 0; i < jsonControls.length(); i++) {
+					JSONObject jsonSysControl = jsonControls.getJSONObject(i);
+					// only present controls users can add
+					if (jsonSysControl.optBoolean("canUserAdd")) {
+						JSONObject jsonSendControl = new JSONObject();
+						jsonSendControl.put("name", jsonSysControl.getString("name"));
+						jsonSendControl.put("type", jsonSysControl.getString("type"));
+						jsonSendControl.put("helpHtml", jsonSysControl.optString("helpHtml"));
+						jsonSendControls.put(jsonSendControl);
+					}
+				}
+				// add the controls to the result
+				result.put("controls", jsonSendControls);
+
+				// add the devices
+				result.put("devices", rapidServlet.getDevices());
+
+				// create a json object for our email settings
+				JSONObject jsonEmail = new JSONObject();
+				// get the email settings object
+				Email email = Email.getEmailSettings();
+				// if not null
+				if (email != null) {
+					// add email settings properties
+					jsonEmail.put("enabled", email.getEnabled());
+					jsonEmail.put("host", email.getHost());
+					jsonEmail.put("port", email.getPort());
+					jsonEmail.put("security", email.getSecurity());
+					jsonEmail.put("userName", email.getUserName());
+					// for password use ******** or empty string if not set
+					if (email.getPassword() == null) {
+						jsonEmail.put("password", "");
+					} else {
+						if ("".equals(email.getPassword())) {
 							jsonEmail.put("password", "");
 						} else {
-							if ("".equals(email.getPassword())) {
-								jsonEmail.put("password", "");
-							} else {
-								jsonEmail.put("password", "********");
-							}
+							jsonEmail.put("password", "********");
 						}
 					}
-					// add the email settings
-					result.put("email", jsonEmail);
+				}
+				// add the email settings
+				result.put("email", jsonEmail);
 
-				} // at least one app check
 
 				// add the current userName to the result
 				result.put("userName", rapidRequest.getUserName());
@@ -1020,6 +1081,112 @@ public class Rapid extends Action {
 
 				} // password check
 
+			} else if ("GETWORKFLOWS".equals(action)) {
+
+				// create a json array for holding our workflows
+				JSONArray jsonWorkflows = new JSONArray();
+
+				// get a sorted list of the workflows
+				for (String id : rapidServlet.getWorkflows().getIds()) {
+
+						// get the this workflow
+						Workflow workflow = rapidServlet.getWorkflows().get(id);
+
+						/*
+
+						// get the security
+						SecurityAdapter security = application.getSecurityAdapter();
+
+						// now emulate the app we are looping
+						RapidRequest appSecurityRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), application);
+
+						// check the user password
+						if (security.checkUserPassword(appSecurityRequest, rapidRequest.getUserName(), rapidRequest.getUserPassword())) {
+
+							// check the users permission to admin this application
+							boolean adminPermission = security.checkUserRole(appSecurityRequest, com.rapid.server.Rapid.ADMIN_ROLE);
+
+							// if app is rapid do a further check
+							if (adminPermission && "rapid".equals(application.getId())) adminPermission = application.getSecurityAdapter().checkUserRole(appSecurityRequest, com.rapid.server.Rapid.SUPER_ROLE);
+
+							// if we got permssion - add this application to the list
+							if (adminPermission) {
+								// create a json object
+								JSONObject jsonApplication = new JSONObject();
+								// add the details we want
+								jsonApplication.put("value", application.getId());
+								jsonApplication.put("text", application.getName() + " - " + application.getTitle());
+								// add the object to the collection
+								jsonApps.put(jsonApplication);
+								// no need to check any further versions
+								break;
+							}
+
+						} // password check
+
+						*/
+
+						// create a json object
+						JSONObject jsonWorkflow = new JSONObject();
+						// add the details we want
+						jsonWorkflow.put("value", workflow.getId());
+						jsonWorkflow.put("text", workflow.getName() + " - " + workflow.getTitle());
+						// add to workflows
+						jsonWorkflows.put(jsonWorkflow);
+
+				} // app loop
+
+				// add the actions to the result
+				result.put("workflows", jsonWorkflows);
+
+			} else if ("GETWORKFLOW".equals(action)) {
+
+				// get the id
+				String id = jsonAction.getString("wfId");
+
+				// get the this workflow
+				Workflow workflow = rapidServlet.getWorkflows().get(id);
+
+				/*
+
+				// get the security
+				SecurityAdapter security = application.getSecurityAdapter();
+
+				// now emulate the app we are looping
+				RapidRequest appSecurityRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), application);
+
+				// check the user password
+				if (security.checkUserPassword(appSecurityRequest, rapidRequest.getUserName(), rapidRequest.getUserPassword())) {
+
+					// check the users permission to admin this application
+					boolean adminPermission = security.checkUserRole(appSecurityRequest, com.rapid.server.Rapid.ADMIN_ROLE);
+
+					// if app is rapid do a further check
+					if (adminPermission && "rapid".equals(application.getId())) adminPermission = application.getSecurityAdapter().checkUserRole(appSecurityRequest, com.rapid.server.Rapid.SUPER_ROLE);
+
+					// if we got permssion - add this application to the list
+					if (adminPermission) {
+						// create a json object
+						JSONObject jsonApplication = new JSONObject();
+						// add the details we want
+						jsonApplication.put("value", application.getId());
+						jsonApplication.put("text", application.getName() + " - " + application.getTitle());
+						// add the object to the collection
+						jsonApps.put(jsonApplication);
+						// no need to check any further versions
+						break;
+					}
+
+				} // pass word check
+
+				*/
+
+				// add the details we want
+				result.put("id", workflow.getId());
+				result.put("name", workflow.getName());
+				result.put("title", workflow.getTitle());
+				result.put("description", workflow.getDescription());
+
 			} else if ("GETDBCONN".equals(action)) {
 
 				// get the index
@@ -1173,6 +1340,9 @@ public class Rapid extends Action {
 
 				// add the user description
 				result.put("description", user.getDescription());
+
+				// add the user email
+				result.put("email", user.getEmail());
 
 				// set the default password mask
 				String password = "********";
@@ -1817,7 +1987,7 @@ public class Rapid extends Action {
 				Application newApp = createApplication(rapidServlet, rapidRequest, name, version, title, type, responsive, themeType, description);
 
 				// set the result message
-				result.put("message", "Application " + app.getTitle() + " created");
+				result.put("message", "Application " + newApp.getTitle() + " created");
 
 				// set the result appId
 				result.put("appId", newApp.getId());
@@ -1940,6 +2110,35 @@ public class Rapid extends Action {
 				if (delPage != null) delPage.delete(rapidServlet, rapidActionRequest, app);
 				// set the result message
 				result.put("message", "Page " + delPage.getName() + " delete");
+
+			} else if ("NEWWORKFLOW".equals(action)) {
+
+				// retrieve the inputs from the json
+				String name = jsonAction.getString("name").trim();
+				String title = jsonAction.optString("title").trim();
+				String description = jsonAction.optString("description").trim();
+
+				// create a new workflow with our reusable, private method
+				Workflow newWorkflow = createWorkflow(rapidServlet, rapidRequest, name, title, description);
+
+				// set the result message
+				result.put("message", "Workflow " + app.getTitle() + " created");
+
+				// set the result appId
+				result.put("wfId", newWorkflow.getId());
+
+			} else if ("DELWORKFLOW".equals(action)) {
+
+				// get the id
+				String id = jsonAction.getString("id").trim();
+				// get the collection of workflows
+				Workflows workflows = rapidServlet.getWorkflows();
+				// get the workflow
+				Workflow workflow = workflows.get(id);
+				// delete it
+				workflow.delete(rapidServlet, rapidRequest);
+				// set the result message
+				result.put("message", "Work flow " + workflow.getName() + " deleted");
 
 			} else if ("NEWDBCONN".equals(action)) {
 
@@ -2094,6 +2293,8 @@ public class Rapid extends Action {
 				String userName = jsonAction.getString("userName").trim();
 				// get the userDescription
 				String description = jsonAction.optString("description","").trim();
+				// get the email
+				String email = jsonAction.optString("email");
 				// get the password
 				String password = jsonAction.getString("password");
 				// get the device details
@@ -2110,7 +2311,7 @@ public class Rapid extends Action {
 				rapidRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), app);
 
 				// add the user
-				security.addUser(rapidRequest, new User(userName, description, password, deviceDetails));
+				security.addUser(rapidRequest, new User(userName, description, email, password, deviceDetails));
 
 				// update the Rapid Request to have the new user name
 				rapidRequest.setUserName(userName);
@@ -2192,6 +2393,8 @@ public class Rapid extends Action {
 				rapidRequest.setUserName(userName);
 				// get the description
 				String description = jsonAction.getString("description").trim();
+				// get the email
+				String email = jsonAction.optString("email");
 				// get the password
 				String password = jsonAction.getString("password");
 				// get the device details
@@ -2201,6 +2404,8 @@ public class Rapid extends Action {
 				SecurityAdapter security = app.getSecurityAdapter();
 				// get the user
 				User user = security.getUser(rapidRequest);
+				// update the email
+				user.setEmail(email);
 				// update the description
 				user.setDescription(description);
 				// update the device details

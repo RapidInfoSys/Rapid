@@ -80,6 +80,18 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 									</xs:restriction>
 								</xs:simpleType>
 							</xs:element>
+							<xs:element name="image" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>A url for the action image relative to the
+										workflow.jsp document
+									</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:minLength value="1" />
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
 							<xs:element name="helpHtml" type="xs:string" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>
@@ -115,6 +127,12 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 								<xs:annotation>
 									<xs:documentation>If set to true the action will be added to
 										new applications when they are created
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="canUseWorkflow" type="xs:boolean" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>If set to true the action will be available for adding to workflow
 									</xs:documentation>
 								</xs:annotation>
 							</xs:element>						
@@ -186,6 +204,13 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 														<xs:annotation>
 															<xs:documentation>
 															Whether changes to this property cause the control's properties to refresh, useful for "switching" properties that might turn on or off other features
+															</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="workflowOutput" type="xs:boolean" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>
+															Whether this property produces an output for workflow
 															</xs:documentation>
 														</xs:annotation>
 													</xs:element>

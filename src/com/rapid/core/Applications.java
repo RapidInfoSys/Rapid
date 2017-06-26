@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2015 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -8,9 +8,9 @@ gareth.edwards@rapid-is.co.uk
 This file is part of the Rapid Application Platform
 
 RapidSOA is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as 
-published by the Free Software Foundation, either version 3 of the 
-License, or (at your option) any later version. The terms require you 
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version. The terms require you
 to include the original copyright, and the license notice in all redistributions.
 
 This program is distributed in the hope that it will be useful,
@@ -29,23 +29,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TreeMap;
 
 import com.rapid.utils.Comparators;
 
 public class Applications {
-	
+
 	public static class Versions extends TreeMap<String, Application> {
 
 		private static final long serialVersionUID = 5010L;
-		
+
 		public Versions() {
 			// note the use of the tree map with case insensitive order - this means that keys are all case insensitive, including checking them
 			super(String.CASE_INSENSITIVE_ORDER);
 		}
-		
+
 		public List<Application> sort() {
 			// create the list we're going to return
 			List<Application> versions = new ArrayList<Application>();
@@ -57,39 +56,39 @@ public class Applications {
 			// sort the collection
 			Collections.sort(versions, new Comparator<Application>() {
 				@Override
-				public int compare(Application a1, Application a2) {		
+				public int compare(Application a1, Application a2) {
 					if (a1.getCreatedDate().after(a2.getCreatedDate())) {
 						return 1;
 					} else if (a2.getCreatedDate().after(a1.getCreatedDate())) {
 						return -1;
 					} else {
 						return 0;
-					}					
-				}				
+					}
+				}
 			});
 			// return the list
-			return versions;			
+			return versions;
 		}
-				
+
 	}
 
 	// private instance variables
 	private TreeMap<String, Versions> _applications;
-	
+
 	// constructor
 	public Applications() {
 		// note the use of the tree map with case insensitive order - this means that keys are all case insensitive, including checking them
 		_applications = new TreeMap<String, Versions>(String.CASE_INSENSITIVE_ORDER);
 	}
-	
+
 	// methods
-			
+
 	private Versions getVersions(String id, boolean createIfNull) {
 		// return null if id is null
 		if (id == null) return null;
 		// get the versions
 		Versions versions = _applications.get(id);
-		// create an entry if required 
+		// create an entry if required
 		if (createIfNull && versions == null) {
 			versions = new Versions();
 			_applications.put(id, versions);
@@ -97,12 +96,12 @@ public class Applications {
 		// return
 		return versions;
 	}
-	
+
 	public Versions getVersions(String id) {
 		// get the versions without creating an entry
 		return getVersions(id, false);
 	}
-	
+
 	public List<String> getIds() {
 		// create the array we're going to return
 		ArrayList<String> ids = new ArrayList<String>();
@@ -115,11 +114,11 @@ public class Applications {
 				if ("rapid".equals(id1)) return 1;
 				if ("rapid".equals(id2)) return -1;
 				return Comparators.AsciiCompare(id1, id2, false);
-			}			
+			}
 		});
 		return ids;
 	}
-	
+
 	// add an application with a known version
 	public void put(String id, String version, Application application) {
 		// get the versions of this app
@@ -129,12 +128,12 @@ public class Applications {
 		// put the versions amongst the applications
 		_applications.put(id, versions);
 	}
-	
+
 	// add an application using it's own id and version
 	public void put(Application application) {
 		put(application.getId(), application.getVersion(), application);
 	}
-	
+
 	// remove all application versions by id an version
 	public void remove(String id, String version) {
 		// get the versions of this app
@@ -147,12 +146,12 @@ public class Applications {
 			if (versions.size() == 0) _applications.remove(id);
 		}
 	}
-	
+
 	// remove an application using it's own id and version
 	public void remove(Application application) {
 		remove(application.getId(), application.getVersion());
 	}
-		
+
 	// fetch the highest version for an id by status
 	public Application getLatestVersion(String id, int status) {
 		// assume there are no applications
@@ -178,12 +177,12 @@ public class Applications {
 		}
 		return application;
 	}
-	
+
 	// fetch the highest version for an id regardless of status
 	public Application getLatestVersion(String id) {
 		return getLatestVersion(id, -1);
 	}
-		
+
 	// fetch the most recent live version, then most recent dev
 	public Application get(String id) {
 		// get the latest live application
@@ -193,11 +192,11 @@ public class Applications {
 		// return our highest application
 		return application;
 	}
-	
+
 	// fetch an application with a known version, resorting to highest live if not version provided
 	public Application get(String id, String version) {
 		// return null if not app id
-		if (id == null) return null;		
+		if (id == null) return null;
 		// get the versions of this app
 		Versions versions = getVersions(id);
 		// return null if we don't have any
@@ -209,9 +208,9 @@ public class Applications {
 		} else {
 			// return version
 			return versions.get(version);
-		}		
+		}
 	}
-	
+
 	// get the highest live version of each application
 	public List<Application> get() {
 		// create the list we're about to sort
@@ -221,7 +220,7 @@ public class Applications {
 		// return
 		return applications;
 	}
-			
+
 	public List<Application> sort() {
 		// create the list we're about to sort
 		List<Application> applications = get();
@@ -234,16 +233,16 @@ public class Applications {
 				if ("rapid".equals(a2.getId())) return -1;
 				return Comparators.AsciiCompare(a1.getId(), a2.getId(), false);
 			}
-			
+
 		});
 		return applications;
 	}
-	
+
 	// return whether an application exists
 	public boolean exists(String id) {
 		return _applications.containsKey(id);
 	}
-	
+
 	// return whether an application and version exists
 	public boolean exists(String id, String version) {
 		if (_applications.containsKey(id)) {
@@ -251,10 +250,10 @@ public class Applications {
 		}
 		return false;
 	}
-		
+
 	// return the number of applications
 	public int size() {
 		return _applications.size();
 	}
-	
+
 }

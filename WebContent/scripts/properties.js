@@ -36,6 +36,345 @@ var _dialogueZindex = 10012;
 // this holds the cell, propertyObject, property, and details by dialogue id for refeshing child actions
 var _dialogueRefeshProperties = {};
 
+// this function returns a set of options for a dropdown using the current set of pages
+function getPageOptions(selectId, ignoreId) {
+	var options = "";
+	for (var i in _pages) {
+		var page = _pages[i];
+		if (page.id != ignoreId) options += "<option value='" + page.id + "' " + (page.id == selectId ? "selected='selected'" : "") + ">" + page.name + " - "  +page.title + "</option>"; 
+	}
+	return options;
+}
+
+// this function returns a set of options for a dropdown of controls
+function getControlOptions(selectId, ignoreId, type) {
+	var controls = getControls();
+	var options = "";
+	for (var i in controls) {
+		var control = controls[i];
+		// note how only control with names are included, and type is only matched if included
+		if (control.id != ignoreId && control.name && (!type || type == control.type)) options += "<option value='" + control.id + "' " + (control.id == selectId ? "selected='selected'" : "") + ">" + control.name + "</option>"; 
+	}
+	return options;
+}
+
+// this function returns a set of options for a dropdown of security roles
+function getRolesOptions(selectRole, ignoreRoles) {
+	var options = "";
+	var roles = _version.roles;
+	if (roles) {		
+		for (var i in roles) {
+			// retrieve this role			
+			var role = roles[i];
+			// assume we're not going to ignore it
+			var ignore = false;
+			// loop ignore roles
+			if (ignoreRoles) {
+				for (var j in ignoreRoles) {
+					if (role == ignoreRoles[j]) {
+						ignore = true;
+						break;
+					}
+				}
+			}			
+			// if we're not going to ignore it
+			if (!ignore) options += "<option " + (role == selectRole ? "selected='selected'" : "") + ">" + role + "</option>"; 
+		}
+	}
+	return options;
+}
+
+// different system properties for inputs
+var _systemValues = ["app id","app version","page id","user name","online","mobile","mobile version","true","false","null","field"];
+
+// this function returns system values
+function getSystemValueOptions(selectId) {
+	var options = "";
+	// system values
+	if (_systemValues) {
+		options += "<optgroup label='System values'>";
+		for (var i in _systemValues) {
+			var val = "System." + _systemValues[i];
+			options += "<option value='" + val + "'" + (val == selectId ? " selected='selected'" : "") + ">" + _systemValues[i] + "</option>";
+		}
+		options += "</optgroup>";
+	}
+	return options;
+}
+
+// this function returns a set of options for a dropdown for inputs or outputs (depending on input true/false), can be controls, control properties (input only), other page controls, page variables (input only), system values (input only)
+function getDataOptions(selectId, ignoreId, input) {
+	var options = "";	
+	var controls = getControls();
+	var gotSelected = false;
+	if (controls) {
+		options += "<optgroup label='Page controls'>";
+		for (var i in controls) {	
+			// retrieve the control
+			var control = controls[i];
+			// get the control class
+			var controlClass = _controlTypes[control.type];
+			// if we're not ignoring the control and it has a name
+			if (controlClass && control.id != ignoreId && control.name) {
+				
+				// if it has a get data function (for input), or a setDataJavaScript
+				if ((input && controlClass.getDataFunction) || (!input && controlClass.setDataJavaScript)) {
+					if (control.id == selectId && !gotSelected) {
+						options += "<option value='" + control.id + "' selected='selected'>" + control.name + "</option>";
+						gotSelected = true;
+					} else {
+						options += "<option value='" + control.id + "' >" + control.name + "</option>";
+					}				
+				}
+				
+				// get any run time properties
+				var properties = controlClass.runtimeProperties;
+				// if there are runtimeProperties in the class
+				if (properties) {
+					// promote if array
+					if ($.isArray(properties.runtimeProperty)) properties = properties.runtimeProperty;
+					// loop them
+					for (var i in properties) {
+						// get the property
+						var property = properties[i];
+						// if we want inputs and there's is a get function, or outputs and there's set javascript
+						if ((input && property.getPropertyFunction) || (!input && property.setPropertyJavaScript)) {
+							// derive the key
+							var key = control.id + "." + property.type;
+							// add the option
+							options += "<option value='" + key  +  "' " + (key == selectId ? "selected='selected'" : "") + ">" + control.name + "." + property.name + "</option>";
+						}
+						
+					}
+					
+				}
+								
+			}												
+			
+		}
+		options += "</optgroup>";
+	}
+	
+	// page variables are for input only
+	if (input && _page && _page.sessionVariables) {
+		options += "<optgroup label='Page variables'>";
+		for (var i in _page.sessionVariables) {
+			if (selectId == _page.sessionVariables[i] && !gotSelected) {
+				options += "<option value='" + _page.sessionVariables[i] + "' selected='selected' >" + _page.sessionVariables[i] + "</option>";
+				gotSelected = true;
+			} else {
+				options += "<option value='" + _page.sessionVariables[i] + "' >" + _page.sessionVariables[i] + "</option>";
+			}			
+		}
+		options += "</optgroup>";
+	}
+	
+	// other page controls can be used for input
+	if (_page && _pages) {
+
+		for (var i in _pages) {
+			
+			if (_pages[i].id != _page.id && _pages[i].controls) {
+				
+				var pageControlOptions = "";
+												
+				for (var j in _pages[i].controls) {
+					
+					var control = _pages[i].controls[j];
+					
+					if (control.otherPages) {
+											
+						if ((input && control.input) || (!input && control.output)) {
+							if (selectId == control.id && !gotSelected) {
+								pageControlOptions += "<option value='" + control.id + "' selected='selected' >" +  control.name + "</option>";
+								gotSelected = true;
+							} else {
+								pageControlOptions += "<option value='" + control.id + "' >" + control.name + "</option>";
+							}
+						}
+						
+						if (control.runtimeProperties) {						
+							for (var k in control.runtimeProperties) {
+								if ((input && control.runtimeProperties[k].input) || (!input && control.runtimeProperties[k].output)) {
+									if (selectId == control.id + "." + control.runtimeProperties[k].type && !gotSelected) {
+										pageControlOptions += "<option value='" + control.id + "." + control.runtimeProperties[k].type + "' selected='selected' >" + control.name + "." + control.runtimeProperties[k].name + "</option>";
+									} else {
+										pageControlOptions += "<option value='" + control.id + "." + control.runtimeProperties[k].type + "' >" + control.name + "." + control.runtimeProperties[k].name + "</option>";
+									}	
+								}
+							}						
+						}
+					}					
+				}
+				
+				if (pageControlOptions) options += "<optgroup label='" + _pages[i].name + " - " + _pages[i].title + "'>" + pageControlOptions + "</optgroup>";
+			
+			}			
+		}
+	}	
+	// system values, only for inputs - these are defined in an array above this function
+	if (input && _systemValues) {
+		options += getSystemValueOptions(selectId);		
+	}
+	// return
+	return options;
+}
+
+// this function returns a set of options for form values from previous pages
+function getFormValueOptions(selectId) {
+	// we want this pages session variables and all prior pages session variables and controls with canBeUsedForFormPageVisibilty
+	var options = "";
+	var gotSelected = false;
+	// page variables 
+	if (_page && _page.sessionVariables) {
+		options += "<optgroup label='Page variables'>";
+		for (var i in _page.sessionVariables) {
+			var val = "Session." + _page.sessionVariables[i];
+			if (selectId == val && !gotSelected) {
+				options += "<option value='" + val + "' selected='selected' >" + _page.sessionVariables[i] + "</option>";
+				gotSelected = true;
+			} else {
+				options += "<option value='" + val + "' >" + _page.sessionVariables[i] + "</option>";
+			}			
+		}
+		options += "</optgroup>";
+	}
+	// other pages
+	if (_page && _pages) {
+		// loop the pages
+		for (var i in _pages) {
+			// stop when the current page is reached (we only want the prior ones)
+			if (_pages[i].id == _page.id) break;
+			if (_pages[i].controls) {
+				var pageControlOptions = "";
+				// page session variables
+				for (var j in _pages[i].sessionVariables) {
+					var val = "Session." + _pages[i].sessionVariables[j];
+					if (selectId == val) {
+						pageControlOptions += "<option value='" + val + "' selected='selected' >" +  _pages[i].sessionVariables[j] + "</option>";
+						gotSelected = true;
+					} else {
+						pageControlOptions += "<option value='" + val + "' >" + _pages[i].sessionVariables[j] + "</option>";						
+					}
+				}
+				// page controls
+				for (var j in _pages[i].controls) {					
+					var control = _pages[i].controls[j];					
+					if (control.pageVisibility && control.name) {																	
+						if (selectId == control.id && !gotSelected) {
+							pageControlOptions += "<option value='" + control.id + "' selected='selected' >" +  control.name + "</option>";
+							gotSelected = true;
+						} else {
+							pageControlOptions += "<option value='" + control.id + "' >" + control.name + "</option>";
+						}												
+					}					
+				}				
+				if (pageControlOptions) options += "<optgroup label='" + _pages[i].name + " - " + _pages[i].title + "'>" + pageControlOptions + "</optgroup>";			
+			}			
+		}
+	}
+	return options;
+}
+
+
+
+// this function returns a set of options for a dropdown of sessionVariables and controls with a getData method
+function getInputOptions(selectId, ignoreId) {
+	return getDataOptions(selectId, ignoreId, true);
+}
+
+// this function returns a set of options for a dropdown of sessionVariables and controls with a setData method
+function getOutputOptions(selectId, ignoreId) {
+	return getDataOptions(selectId, ignoreId, false);
+}
+
+// this function returns a set of options for use in page visibility logic
+function getPageVisibilityOptions(selectId) {
+	return getFormValueOptions(selectId) + getSystemValueOptions(selectId);
+}
+
+// this function returns a set of options for a dropdown of existing events from current controls 
+function getEventOptions(selectId) {
+	var options = "";
+	for (var i in _page.events) {
+		var event = _page.events[i];
+		var id = "page." + event.type;
+		options += "<option value='" + id + "' " + (selectId  == id ? "selected='selected'" : "") + ">" + id + "</option>";			
+	}
+	var controls = getControls();	
+	for (var i in controls) {
+		for (var j in controls[i].events) {
+			var event = controls[i].events[j];
+			// only if there are some actions
+			if (event.actions && event.actions.length > 0) {
+				var id = controls[i].id + "." + event.type;
+				var text = controls[i].name + "." + event.type;
+				options += "<option value='" + id + "' " + (selectId  == id ? "selected='selected'" : "") + ">" + text + "</option>";
+			}
+		}
+	}
+	return options;
+}
+
+// this function returns a set of options for a dropdown of existing actions from current controls 
+function getExistingActionOptions(selectId, ignoreId) {
+	var options = "";
+	for (var i in _page.events) {
+		var eventJS = "";
+		var event = _page.events[i];
+		for (var j in event.actions) {
+			var action = event.actions[j];
+			if (action.id != ignoreId) eventJS += "<option value='" + action.id + "' " + (action.id == selectId ? "selected='selected'" : "") + ">" + (j*1+1) + " - "  + action.type + "</option>";
+		}			
+		if (eventJS) options += "<optgroup label='" + _page.name + "." + event.type + "'>" + eventJS + "</optgroup>";
+	}
+	var controls = getControls();	
+	for (var i in controls) {
+		for (var j in controls[i].events) {
+			var eventJS = "";
+			var event = controls[i].events[j];
+			for (var k in event.actions) {
+				var action = event.actions[k];
+				if (controls[i].name) {
+					if (action.id != ignoreId) eventJS += "<option value='" + action.id + "' " + (action.id == selectId ? "selected='selected'" : "") + ">" + (k*1+1) + " - " + action.type + "</option>";
+				}
+			}	
+			if (eventJS) options += "<optgroup label='" + controls[i].name + "." + event.type + "'>" + eventJS + "</optgroup>";
+		}
+	}
+	return options;
+}
+
+function getDatabaseConnectionOptions(selectIndex) {
+	var options = "";
+	if (_version.databaseConnections) {
+		for (var i in _version.databaseConnections) {
+			options += "<option value='" + i + "' " + (i == selectIndex ? "selected='selected'" : "") + ">" + _version.databaseConnections[i] + "</option>";
+		}
+	}
+	return options;
+}
+
+function getStyleClassesOptions(selected) {
+	var classOptions = "";
+	// loop any style classes
+	for (var i in _styleClasses) {
+		classOptions += "<option" + (_styleClasses[i] == selected ? " selected='selected'" : "") + ">" + _styleClasses[i] + "</option>";
+	}
+	// return
+	return classOptions;
+}
+
+function getValueListsOptions(selected) {
+	var valueLists = "";
+	if (_version.valueLists) {
+		for (var i in _version.valueLists) {
+			valueLists += "<option" + (_version.valueLists[i].name == selected ? " selected='selected'" : "") + ">" + _version.valueLists[i].name + "</option>";
+		}
+	}
+	return valueLists;
+}
+
 // this finds the dialogue each listener is in and stores it so the relevant ones can be detached when the dialogue is closed
 function addListener(listener) {
 	// assume we're not able to find the listener id
