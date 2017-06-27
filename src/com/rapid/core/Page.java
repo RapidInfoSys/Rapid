@@ -959,7 +959,7 @@ public class Page {
 			case Resource.CSS:
 				if (application.getStatus() == Application.STATUS_LIVE) {
 					try {
-						resourceHtml = "    <style>" + Minify.toString(resource.getContent(), Minify.CSS) + "<style>";
+						resourceHtml = "    <style>" + Minify.toString(resource.getContent(), Minify.CSS) + "</style>";
 					} catch (IOException ex) {
 						resourceHtml = "    <style>/* Failed to minify resource " + resource.getName() + " CSS : " + ex.getMessage() + "*/<style>";
 					}
