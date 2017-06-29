@@ -556,6 +556,8 @@ function Control(controlType, parentControl, jsonControl, loadComplexObjects, pa
 			this.object.click( function(ev) {
 				selectControl(getControlById($(ev.target).attr("id")));
 			});
+			// add a property so we can spot it later and avoid its html when deriving role html
+			this._nonVisibleControl = true;
 		}
 								
 	} else {

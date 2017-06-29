@@ -8,6 +8,10 @@
         <description>Use Rapid Design to design applications</description>
         <name>RapidDesign</name>
     </roles>
+    <roles>
+        <description>Use Rapid Workflow Design to design workflow</description>
+        <name>RapidWorkflow</name>
+    </roles>
     <users>
         <description>Admin user</description>
         <deviceDetails></deviceDetails>
@@ -15,8 +19,6 @@
         <password>admin</password>
         <roles>RapidAdmin</roles>
         <roles>RapidDesign</roles>
-        <roles>RapidWorkflow</roles>
-        <roles>RapidSuper</roles>
     </users>
     <users>
         <description>Design user</description>
@@ -24,12 +26,5 @@
         <name>design</name>
         <password>design</password>
         <roles>RapidDesign</roles>
-    </users>
-    <users>
-        <description>Workflow user</description>
-        <deviceDetails></deviceDetails>
-        <name>workflow</name>
-        <password>workflow</password>
-        <roles>RapidWorkflow</roles>
     </users>
 </security>

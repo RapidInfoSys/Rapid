@@ -95,8 +95,8 @@ function showDialogue(url, onShow) {
             		}
             	}
             	
-            	// if this is the login page (usually because our session has expired)
-            	if (bodyHtml.indexOf("<form name=\"login\" id=\"RapidLogin\">") > 0) {
+            	// if this is the login page go to the real thing, requesting to come back to this location
+        		if (bodyHtml.indexOf("<form name=\"login\" id=\"RapidLogin\" method=\"post\">") > 0) {
             		            		
             		// stop the save changes onunload prompt
             		_dirty = false;

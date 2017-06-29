@@ -1920,8 +1920,8 @@ function getRoleControl(control, html) {
 		for (var i in childControls) {
 			// get the child at this position
 			var childControl = childControls[i];
-			// if there was one
-			if (childControl) {
+			// if there was one and it was not non-visible
+			if (childControl && !childControl._nonVisibleControl) {
 				// get the child html
 				var childHtml = childControl.object.prop('outerHTML');
 				// append the length
@@ -2020,12 +2020,15 @@ function getSavePageData() {
 			control._save();
 		}
 	}
-	
+		
 	// get a page object based on the page "control" (this creates a single property array called childControls)
 	var pageObject = getDataObject(_page);
 					
     // show message
 	$("#rapid_P11_C7_").html("Generating html");
+	
+	// remove nonVisibleControl controls
+	_page.object.find(".nonVisibleControl").remove();
 	
 	// get the page save html - do this before getting individual control html
 	var pageHtml = _page.object.html().trim();
