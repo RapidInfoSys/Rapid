@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -106,14 +106,13 @@ public interface SOADataReader {
 		private SAXParser _saxParser;
 		private XMLReader _xmlReader;
 		private SOAXMLContentHandler _soaXMLContentHandler;
-		private static String _authentication;
 
 		private static class SOAXMLContentHandler implements ContentHandler {
 
 			private SOASchema _soaSchema;
 			private int _currentColumn,  _currentRow, _previousColumn;
 			private SOAElement _currentElement;
-			private String _root, _currentElementId;
+			private String _root, _currentElementId, _authentication;
 			private boolean _rootFound, _ignoreHeader;
 
 			private List<String> _columnElementIds = new ArrayList<String>();
@@ -133,6 +132,10 @@ public interface SOADataReader {
 
 			public SOASchema getSOASchema() {
 				return _soaSchema;
+			}
+
+			public String getAuthentication() {
+				return _authentication;
 			}
 
 			@Override
@@ -556,7 +559,7 @@ public interface SOADataReader {
 
 		@Override
 		public String getAuthentication() {
-			return _authentication;
+			return _soaXMLContentHandler.getAuthentication();
 		}
 
 	}
@@ -578,6 +581,7 @@ public interface SOADataReader {
 		private String _currentElementId;
 		private int _previousColumn;
 		private String _currentKey;
+		private String _authentication;
 
 		private ArrayList<String> _columnElementIds = new ArrayList<String>();
 		private ArrayList<Integer> _columnRows = new ArrayList<Integer>();
@@ -876,8 +880,8 @@ public interface SOADataReader {
 		            // retain the current key here
 		            _currentKey = key;
 
-		            // create a new branch for this key (reused in TreeElementJSONArray)
-		            newElement(false);
+		            // create a new branch for this key (reused in TreeElementJSONArray) - but not if authentication key at 0,0
+		            if (!"authentication".equals(key) || _currentColumn > 0 || _currentRow > 0) newElement(false);
 
 		            // inc the column
 					_currentColumn ++;
@@ -900,13 +904,23 @@ public interface SOADataReader {
 		            // dec the column
 					_currentColumn --;
 
-		            // validate the current branch
-		            validateElement(key);
+					// if authentication key at position 0/0
+					if ("authentication".equals(key) && _currentColumn == 0 && _currentRow == 0) {
+
+						// retain the authentication value
+						_authentication = (String) o;
+
+					} else {
+
+			            // validate the current branch
+			            validateElement(key);
+
+			            // add the object
+			            this.putOnce(key, o);
+
+					}
 
 					//--------------------------------------- End of code particular to creating the SOA -----------------------------------
-
-		            // add the object
-		            this.putOnce(key, o);
 
 		            // Pairs are separated by ','.
 		            switch (x.nextClean()) {
@@ -927,7 +941,7 @@ public interface SOADataReader {
 
 		public class SOAJSONArray extends JSONArray {
 
-			// we extend the contructor so we can make our own special array branches
+			// we extend the constructor so we can make our own special array branches
 
 			public SOAJSONArray(JSONTokener x) throws JSONException {
 				super();
@@ -952,14 +966,8 @@ public interface SOADataReader {
 		                    // create a new branch for this key (reused in TreeElementJSONObject)
 				            newElement(true);
 
-		                    // inc the column
-							_currentColumn ++;
-
-				            // get the next object (this can create new columns)
+				            // get the next object
 				            Object o = x.nextValue();
-
-				            // dec the column
-							_currentColumn --;
 
 							// validate the current branch
 				            validateElement(_currentKey);
@@ -1057,13 +1065,9 @@ public interface SOADataReader {
 
 		@Override
 		public String getAuthentication() {
-			return null;
+			return _authentication;
 		}
 
-
-
 	}
-
-
 
 }
