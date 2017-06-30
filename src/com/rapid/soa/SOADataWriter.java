@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -161,15 +161,21 @@ public abstract class SOADataWriter {
 
 			} else {
 
+				// only the root element has no parent and we have already established that it is not an array
 				if (element.getParentElement() == null) {
 
-					// only the root element has no parent and we have already established that it is not an array
+					// open json object
+					_stringBuilder.append("{");
 
+					// get any children
 					List<SOAElement> childElements = element.getChildElements();
 
-					if (childElements != null) {
+					// if no children just print this value
+					if (childElements == null) {
 
-						_stringBuilder.append("{");
+						_stringBuilder.append("\"" + element.getName() + "\":\"" + jsonEscape(element.getValue()) + "\"");
+
+					} else {
 
 						for (int i = 0; i < childElements.size(); i ++) {
 
@@ -179,12 +185,12 @@ public abstract class SOADataWriter {
 
 						}
 
-						_stringBuilder.append("}");
-
 					}
 
-				} else {
+					// close json object
+					_stringBuilder.append("}");
 
+				} else {
 
 					if (element.getParentElement().getIsArray()) {
 
