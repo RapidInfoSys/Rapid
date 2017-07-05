@@ -25,8 +25,10 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 
 package com.rapid.actions;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -754,6 +756,22 @@ public class Database extends Action {
 									break;
 									case (Types.DOUBLE) :
 										jsonRow.put(rs.getDouble(i + 1));
+									break;
+									case (Types.DATE) :
+										Date date = rs.getDate(i + 1);
+										if (date == null) {
+											jsonRow.put(date);
+										} else {
+											jsonRow.put(rapidRequest.getRapidServlet().getLocalDateFormatter().format(date));
+										}
+									break;
+									case (Types.TIMESTAMP) :
+										Timestamp timeStamp = rs.getTimestamp(i + 1);
+										if (timeStamp == null) {
+											jsonRow.put(timeStamp);
+										} else {
+											jsonRow.put(rapidRequest.getRapidServlet().getLocalDateTimeFormatter().format(timeStamp));
+										}
 									break;
 									default :
 										jsonRow.put(rs.getString(i + 1));
