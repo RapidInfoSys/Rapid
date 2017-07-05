@@ -709,7 +709,7 @@ public class Database extends Action {
 					sql = sql.trim();
 
 					// check the verb
-					if (sql.toLowerCase().startsWith("select") || sql.toLowerCase().startsWith("with")) {
+					if (sql.toLowerCase().startsWith("select") || sql.toLowerCase().startsWith("with") || sql.toLowerCase().startsWith("exec")) {
 
 						// set readonly to true (makes for faster querying)
 						df.setReadOnly(true);
