@@ -30,6 +30,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -728,6 +729,10 @@ public class Database extends Action {
 							// got fields indicator
 							boolean gotFields = false;
 
+							// date formatters we might need but only want to fetch / initialise once
+							SimpleDateFormat localDateFormatter = null;
+							SimpleDateFormat localDateTimeFormatter = null;
+
 							// loop the result set
 							while (rs.next()) {
 
@@ -762,7 +767,8 @@ public class Database extends Action {
 										if (date == null) {
 											jsonRow.put(date);
 										} else {
-											jsonRow.put(rapidRequest.getRapidServlet().getLocalDateFormatter().format(date));
+											if (localDateFormatter == null) localDateFormatter = rapidRequest.getRapidServlet().getLocalDateFormatter();
+											jsonRow.put(localDateFormatter.format(date));
 										}
 									break;
 									case (Types.TIMESTAMP) :
@@ -773,10 +779,12 @@ public class Database extends Action {
 											// check for 0 millseconds past midnight - a truncated date time (time zone offset is in minutes, multiplied by the number of millis in a minute modulus with number of millis in a day)
 											if ((timeStamp.getTime() - timeStamp.getTimezoneOffset() * 60000) % 86400000L == 0) {
 												// if so show just date
-												jsonRow.put(rapidRequest.getRapidServlet().getLocalDateFormatter().format(timeStamp));
+												if (localDateFormatter == null) localDateFormatter = rapidRequest.getRapidServlet().getLocalDateFormatter();
+												jsonRow.put(localDateFormatter.format(timeStamp));
 											} else {
 												// show date and time
-												jsonRow.put(rapidRequest.getRapidServlet().getLocalDateTimeFormatter().format(timeStamp));
+												if (localDateTimeFormatter == null) localDateTimeFormatter = rapidRequest.getRapidServlet().getLocalDateTimeFormatter();
+												jsonRow.put(localDateTimeFormatter.format(timeStamp));
 											}
 										}
 									break;
