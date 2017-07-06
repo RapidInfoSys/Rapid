@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2015 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -197,24 +197,24 @@ public class RapidHttpServlet extends HttpServlet {
 		return getInitParameter(name);
 	}
 
-	// this is used to format between Java Date and XML date
+	// this is used to format between Java Date and XML date - not threadsafe so new instance each time
 	public SimpleDateFormat getXMLDateFormatter() {
-		return (SimpleDateFormat) getServletContext().getAttribute("xmlDateFormatter");
+		return new SimpleDateFormat("yyyy-MM-dd");
 	}
 
-	// this is used to format between Java Date and XML dateTime
+	// this is used to format between Java Date and XML dateTime - not threadsafe so new instance each time
 	public SimpleDateFormat getXMLDateTimeFormatter() {
-		return (SimpleDateFormat) getServletContext().getAttribute("xmlDateTimeFormatter");
+		return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 	}
 
-	// this is used to format between Java Date and Local date format
+	// this is used to format between Java Date and Local date format - not threadsafe so new instance each time
 	public SimpleDateFormat getLocalDateFormatter() {
-		return (SimpleDateFormat) getServletContext().getAttribute("localDateFormatter");
+		return new SimpleDateFormat((String) getServletContext().getAttribute("localDateFormatter"));
 	}
 
-	// this is used to format between Java Date and local dateTime format (used by backups and page lock)
+	// this is used to format between Java Date and local dateTime format (used by backups, page lock, and database action) - not threadsafe so new instance each time
 	public SimpleDateFormat getLocalDateTimeFormatter() {
-		return (SimpleDateFormat) getServletContext().getAttribute("localDateTimeFormatter");
+		return new SimpleDateFormat((String) getServletContext().getAttribute("localDateTimeFormatter"));
 	}
 
 	// this is used is actions such as database and webservice to cache results for off-line demos

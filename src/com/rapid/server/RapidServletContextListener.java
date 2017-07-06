@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -38,7 +38,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -1354,16 +1353,14 @@ public class RapidServletContextListener extends Log4jServletContextListener imp
 			loadProcesses(servletContext);
 
 			// add some useful global objects
-			servletContext.setAttribute("xmlDateFormatter", new SimpleDateFormat("yyyy-MM-dd"));
-			servletContext.setAttribute("xmlDateTimeFormatter", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"));
 
 			String localDateFormat = servletContext.getInitParameter("localDateFormat");
 			if (localDateFormat == null) localDateFormat = "dd/MM/yyyy";
-			servletContext.setAttribute("localDateFormatter", new SimpleDateFormat(localDateFormat));
+			servletContext.setAttribute("localDateFormat", localDateFormat);
 
 			String localDateTimeFormat = servletContext.getInitParameter("localDateTimeFormat");
 			if (localDateTimeFormat == null) localDateTimeFormat = "dd/MM/yyyy HH:mm a";
-			servletContext.setAttribute("localDateTimeFormatter", new SimpleDateFormat(localDateTimeFormat));
+			servletContext.setAttribute("localDateTimeFormat", localDateTimeFormat);
 
 			boolean actionCache = Boolean.parseBoolean(servletContext.getInitParameter("actionCache"));
 			if (actionCache) servletContext.setAttribute("actionCache", new ActionCache(servletContext));
