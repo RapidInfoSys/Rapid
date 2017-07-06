@@ -770,7 +770,14 @@ public class Database extends Action {
 										if (timeStamp == null) {
 											jsonRow.put(timeStamp);
 										} else {
-											jsonRow.put(rapidRequest.getRapidServlet().getLocalDateTimeFormatter().format(timeStamp));
+											// check for 0 millseconds past midnight - a truncated date time (time zone offset is in minutes, multiplied by the number of millis in a minute modulus with number of millis in a day)
+											if ((timeStamp.getTime() - timeStamp.getTimezoneOffset() * 60000) % 86400000L == 0) {
+												// if so show just date
+												jsonRow.put(rapidRequest.getRapidServlet().getLocalDateFormatter().format(timeStamp));
+											} else {
+												// show date and time
+												jsonRow.put(rapidRequest.getRapidServlet().getLocalDateTimeFormatter().format(timeStamp));
+											}
 										}
 									break;
 									default :
