@@ -509,7 +509,7 @@ public class Designer extends RapidHttpServlet {
 											FilenameFilter xmlFilenameFilter = new FilenameFilter() {
 										    	@Override
 												public boolean accept(File dir, String name) {
-										    		return name.toLowerCase().endsWith(".png") || name.toLowerCase().endsWith(".gif") || name.toLowerCase().endsWith(".jpg") || name.toLowerCase().endsWith(".jpeg");
+										    		return name.toLowerCase().endsWith(".png") || name.toLowerCase().endsWith(".gif") || name.toLowerCase().endsWith(".jpg") || name.toLowerCase().endsWith(".jpeg") || name.toLowerCase().endsWith(".svg");
 										    	}
 										    };
 										    // a array to hold the images as they come out of the filter
@@ -1372,7 +1372,7 @@ public class Designer extends RapidHttpServlet {
 								if ("uploadImage".equals(rapidRequest.getActionName())) {
 
 									// check the file type
-									if (!fileType.equals("image/jpeg") && !fileType.equals("image/gif") && !fileType.equals("image/png")) throw new Exception("Unsupported file type");
+									if (!fileType.equals("image/jpeg") && !fileType.equals("image/gif") && !fileType.equals("image/png") && !fileType.equals("image/svg+xml")) throw new Exception("Unsupported file type");
 
 									// get the web folder from the application
 									String path = rapidRequest.getApplication().getWebFolder(getServletContext());

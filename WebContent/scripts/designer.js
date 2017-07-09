@@ -4133,7 +4133,7 @@ function fileuploaded(fileuploadframe) {
 
     if ((r) && (r != "")) {
     	
-    	if (r.indexOf("Error") == 0) {
+    	if (r.indexOf("Error") == 0 || r.indexOf("Unsupported") == 0) {
     		
     		alert(r);
     		
