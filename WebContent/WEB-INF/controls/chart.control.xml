@@ -350,6 +350,8 @@ function drawChart(id, data) {
 		
 		// retain chart
 		_charts[id].chart = chart;
+		// retain data
+		_charts[id].data = data;
       
       }
 	 
