@@ -456,7 +456,7 @@ $( "#" + id ).find("input").datepicker({
 				}
 			}
 		} catch(ex){}
-    }    
+    }
 }).change( function (ev) {
 	var datePicker = $(this);
 	var date = datePicker.val();

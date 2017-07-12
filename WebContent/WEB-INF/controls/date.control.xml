@@ -235,26 +235,31 @@ if (data != null && data !== undefined) {
 	}
 }
 
+// record on the details whether we want change events triggered - this is because we are about to update and the month/year change handler will read this
+details.dontTriggerChange = !changeEvents;
+
+// look for simple, unambiguous date formats
 try {
-
+	// retain current value
 	var d = value;
-	
+	// if this looks like an ISO date format
 	if (date_quickISORegex.test(value)) {
-	
+		// parse date from ISO format
 		d = $.datepicker.parseDate("yy-mm-dd", value.substr(0, 10));
-	
+	// if this looks like an Oracle date format
 	} else if (date_quickOracleRegex.test(value)) {
-	
+		// parse date from Oracle format
 		d = $.datepicker.parseDate("dd-M-yy", value.substr(0, 11));
-	
 	}
-
+	// set the date into the control
 	control.datepicker("setDate", d);
-	
 } catch (ex) {
 	control.datepicker("setDate",value);
 }
 
+// set this back again so default behaviour resumes
+details.dontTriggerChange = false;
+// trigger any changes
 if (changeEvents) control.trigger("change");
 			]]>
 	    </setDataJavaScript>
@@ -320,13 +325,29 @@ $( "#" + id ).datepicker({
     selectOtherMonths: details.selectOtherMonths,
     constrainInput: true,
     onChangeMonthYear: function(year, month, inst) {
+    	// this changes the default behaviour of the month and year change drop down and arrows to select the previously selected day in the new month or year
     	try {
-    		if (inst && inst.currentDay && inst.input.val() && $(inst.dpDiv).is(':visible')) {
-	    		var d = new Date();
-	    		d.setDate(inst.currentDay);
-		      	d.setMonth(month-1);
-		      	d.setFullYear(year);
-		      	$(this).datepicker("setDate", d);				
+    		// if we have an instance of the date picker and it has a value we can work on
+    		if (inst  && inst.currentDay && inst.input.val()) {
+    			// get the currently selected day - this can change as soon as we call getDate below
+    			var dy = inst.selectedDay;
+    			// get an jQuery wrapped instance of the date picker control
+    			var dp = $(this);
+    			// get the current date - the day can be from the initial or previous value, different from the currently selected
+	    		var d = dp.datepicker("getDate");
+	    		// if we got a date
+	    		if (d) {
+	    			// if we had a selected day use that
+	    			if (dy) d.setDate(dy);
+	    			// set the month to the new one
+		      		d.setMonth(month-1);
+		      		// set the year to the new one
+		      		d.setFullYear(year);
+		      		// set the new date
+		      		dp.datepicker("setDate", d);
+		      		// trigger a change in the control unless these have been temporarily turned off in the setData method 
+		      		if (!details.dontTriggerChange) inst.input.trigger("change");
+				}
 			}
 		} catch(ex){}
     }
