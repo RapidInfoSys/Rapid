@@ -434,7 +434,7 @@ $( "#" + id ).find("input").datepicker({
     	// this changes the default behaviour of the month and year change drop down and arrows to select the previously selected day in the new month or year
     	try {
     		// if we have an instance of the date picker and it has a value we can work on
-    		if (inst && inst.input.val()) {
+    		if (inst && inst.currentDay && inst.input.val()) {
     			// get the currently selected day - this can change as soon as we call getDate below
     			var dy = inst.selectedDay;
     			// get an jQuery wrapped instance of the date picker control
