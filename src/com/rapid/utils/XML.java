@@ -56,6 +56,13 @@ import org.xml.sax.SAXException;
 
 public class XML {
 
+	private static DocumentBuilder getDocBuilder() throws ParserConfigurationException {
+
+		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+        return docBuilderFactory.newDocumentBuilder();
+
+	}
+
 	public static Document openDocument(File file) throws ParserConfigurationException, SAXException, IOException {
 
 		InputStream inputStream = new FileInputStream(file);
@@ -63,9 +70,7 @@ public class XML {
         InputSource is = new InputSource(reader);
         is.setEncoding("UTF-8");
 
-		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-        Document document = docBuilder.parse (is);
+        Document document = getDocBuilder().parse (is);
 
         return document;
 
@@ -73,9 +78,15 @@ public class XML {
 
 	public static Document openDocument(String string) throws ParserConfigurationException, SAXException, IOException {
 
-		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-        Document document = docBuilder.parse( new InputSource( new StringReader(string)));
+        Document document = getDocBuilder().parse( new InputSource( new StringReader(string)));
+
+        return document;
+
+	}
+
+	public static Document openDocument(Reader reader) throws ParserConfigurationException, SAXException, IOException {
+
+        Document document = getDocBuilder().parse( new InputSource( reader));
 
         return document;
 
