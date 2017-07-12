@@ -1691,8 +1691,36 @@ function loadVersion(forceLoad) {
 				_selectionBorder.show();	
 				// set its parent to the _page
 				control._parent = _page;
-				// add it to the _page childControls collection
-				_page.childControls.push(control);			
+				
+				// assume there are no non-visual controls and control will go at the end
+				var firstNonVisualControlPos = -1;
+				// if this is not a nonVisualControl and there are currently page controls
+				if (controlClass.getHtmlFunction.indexOf("nonVisibleControl") < 0 && _page.childControls && _page.childControls.length > 0) {
+					// loop all page controls looking for first non-visual controls
+					for (var i in _page.childControls) {
+						// get the child control
+						var childControl = _page.childControls[i];
+						// get the class
+						var childControlClass = _controlTypes[childControl.type];
+						// if it is nonVisible
+						if (childControlClass.getHtmlFunction.indexOf("nonVisibleControl") > 0) {
+							// retain this position
+							firstNonVisualControlPos = i*1;
+							// we're done
+							break;
+						}
+					}
+				}
+				
+				// if there is a firstNonVisualControlPos
+				if (firstNonVisualControlPos > -1) {
+					// insert control before first nonVisual control
+					_page.childControls.splice(firstNonVisualControlPos,0,control);
+				} else {
+					// add it to the end of the _page childControls collection
+					_page.childControls.push(control);
+				}
+
 				// now run any pushJavaScript
 				if (control._pushed) control._pushed();
 				// retain a reference to the selected control					
@@ -3763,18 +3791,31 @@ function arrangeNonVisibleControls() {
 				
 		// start at first x position
 		var x = _panelPinnedOffset + 10;
-		
-		// loop the page child controls
-		for (var i in _page.childControls) {
+		// array of non-vis controls
+		var nonVisControls = [];
+		// assume no map update required
+		var mapUpdateRequired = false;		
+			
+		// loop the page child controls using the old style loop so we can recheck
+		for (var i = 0; i < _page.childControls.length; i++) {
 			
 			// get the child control
 			var childControl = _page.childControls[i];
 			// get the class
 			var childControlClass = _controlTypes[childControl.type];
-			
+						
 			// if it is nonVisible
 			if (childControlClass.getHtmlFunction.indexOf("nonVisibleControl") > 0) {
-				
+
+				// retain current position of this non-vis control - we will check if any vis controls are after it
+				lastNonVisControlPos = i;
+				// remove non-vis control from current position
+				_page.childControls.splice(i,1);
+				// add to non-vis controls collection - eventually we will add these back in order
+				nonVisControls.push(childControl);
+				// go back a step to ensure we loop over the control that just moved into this now-vacted position
+				i--;
+								
 				// get the object
 				var	o = childControl.object;
 				
@@ -3795,8 +3836,22 @@ function arrangeNonVisibleControls() {
 				// add to the growing x value
 				x += (5 + w);
 				
-			}
-		}		
+			} else {
+				// we've hit a visual control after a non-vis one - we will need to update the map
+				if (nonVisControls.length > 0) mapUpdateRequired = true;
+			}// non-vis / vis check
+		
+		} // control loop 
+			
+		// non-vis loop
+		for (var i in nonVisControls) {
+			// add to end of child controls
+			_page.childControls.push(nonVisControls[i]);			
+		}
+		
+		// update map if this is required
+		if (mapUpdateRequired) buildPageMap(true);
+		
 	}	
 }
 
