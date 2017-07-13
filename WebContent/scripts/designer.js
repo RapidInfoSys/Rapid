@@ -57,6 +57,8 @@ var _pages = [];
 var _actions = [];
 // a list of available style classes
 var _styleClasses = [];
+// the controlAndActionPrefix, default to empty space
+var _controlAndActionPrefix = "";
 
 // the document window
 var _window;
@@ -2548,6 +2550,9 @@ $(document).ready( function() {
         			// calculate the scale
         			_scale = _ppi / _devices[_device].PPI * _devices[_device].scale * _zoom;
         		}
+        		
+        		// look for controlAndActionPrefix and retain if so. If not initial blank place will be retained
+        		if (systemData.controlAndActionPrefix) _controlAndActionPrefix = systemData.controlAndActionPrefix;
         		
         		// now load the apps
     	    	loadApps();	

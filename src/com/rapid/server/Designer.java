@@ -277,6 +277,13 @@ public class Designer extends RapidHttpServlet {
 							// add the devices
 							jsonSystemData.put("devices", getDevices());
 
+							// look for a controlAndActionPrefix
+							String controlAndActionPrefix = request.getServletContext().getInitParameter("controlAndActionPrefix");
+							// update to empty string if not present - this is the default and expected for older versions of the web.xml
+							if (controlAndActionPrefix == null) controlAndActionPrefix = "";
+							// add the controlAndActionPrefix
+							jsonSystemData.put("controlAndActionPrefix", controlAndActionPrefix);
+
 							// put into output string
 							output = jsonSystemData.toString();
 

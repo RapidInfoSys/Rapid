@@ -139,7 +139,7 @@ function Control(controlType, parentControl, jsonControl, loadComplexObjects, pa
 					// give this control a new, unique id when pasting
 					if (paste) {					
 						// set a unique ID for this control
-						this.id = _page.id + "_C" + _nextId + "_";
+						this.id = _controlAndActionPrefix + _page.id + "_C" + _nextId + "_";
 						// if this is the rapid app, prefix it
 						if (_version.id == "rapid") this.id = "rapid_" + this.id;
 						// check the pasteMap
@@ -272,7 +272,7 @@ function Control(controlType, parentControl, jsonControl, loadComplexObjects, pa
 		} else {
 			
 			// set a unique ID for this control (the last underscore is to stop _C12 being replaced by _C1)
-			this.id = _page.id + "_C" + _nextId + "_";
+			this.id = _controlAndActionPrefix + _page.id + "_C" + _nextId + "_";
 			// inc the next id
 			_nextId++;
 			// if this is the rapid app append a prefix so as not to be affected by any app they are used with
