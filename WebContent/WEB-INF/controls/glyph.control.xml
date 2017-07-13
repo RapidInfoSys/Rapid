@@ -59,6 +59,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            </setConstructValueFunction>
 	            <changeValueJavaScript>glyphCode</changeValueJavaScript>
 	            <refreshHtml>true</refreshHtml>
+	            <refreshProperties>true</refreshProperties>
 	            <helpHtml>Sets the glyph to appear from a library of different images.</helpHtml>
 	        </property>
 	        

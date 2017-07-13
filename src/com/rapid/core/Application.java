@@ -1043,8 +1043,8 @@ public class Application {
 						if (styleClass.indexOf(")") > 0) styleClass = styleClass.substring(0, styleClass.indexOf(")"));
 						// remove any colons
 						if (styleClass.indexOf(":") > 0) styleClass = styleClass.substring(0, styleClass.indexOf(":"));
-						// check we don't have it already and add it if ok
-						if (!classes.contains(styleClass)) classes.add(styleClass);
+						// check we don't have it already and add it if ok - i.e. contains no other .'s (this is common for urls getting picked up here)
+						if (!classes.contains(styleClass) && styleClass.indexOf(".") < 0) classes.add(styleClass);
 					}
 
 				}
