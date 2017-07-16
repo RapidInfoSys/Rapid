@@ -296,6 +296,14 @@ if (data != null && data !== undefined) {
 	    
 	    <styles>
 	        <style>
+	            <name>Responsive container</name>
+	            <getAppliesToFunction>
+					<![CDATA[
+return "#" + this.id;
+	       			 ]]>
+	            </getAppliesToFunction>
+	        </style>	        
+	        <style>
 	            <name>Radio button box</name>  
 	            <getAppliesToFunction>
 					<![CDATA[	      
@@ -304,30 +312,37 @@ return "#" + this.id + " div.form-group, #" + this.id + " div.r-radioInline";
 	            </getAppliesToFunction>
 	        </style>
 	        <style>
-	            <name>Responsive radio buttons</name>
+	            <name>Radio buttons</name>
 	            <getAppliesToFunction>
 					<![CDATA[
-//return "#" + this.id + " input[type=radio]";
 return "#" + this.id + " .check-radio";
 	       			 ]]>
 	            </getAppliesToFunction>
 	        </style>
 	        <style>
-	            <name>Labels</name>
+	            <name>Radio controls</name>
 	            <getAppliesToFunction>
 					<![CDATA[
-return "#" + this.id + " span";
+return "#" + this.id + " input";
 	       			 ]]>
 	            </getAppliesToFunction>
 	        </style>
 	        <style>
-	            <name>Responsive container</name>
+	            <name>:hover</name>
 	            <getAppliesToFunction>
 					<![CDATA[
-return "#" + this.id;
+return "#" + this.id + " input:hover";
 	       			 ]]>
 	            </getAppliesToFunction>
 	        </style>
+	        <style>
+	            <name>:focus</name>
+	            <getAppliesToFunction>
+					<![CDATA[
+return "#" + this.id + " input:focus";
+	       			 ]]>
+	            </getAppliesToFunction>
+	        </style>	        
 	    </styles>
 	    
 	</control>

@@ -111,7 +111,7 @@ return ["none","circle","circle-o","square","square-o"];
 	        <property>
 	            <key>extraSmall</key>
 	            <name>Extra small width</name>
-	            <setConstructValueFunction>return "xs-1"</setConstructValueFunction>
+	            <setConstructValueFunction>return "xs-12"</setConstructValueFunction>
 	            <changeValueJavaScript>select</changeValueJavaScript>
 	            <getValuesFunction>
 	                <![CDATA[
@@ -329,6 +329,14 @@ return "#" + this.id + ":hover";
 	       			 ]]>	                
 	            </getAppliesToFunction>
 	        </style>
+	        <style>
+	            <name>:focus</name>
+	            <getAppliesToFunction>
+					<![CDATA[
+return "#" + this.id + ":focus";
+	       			 ]]>
+	            </getAppliesToFunction>
+	        </style>	        
 	    </styles>
 	    
 	</control>

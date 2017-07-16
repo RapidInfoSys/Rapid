@@ -267,7 +267,7 @@ if (data != null && data !== undefined) {
 	    
 	    <styles>       
 	        <style>
-	            <name>Responsive panel</name>  
+	            <name>Responsive text</name>  
 	            <getAppliesToFunction>
 					<![CDATA[	      
 return "#" + this.id;

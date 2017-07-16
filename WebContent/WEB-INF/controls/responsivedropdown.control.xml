@@ -281,7 +281,15 @@ if (data !== undefined) {
 	    	    
 	    <styles>
 	        <style>
-	            <name>Responsive drop down</name>
+	            <name>Responsive container</name>
+	            <getAppliesToFunction>
+					<![CDATA[
+return "#" + this.id;
+	       			 ]]>
+	            </getAppliesToFunction>
+	        </style>	        
+	        <style>
+	            <name>Drop down control</name>
 	            <getAppliesToFunction>
 					<![CDATA[
 return "#" + this.id + " select";
@@ -289,13 +297,21 @@ return "#" + this.id + " select";
 	            </getAppliesToFunction>
 	        </style>
 	        <style>
-	            <name>Responsive container</name>
+	            <name>:hover</name>
 	            <getAppliesToFunction>
 					<![CDATA[
-return "#" + this.id;
+return "#" + this.id + " select:hover";
 	       			 ]]>
 	            </getAppliesToFunction>
 	        </style>
+	        <style>
+	            <name>:focus</name>
+	            <getAppliesToFunction>
+					<![CDATA[
+return "#" + this.id + " select:focus";
+	       			 ]]>
+	            </getAppliesToFunction>
+	        </style>	        
 	    </styles>
 	    
 	   	<runtimeProperties>

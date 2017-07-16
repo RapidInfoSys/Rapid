@@ -383,7 +383,15 @@ details.dontTriggerChange = false;
 	    
 	    <styles>
 	        <style>
-	            <name>Responsive date</name>
+	            <name>Responsive container</name>
+	            <getAppliesToFunction>
+					<![CDATA[
+return "#" + this.id;
+	       			 ]]>
+	            </getAppliesToFunction>
+	        </style>	        
+	        <style>
+	            <name>Date control</name>
 	            <getAppliesToFunction>
 					<![CDATA[
 return "#" + this.id + " input";
@@ -403,14 +411,6 @@ return "#" + this.id + " input:hover";
 	            <getAppliesToFunction>
 					<![CDATA[
 return "#" + this.id + " input:focus";
-	       			 ]]>
-	            </getAppliesToFunction>
-	        </style>
-	        <style>
-	            <name>Responsive container</name>
-	            <getAppliesToFunction>
-					<![CDATA[
-return "#" + this.id;
 	       			 ]]>
 	            </getAppliesToFunction>
 	        </style>

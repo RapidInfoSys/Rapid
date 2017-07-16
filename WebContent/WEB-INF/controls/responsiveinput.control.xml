@@ -284,7 +284,15 @@ if (control.is(".autoheight")) textarea_autoheight_size(control, true);
 	    
 	    <styles>
 	        <style>
-	            <name>Responsive input box</name>
+	            <name>Responsive container</name>
+	            <getAppliesToFunction>
+					<![CDATA[
+return "#" + this.id;
+	       			 ]]>
+	            </getAppliesToFunction>
+	        </style>	        
+	        <style>
+	            <name>Input box control</name>
 	            <getAppliesToFunction>
 					<![CDATA[
 return "#" + this.id + " input, #" + this.id + " textarea";
@@ -304,14 +312,6 @@ return "#" + this.id + " input:hover, #" + this.id + " textarea:hover";
 	            <getAppliesToFunction>
 					<![CDATA[
 return "#" + this.id + " input:focus, #" + this.id + " textarea:focus";
-	       			 ]]>
-	            </getAppliesToFunction>
-	        </style>
-	        <style>
-	            <name>Responsive container</name>
-	            <getAppliesToFunction>
-					<![CDATA[
-return "#" + this.id;
 	       			 ]]>
 	            </getAppliesToFunction>
 	        </style>

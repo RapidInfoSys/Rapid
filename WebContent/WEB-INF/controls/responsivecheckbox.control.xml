@@ -271,8 +271,16 @@ if (changeEvents) control.trigger("change");
 	    </events>
 	    
 	    <styles>
+			<style>
+	            <name>Responsive container</name>
+	            <getAppliesToFunction>
+					<![CDATA[
+return "#" + this.id;
+	       			 ]]>
+	            </getAppliesToFunction>
+	        </style>
 	        <style>
-	            <name>Responsive checkbox</name>
+	            <name>Checkbox control</name>
 	            <getAppliesToFunction>
 					<![CDATA[
 return "#" + this.id + " .check-input";
@@ -283,18 +291,18 @@ return "#" + this.id + " .check-input";
 	            <name>:hover</name>
 	            <getAppliesToFunction>
 					<![CDATA[
-return "#" + this.id + " :hover";
+return "#" + this.id + " .check-input:hover";
 	       			 ]]>
 	            </getAppliesToFunction>
 	        </style>
 	        <style>
-	            <name>Responsive container</name>
+	            <name>:focus</name>
 	            <getAppliesToFunction>
 					<![CDATA[
-return "#" + this.id;
+return "#" + this.id + " .check-input:focus";
 	       			 ]]>
 	            </getAppliesToFunction>
-	        </style>
+	        </style>	        
 	    </styles>
 	    
 	</control>
