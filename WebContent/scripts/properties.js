@@ -35,6 +35,8 @@ var _dialogueListeners = {};
 var _dialogueZindex = 10012;
 // this holds the cell, propertyObject, property, and details by dialogue id for refeshing child actions
 var _dialogueRefeshProperties = {};
+// the control name is important for checking conflicts and the change event is not picked up if a new control is selected so we track it specially
+var _controlName;
 
 // this function returns a set of options for a dropdown using the current set of pages
 function getPageOptions(selectId, ignoreId) {
@@ -606,17 +608,6 @@ function updateProperty(cell, propertyObject, property, details, value) {
 										
 			}
 			
-			// if this is the name
-			if (property.key == "name") {
-				// if the property map is visible
-				if ($("#pageMap").is(":visible")) {
-					// get the control class
-					var controlClass = _controlTypes[propertyObject.type];
-					// update the name
-					$("#pageMap").find("span[data-id=" + propertyObject.id + "]").html(((controlClass.image) ? "<img src='" + controlClass.image + "'/>" : "") + propertyObject.type + (propertyObject.name ? " - " + propertyObject.name: ""));
-				}
-			}
-			
 		} // property value changed check		
 	} // page lock check	
 }
@@ -854,10 +845,20 @@ function Property_text(cell, propertyObject, property, details) {
 	addListener( input.keyup( function(ev) { 
 		updateProperty(cell, propertyObject, property, details, ev.target.value); 
 	}));
-	// if this is the name also add an onchange to rebuild the map
-	if (property.key == "name") {
-		addListener( input.change( function(ev) { 
+	// if this is a control's name property
+	if (propertyObject.object && property.key == "name") {
+		// retain the name
+		_controlName = value;
+		// add a listener to rebuild the page map with the new control name - we need blur as change does not pick up when the user selects a new control
+		addListener( input.change( function(ev) {
+			// retain the changed name
+			_controlName = $(ev.target).val();
+			// remove any conflict message
+			cell.closest("table").find("td.conflict").remove();
+			// update the page map
 			buildPageMap();
+			// if a conflict is present, add it
+			if (propertyObject._conflict) cell.closest("table").find("tr:nth-child(2)").after("<tr><td colspan='2' class='conflict propertyHeader'>Page \"" + propertyObject._conflict + "\" has a control with the same name</td></tr>");			
 		}));
 	}
 }

@@ -61,7 +61,7 @@ function loadControl(jsonControl, parentControl, loadActions, paste, undo, check
 			
 }
 
-//this object function serves as a closure for holding the static values required to construct each type of control - they're created and assigned globally when the designer loads and originate from the .control.xml files
+// this object function serves as a closure for holding the static values required to construct each type of control - they're created and assigned globally when the designer loads and originate from the .control.xml files
 function ControlClass(controlClass) {
 	// retain all values passed in the json for the control (from the .control.xml file)
 	for (var i in controlClass) this[i] = controlClass[i];
@@ -718,8 +718,8 @@ function getControlConflict(c) {
 			}	
 		}
 		
-		// if not found in this page
-		if (!conflict) {
+		// if not found in this page and we are a form, check other pages
+		if (!conflict && _version.isForm) {
 			// loop all pages looking for controls with the same name
 			for (var i in _pages) {
 				var page = _pages[i];

@@ -3426,8 +3426,13 @@ function coverMouseDown(ev) {
 	_mouseDown = true;
 	// hide the control panel (sometimes it's mouseout isn't hit)
 	if (!_panelPinned) hideControlPanel();
-	// if there is a selected control with unapplied styles, apply now before wiping everything out
-	if (_selectedControl && !_stylesApplied) applyStyles();
+	// if there is a selected control - some change events are not picked up so we need to do them here 
+	if (_selectedControl) {
+		// if the control name has changed and not been picked up
+		if (_controlName != _selectedControl.name) buildPageMap();
+		// if unapplied styles, apply now before wiping everything out
+		if (!_stylesApplied) applyStyles();
+	}
 	// get the control under the mouse X/Y
 	var c = getMouseControl(ev);
 	// if we got one
@@ -3947,7 +3952,7 @@ function hideControlPanel(resetOffset) {
 	$("#controlPanelInner").hide();
 }
 
-function hidePropertiesPanel() {	
+function hidePropertiesPanel() {
 	// hide the inner
 	$("#propertiesPanelInner").hide();
 	// slide in the panel - note the .stop(true, true) which clears any current animation queue and sets the final settings immediately 
