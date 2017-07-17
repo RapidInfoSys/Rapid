@@ -74,13 +74,20 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <setConstructValueFunction>return "";</setConstructValueFunction>
 	            <changeValueJavaScript>text</changeValueJavaScript>
 	            <refreshHtml>true</refreshHtml>
-	            <helpHtml>Sets an initial value for the date.</helpHtml>
+	            <helpHtml>Sets an initial value for the date. The value may be in the current date format (e.g., "26/01/2009"), a number of days from today (e.g., 0, or +7) or a set of values and periods ("y" for years, "m" for months, "w" for weeks, "d" for days, e.g., "+1m +7d").</helpHtml>
 	        </property>
 	        
 	        <property>
 	            <key>format</key>
 	            <name>Date format</name>
-	            <setConstructValueFunction>return "dd/mm/yy";</setConstructValueFunction>
+	            <setConstructValueFunction>
+switch (_localDateFormat) {
+	case "MM/dd/yyyy": return "mm/dd/yy";
+	case "yyyy-MM-dd": return "yy-mm-dd";
+	case "dd-MMM-yyyy": return "dd-M-yy";
+	default: return "dd/mm/yy";
+}
+	            </setConstructValueFunction>
 	            <changeValueJavaScript>select</changeValueJavaScript>
 	            <getValuesFunction>
 	                <![CDATA[
@@ -263,7 +270,7 @@ var inputId = "";
 if (this.responsiveLabel) inputId = " id='" + this.id + "_input'";
 
 var placeholder = "Choose a date";
-switch (this.dateFormat) {
+switch (this.format) {
 	case "dd/mm/yy":
 		placeholder = "dd/mm/yyyy";
 		break;
@@ -278,7 +285,8 @@ switch (this.dateFormat) {
 		break;
 }
 if (this.readonly === undefined) this.readonly = true;
-html = "<input " + inputId + " name='" + this.id + "' " + " class='date form-control" + classes + " ' value='" + this.value + "'placeholder='" + placeholder + "'" + (this.readonly ? "readonly='readonly'" : "") + "/>";
+// setting the value has been moved to the init
+html = "<input " + inputId + " name='" + this.id + "' " + " class='date form-control" + classes + "' placeholder='" + placeholder + "'" + (this.readonly ? "readonly='readonly'" : "") + "/>";
 
 if (this.responsiveLabel) {
 	return "<div id='" + this.id + "' class='r-date" + classes + "'><label for='" + this.id + "input'>" + this.responsiveLabel + "</label>" + html + "</div>";
@@ -286,7 +294,23 @@ if (this.responsiveLabel) {
 	return "<div id='" + this.id + "' class='r-date" + classes + "'>" + html + "</div>";
 }
 	        ]]>
-	    </getHtmlFunction> 
+	    </getHtmlFunction>
+	    
+		<rebuildJavaScript>
+	        <![CDATA[
+// update control to input
+this.object.find("input").datepicker({
+    dateFormat: this.format
+}).datepicker(  "setDate", this.value );	
+	        ]]>		    
+		</rebuildJavaScript>
+				
+		<saveJavaScript>
+	        <![CDATA[
+// this class needs removing so jQueryUI knows to rebuild properly	        
+this.object.find("input").removeClass("hasDatepicker");	        
+	        ]]>		    
+		</saveJavaScript>			    
 	    
 	    <getDetailsFunction>
 	        <![CDATA[
@@ -297,7 +321,8 @@ return {
 	maxDate: this.maxDate,
 	yearRange: (this.yearRange ? this.yearRange: "-100:+10"),
 	showOtherMonths: this.showOtherMonths,
-	selectOtherMonths: this.showOtherMonths && this.selectOtherMonths
+	selectOtherMonths: this.showOtherMonths && this.selectOtherMonths,
+	value: this.value
 };
 	        ]]>
 	    </getDetailsFunction>
@@ -491,6 +516,8 @@ $( "#" + id ).find("input").datepicker({
 		}
 	}
 });
+// now set any value
+$( "#" + id ).find("input").datepicker("setDate", details.value);
 	        ]]>
 	    </initJavaScript>
 

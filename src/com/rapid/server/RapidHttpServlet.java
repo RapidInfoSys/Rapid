@@ -207,6 +207,16 @@ public class RapidHttpServlet extends HttpServlet {
 		return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 	}
 
+		// this is used to format between Java Date and Local date format - not threadsafe so new instance each time
+		public String getLocalDateFormat() {
+			return (String) getServletContext().getAttribute("localDateFormat");
+		}
+
+		// this is used to format between Java Date and local dateTime format (used by backups, page lock, and database action) - not threadsafe so new instance each time
+		public String getLocalDateTimeFormat() {
+			return (String) getServletContext().getAttribute("localDateTimeFormat");
+		}
+
 	// this is used to format between Java Date and Local date format - not threadsafe so new instance each time
 	public SimpleDateFormat getLocalDateFormatter() {
 		return new SimpleDateFormat((String) getServletContext().getAttribute("localDateFormat"));

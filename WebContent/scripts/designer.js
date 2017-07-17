@@ -57,6 +57,8 @@ var _pages = [];
 var _actions = [];
 // a list of available style classes
 var _styleClasses = [];
+// the local date format
+var _localDateFormat = "dd/MM/yyyy";
 // the controlAndActionPrefix, default to empty space
 var _controlAndActionPrefix = "";
 
@@ -2550,6 +2552,9 @@ $(document).ready( function() {
         			// calculate the scale
         			_scale = _ppi / _devices[_device].PPI * _devices[_device].scale * _zoom;
         		}
+        		
+        		// look for localDateformat and retain if so. If not initial UK format will be retained if not
+        		if (systemData.localDateFormat) _localDateFormat = systemData.localDateFormat;
         		
         		// look for controlAndActionPrefix and retain if so. If not initial blank place will be retained
         		if (systemData.controlAndActionPrefix) _controlAndActionPrefix = systemData.controlAndActionPrefix;

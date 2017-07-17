@@ -66,13 +66,20 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <setConstructValueFunction>return "";</setConstructValueFunction>
 	            <changeValueJavaScript>text</changeValueJavaScript>
 	            <refreshHtml>true</refreshHtml>
-	            <helpHtml>Sets an initial value for the date.</helpHtml>
+	            <helpHtml>Sets an initial value for the date. The value may be in the current date format (e.g., "26/01/2009"), a number of days from today (e.g., 0, or +7) or a set of values and periods ("y" for years, "m" for months, "w" for weeks, "d" for days, e.g., "+1m +7d").</helpHtml>
 	        </property>
 	        
 	        <property>
 	            <key>format</key>
 	            <name>Date format</name>
-	            <setConstructValueFunction>return "dd/mm/yy";</setConstructValueFunction>
+	            <setConstructValueFunction>
+switch (_localDateFormat) {
+	case "MM/dd/yyyy": return "mm/dd/yy";
+	case "yyyy-MM-dd": return "yy-mm-dd";
+	case "dd-MMM-yyyy": return "dd-M-yy";
+	default: return "dd/mm/yy";
+}
+	            </setConstructValueFunction>
 	            <changeValueJavaScript>select</changeValueJavaScript>
 	            <getValuesFunction>
 	                <![CDATA[
@@ -174,7 +181,7 @@ var date_quickOracleRegex = /^\d{1,2}-[a-zA-Z]{3}-\d{4}/;
 	    <getHtmlFunction>
 	        <![CDATA[
 var placeholder = "Choose a date";
-switch (this.dateFormat) {
+switch (this.format) {
 	case "dd/mm/yy":
 		placeholder = "dd/mm/yyyy";
 		break;
@@ -189,10 +196,26 @@ switch (this.dateFormat) {
 		break;		
 }
 if (this.readonly === undefined) this.readonly = true;
-return "<input id='" + this.id + "' name='" + this.id + "' " + " class='date" + getStyleClasses(this) + "' value='" + this.value + "'placeholder='" + placeholder + "'" + (this.readonly ? "readonly='readonly'" : "") + "/>";
+// setting of value is in init methods
+return "<input id='" + this.id + "' name='" + this.id + "' " + " class='date" + getStyleClasses(this) + "' placeholder='" + placeholder + "'" + (this.readonly ? "readonly='readonly'" : "") + "/>";
 	        ]]>
 	    </getHtmlFunction> 
-	    
+	    	    
+		<rebuildJavaScript>
+	        <![CDATA[	        
+this.object.datepicker({
+    dateFormat: this.format
+}).datepicker(  "setDate", this.value );	
+	        ]]>		    
+		</rebuildJavaScript>
+		
+		<saveJavaScript>
+	        <![CDATA[
+// this class needs removing so jQueryUI knows to rebuild properly	        
+this.object.removeClass("hasDatepicker");	        
+	        ]]>		    
+		</saveJavaScript>
+		 
 	    <getDetailsFunction>
 	        <![CDATA[
 return {
@@ -202,7 +225,8 @@ return {
 	maxDate: this.maxDate,
 	yearRange: (this.yearRange ? this.yearRange: "-100:+10"),
 	showOtherMonths: this.showOtherMonths,
-	selectOtherMonths: this.showOtherMonths && this.selectOtherMonths
+	selectOtherMonths: this.showOtherMonths && this.selectOtherMonths,
+	value: this.value
 };
 	        ]]>
 	    </getDetailsFunction>
@@ -313,7 +337,7 @@ return "#" + this.id + ":focus";
 		<initJavaScript>
 	        <![CDATA[
 var format = details.format;
-if (!format) format = "dd/mm/yy"; 	        
+if (!format) format = "dd/mm/yy";
 $( "#" + id ).datepicker({
 	changeMonth: true,
     changeYear: true,
@@ -385,9 +409,11 @@ $( "#" + id ).datepicker({
 		}	
 	}		
 });
+// now set any value
+$( "#" + id ).datepicker("setDate", details.value);
 	        ]]>
 	    </initJavaScript>
-
+	    
 	    <runtimeProperties>
 	    	<runtimeProperty>
 	    		<type>age</type>

@@ -277,6 +277,9 @@ public class Designer extends RapidHttpServlet {
 							// add the devices
 							jsonSystemData.put("devices", getDevices());
 
+							// add the local date format
+							jsonSystemData.put("localDateFormat", getLocalDateFormat());
+
 							// look for a controlAndActionPrefix
 							String controlAndActionPrefix = request.getServletContext().getInitParameter("controlAndActionPrefix");
 							// update to empty string if not present - this is the default and expected for older versions of the web.xml
