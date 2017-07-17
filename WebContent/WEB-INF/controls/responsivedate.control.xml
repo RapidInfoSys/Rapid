@@ -286,7 +286,7 @@ switch (this.format) {
 }
 if (this.readonly === undefined) this.readonly = true;
 // setting the value has been moved to the init
-html = "<input " + inputId + " name='" + this.id + "' " + " class='date form-control" + classes + "' placeholder='" + placeholder + "'" + (this.readonly ? "readonly='readonly'" : "") + "/>";
+html = "<input " + inputId + " name='" + this.id + "' " + " class='form-control' placeholder='" + placeholder + "'" + (this.readonly ? "readonly='readonly'" : "") + "/>";
 
 if (this.responsiveLabel) {
 	return "<div id='" + this.id + "' class='r-date" + classes + "'><label for='" + this.id + "input'>" + this.responsiveLabel + "</label>" + html + "</div>";
@@ -298,6 +298,19 @@ if (this.responsiveLabel) {
 	    
 		<rebuildJavaScript>
 	        <![CDATA[
+// update the responsive class
+var classes = this.object.attr("class").split(' ');
+// loop and remove if responsive
+for (var i in classes) {
+	var c = classes[i]; 
+	if (c.indexOf("col-") == 0) this.object.removeClass(c);
+}
+// add any responsive classes back
+if (this.extraSmall) this.object.addClass("col-" + this.extraSmall);
+if (this.small) this.object.addClass("col-" + this.small);
+if (this.medium) this.object.addClass("col-" + this.medium);
+if (this.large) this.object.addClass("col-" + this.large);
+
 // update control to input
 this.object.find("input").datepicker({
     dateFormat: this.format
