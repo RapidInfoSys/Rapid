@@ -94,6 +94,7 @@ switch (_localDateFormat) {
 return [["dd/mm/yy","dd/mm/yyyy"],["mm/dd/yy","mm/dd/yyyy"],["yy-mm-dd","yyyy-mm-dd"],["dd-M-yy","dd-MMM-yyyy"],["d MM yy","Short day, full month"],["DD, d MM, yy","Full date details"]];
 					]]>
 	            </getValuesFunction>
+	            <refreshHtml>true</refreshHtml>
 	            <helpHtml>Sets the date format. Useful for other regions.</helpHtml>
 	        </property>
 	        
@@ -310,9 +311,35 @@ if (this.extraSmall) this.object.addClass("col-" + this.extraSmall);
 if (this.small) this.object.addClass("col-" + this.small);
 if (this.medium) this.object.addClass("col-" + this.medium);
 if (this.large) this.object.addClass("col-" + this.large);
-
-// update control to input
-this.object.find("input").datepicker({
+// get object reference
+var o = this.object.find("input");
+// if readonly
+if (this.readonly) {
+	// add attribute
+	o.attr("readonly","readonly");
+} else {
+	// remove attribute
+	o.removeAttr("readonly");
+}
+var placeholder = "Choose a date";
+switch (this.format) {
+	case "dd/mm/yy":
+		placeholder = "dd/mm/yyyy";
+		break;
+	case "mm/dd/yy":
+		placeholder = "mm/dd/yyyy";
+		break;
+	case "yy-mm-dd":
+		placeholder = "yyyy-mm-dd";
+		break;
+	case "dd-M-yy":
+		placeholder = "dd-mmm-yyyy";
+		break;		
+}
+// set placeholder
+o.attr("placeholder",placeholder);
+// set format
+o.datepicker({
     dateFormat: this.format
 }).datepicker(  "setDate", this.value );	
 	        ]]>		    
