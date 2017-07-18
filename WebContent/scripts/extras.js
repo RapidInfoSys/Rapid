@@ -557,7 +557,7 @@ function showControlValidation(controlId, message) {
 	var control = $("#" + controlId);
 	control.addClass("validation");
 	if (message) {
-		var element = control.next("div.validation")[0];
+		var element = control.next("div.validation:not(.r-checkbox):not(.r-date):not(.r-dropdown):not(.r-inputbox):not(.r-panel):not(.r-radio):not(.r-text)")[0];
 		if (element) {
 			$(element).html(message);
 		} else {
@@ -569,7 +569,7 @@ function showControlValidation(controlId, message) {
 function hideControlValidation(controlId) {
 	var control = $("#" + controlId);
 	control.removeClass("validation");
-	control.next("div.validation").remove();
+	control.next("div.validation:not(.r-checkbox):not(.r-date):not(.r-dropdown):not(.r-inputbox):not(.r-panel):not(.r-radio):not(.r-text)").remove();
 }
 
 function makeDataObject(data, field) {
