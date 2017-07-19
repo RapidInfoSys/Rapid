@@ -2964,6 +2964,9 @@ $(document).ready( function() {
 			// disable the button
 			button.disable();
 			
+			// hide any hints
+			$("span.hint:visible").hide();
+			
 			// hide all property dialogues
 			hideDialogues();
 			
