@@ -652,7 +652,7 @@ public class Database extends Action {
 								// retain the value
 								String value = null;
 								// if it looks like a control, or a system value (bit of extra safety checking)
-								if ((rapidServlet.getControlAndActionPrefix() + "P").equals(id.substring(0,1)) && id.indexOf("_C") > 0 || id.indexOf("System.") == 0) {
+								if (id.indexOf("P") >= 0 && id.indexOf("_C") > id.indexOf("P") || id.indexOf("System.") == 0) {
 									// loop the json inputs looking for the value
 									if (jsonInputData != null) {
 										for (int j = 0; j < jsonFields.length(); j++) {
