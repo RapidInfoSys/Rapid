@@ -596,6 +596,9 @@ public class Database extends Action {
 		// place holder for the object we're going to return
 		JSONObject jsonData = null;
 
+		// get the rapidServlet
+		RapidHttpServlet rapidServlet = rapidRequest.getRapidServlet();
+
 		// retrieve the sql
 		String sql = _query.getSQL();
 
@@ -603,7 +606,7 @@ public class Database extends Action {
 		if (sql != null) {
 
 			// merge in any application parameters
-			sql = application.insertParameters(rapidRequest.getRapidServlet().getServletContext(), sql);
+			sql = application.insertParameters(rapidServlet.getServletContext(), sql);
 
 			// get any json inputs
 			JSONObject jsonInputData = jsonAction.optJSONObject("data");
@@ -649,7 +652,7 @@ public class Database extends Action {
 								// retain the value
 								String value = null;
 								// if it looks like a control, or a system value (bit of extra safety checking)
-								if ("P".equals(id.substring(0,1)) && id.indexOf("_C") > 0 || id.indexOf("System.") == 0) {
+								if ((rapidServlet.getControlAndActionPrefix() + "P").equals(id.substring(0,1)) && id.indexOf("_C") > 0 || id.indexOf("System.") == 0) {
 									// loop the json inputs looking for the value
 									if (jsonInputData != null) {
 										for (int j = 0; j < jsonFields.length(); j++) {
@@ -908,7 +911,8 @@ public class Database extends Action {
 														if (jsonRow.length() > l) parentValue = jsonRow.get(l);
 														// child value
 														Object childValue = null;
-														if (jsonChildRow.length() > l) childValue= jsonChildRow.get(fieldsMap.get(l));
+														// get child value if present
+														if (jsonChildRow.length() > l) childValue= jsonChildRow.opt(fieldsMap.get(l));
 														// non null check
 														if (parentValue != null && childValue != null) {
 															// a string we will concert the child value to

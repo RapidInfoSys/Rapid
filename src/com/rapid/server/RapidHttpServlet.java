@@ -227,6 +227,16 @@ public class RapidHttpServlet extends HttpServlet {
 		return new SimpleDateFormat((String) getServletContext().getAttribute("localDateTimeFormat"));
 	}
 
+	// any control prefix
+	public String getControlAndActionPrefix() {
+		// look for a controlAndActionPrefix
+		String controlAndActionPrefix = getServletContext().getInitParameter("controlAndActionPrefix");
+		// update to empty string if not present - this is the default and expected for older versions of the web.xml
+		if (controlAndActionPrefix == null) controlAndActionPrefix = "";
+		// return
+		return controlAndActionPrefix;
+	}
+
 	// this is used is actions such as database and webservice to cache results for off-line demos
 	public ActionCache getActionCache() {
 		return (ActionCache) getServletContext().getAttribute("actionCache");
