@@ -2083,6 +2083,12 @@ public class Rapid extends Action {
 				String title = jsonAction.optString("title").trim();
 				String description = jsonAction.optString("description").trim();
 
+				// assume designer set id
+				boolean nameIds = rapidServlet.getPageNameIds();
+
+				// check nameIds and set accordingly
+				if (nameIds) id = name;
+
 				Page newPage = new Page();
 				newPage.setId(id);
 				newPage.setName(name);

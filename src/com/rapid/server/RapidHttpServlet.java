@@ -237,6 +237,12 @@ public class RapidHttpServlet extends HttpServlet {
 		return controlAndActionPrefix;
 	}
 
+	// whether page names are used as ids
+	public boolean getPageNameIds() {
+		// return the parsed value of the parameter
+		return Boolean.parseBoolean(getServletContext().getInitParameter("pageNameIds"));
+	}
+
 	// this is used is actions such as database and webservice to cache results for off-line demos
 	public ActionCache getActionCache() {
 		return (ActionCache) getServletContext().getAttribute("actionCache");
