@@ -1235,15 +1235,23 @@ public class Designer extends RapidHttpServlet {
 								JSONArray jsonPages = jsonPage.optJSONArray("pages");
 								// if we got some
 								if (jsonPages != null) {
+									// the start page id
+									String startPageId = null;
 									// make a new map for the page orders
 									Map<String, Integer> pageOrders = new HashMap<String, Integer>();
 									// loop the page orders
 									for (int i = 0; i < jsonPages.length(); i++) {
+										// get the page id
+										String pageId = jsonPages.getJSONObject(i).getString("id");
 										// add the order to the map
-										pageOrders.put(jsonPages.getJSONObject(i).getString("id"), i);
+										pageOrders.put(pageId, i);
+										// retain page id if first one
+										if (i == 0) startPageId = pageId;
 									}
 									// replace the application pageOrders map
 									application.setPageOrders(pageOrders);
+									// update the application start page
+									application.setStartPageId(startPageId);
 									// save the application and the new orders
 									application.save(this, rapidRequest, true);
 								}
@@ -1286,9 +1294,31 @@ public class Designer extends RapidHttpServlet {
 
 								int outputs = 0;
 
-								if (jsonOutputs != null) outputs = jsonOutputs.length();
+								// if got some outputs reduce the check count for any duplicates
+								if (jsonOutputs != null) {
+									// start with full number of outputs
+									outputs = jsonOutputs.length();
+									// retain fields
+									List<String> fieldList = new ArrayList<String>();
+									// loop outputs
+									for (int i = 0; i < jsonOutputs.length(); i++) {
+										// look for a field
+										String field = jsonOutputs.getJSONObject(i).optString("field", null);
+										// if we got one
+										if (field != null) {
+											// check if we have it already
+											if (fieldList.contains(field)) {
+												// we do so reduce the control count by one
+												outputs --;
+											} else {
+												// we don't have this field yet so remember
+												fieldList.add(field);
+											}
+										}
+									}
+								}
 
-								String sql = jsonQuery.getString("SQL");
+								String sql = jsonQuery.getString("SQL").trim();
 
 								// merge in any parameters
 								sql = application.insertParameters(getServletContext(), sql);
@@ -1298,7 +1328,11 @@ public class Designer extends RapidHttpServlet {
 
 								if (outputs == 0) {
 
-									df.getPreparedStatement(rapidRequest,sql , parameters);
+									if (sql.toLowerCase().startsWith("select")) {
+										throw new Exception("Select statement should have at least one output");
+									} else {
+										df.getPreparedStatement(rapidRequest,sql , parameters);
+									}
 
 								} else {
 
