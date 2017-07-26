@@ -825,9 +825,9 @@ public class Database extends Action {
 									jsonRows = new JSONArray();
 								}
 
-							}
+							} // got results loop
 
-						}
+						} // parameters list loop - not sure whether this ever called
 
 					} else {
 

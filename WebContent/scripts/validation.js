@@ -103,6 +103,7 @@ function showValidation(control) {
 				control.validation = {
 					type: "",
 					allowNulls: false,
+					passHidden: true,
 					regEx: "",
 					message: "",
 					javaScript: null
