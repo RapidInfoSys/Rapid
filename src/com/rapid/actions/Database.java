@@ -741,9 +741,6 @@ public class Database extends Action {
 								// got fields indicator
 								boolean gotFields = false;
 
-								// get resultset again just in case it's been moved on
-								rs = st.getResultSet();
-
 								// get it's meta data for the field names
 								ResultSetMetaData rsmd = rs.getMetaData();
 
@@ -820,6 +817,8 @@ public class Database extends Action {
 
 								// if we got some
 								if (gotResults) {
+									// move result set on
+									rs = st.getResultSet();
 									// clear fields collection
 									jsonFields = new JSONArray();
 									// clear rows collection can start initialised
