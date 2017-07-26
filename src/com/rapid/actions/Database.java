@@ -28,6 +28,7 @@ package com.rapid.actions;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.text.SimpleDateFormat;
@@ -726,84 +727,106 @@ public class Database extends Action {
 							// get the result set!
 							ResultSet rs = df.getPreparedResultSet(rapidRequest, sql, parameters);
 
-							// get it's meta data for the field names
-							ResultSetMetaData rsmd = rs.getMetaData();
-
-							// got fields indicator
-							boolean gotFields = false;
-
 							// date formatters we might need but only want to fetch / initialise once
 							SimpleDateFormat localDateFormatter = null;
 							SimpleDateFormat localDateTimeFormatter = null;
 
-							// loop the result set
-							while (rs.next()) {
+							// assume results
+							boolean gotResults = true;
+							// get the statement
+							Statement st = rs.getStatement();
 
-								// initialise the row
-								JSONArray jsonRow = new JSONArray();
+							while (gotResults) {
 
-								// loop the columns
-								for (int i = 0; i < rsmd.getColumnCount(); i++) {
-									// add the field name to the fields collection if not done yet
-									if (!gotFields) jsonFields.put(rsmd.getColumnLabel(i + 1));
-									// get the column type
-									int columnType = rsmd.getColumnType(i + 1);
-									// add the data to the row according to it's type
-									switch (columnType) {
-									case (Types.NUMERIC) :
-										jsonRow.put(rs.getDouble(i + 1));
-									break;
-									case (Types.INTEGER) :
-										jsonRow.put(rs.getInt(i + 1));
-									break;
-									case (Types.BIGINT) :
-										jsonRow.put(rs.getLong(i + 1));
-									break;
-									case (Types.FLOAT) :
-										jsonRow.put(rs.getFloat(i + 1));
-									break;
-									case (Types.DOUBLE) :
-										jsonRow.put(rs.getDouble(i + 1));
-									break;
-									case (Types.DATE) :
-										Date date = rs.getDate(i + 1);
-										if (date == null) {
-											jsonRow.put(date);
-										} else {
-											if (localDateFormatter == null) localDateFormatter = rapidRequest.getRapidServlet().getLocalDateFormatter();
-											jsonRow.put(localDateFormatter.format(date));
-										}
-									break;
-									case (Types.TIMESTAMP) :
-										Timestamp timeStamp = rs.getTimestamp(i + 1);
-										if (timeStamp == null) {
-											jsonRow.put(timeStamp);
-										} else {
-											// check for 0 millseconds past midnight - a truncated date time (time zone offset is in minutes, multiplied by the number of millis in a minute modulus with number of millis in a day)
-											if ((timeStamp.getTime() - timeStamp.getTimezoneOffset() * 60000) % 86400000L == 0) {
-												// if so show just date
-												if (localDateFormatter == null) localDateFormatter = rapidRequest.getRapidServlet().getLocalDateFormatter();
-												jsonRow.put(localDateFormatter.format(timeStamp));
+								// got fields indicator
+								boolean gotFields = false;
+
+								// get resultset again just in case it's been moved on
+								rs = st.getResultSet();
+
+								// get it's meta data for the field names
+								ResultSetMetaData rsmd = rs.getMetaData();
+
+								// loop the result set
+								while (rs.next()) {
+
+									// initialise the row
+									JSONArray jsonRow = new JSONArray();
+
+									// loop the columns
+									for (int i = 0; i < rsmd.getColumnCount(); i++) {
+										// add the field name to the fields collection if not done yet
+										if (!gotFields) jsonFields.put(rsmd.getColumnLabel(i + 1));
+										// get the column type
+										int columnType = rsmd.getColumnType(i + 1);
+										// add the data to the row according to it's type
+										switch (columnType) {
+										case (Types.NUMERIC) :
+											jsonRow.put(rs.getDouble(i + 1));
+										break;
+										case (Types.INTEGER) :
+											jsonRow.put(rs.getInt(i + 1));
+										break;
+										case (Types.BIGINT) :
+											jsonRow.put(rs.getLong(i + 1));
+										break;
+										case (Types.FLOAT) :
+											jsonRow.put(rs.getFloat(i + 1));
+										break;
+										case (Types.DOUBLE) :
+											jsonRow.put(rs.getDouble(i + 1));
+										break;
+										case (Types.DATE) :
+											Date date = rs.getDate(i + 1);
+											if (date == null) {
+												jsonRow.put(date);
 											} else {
-												// show date and time
-												if (localDateTimeFormatter == null) localDateTimeFormatter = rapidRequest.getRapidServlet().getLocalDateTimeFormatter();
-												jsonRow.put(localDateTimeFormatter.format(timeStamp));
+												if (localDateFormatter == null) localDateFormatter = rapidRequest.getRapidServlet().getLocalDateFormatter();
+												jsonRow.put(localDateFormatter.format(date));
 											}
+										break;
+										case (Types.TIMESTAMP) :
+											Timestamp timeStamp = rs.getTimestamp(i + 1);
+											if (timeStamp == null) {
+												jsonRow.put(timeStamp);
+											} else {
+												// check for 0 millseconds past midnight - a truncated date time (time zone offset is in minutes, multiplied by the number of millis in a minute modulus with number of millis in a day)
+												if ((timeStamp.getTime() - timeStamp.getTimezoneOffset() * 60000) % 86400000L == 0) {
+													// if so show just date
+													if (localDateFormatter == null) localDateFormatter = rapidRequest.getRapidServlet().getLocalDateFormatter();
+													jsonRow.put(localDateFormatter.format(timeStamp));
+												} else {
+													// show date and time
+													if (localDateTimeFormatter == null) localDateTimeFormatter = rapidRequest.getRapidServlet().getLocalDateTimeFormatter();
+													jsonRow.put(localDateTimeFormatter.format(timeStamp));
+												}
+											}
+										break;
+										default :
+											jsonRow.put(rs.getString(i + 1));
 										}
-									break;
-									default :
-										jsonRow.put(rs.getString(i + 1));
 									}
+									// add the row to the rows collection
+									jsonRows.put(jsonRow);
+									// remember we now have our fields
+									gotFields = true;
+
 								}
-								// add the row to the rows collection
-								jsonRows.put(jsonRow);
-								// remember we now have our fields
-								gotFields = true;
+								// close the record set
+								rs.close();
+
+								// look for any more results
+								gotResults = st.getMoreResults();
+
+								// if we got some
+								if (gotResults) {
+									// clear fields collection
+									jsonFields = new JSONArray();
+									// clear rows collection can start initialised
+									jsonRows = new JSONArray();
+								}
 
 							}
-
-							// close the record set
-							rs.close();
 
 						}
 
