@@ -1716,8 +1716,8 @@ public class Page {
 											String value = formControlValue.getValue();
 											// assume no field
 											String field = "null";
-											// the dropdown control needs a little help
-											if ("dropdown".equals(pageControl.getType())) field = "'x'";
+											// the dropdown controls need a little help
+											if ("dropdown".equals(pageControl.getType()) || "responsivedropdown".equals(pageControl.getType())) field = "'x'";
 											// get any control details
 											String details = pageControl.getDetailsJavaScript(application, this);
 											// if null update to string
