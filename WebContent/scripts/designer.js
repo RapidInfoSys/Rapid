@@ -3331,8 +3331,8 @@ $(document).ready( function() {
 						break;
 					}
 				}
-				// can we do an insert, or add as a peer
-				if (_controlTypes[pasteControl.type].canUserInsert && (_controlTypes[_copyControl.type].canUserAdd || childCanAddPeers)) {
+				// can we do an insert, or add as a peer - but stop controls of same type pasting into each other - panels especially!
+				if (_controlTypes[pasteControl.type].canUserInsert && pasteControl.type != _copyControl.type && (_controlTypes[_copyControl.type].canUserAdd || childCanAddPeers)) {
 					// create the new control and place in child collection of current parent
 					var newControl = doPaste(_copyControl, pasteControl);
 					// add to childControl collection of current parent
