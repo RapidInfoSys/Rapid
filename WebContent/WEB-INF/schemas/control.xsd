@@ -181,7 +181,17 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 										<xs:minLength value="1" />
 									</xs:restriction>
 								</xs:simpleType>
-							</xs:element>				
+							</xs:element>
+							<xs:element name="requiredActionType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>An action this control depends on that should be added at the same time</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:minLength value="1" />
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>		
 							<xs:element name="properties" minOccurs="0">
 								<xs:complexType>
 									<xs:sequence>
@@ -724,6 +734,17 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 										</xs:element>
 									</xs:sequence>		
 								</xs:complexType>													
+							</xs:element>
+							
+							<xs:element name="formSetRunTimePropertyType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>A run time property with which to populate a form control from the form adapter</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:minLength value="1" />
+									</xs:restriction>
+								</xs:simpleType>
 							</xs:element>
 							
 							<xs:element name="designLinkJQuery" minOccurs="0">
