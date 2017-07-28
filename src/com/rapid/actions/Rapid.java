@@ -1913,7 +1913,7 @@ public class Rapid extends Action {
 
 				ArrayList<String> actionTypes = new ArrayList<String>();
 
-				for (int i =0; i < jsonActionTypes.length(); i++) {
+				for (int i = 0; i < jsonActionTypes.length(); i++) {
 					actionTypes.add(jsonActionTypes.getString(i).trim());
 				}
 
@@ -1943,8 +1943,36 @@ public class Rapid extends Action {
 
 				ArrayList<String> controlTypes = new ArrayList<String>();
 
-				for (int i =0; i < jsonControlTypes.length(); i++) {
-					controlTypes.add(jsonControlTypes.getString(i).trim());
+				// loop the controls
+				for (int i = 0; i < jsonControlTypes.length(); i++) {
+					// get the control type
+					String controlType = jsonControlTypes.getString(i).trim();
+					// get the json for it
+					JSONObject jsonControl = rapidServlet.getJsonControl(controlType);
+					// if there was one
+					if (jsonControl != null) {
+						// add this type
+						controlTypes.add(controlType);
+						// look for any required action
+						String requiredActionType = jsonControl.optString("requiredActionType", null);
+						// if we got one
+						if (requiredActionType != null) {
+							// get the action types
+							List<String> actionTypes = app.getActionTypes();
+							// if it doesn't exist
+							if (!actionTypes.contains(requiredActionType)) {
+								// get the json for it
+								JSONObject jsonActionType = rapidServlet.getJsonControl(requiredActionType);
+								// if we got one
+								if (jsonActionType != null) {
+									// add it
+									actionTypes.add(requiredActionType);
+									// sort the list
+									Collections.sort(actionTypes);
+								}
+							}
+						}
+					}
 				}
 
 				// make sure some required controls are there if this is the rapid app

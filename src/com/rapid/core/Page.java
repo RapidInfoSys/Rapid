@@ -1714,16 +1714,23 @@ public class Page {
 
 											// get the value
 											String value = formControlValue.getValue();
-											// assume no field
-											String field = "null";
-											// the dropdown controls need a little help
-											if ("dropdown".equals(pageControl.getType()) || "responsivedropdown".equals(pageControl.getType())) field = "'x'";
+											// assume using setData
+											String function = "setData_" + pageControl.getType();
+											// get the json properties for the control
+											JSONObject jsonControl = rapidServlet.getJsonControl(pageControl.getType());
+											// if we got some
+											if (jsonControl != null) {
+												// look for the formSetRunTimePropertyType
+												String formSetRunTimePropertyType = jsonControl.optString("formSetRunTimePropertyType", null);
+												// if we got one update the function to use it
+												if (formSetRunTimePropertyType != null) function = "setProperty_" + pageControl.getType() + "_" + formSetRunTimePropertyType;
+											}
 											// get any control details
 											String details = pageControl.getDetailsJavaScript(application, this);
 											// if null update to string
 											if (details == null) details = null;
 											// if there is a value use the standard setData for it (this might change to something more sophisticated at some point)
-											if (value != null) formValues.append("  if (window[\"setData_" + pageControl.getType() + "\"]) setData_" + pageControl.getType() + "(ev, '" + pageControl.getId() + "', " + field + ", " + details + ", '" + value.replace("\\", "\\\\").replace("'", "\\'").replace("\r\n", "\\n").replace("\n", "\\n").replace("\r", "") + "');\n");
+											if (value != null) formValues.append("  if (window[\""+ function + "\"]) " + function + "(ev, '" + pageControl.getId() + "', null, " + details + ", '" + value.replace("\\", "\\\\").replace("'", "\\'").replace("\r\n", "\\n").replace("\n", "\\n").replace("\r", "") + "');\n");
 										}
 									}
 								}

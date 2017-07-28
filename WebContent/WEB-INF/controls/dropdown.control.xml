@@ -224,5 +224,7 @@ if (changeEvents) control.trigger("change");
 	        </runtimeProperty>
 	    </runtimeProperties>
 	    
+	   	<formSetRunTimePropertyType>value</formSetRunTimePropertyType>
+	    
 	</control>
 </controls>

@@ -189,7 +189,13 @@ function getGridDataStoreData(id, details) {
 			dataString = window[_appId + "datastore"];			
 		break;
 	}
-	if (dataString) data = JSON.parse(dataString);
+	if (dataString) {
+		data = JSON.parse(dataString);
+		if (data) {
+			if (!data.fields) data.fields = [];
+			if (!data.rows) data.rows = [];
+		}
+	}
 	return data;
 }
 

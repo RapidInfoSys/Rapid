@@ -557,11 +557,11 @@ function showControlValidation(controlId, message) {
 	var control = $("#" + controlId);
 	control.addClass("validation");
 	if (message) {
-		var element = control.next("div.validation")[0];
+		var element = control.next("div.validation.validationMessage")[0];
 		if (element) {
 			$(element).html(message);
 		} else {
-			control.after("<div class='validation'>" + message + "</div>");
+			control.after("<div class='validation validationMessage'>" + message + "</div>");
 		}
 	}
 }
@@ -569,7 +569,7 @@ function showControlValidation(controlId, message) {
 function hideControlValidation(controlId) {
 	var control = $("#" + controlId);
 	control.removeClass("validation");
-	control.next("div.validation").remove();
+	control.next("div.validation.validationMessage").remove();
 }
 
 function makeDataObject(data, field) {
