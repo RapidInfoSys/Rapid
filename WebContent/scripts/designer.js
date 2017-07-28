@@ -3331,8 +3331,8 @@ $(document).ready( function() {
 						break;
 					}
 				}
-				// can we do an insert, or add as a peer - but stop controls of same type pasting into each other - panels especially!
-				if (_controlTypes[pasteControl.type].canUserInsert && pasteControl.type != _copyControl.type && (_controlTypes[_copyControl.type].canUserAdd || childCanAddPeers)) {
+				// can we do an insert, or add as a peer - but stop controls pasting into themselves - panels especially!
+				if (_controlTypes[pasteControl.type].canUserInsert && pasteControl.id != _copyControl.id && (_controlTypes[_copyControl.type].canUserAdd || childCanAddPeers)) {
 					// create the new control and place in child collection of current parent
 					var newControl = doPaste(_copyControl, pasteControl);
 					// add to childControl collection of current parent
@@ -3348,8 +3348,8 @@ $(document).ready( function() {
 					if (newControl._insertRight) {
 						newControl._insertRight();
 					} else {						
-						// move the object (if the parent isn't the page)
-						if (pasteControl._parent._parent) newControl.object.insertAfter(pasteControl.object);
+						// move the object (if not the page)
+						if (pasteControl._parent) newControl.object.insertAfter(pasteControl.object);
 						// add it to the parent at the correct position
 						pasteControl._parent.childControls.splice(pasteControl.object.index()+1,0,newControl);
 					}
