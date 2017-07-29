@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.1"?>
 
 <!-- 
 
@@ -48,7 +48,7 @@ In the "Targets" tab empty "After a 'Clean'" and "Manual Build". For "Auto Build
 	<property file="build.properties" />
 
 	<target name="info">
-		<echo>Custom Rapid builder v 1.0</echo>
+		<echo>Custom Rapid builder v 1.1</echo>
 	</target>
 
 	<target name="clean">
@@ -87,6 +87,10 @@ In the "Targets" tab empty "After a 'Clean'" and "Manual Build". For "Auto Build
 		<copy todir="${basedir}/../../../src" includeEmptyDirs="true" verbose="true">
 			<fileset dir="${rapid_base}/src" />
 		</copy>
+		<!-- delete the annoying ${web:rootDir} if logging was not properly initialised -->
+		<delete includeEmptyDirs="true"  failonerror="false">
+    		<fileset dir="${basedir}/../../../${web:rootDir}"/>
+  		</delete>
 	</target>
 
 </project>
