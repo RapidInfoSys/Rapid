@@ -8,9 +8,9 @@ gareth.edwards@rapid-is.co.uk
 This file is part of the Rapid Application Platform
 
 Rapid is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as 
-published by the Free Software Foundation, either version 3 of the 
-License, or (at your option) any later version. The terms require you 
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version. The terms require you
 to include the original copyright, and the license notice in all redistributions.
 
 This program is distributed in the hope that it will be useful,
@@ -25,40 +25,34 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 
 package com.rapid.forms;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
 
-import org.json.JSONObject;
-
 import com.rapid.core.Application;
-import com.rapid.core.Control;
-import com.rapid.core.Page;
 import com.rapid.server.RapidRequest;
-import com.rapid.utils.Html;
 
 public class RapidFormAdapter extends FormAdapter {
-	
+
 	//  static finals
 	private static final String NEXT_FORM_ID = "nextFormId";
 	private static final String USER_FORM_PAGE_VARIABLE_VALUES = "userFormPageVariableValues";
 	private static final String USER_FORM_PAGE_CONTROL_VALUES = "userFormPageControlValues";
 	private static final String USER_FORM_COMPLETE_VALUES = "userFormCompleteValues";
 	private static final String USER_FORM_SUBMIT_DETAILS = "userFormSubmitDetails";
-		
+
 	// constructor
 
 	public RapidFormAdapter(ServletContext servletContext, Application application) {
 		super(servletContext, application);
 	}
-	
+
 	// class methods
-		
+
 	// the RapidFormAdapter holds all values in the user session so this method just gets them from there
-	protected Map<String,FormPageControlValues> getUserFormPageControlValues(RapidRequest rapidRequest) throws Exception {	
+	protected Map<String,FormPageControlValues> getUserFormPageControlValues(RapidRequest rapidRequest) throws Exception {
 		// get the servlet context
 		ServletContext servletContext = rapidRequest.getRapidServlet().getServletContext();
 		// get all app page control values from the context
@@ -69,7 +63,7 @@ public class RapidFormAdapter extends FormAdapter {
 			userAppPageControlValues = new HashMap<String, Map<String, FormPageControlValues>>();
 			// add to session
 			servletContext.setAttribute(USER_FORM_PAGE_CONTROL_VALUES, userAppPageControlValues);
-		}		
+		}
 		// get the form id
 		String formId = getFormId(rapidRequest);
 		// the page controls for specified app
@@ -81,14 +75,14 @@ public class RapidFormAdapter extends FormAdapter {
 			// add to user app pages
 			userAppPageControlValues.put(formId, userPageControlValues);
 		}
-		
-		// example page control pre-population			
+
+		// example page control pre-population
 		// userPageControlValues.put("P2", new FormPageControlValues(new FormControlValue("P2_C1_", "Hello world !!!")));
-		
+
 		// return!
 		return userPageControlValues;
 	}
-	
+
 	// this uses a similar technique to record whether the form is complete or not
 	protected Map<String,Boolean> getUserFormCompleteValues(RapidRequest rapidRequest) {
 		// get the servlet context
@@ -105,7 +99,7 @@ public class RapidFormAdapter extends FormAdapter {
 		// return
 		return userFormCompleteValues;
 	}
-		
+
 	protected Map<String,String> getUserFormPageVariableValues(RapidRequest rapidRequest, String formId) {
 		// get the servlet context
 		ServletContext servletContext = rapidRequest.getRapidServlet().getServletContext();
@@ -126,13 +120,13 @@ public class RapidFormAdapter extends FormAdapter {
 			formPageVariableValues = new HashMap<String,String>();
 			// store them
 			userFormPageVariableValues.put(formId, formPageVariableValues);
-		}		
+		}
 		// return
 		return formPageVariableValues;
 	}
-	
+
 	// overridden methods
-	
+
 	// this gets a new form id, when required, from an attribute in the servletContext
 	@Override
 	public UserFormDetails getNewFormDetails(RapidRequest rapidRequest) {
@@ -149,7 +143,7 @@ public class RapidFormAdapter extends FormAdapter {
 		// return it
 		return new UserFormDetails(formId, null);
 	}
-	
+
 	@Override
 	public UserFormDetails getResumeFormDetails(RapidRequest rapidRequest, String formId, String password) throws Exception {
 		// get the servlet context
@@ -173,13 +167,13 @@ public class RapidFormAdapter extends FormAdapter {
 			}
 		}
 	}
-			
+
 	@Override
 	public void setMaxPage(RapidRequest rapidRequest, UserFormDetails formDetails, String pageId) {
 		// if we got the details
 		if (formDetails != null) formDetails.setMaxPageId(pageId);
 	}
-			
+
 	@Override
 	public void setFormComplete(RapidRequest rapidRequest, UserFormDetails formDetails) throws Exception {
 		// get the userPageComplete values
@@ -191,7 +185,7 @@ public class RapidFormAdapter extends FormAdapter {
 		// update details
 		formDetails.setComplete(true);
 	}
-	
+
 	// set a form page variable
 	@Override
 	public void setFormPageVariableValue(RapidRequest rapidRequest, String formId, 	String name, String value) throws Exception {
@@ -202,14 +196,14 @@ public class RapidFormAdapter extends FormAdapter {
 		// store it
 		rapidRequest.getRapidServlet().getServletContext().setAttribute(USER_FORM_PAGE_VARIABLE_VALUES, userFormPageVariableValues);
 	}
-	
+
 	// return form page variables
 	@Override
 	public Map<String, String> getFormPageVariableValues( 	RapidRequest rapidRequest, String formId) throws Exception {
 		// use our reusable function
 		return getUserFormPageVariableValues(rapidRequest, formId);
 	}
-	
+
 	// uses our user session method to get the form page control values
 	@Override
 	public FormPageControlValues getFormPageControlValues(RapidRequest rapidRequest, String formId, String pageId) throws Exception	{
@@ -219,20 +213,22 @@ public class RapidFormAdapter extends FormAdapter {
 
 	// uses our user session method to set the form page control values (for hidden pages pageControlValues will be null)
 	@Override
-	public void setFormPageControlValues(RapidRequest rapidRequest, String formId, String pageId, FormPageControlValues pageControlValues) throws Exception {		
+	public void setFormPageControlValues(RapidRequest rapidRequest, String formId, String pageId, FormPageControlValues pageControlValues) throws Exception {
 		// store them
-		getUserFormPageControlValues(rapidRequest).put(pageId, pageControlValues);	
+		getUserFormPageControlValues(rapidRequest).put(pageId, pageControlValues);
 	}
-	
+
 	// uses our user session method to get a control value
 	@Override
 	public String getFormControlValue(RapidRequest rapidRequest, String formId, String controlId, boolean notHidden) throws Exception {
-		// split the controlid
-		String[] controlIdParts = controlId.split("_");
+		// find the last underscore
+		int controlIdPos = controlId.substring(0, controlId.length() - 1).lastIndexOf("_");
 		// check we have enough to include the page
-		if (controlIdParts.length > 1) {
-			// get the page id from the first part
-			String pageId = controlIdParts[0];
+		if (controlIdPos > 1) {
+			// get any control and action prefix
+			String prefix = rapidRequest.getRapidServlet().getControlAndActionPrefix();
+			// get the page id from the first part, ignoring any prefix
+			String pageId = controlId.substring(prefix.length(), controlIdPos);
 			// get all user form page values
 			Map<String,FormPageControlValues> userFormPageControlValues = getUserFormPageControlValues(rapidRequest);
 			// if there are control values stored
@@ -244,14 +240,14 @@ public class RapidFormAdapter extends FormAdapter {
 					// loop them
 					for (FormControlValue controlValue : pageControlValues) {
 						// look for an id match, but not if hidden and not hidden is true
-						if (controlValue.getId().equals(controlId) && !(controlValue.getHidden() && notHidden)) return controlValue.getValue();						
+						if (controlValue.getId().equals(controlId) && !(controlValue.getHidden() && notHidden)) return controlValue.getValue();
 					}
-				} 
+				}
 			} // page has values
-		} // parts > 1		
-		return null;		
+		} // parts > 1
+		return null;
 	}
-	
+
 	// submit the form - for the RapidFormAdapter nothing special happens, more sophisticated ones will write to databases, webservices, etc
 	@Override
 	public SubmissionDetails submitForm(RapidRequest rapidRequest) throws Exception {
@@ -269,15 +265,15 @@ public class RapidFormAdapter extends FormAdapter {
 		// simple submission detail
 		SubmissionDetails submissionDetail = new SubmissionDetails("Form submitted", rapidRequest.getRapidServlet().getLocalDateTimeFormatter().format(new Date()));
 		// get the form id
-		String formId = getFormId(rapidRequest);		
+		String formId = getFormId(rapidRequest);
 		// add to collection
 		submissionDetails.put(formId, submissionDetail);
 		// return
 		return submissionDetail;
 	}
-	
+
 	@Override
-	public String getFormSubmittedDate(RapidRequest rapidRequest, String formId) throws Exception {	
+	public String getFormSubmittedDate(RapidRequest rapidRequest, String formId) throws Exception {
 		// get the servlet context
 		ServletContext servletContext = rapidRequest.getRapidServlet().getServletContext();
 		// get all submitted details
@@ -290,11 +286,11 @@ public class RapidFormAdapter extends FormAdapter {
 			if (submissionDetail != null) return submissionDetail.getDateTime();
 		}
 		// didn't find anything
-		return null;		
+		return null;
 	}
 
 	// nothing to do here
 	@Override
 	public void close() {}
-	 		
+
 }
