@@ -496,10 +496,10 @@ public class Page {
 				if (id2 == null) return -1;
 				id1 = id1.replace("_", "");
 				id2 = id2.replace("_", "");
-				int pos = id1.indexOf("A");
+				int pos = id1.lastIndexOf("A");
 				if (pos < 0) return -1;
 				id1 = id1.substring(pos + 1);
-				pos = id2.indexOf("A");
+				pos = id2.lastIndexOf("A");
 				if (pos < 0) return 1;
 				id2 = id2.substring(pos + 1);
 				return (Integer.parseInt(id1) - Integer.parseInt(id2));

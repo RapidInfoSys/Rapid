@@ -150,11 +150,11 @@ return [{value:"", text:"Please select..."}, {value:"hidden-lg", text:"hidden"},
 // get the style classes for this control
 classes = getStyleClasses(this);
 
-// add appropriate col width classes if they are specified
-if (this.extraSmall) classes += " col-" + this.extraSmall;
-if (this.small) classes += " col-" + this.small;
-if (this.medium) classes += " col-" + this.medium;
-if (this.large) classes += " col-" + this.large;
+// add appropriate col width classes if they are specified - hidden does not take the col- prefix
+if (this.extraSmall) classes += (this.extraSmall.indexOf("hidden") == 0 ? "" : " col-") + this.extraSmall;
+if (this.small) classes += (this.small.indexOf("hidden") == 0 ? "" : " col-") + this.small;
+if (this.medium) classes += (this.medium.indexOf("hidden") == 0 ? "" : " col-") + this.medium;
+if (this.large) classes += (this.large.indexOf("hidden") == 0 ? "" : " col-") + this.large;
 
 // return our html for adding to our parent object
 return "<div id='" + this.id + "' class='r-panel" + classes + "'" + (this.text ? "" : " style='min-height:15px;'") + ">" + this.text + "</div>";
