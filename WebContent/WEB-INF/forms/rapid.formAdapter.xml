@@ -5,4 +5,5 @@
   <class>com.rapid.forms.RapidFormAdapter</class>
   <canSaveForms>true</canSaveForms>
   <canGeneratePDF>true</canGeneratePDF>
+  <canSupportIntegrationProperties>true</canSupportIntegrationProperties>
 </formAdapter>

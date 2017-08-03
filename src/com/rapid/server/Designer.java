@@ -84,6 +84,7 @@ import com.rapid.data.ConnectionAdapter;
 import com.rapid.data.DataFactory;
 import com.rapid.data.DataFactory.Parameters;
 import com.rapid.data.DatabaseConnection;
+import com.rapid.forms.FormAdapter;
 import com.rapid.security.SecurityAdapter;
 import com.rapid.security.SecurityAdapter.Role;
 import com.rapid.security.SecurityAdapter.User;
@@ -510,7 +511,6 @@ public class Designer extends RapidHttpServlet {
 											// put the app controls we've just built into the app
 											jsonVersion.put("controls", jsonAppControls);
 
-
 											// create a json object for the images
 											JSONArray jsonImages = new JSONArray();
 											// get the directory in which the control xml files are stored
@@ -547,6 +547,33 @@ public class Designer extends RapidHttpServlet {
 											}
 											// put them into our application object
 											jsonVersion.put("styleClasses", jsonStyleClasses);
+
+											// look for any form adpter
+											FormAdapter formAdapter = application.getFormAdapter();
+											// if we got one
+											if (formAdapter != null) {
+												// get the type
+												String formAdapterType = formAdapter.getType();
+												// get the json form adpater details
+												JSONArray jsonFormAdapters = getJsonFormAdapters();
+												// if we got some
+												if (jsonFormAdapters != null) {
+													// loop them
+													for (int i = 0; i < jsonFormAdapters.length(); i++) {
+														// get this form adapter
+														JSONObject jsonFormAdapter = jsonFormAdapters.getJSONObject(i);
+														// if this is the one we want
+														if (formAdapterType.equals(jsonFormAdapter.optString("type"))) {
+															// add the properties to the version
+															jsonVersion.put("canSaveForms", jsonFormAdapter.optBoolean("canSaveForms"));
+															jsonVersion.put("canGeneratePDF", jsonFormAdapter.optBoolean("canGeneratePDF"));
+															jsonVersion.put("canSupportIntegrationProperties", jsonFormAdapter.optBoolean("canSupportIntegrationProperties"));
+															// we're done
+															break;
+														}
+													}
+												}
+											}
 
 											// put the app into the collection
 											jsonVersions.put(jsonVersion);

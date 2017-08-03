@@ -69,8 +69,21 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>
-				<xs:element name="canSaveForms" type="xs:boolean" />
-				<xs:element name="canGeneratePDF" type="xs:boolean" />
+				<xs:element name="canSaveForms" type="xs:boolean">
+					<xs:annotation>
+						<xs:documentation>Whether this form adapter supports saving and resuming of forms - affects whether this is offered as an option in the form actions</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="canGeneratePDF" type="xs:boolean">
+					<xs:annotation>
+						<xs:documentation>Whether this form adapter supports generating a pdf - affects whether this is offered as an option in the form actions</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="canSupportIntegrationProperties" type="xs:boolean" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Whether this form adapter makes use of the form integration properties: formObject, formObjectNumber, formObjectAttribute - affects whether these extra properties are offered for form controls</xs:documentation>
+					</xs:annotation>
+				</xs:element>
 			</xs:sequence>
 			<xs:attribute name="xmlVersion" type="xs:integer" use="required">
 				<xs:annotation>

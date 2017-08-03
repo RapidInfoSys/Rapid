@@ -144,6 +144,13 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 											<xs:complexType>
 												<xs:sequence>
 													<xs:element name="key">
+													<xs:annotation>
+															<xs:documentation>The property keys are all copied into
+																the object when saving/restoring so there are some
+																reserved words used by the system that should not be used
+																such as: type, name, and comments
+															</xs:documentation>
+														</xs:annotation>
 														<xs:simpleType>
 															<xs:restriction base="xs:string">
 																<xs:minLength value="1" />

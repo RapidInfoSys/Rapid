@@ -979,12 +979,12 @@ public class Application {
 				// log
 				logger.trace("Instantiating Rapid form adapter for " + _id + "/" + _version);
 				// revert to rapid form adapter
-				_formAdapter = new RapidFormAdapter(servletContext, this);
+				_formAdapter = new RapidFormAdapter(servletContext, this, "rapid");
 			} else {
 				// log
 				logger.trace("Instantiating form adapter " + _formAdapterType + " for " + _id + "/" + _version);
 				// instantiate the specified form adapter
-				_formAdapter = constructor.newInstance(servletContext, this);
+				_formAdapter = constructor.newInstance(servletContext, this, _formAdapterType);
 			}
 		}
 	}

@@ -471,7 +471,7 @@ public class RapidServletContextListener extends Log4jServletContextListener imp
 			// check this type is unique
 			if (formConstructors.get(type) != null) throw new Exception(type + " form adapter already loaded. Type names must be unique.");
 			// add to constructors hashmap referenced by type
-			formConstructors.put(type, classClass.getConstructor(ServletContext.class, Application.class));
+			formConstructors.put(type, classClass.getConstructor(ServletContext.class, Application.class, String.class));
 
 			// add to our collection
 			jsonAdapters.put(jsonFormAdapter);

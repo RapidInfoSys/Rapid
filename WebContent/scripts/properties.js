@@ -484,15 +484,23 @@ function showProperties(control) {
 		var properties = controlClass.properties;
 		if (properties) {
 			// (if a single it's a class not an array due to JSON class conversion from xml)
-			if ($.isArray(properties.property)) properties = properties.property; 			
+			if ($.isArray(properties.property)) properties = properties.property;
 			// loop the class properties
-			for (var i in properties) {
+			for (var i = 0; i < properties.length; i++) {
+				// retrieve a property object from the control class
+				var property = properties[i];
+				// if we support integration properties and this is a formControl check for special form integration properties (a bit like action comments)
+				if (control.type != "page" && _version.canSupportIntegrationProperties && property.key == "label" && properties[properties.length - 1].key != "formObjectAttribute") {
+					// add form properties
+					properties.push({"name":"Form integration","changeValueJavaScript":"gap", "setConstructValueFunction": "return 'Form integration'"});
+					properties.push({"key":"formObject","name":"Form object","refreshProperties": true, "helpHtml":"The type of object that control is holding data for in the form. Used for advanced form integration."});
+					properties.push({"key":"formObjectNumber","name":"Number","refreshProperties": true, "helpHtml":"A number relevant to the type of data object. For example 1, for the first address, 2 for the second, etc. Decimals are also allowed, for example party question 1.2 would be the second question for the first party"});
+					properties.push({"key":"formObjectAttribute","name":"Attribute","refreshProperties": true, "helpHtml":"A further attribute of the object. For example a party title or forename, or address start date"});					
+				}
 				// add a row
 				propertiesTable.append("<tr></tr>");
 				// get a reference to the row
-				var propertiesRow = propertiesTable.children().last();
-				// retrieve a property object from the control class
-				var property = properties[i];
+				var propertiesRow = propertiesTable.children().last();				
 				// check that visibility is not false
 				if (property.visible === undefined || !property.visible === false) {
 					// assume no help
@@ -510,6 +518,8 @@ function showProperties(control) {
 					if (help) addHelp(helpId,true,true,property.helpHtml);
 					// get the cell the property update control is going in
 					var cell = propertiesRow.children().last();
+					// if no changeValueJavaScript, set it to the key
+					if (!property.changeValueJavaScript) property.changeValueJavaScript = property.key; 
 					// apply the property function if it starts like a function or look for a known Property_[type] function and call that
 					if (property.changeValueJavaScript.trim().indexOf("function(") == 0) {
 						try {
@@ -887,6 +897,30 @@ function Property_integer(cell, propertyObject, property, details) {
 	}));
 }
 
+//a handler for inputs that must be numbers
+function Property_number(cell, propertyObject, property, details) {
+	var value = "";
+	// set the value if it exists (or is 0)
+	if (propertyObject[property.key] || parseInt(propertyObject[property.key]) == 0) value = propertyObject[property.key];
+	// append the adjustable form control
+	cell.append("<input class='propertiesPanelTable' value='" + value + "' />");
+	// get a reference to the form control
+	var input = cell.children().last();
+	// add a listener to set the property back if not an integer
+	addListener( input.change( function(ev) {
+		var input = $(ev.target);
+		var val = input.val();    
+		// check integer match
+		if (val.match(new RegExp("^(\\d*\\.)?\\d+$"))) {
+			// update value
+			updateProperty(cell, propertyObject, property, details, ev.target.value);						
+		} else {
+			// restore value
+			input.val(propertyObject[property.key]);
+		}
+	}));
+}
+
 function Property_bigtext(cell, propertyObject, property, details) {
 	var value = "";
 	// set the value if it exists
@@ -964,6 +998,20 @@ function Property_select(cell, propertyObject, property, details, changeFunction
 					}
 				}
 			}
+		} else if ($.isPlainObject(values)) {
+			// add a please select
+			options = "<option value=''>Please select...</option>";
+			// loop keys
+			for (var i in values) {
+				// if there is a name
+				if (values[i].name) {
+					// add option with name
+					options += "<option value='" + i + "'>" + escapeApos(values[i].name) + "</option>";
+				} else {
+					// add option
+					options += "<option>" + i + "</option>";
+				}
+			}
 		} else {
 			options = values;
 		}
@@ -1010,7 +1058,17 @@ function Property_checkbox(cell, propertyObject, property, details) {
 
 // adds a gap in the properties
 function Property_gap(cell, propertyObject, property, details) {
+	// empty the box so it's just a tiny gap
 	cell.prev().html("");
+	// if we have a setConstructValueFunction
+	if (property.setConstructValueFunction) {
+		// create a function from the property contents
+		var f = new Function(property.setConstructValueFunction);
+		// get label from invoking the function
+		var name = f.apply(this, []); 
+		// display the name
+		cell.parent().after("<tr><td colspan='2'><h3>" + name + "</h3></td></tr>");
+	}
 }
 
 function Property_fields(cell, action, property, details) {
@@ -4979,16 +5037,18 @@ function Property_formActionType(cell, propertyObject, property, details) {
 		// check the page type
 		switch (_page.formPageType * 1) {
 		case 1:
-			// submitted
-			getValuesFunction += ",[\"sub\",\"copy form submit message\"],[\"pdf\",\"copy form pdf url\"]";
+			// submit message
+			getValuesFunction += ",[\"sub\",\"copy form submit message\"]";
+			// pdf url, if allowed by form adapter
+			if (_version.canGeneratePDF) getValuesFunction += ",[\"pdf\",\"copy form pdf url\"]";
 			break;
 		case 2:
-			// error
+			// error message
 			getValuesFunction += ",[\"err\",\"copy form error message\"]";
 			break;
 		case 3:
-			// save
-			getValuesFunction += ",[\"res\",\"copy form resume url\"]";
+			// save resumption url, if allowed by form adapter
+			if (_version.canSaveForms) getValuesFunction += ",[\"res\",\"copy form resume url\"]";
 			break;
 		}
 		// close the array and add the final semi colon
@@ -5188,7 +5248,7 @@ function Property_emailContent(cell, propertyObject, property, details) {
 	
 }
 
-//this is for the date select other months which is conditional upon showing other months
+// this is for the date select other months which is conditional upon showing other months
 function Property_dateSelectOtherMonths(cell, propertyObject, property, details) {
 	// only if the type is to copy values
 	if (propertyObject.showOtherMonths == "true" || propertyObject.showOtherMonths == true) {
@@ -5198,4 +5258,45 @@ function Property_dateSelectOtherMonths(cell, propertyObject, property, details)
 		// remove this row
 		cell.closest("tr").remove();
 	}
+}
+
+// a global for form address attributes
+var _formAddressAttributes = [["","Please select..."],["address","Full address"],["startDate","Start date"],["endDate","End date"]];
+
+// a global for form objects
+var _formObjects = {
+		"address": {"name" : "Address", "attributes" : _formAddressAttributes},
+		"contact": {"name" : "Contact", "attributes" : [["","Please select..."],["phone","Phone number"],["mobile","Mobile number"],["home","Home number"],["work","Work number"],["email","Email address"]]},
+		"party": {"name" : "Party", "attributes" : [["","Please select..."],["title","Title"],["forename","Forename"],["surname","Surname"],["dob","Date of birth"],["gender","Gender"],["ethnicity","Ethnicity"],["language","Language"],["religion","Religion"],["sexorientation","Sexual orientation"]]},
+		"partyAddress": {"name" : "Party address", "attributes" : _formAddressAttributes},
+		"partyQuestion": {"name" : "Party question"},
+		"question": {"name" : "Question"}
+}
+
+// this is for advanced form integration
+function Property_formObject(cell, propertyObject, property, details) {
+	// update the property getValuesFunction
+	property.getValuesFunction = "return _formObjects";
+	// send it in the select
+	Property_select(cell, propertyObject, property, details);
+}
+
+//this is for advanced form integration
+function Property_formObjectAttribute(cell, propertyObject, property, details) {
+	// only if there is a formObject set and it has attributes
+	if (propertyObject.formObject && _formObjects[propertyObject.formObject].attributes) {
+		// update the property getValuesFunction
+		property.getValuesFunction = "return _formObjects['" + propertyObject.formObject + "'].attributes";
+		// send it in the select
+		Property_select(cell, propertyObject, property, details);
+	} else {
+		// remove this row
+		cell.closest("tr").remove();		
+	}
+} 
+
+//this is for advanced form integration
+function Property_formObjectNumber(cell, propertyObject, property, details) {
+	// this is a number - decimals could be 
+	Property_number(cell, propertyObject, property, details);
 } 

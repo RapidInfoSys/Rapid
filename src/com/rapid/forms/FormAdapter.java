@@ -276,6 +276,7 @@ public abstract class FormAdapter {
 
 	// instance variables
 
+	protected String _type;
 	protected ServletContext _servletContext;
 	protected Application _application;
 	protected String _css;
@@ -285,12 +286,14 @@ public abstract class FormAdapter {
 
 	public ServletContext getServletContext() { return _servletContext; }
 	public Application getApplication() { return _application; }
+	public String getType() { return _type; }
 
 	// constructor
 
-	public FormAdapter(ServletContext servletContext, Application application) {
+	public FormAdapter(ServletContext servletContext, Application application, String type) {
 		_servletContext = servletContext;
 		_application = application;
+		_type = type;
 		_logger = LogManager.getLogger(FormAdapter.class);
 	}
 

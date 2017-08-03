@@ -45,8 +45,8 @@ public class RapidFormAdapter extends FormAdapter {
 
 	// constructor
 
-	public RapidFormAdapter(ServletContext servletContext, Application application) {
-		super(servletContext, application);
+	public RapidFormAdapter(ServletContext servletContext, Application application, String type) {
+		super(servletContext, application, type);
 	}
 
 	// class methods

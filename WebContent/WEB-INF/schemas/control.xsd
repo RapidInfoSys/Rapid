@@ -203,7 +203,8 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 														<xs:annotation>
 															<xs:documentation>The property keys are all copied into
 																the object when saving/restoring so there are some
-																reserved words
+																reserved words used by the system that should not be used
+																such as: type, name, and label
 															</xs:documentation>
 														</xs:annotation>
 														<xs:simpleType>
