@@ -61,8 +61,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <type>javascript</type>
 	            <contents>
 	                <![CDATA[
-
-                          
+Dropzone.autoDiscover = false;
 	                ]]>
 	            </contents>
 	        </resource>

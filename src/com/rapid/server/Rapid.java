@@ -947,7 +947,7 @@ public class Rapid extends RapidHttpServlet {
 											}
 										}
 										// get the headers string
-										String headersString = new String(bodyBytes, boundary.length() + 5, bytesOffset - boundary.length() - 10);
+										String headersString = new String(bodyBytes, boundary.length() + 5, bytesOffset - boundary.length() - 8);
 										// split the parts
 										String[] headers = headersString.split("\r\n");
 										// loop them
@@ -979,12 +979,19 @@ public class Rapid extends RapidHttpServlet {
 
 							} else {
 
-								// check the jpg or png file signature (from http://en.wikipedia.org/wiki/List_of_file_signatures)
+								// create a writer
+								PrintWriter out = response.getWriter();
+
+								// check the jpg, png, or bmp file signature (from http://en.wikipedia.org/wiki/List_of_file_signatures)
 								if ((bodyBytes[bytesOffset] == (byte)0xFF && bodyBytes[bytesOffset + 1] == (byte)0xD8 && bodyBytes[bytesOffset + 2] == (byte)0xFF)
-										|| (bodyBytes[bytesOffset] == (byte)0x89 && bodyBytes[bytesOffset + 1] == (byte)0x50 && bodyBytes[bytesOffset + 2] == (byte)0x4E)) {
+										|| (bodyBytes[bytesOffset] == (byte)0x89 && bodyBytes[bytesOffset + 1] == (byte)0x50 && bodyBytes[bytesOffset + 2] == (byte)0x4E)
+										|| (bodyBytes[bytesOffset] == (byte)0x42 && bodyBytes[bytesOffset + 1] == (byte)0x4D)
+								) {
 
 									// create the path
 									String imagePath = "uploads/" +  app.getId() + "/" + imageName;
+									// servers with public access must use the secure upload location
+									imagePath = "WEB-INF/" + imagePath;
 									// create a file
 									File imageFile = new File(getServletContext().getRealPath(imagePath));
 									// create app folder if need be
@@ -997,24 +1004,23 @@ public class Rapid extends RapidHttpServlet {
 									fos.close();
 
 									// log the file creation
-									logger.debug("Saved image file " + imageFile);
-
-									// create a writer
-									PrintWriter out = response.getWriter();
+									logger.debug("Saved image file " + imagePath);
 
 									// print the results
-									out.print(imagePath);
+									out.print(imageFile);
 
 									// close the writer
 									out.close();
 
 								} else {
 
-									// send forbidden response
-									sendMessage(response, 400, "Unrecognised", "Unrecognised file type");
-
 									// log
-									logger.debug("Rapid POST response (403) : Unrecognised file type");
+									logger.debug("Rapid POST response (403) : Unrecognised file type must be .jpg, .png, or .bmp");
+
+									// send forbidden response
+									response.setStatus(400);
+									// write message
+									out.print("Unrecognised file type");
 
 								} // signature check
 
