@@ -975,23 +975,25 @@ public class Rapid extends RapidHttpServlet {
 								sendMessage(response, 400, "Name required", "Image name must be provided");
 
 								// log
-								logger.debug("Rapid POST response (403) : Name must be provided");
+								logger.debug("Rapid POST response (400) : Image name must be provided");
 
 							} else {
 
 								// create a writer
 								PrintWriter out = response.getWriter();
 
-								// check the jpg, png, or bmp file signature (from http://en.wikipedia.org/wiki/List_of_file_signatures)
+								// check the jpg, gif, png, bmp, or pdf file signature (from http://en.wikipedia.org/wiki/List_of_file_signatures)
 								if ((bodyBytes[bytesOffset] == (byte)0xFF && bodyBytes[bytesOffset + 1] == (byte)0xD8 && bodyBytes[bytesOffset + 2] == (byte)0xFF)
+										|| (bodyBytes[bytesOffset] == (byte)0x47 && bodyBytes[bytesOffset + 1] == (byte)0x49 && bodyBytes[bytesOffset + 2] == (byte)0x46)
 										|| (bodyBytes[bytesOffset] == (byte)0x89 && bodyBytes[bytesOffset + 1] == (byte)0x50 && bodyBytes[bytesOffset + 2] == (byte)0x4E)
 										|| (bodyBytes[bytesOffset] == (byte)0x42 && bodyBytes[bytesOffset + 1] == (byte)0x4D)
+										|| (bodyBytes[bytesOffset] == (byte)0x25 && bodyBytes[bytesOffset + 1] == (byte)0x50 && bodyBytes[bytesOffset + 2] == (byte)0x44)
 								) {
 
 									// create the path
 									String imagePath = "uploads/" +  app.getId() + "/" + imageName;
 									// servers with public access must use the secure upload location
-									imagePath = "WEB-INF/" + imagePath;
+									if (this.isPublic()) imagePath = "WEB-INF/" + imagePath;
 									// create a file
 									File imageFile = new File(getServletContext().getRealPath(imagePath));
 									// create app folder if need be
@@ -1015,7 +1017,7 @@ public class Rapid extends RapidHttpServlet {
 								} else {
 
 									// log
-									logger.debug("Rapid POST response (403) : Unrecognised file type must be .jpg, .png, or .bmp");
+									logger.debug("Rapid POST response (403) : Unrecognised file type must be .jpg, .gif, .png, .bmp, or .pdf");
 
 									// send forbidden response
 									response.setStatus(400);

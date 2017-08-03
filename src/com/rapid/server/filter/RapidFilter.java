@@ -173,7 +173,7 @@ public class RapidFilter implements Filter {
 		if (response != null) {
 
 			// try and avoid caching
-			response.setHeader("Expires", "Sat, 15 March 1980 12:00:00 GMT");
+			response.setHeader("Expires", "Tue, 1 January 1980 12:00:00 GMT");
 
 			// Set standard HTTP/1.1 no-cache headers.
 			response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");

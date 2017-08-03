@@ -45,6 +45,21 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <changeValueJavaScript>text</changeValueJavaScript>
 	            <helpHtml>Name that can be given to the control. Names are used to help identify controls uniquely.</helpHtml>
 	        </property>
+	        
+	        <property>
+	            <key>acceptedFiles</key>
+	            <name>Accepted files</name>
+	            <changeValueJavaScript>text</changeValueJavaScript>
+	            <getValuesFunction> return "application/pdf,image/bmp,image/gif,image/jpeg,image/png"</getValuesFunction>
+	            <helpHtml>A comma separated list of mime types or file extensions. Eg.: image/*,application/pdf,.psd</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>maxFiles</key>
+	            <name>Max files</name>
+	            <changeValueJavaScript>integer</changeValueJavaScript>
+	            <helpHtml>Maximum number of files allowed to be uploaded.</helpHtml>
+	        </property>
 	        	 	                  	      
 	    </properties>
 	    
@@ -77,7 +92,7 @@ Dropzone.autoDiscover = false;
 	    
 	    <getHtmlFunction>
 	        <![CDATA[	   	        
-return "<div class='upload dropzone' id='" + this.id + "'></div>";
+return "<div class='upload dropzone' id='" + this.id + "'><input type='hidden' name='" + this.id + "' id='" + this.id + "files'></input></div>";
 	        ]]>
 	    </getHtmlFunction> 
 	    
@@ -86,6 +101,15 @@ return "<div class='upload dropzone' id='" + this.id + "'></div>";
 new _pageIframeWindow[0].Dropzone("div#" + this.id, { url: "~"});
 	        ]]>
 	    </initDesignJavaScript>
+	    
+	    <getDetailsFunction>	        
+	        <![CDATA[
+return {
+  acceptedFiles: this.acceptedFiles,
+  maxFiles: this.maxFiles
+};
+			]]>	        	        
+	    </getDetailsFunction>	    
 	    	    
 	    <getDataFunction>
 	        <![CDATA[
@@ -106,7 +130,25 @@ return "#" + this.id;
 	    
 	   	<initJavaScript>
 	        <![CDATA[
-new Dropzone("div#" + id, { url: "~?a=" + _appId + "&v=" + _appVersion + "&action=uploadImage"});
+var dz = new Dropzone("div#" + id, { 
+	url: "~?a=" + _appId + "&v=" + _appVersion + "&action=uploadImage", 
+	acceptedFiles: details.acceptedFiles,
+	capture: "camera", 
+	maxFiles : details.maxFiles,
+	
+});
+dz.on("success", function(file) {
+    var i = $("#" + id + "files");
+    var files = i.val();
+    if (files) {
+    	files += ",";
+    } else {
+    	files = "";
+    }
+    files += file.name;
+    i.val(files);
+    
+});
 	        ]]>
 	    </initJavaScript>
 	    

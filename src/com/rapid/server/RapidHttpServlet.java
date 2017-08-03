@@ -59,6 +59,7 @@ import com.rapid.core.Applications;
 import com.rapid.core.Device.Devices;
 import com.rapid.core.Theme;
 import com.rapid.core.Workflows;
+import com.rapid.server.filter.RapidAuthenticationAdapter;
 import com.rapid.utils.JAXB.EncryptedXmlAdapter;
 
 @SuppressWarnings({"serial", "unchecked", "rawtypes"})
@@ -242,6 +243,9 @@ public class RapidHttpServlet extends HttpServlet {
 		// return the parsed value of the parameter
 		return Boolean.parseBoolean(getServletContext().getInitParameter("pageNameIds"));
 	}
+
+	// whether the connection adapter allows the pubic unauthenticated access
+	public boolean isPublic() { return (boolean) getServletContext().getAttribute(RapidAuthenticationAdapter.INIT_PARAM_PUBLIC_ACCESS); }
 
 	// this is used is actions such as database and webservice to cache results for off-line demos
 	public ActionCache getActionCache() {

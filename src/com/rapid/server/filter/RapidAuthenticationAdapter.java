@@ -8,9 +8,9 @@ gareth.edwards@rapid-is.co.uk
 This file is part of the Rapid Application Platform
 
 RapidSOA is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as 
-published by the Free Software Foundation, either version 3 of the 
-License, or (at your option) any later version. The terms require you 
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version. The terms require you
 to include the original copyright, and the license notice in all redistributions.
 
 This program is distributed in the hope that it will be useful,
@@ -34,15 +34,19 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 public abstract class RapidAuthenticationAdapter {
-	
+
+	public static final String INIT_PARAM_IP_CHECK = "ipcheck";
+	public static final String INIT_PARAM_PUBLIC_ACCESS = "public";
+	public static final String PUBLIC_ACCESS_USER = "public";
+
 	protected ServletContext _servletContext;
-	
+
 	public ServletContext getServletContext() { return _servletContext; }
-	
+
 	public RapidAuthenticationAdapter(FilterConfig filterConfig) {
 		_servletContext = filterConfig.getServletContext();
 	}
-	
+
 	public abstract ServletRequest process(ServletRequest request, ServletResponse response) throws IOException, ServletException;
 
 }
