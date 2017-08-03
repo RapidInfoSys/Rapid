@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<controls xmlVersion="1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../schemas/control.xsd">
+
+<!-- 
+
+Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
+
+gareth.edwards@rapid-is.co.uk
+
+
+This file is part of the Rapid Application Platform
+
+Rapid is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version. The terms require you to include
+the original copyright, and the license notice in all redistributions.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
+
+ -->
+
+	<control>
+	    
+	    <type>upload</type>
+	    <name>Upload</name>
+	    <image>images/penknife_24x24.png</image>
+	    <helpHtml>Control to upload files</helpHtml>
+	    	            
+	    <canUserAdd>true</canUserAdd>
+	    <canUserMove>true</canUserMove>
+	    <canUserAddPeers>true</canUserAddPeers>
+	    	    
+	    <properties>
+	        
+	        <property>
+	            <key>name</key>
+	            <name>Name</name>
+	            <changeValueJavaScript>text</changeValueJavaScript>
+	            <helpHtml>Name that can be given to the control. Names are used to help identify controls uniquely.</helpHtml>
+	        </property>
+	        	 	                  	      
+	    </properties>
+	    
+	    <resources>
+	        <resource>
+	            <type>javascriptFile</type>
+	            <contents>scripts/controls/dropzone.js</contents>
+	        </resource>
+	        <resource>
+	            <type>cssFile</type>
+	            <contents>styles/controls/dropzone.css</contents>
+	        </resource>	        
+	        <resource>
+	            <type>javascript</type>
+	            <contents>
+	                <![CDATA[
+
+                          
+	                ]]>
+	            </contents>
+	        </resource>
+	        <resource>
+	            <type>css</type>
+	            <contents>
+	                <![CDATA[
+            	      
+	                ]]>
+	            </contents>
+	        </resource>
+	    </resources>
+	    
+	    <getHtmlFunction>
+	        <![CDATA[	   	        
+return "<div class='upload dropzone' id='" + this.id + "'></div>";
+	        ]]>
+	    </getHtmlFunction> 
+	    
+	    <initDesignJavaScript>
+	        <![CDATA[
+new _pageIframeWindow[0].Dropzone("div#" + this.id, { url: "~"});
+	        ]]>
+	    </initDesignJavaScript>
+	    	    
+	    <getDataFunction>
+	        <![CDATA[
+return null;
+	        ]]>
+	    </getDataFunction>
+	 
+	    <styles>
+	        <style>
+	            <name>Upload</name>
+	            <getAppliesToFunction>
+					<![CDATA[
+return "#" + this.id;
+	       			 ]]>
+	            </getAppliesToFunction>
+	        </style>
+	    </styles>
+	    
+	   	<initJavaScript>
+	        <![CDATA[
+new Dropzone("div#" + id, { url: "~?a=" + _appId + "&v=" + _appVersion + "&action=uploadImage"});
+	        ]]>
+	    </initJavaScript>
+	    
+	</control>
+</controls>

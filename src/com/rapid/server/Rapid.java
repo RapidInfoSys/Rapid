@@ -924,8 +924,51 @@ public class Rapid extends RapidHttpServlet {
 
 							// get the name
 							String imageName = request.getParameter("name");
+							// assume bytes offset is 0
+							int bytesOffset = 0;
+							// assume no boundary
+							String boundary = "";
 
-							// if we got one
+							// if no try
+							if (imageName == null) {
+								// get the content type
+								String contentType = request.getHeader("content-type");
+								// if we got some
+								if (contentType != null) {
+									// check boundary
+									if (contentType.contains("boundary=")) {
+										// get the boundary
+										boundary  = contentType.substring(contentType.indexOf("boundary=") + 10);
+										// find the double break
+										for (int i = boundary.length(); i < bodyBytes.length - 4; i++) {
+											if (bodyBytes[i] == 13 && bodyBytes[i+1] == 10 && bodyBytes[i+2] == 13 && bodyBytes[i+3] == 10) {
+												bytesOffset = i + 4;
+												break;
+											}
+										}
+										// get the headers string
+										String headersString = new String(bodyBytes, boundary.length() + 5, bytesOffset - boundary.length() - 10);
+										// split the parts
+										String[] headers = headersString.split("\r\n");
+										// loop them
+										for (String header : headers) {
+											// get the parts
+											String[] headerParts = header.split(":");
+											// check content type
+											if (headerParts.length > 1 && headerParts[0].toLowerCase().trim().equals("content-type")) {
+												// get content parts
+												String[] contentParts = headerParts[1].split("/");
+												// set the file name
+												if (contentParts.length > 1) imageName = "test." + contentParts[1].toLowerCase().trim();
+											}
+										}
+										// add closer to bounday as we take the bytes off later
+										boundary += "--";
+									}
+								}
+							}
+
+							// check we got one
 							if (imageName == null) {
 
 								// send forbidden response
@@ -936,8 +979,9 @@ public class Rapid extends RapidHttpServlet {
 
 							} else {
 
-								// check the jpg file signature (from http://en.wikipedia.org/wiki/List_of_file_signatures)
-								if (bodyBytes[0] == (byte)0xFF && bodyBytes[1] == (byte)0xD8 && bodyBytes[2] == (byte)0xFF) {
+								// check the jpg or png file signature (from http://en.wikipedia.org/wiki/List_of_file_signatures)
+								if ((bodyBytes[bytesOffset] == (byte)0xFF && bodyBytes[bytesOffset + 1] == (byte)0xD8 && bodyBytes[bytesOffset + 2] == (byte)0xFF)
+										|| (bodyBytes[bytesOffset] == (byte)0x89 && bodyBytes[bytesOffset + 1] == (byte)0x50 && bodyBytes[bytesOffset + 2] == (byte)0x4E)) {
 
 									// create the path
 									String imagePath = "uploads/" +  app.getId() + "/" + imageName;
@@ -948,7 +992,7 @@ public class Rapid extends RapidHttpServlet {
 									// create a file output stream to save the data to
 									FileOutputStream fos = new FileOutputStream(imageFile);
 									// write the body bytes to the stream
-									fos.write(bodyBytes);
+									fos.write(bodyBytes, bytesOffset, bodyBytes.length - bytesOffset - boundary.length());
 									// close the stream
 									fos.close();
 
