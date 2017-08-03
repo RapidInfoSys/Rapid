@@ -52,6 +52,15 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	        </property>
 	        
 	        <property>
+	            <key>responsiveLabel</key>
+	            <name>Label</name>
+	            <setConstructValueFunction>return "";</setConstructValueFunction>
+	            <changeValueJavaScript>text</changeValueJavaScript>
+	            <refreshHtml>true</refreshHtml>
+	            <helpHtml>Label to appear above the control</helpHtml>
+	        </property>
+	        
+	        <property>
 	            <key>text</key>
 	            <name>Text</name>
 	            <setConstructValueFunction>return "Text"</setConstructValueFunction>
@@ -151,10 +160,17 @@ return [{value:"", text:"Please select..."}, {value:"lg-1", text:"1/12"}, {value
 				<type>cssLink</type>
 				<contents>styles/bootstrap.css</contents>
 			</resource>
-
 			<resource>
 				<type>javascriptLink</type>
 				<contents>scripts_min/bootstrap.min.js</contents>
+			</resource>
+			<resource>
+			    <type>css</type>
+			    <contents>
+.r-text span {
+	display: block;
+}			        
+			    </contents>
 			</resource>
 		</resources>
 	    
@@ -194,8 +210,18 @@ if (this.small) classes += " col-" + this.small;
 if (this.medium) classes += " col-" + this.medium;
 if (this.large) classes += " col-" + this.large;
 
+// assume no repsonsive label
+var responsiveLabelStart = "";
+var responsiveLabelEnd = "";
+// if there was one
+if (this.responsiveLabel) {
+	responsiveLabelStart = "<span data-for='label'>" + this.responsiveLabel + "</span><span data-for='text'>";
+	responsiveLabelEnd = "</span>";
+}
+
+
 // return our html for adding to our parent object
-return "<" + open + " id='" + this.id + "' " + labelFor + " class='r-text" + classes + "'" + (this.text ? "" : " style='min-height:15px;'") + ">" + text + "</" + close + ">";
+return "<" + open + " id='" + this.id + "' " + labelFor + " class='r-text" + classes + "'" + (this.text ? "" : " style='min-height:15px;'") + (this.responsiveLabel ? "" : " data-for='text'") + ">" + responsiveLabelStart + text + responsiveLabelEnd + "</" + close + ">";
 	        ]]>
 	    </getHtmlFunction>
 	    
@@ -219,34 +245,43 @@ if (style && style.indexOf("min-height:15px;") > -1 && this.childControls && thi
 	        ]]>
 	    </saveJavaScript>
 	    
-	    	    <getDataFunction>
+	    <getDataFunction>
 	        <![CDATA[
-return $("#" + id).html();
+// get the control	        
+var control = $("#" + id);
+// if the control is not the text itself find the element we want
+if (!control.is("[data-for=text]")) control = control.find("[data-for=text]");
+// return
+return control.html();
 			]]>
 	    </getDataFunction>
 	    
 	    <setDataJavaScript>
 	        <![CDATA[
-var control = $("#" + id);	        
+// get the control	        
+var control = $("#" + id);
+// assume no value
+var value = "";
+// get the value from the data
 if (data != null && data !== undefined) {	
 	data = makeDataObject(data, field);
 	if (data.rows && data.rows[0]) {	        		
 		if (field && data.fields) {
 			for (var i in data.fields) {
 				if (data.fields[i] && data.fields[i].toLowerCase() == field.toLowerCase()) {
-					control.html(data.rows[0][i]);
+					value = data.rows[0][i];
 					break;
 				}
 			}
 		} else {
-			control.html(data.rows[0][0]);
+			value = data.rows[0][0];
 		}
-	} else {
-		control.html("");
 	}
-} else {
-	control.html("");
 }
+// if the control is not the text itself find the element we want
+if (!control.is("[data-for=text]")) control = control.find("[data-for=text]");
+// set value
+control.html(value);
 			]]>
 	    </setDataJavaScript>
 	    
@@ -271,6 +306,22 @@ if (data != null && data !== undefined) {
 	            <getAppliesToFunction>
 					<![CDATA[	      
 return "#" + this.id;
+	       			 ]]>	                
+	            </getAppliesToFunction>
+	        </style>
+	        <style>
+	            <name>Label</name>  
+	            <getAppliesToFunction>
+					<![CDATA[	      
+return "#" + this.id + " span[data-for=label]";
+	       			 ]]>	                
+	            </getAppliesToFunction>
+	        </style>
+	        	        	        <style>
+	            <name>Text</name>  
+	            <getAppliesToFunction>
+					<![CDATA[	      
+return "#" + this.id + " span[data-for=text]";
 	       			 ]]>	                
 	            </getAppliesToFunction>
 	        </style>

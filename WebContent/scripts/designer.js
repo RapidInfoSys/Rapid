@@ -61,6 +61,8 @@ var _styleClasses = [];
 var _localDateFormat = "dd/MM/yyyy";
 // the controlAndActionPrefix, default to empty space
 var _controlAndActionPrefix = "";
+// the styling targets that we display guidlines for
+var _guideLines = ".table td, .panel, .r-panel, .r-text, .flowLayoutCell { border: 1px dashed #ccc; margin: -1px; }";
 
 // the document window
 var _window;
@@ -1417,10 +1419,7 @@ function loadApps(selectedAppId, forceLoad) {
 
 // this function locks the ui whilst either versions, pages, or a page are loading
 function loadLock(level) {
-		
-	// hide the properties panel
-	$("#propertiesPanel").hide();
-	
+			
 	// disable all page buttons (except rapid admin)
 	$("button:not(#appAdmin):not(#appAdminNewTab)").disable();
 	
@@ -1440,6 +1439,8 @@ function loadLock(level) {
 	
 	// reloading the pages is used to get their new order so is a little different as the page itself is not reloaded
 	if (level != 3) {
+		// hide the properties panel
+		$("#propertiesPanel").hide();
 		// clear down property dialogues for good measure
 		hideDialogues();
 		// show loading in iFrame if not pages reloading for updated order
@@ -2366,7 +2367,7 @@ function updateGuidelines() {
 	// if we want guidelines
 	if (showGuidelines) {
 		// add guidelines css if not present - right at the top so other rules can override
-		if (!css[0]) head.prepend("<style id='guidelines'> .table td, .panel, .r-panel, .flowLayoutCell { border: 1px dashed #ccc; margin: -1px; } </style>");
+		if (!css[0]) head.prepend("<style id='guidelines'>" + _guideLines + "</style>");
 	} else {
 		// remove the guidlines css
 		css.remove();
@@ -2995,7 +2996,9 @@ $(document).ready( function() {
 			        	// set dirty to false
 			        	_dirty = false;
 			        	// reload the pages as the order may have changed, but keep the current one selected
-			        	loadPages(_page.id, false);		        	
+			        	loadPages(_page.id, false);
+			        	// reposition the selection in case controls moved during the reload
+			        	positionAndSizeBorder(_selectedControl);
 			        	// enable close button
 			        	$("#rapid_P11_C10_").enable().focus();
 			        	// auto close after 1 second
