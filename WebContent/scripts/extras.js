@@ -67,6 +67,39 @@ $.extend({
   }
 });
 
+// position loading cover - we can call this for controls with covers when the page morphs like when resizing or loading dialogues
+function positionLoadingCover(control, loadingCover) {
+	loadingCover.css({
+		left: control.offset().left,
+		top: control.offset().top,
+		width: control.outerWidth(),
+		height: control.outerHeight()
+	}).show();
+	loadingCover.children("div").css({
+		height: control.outerHeight()
+	});
+	if (control.width() > 0) {
+		var image = loadingCover.children("span");
+		image.css({
+			left: (control.outerWidth() - image.outerWidth())/2,
+			top: (control.outerHeight() - image.outerHeight())/2
+		}).show();
+	}
+}
+
+// uses the above to position all visible loading covers
+function positionLoadingCovers() {
+	// get all visible loading covers and loop
+	var loadingCovers = $("div.loadingCover:visible").each( function() {
+		// get the cover
+		var loadingCover = $(this);
+		// get the control
+		var control = $("#" + loadingCover.attr("data-id"));
+		// position!
+		positionLoadingCover(control, loadingCover);
+	});	
+}
+
 // extend JQuery object methods
 $.fn.extend({
   enable: function() {
@@ -76,28 +109,14 @@ $.fn.extend({
 	return this.attr("disabled","disabled").find("input,select,textarea").attr("disabled","disabled");
   },
   showLoading: function() {
-	 var loadingCover = $("div.loadingCover[data-id=" + this.attr("id") + "]");
+	 var id = this.attr("id");
+	 var loadingCover = $("div.loadingCover[data-id=" + id + "]");
 	 if (this[0] && this.is(":visible")) {		
 		if (!loadingCover[0]) {
-			$("body").append("<div class='loadingCover' data-id='" + this.attr("id") + "'><div class='loading'></div><span class='loading'></span></div>");
-			loadingCover = $("div.loadingCover[data-id=" + this.attr("id") + "]");
+			$("body").after("<div class='loadingCover' data-id='" + id + "'><div class='loading'></div><span class='loading'></span></div>");
+			loadingCover = $("div.loadingCover[data-id=" + id + "]");
 		}				
-		loadingCover.css({
-			left: this.offset().left,
-			top: this.offset().top,
-			width: this.outerWidth(),
-			height: this.outerHeight()
-		}).show();
-		loadingCover.children("div").css({
-			height: this.outerHeight()
-		});
-		if (this.width() > 0) {
-			var image = loadingCover.children("span");
-			image.css({
-				left: (this.outerWidth() - image.outerWidth())/2,
-				top: (this.outerHeight() - image.outerHeight())/2
-			}).show();
-		}
+		positionLoadingCover(this, loadingCover);
 	 } else {
 		loadingCover.hide();
 	 }

@@ -3,7 +3,7 @@
 
 <!-- 
 
-Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -806,6 +806,9 @@ if (data !== undefined) {
 		// add rowSelect to this row
 		row.addClass("rowSelect"); 
 	});
+	
+	// apply the resizing	
+	$(window).resize(); 
 	
 }
 			]]>

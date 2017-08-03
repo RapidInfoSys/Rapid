@@ -219,7 +219,6 @@ if (this.responsiveLabel) {
 	responsiveLabelEnd = "</span>";
 }
 
-
 // return our html for adding to our parent object
 return "<" + open + " id='" + this.id + "' " + labelFor + " class='r-text" + classes + "'" + (this.text ? "" : " style='min-height:15px;'") + (this.responsiveLabel ? "" : " data-for='text'") + ">" + responsiveLabelStart + text + responsiveLabelEnd + "</" + close + ">";
 	        ]]>
