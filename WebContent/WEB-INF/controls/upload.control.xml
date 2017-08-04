@@ -113,7 +113,7 @@ return {
 	    	    
 	    <getDataFunction>
 	        <![CDATA[
-return null;
+return $("#" + id + "files").val();
 	        ]]>
 	    </getDataFunction>
 	 
@@ -134,8 +134,8 @@ var dz = new Dropzone("div#" + id, {
 	url: "~?a=" + _appId + "&v=" + _appVersion + "&action=uploadImage", 
 	acceptedFiles: details.acceptedFiles,
 	capture: "camera", 
-	maxFiles : details.maxFiles,
-	
+	maxFiles: details.maxFiles,
+	hiddenInputContainer: "div#" + id 
 });
 dz.on("success", function(file) {
     var i = $("#" + id + "files");
@@ -147,7 +147,6 @@ dz.on("success", function(file) {
     }
     files += file.name;
     i.val(files);
-    
 });
 	        ]]>
 	    </initJavaScript>

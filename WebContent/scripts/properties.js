@@ -5267,6 +5267,7 @@ var _formAddressAttributes = [["","Please select..."],["address","Full address"]
 var _formObjects = {
 		"address": {"name" : "Address", "attributes" : _formAddressAttributes},
 		"contact": {"name" : "Contact", "attributes" : [["","Please select..."],["phone","Phone number"],["mobile","Mobile number"],["home","Home number"],["work","Work number"],["email","Email address"]]},
+		"file": {"name" : "File"},
 		"party": {"name" : "Party", "attributes" : [["","Please select..."],["title","Title"],["forename","Forename"],["surname","Surname"],["dob","Date of birth"],["gender","Gender"],["ethnicity","Ethnicity"],["language","Language"],["religion","Religion"],["sexorientation","Sexual orientation"]]},
 		"partyAddress": {"name" : "Party address", "attributes" : _formAddressAttributes},
 		"partyQuestion": {"name" : "Party question"},
