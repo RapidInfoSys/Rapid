@@ -34,8 +34,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Random;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -59,6 +62,7 @@ import com.rapid.forms.FormAdapter.UserFormDetails;
 import com.rapid.security.SecurityAdapter;
 import com.rapid.security.SecurityAdapter.User;
 import com.rapid.server.filter.RapidFilter;
+import com.rapid.utils.Bytes;
 import com.rapid.utils.Files;
 
 public class Rapid extends RapidHttpServlet {
@@ -924,45 +928,90 @@ public class Rapid extends RapidHttpServlet {
 
 							// get the name
 							String imageName = request.getParameter("name");
+							// get the content / mime type
+							String contentType = request.getHeader("content-type");
 							// assume bytes offset is 0
 							int bytesOffset = 0;
 							// assume no boundary
 							String boundary = "";
 
-							// if no try
+							// if name not in the parameter try the more complex boundary way
 							if (imageName == null) {
-								// get the content type
-								String contentType = request.getHeader("content-type");
-								// if we got some
+								// if we have a content type
 								if (contentType != null) {
 									// check boundary
 									if (contentType.contains("boundary=")) {
 										// get the boundary
 										boundary  = contentType.substring(contentType.indexOf("boundary=") + 10);
-										// find the double break
-										for (int i = boundary.length(); i < bodyBytes.length - 4; i++) {
-											if (bodyBytes[i] == 13 && bodyBytes[i+1] == 10 && bodyBytes[i+2] == 13 && bodyBytes[i+3] == 10) {
-												bytesOffset = i + 4;
-												break;
-											}
-										}
+										// find the end of the double break
+										bytesOffset = Bytes.findPattern(bodyBytes, Bytes.DOUBLE_BREAK_BYTES, boundary.length()) + Bytes.DOUBLE_BREAK_BYTES.length;
 										// get the headers string
 										String headersString = new String(bodyBytes, boundary.length() + 5, bytesOffset - boundary.length() - 8);
 										// split the parts
 										String[] headers = headersString.split("\r\n");
+										// assume no extension
+										String ext = null;
 										// loop them
 										for (String header : headers) {
+
+
+											// CHECK FOR FILENAME AND PRESERVE FOR NON-PUBLIC FILES, use this.isPublic()
 											// get the parts
 											String[] headerParts = header.split(":");
-											// check content type
-											if (headerParts.length > 1 && headerParts[0].toLowerCase().trim().equals("content-type")) {
-												// get content parts
-												String[] contentParts = headerParts[1].split("/");
-												// set the file name
-												if (contentParts.length > 1) imageName = "test." + contentParts[1].toLowerCase().trim();
+											// if we had a pair
+											if (headerParts.length > 1) {
+												// content disposition - where the filename is, but only if not public
+												if (!this.isPublic()) {
+													if (headerParts[0].toLowerCase().trim().equals("content-disposition")) {
+														// get content parts
+														String[] contentParts = headerParts[1].split(";");
+														// loop them
+														for (String contentPart : contentParts) {
+															// if this is the file name
+															if (contentPart.trim().toLowerCase().startsWith("filename=")) {
+																// split by =
+																String[] fileNameParts = contentPart.split("=");
+																// if got enough
+																if (fileNameParts.length > 1) imageName = fileNameParts[1].trim().replace("\"", "");
+															}
+														}
+													}
+												}
+												// content type
+												if (headerParts[0].toLowerCase().trim().equals("content-type")) {
+													// get content parts
+													String[] contentParts = headerParts[1].split("/");
+													// update content part to exclude
+													contentType = headerParts[1].trim();
+													// if there are enough parts
+													if (contentParts.length > 1) {
+														// set the file extension
+														ext = contentParts[1].toLowerCase().trim();
+														// adjust jpeg to jpg
+														if ("jpeg".equals(ext)) ext = "jpg";
+													}
+												}
 											}
 										}
-										// add closer to bounday as we take the bytes off later
+										// if we got an extension
+										if (ext != null) {
+											// instances with public access have their files renamed for safety - if non-public we will already have dug the name out of the headers above
+											if (imageName == null) {
+												// date formatter
+												SimpleDateFormat df = new SimpleDateFormat("yyMMddhhmmssS");
+												// get the form adapter
+												FormAdapter formAdapter = app.getFormAdapter();
+												// check if we got one
+												if (formAdapter == null) {
+													// update the file name with random number
+													imageName = df.format(new Date()) + "-" + (new Random().nextInt(89999) + 10000) + "." + ext;
+												} else {
+													// update the file name with form id and random number
+													imageName = df.format(new Date()) + "-" + formAdapter.getFormId(rapidRequest) + "-" + (new Random().nextInt(899) + 100) + "." + ext;
+												}
+											}
+										}
+										// add closer to boundary as we take the bytes off later
 										boundary += "--";
 									}
 								}
@@ -982,49 +1031,68 @@ public class Rapid extends RapidHttpServlet {
 								// create a writer
 								PrintWriter out = response.getWriter();
 
-								// check the jpg, gif, png, bmp, or pdf file signature (from http://en.wikipedia.org/wiki/List_of_file_signatures)
-								if ((bodyBytes[bytesOffset] == (byte)0xFF && bodyBytes[bytesOffset + 1] == (byte)0xD8 && bodyBytes[bytesOffset + 2] == (byte)0xFF)
-										|| (bodyBytes[bytesOffset] == (byte)0x47 && bodyBytes[bytesOffset + 1] == (byte)0x49 && bodyBytes[bytesOffset + 2] == (byte)0x46)
-										|| (bodyBytes[bytesOffset] == (byte)0x89 && bodyBytes[bytesOffset + 1] == (byte)0x50 && bodyBytes[bytesOffset + 2] == (byte)0x4E)
-										|| (bodyBytes[bytesOffset] == (byte)0x42 && bodyBytes[bytesOffset + 1] == (byte)0x4D)
-										|| (bodyBytes[bytesOffset] == (byte)0x25 && bodyBytes[bytesOffset + 1] == (byte)0x50 && bodyBytes[bytesOffset + 2] == (byte)0x44)
-								) {
+								// check the content type is allowed
+								if (getUploadMimeTypes().contains(contentType)) {
 
-									// create the path
-									String imagePath = "uploads/" +  app.getId() + "/" + imageName;
-									// servers with public access must use the secure upload location
-									if (this.isPublic()) imagePath = "WEB-INF/" + imagePath;
-									// create a file
-									File imageFile = new File(getServletContext().getRealPath(imagePath));
-									// create app folder if need be
-									imageFile.getParentFile().mkdir();
-									// create a file output stream to save the data to
-									FileOutputStream fos = new FileOutputStream(imageFile);
-									// write the body bytes to the stream
-									fos.write(bodyBytes, bytesOffset, bodyBytes.length - bytesOffset - boundary.length());
-									// close the stream
-									fos.close();
+									// get the bytes
+									byte[] bytes = getUploadMimeTypeBytes().get(contentType);
 
-									// log the file creation
-									logger.debug("Saved image file " + imagePath);
+									// if we got some
+									if (bytes != null) {
 
-									// print the results
-									out.print(imageFile);
+										// check the jpg, gif, png, bmp, or pdf file signature (from http://en.wikipedia.org/wiki/List_of_file_signatures)
+										if (Bytes.findPattern(bodyBytes, bytes, bytesOffset, bytes.length) > -1) {
 
-									// close the writer
-									out.close();
+											try {
 
-								} else {
+												// create the path
+												String imagePath = "uploads/" +  app.getId() + "/" + imageName;
+												// servers with public access must use the secure upload location
+												if (this.isPublic()) imagePath = "WEB-INF/" + imagePath;
+												// create a file
+												File imageFile = new File(getServletContext().getRealPath(imagePath));
+												// create app folder if need be
+												imageFile.getParentFile().mkdir();
+												// create a file output stream to save the data to
+												FileOutputStream fos = new FileOutputStream(imageFile);
+												// write the body bytes to the stream
+												fos.write(bodyBytes, bytesOffset, bodyBytes.length - bytesOffset - boundary.length());
+												// close the stream
+												fos.close();
 
-									// log
-									logger.debug("Rapid POST response (403) : Unrecognised file type must be .jpg, .gif, .png, .bmp, or .pdf");
+												// log the file creation
+												logger.debug("Saved image file " + imagePath);
 
-									// send forbidden response
-									response.setStatus(400);
-									// write message
-									out.print("Unrecognised file type");
+												// print just the file name
+												out.print(imageFile.getName());
 
-								} // signature check
+												// close the writer
+												out.close();
+
+											} catch (Exception ex) {
+
+												// log
+												logger.error("Error saving uploaded file : " + ex.getMessage(), ex);
+
+												// rethrow
+												throw new Exception("Error uploading file");
+
+											}
+
+										} else {
+
+											// log
+											logger.debug("Rapid POST response (403) : Unrecognised file type must be .jpg, .gif, .png, .bmp, or .pdf or set in uploadMimeTypes in web.xml");
+
+											// send forbidden response
+											response.setStatus(400);
+											// write message
+											out.print("Unrecognised file type");
+
+										} // signature check
+
+									} // bytes check
+								} // content type check
 
 							} // upload file name check
 

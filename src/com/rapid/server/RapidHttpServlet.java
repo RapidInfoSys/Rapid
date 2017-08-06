@@ -36,8 +36,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
@@ -60,6 +62,7 @@ import com.rapid.core.Device.Devices;
 import com.rapid.core.Theme;
 import com.rapid.core.Workflows;
 import com.rapid.server.filter.RapidAuthenticationAdapter;
+import com.rapid.utils.Bytes;
 import com.rapid.utils.JAXB.EncryptedXmlAdapter;
 
 @SuppressWarnings({"serial", "unchecked", "rawtypes"})
@@ -70,6 +73,10 @@ public class RapidHttpServlet extends HttpServlet {
 	private static Logger _logger = LogManager.getLogger(RapidHttpServlet.class);
 	private static JAXBContext _jaxbContext;
 	private static EncryptedXmlAdapter _encryptedXmlAdapter;
+
+	// private instance variables
+	private List<String> _uploadMimeTypes;
+	private Map<String,byte[]> _uploadMimeTypeBytes;
 
 	// properties
 
@@ -246,6 +253,54 @@ public class RapidHttpServlet extends HttpServlet {
 
 	// whether the connection adapter allows the pubic unauthenticated access
 	public boolean isPublic() { return (boolean) getServletContext().getAttribute(RapidAuthenticationAdapter.INIT_PARAM_PUBLIC_ACCESS); }
+
+	// allowed upload mimetypes - set in web.xml
+	public List<String> getUploadMimeTypes() {
+		// if we don't have one yet
+		if (_uploadMimeTypes == null) {
+			// make new one
+			_uploadMimeTypes = new ArrayList<String>();
+			// get the allowed upload mimetypes from the web.xml file
+			String uploadMimeTypes = getServletContext().getInitParameter("uploadMimeTypes");
+			// default if null
+			if (uploadMimeTypes == null) uploadMimeTypes = "image/bmp,image/gif,image/jpeg,image/png,application/pdf";
+			// get list and loop
+			for (String mimeType : uploadMimeTypes.split(",")) {
+				// add to list
+				_uploadMimeTypes.add(mimeType);
+			}
+		}
+		// return
+		return _uploadMimeTypes;
+	}
+
+	// allowed upload mimetypes - set in web.xml
+	public Map<String, byte[]> getUploadMimeTypeBytes() {
+		// if we don't have one yet
+		if (_uploadMimeTypeBytes == null) {
+			// make new one
+			_uploadMimeTypeBytes = new HashMap<String, byte[]>();
+			// get the allowed upload mimetype bytes from the web.xml file
+			String uploadMimeTypeBytes = getServletContext().getInitParameter("uploadMimeTypeBytes");
+			// default if null
+			if (uploadMimeTypeBytes == null) uploadMimeTypeBytes = "424D,47494638,FFD8FF,89504E47,25504446";
+			// get bytes
+			String[] bytes = uploadMimeTypeBytes.split(",");
+			// get list and loop
+			for (int i = 0; i < bytes.length; i++ ) {
+				// get bytes from the string and add to list
+				_uploadMimeTypeBytes.put(_uploadMimeTypes.get(i), Bytes.fromHexString(bytes[i]));
+			}
+		}
+		// return
+		return _uploadMimeTypeBytes;
+	}
+
+	// force the uploadMimeTypes to refresh
+	public void resetMimeTypes() {
+		_uploadMimeTypes = null;
+		_uploadMimeTypeBytes = null;
+	}
 
 	// this is used is actions such as database and webservice to cache results for off-line demos
 	public ActionCache getActionCache() {

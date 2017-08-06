@@ -1536,7 +1536,7 @@ public class Rapid extends Action {
 
 			} else if ("RELOADADAPTERS".equals(action)) {
 
-				// load adapters and set the result message
+				// ints for number of bits of each we're reloading
 				int databaseDrivers = 0;
 				int connectionAdapters = 0;
 				int securityAdapters = 0;
@@ -1544,18 +1544,18 @@ public class Rapid extends Action {
 				int themes = 0;
 				int devices = 0;
 
+				// reload adapters and set the int for the result message
 				databaseDrivers = RapidServletContextListener.loadDatabaseDrivers(servletContext);
-
 				connectionAdapters = RapidServletContextListener.loadConnectionAdapters(servletContext);
-
 				securityAdapters = RapidServletContextListener.loadSecurityAdapters(servletContext);
-
 				forms =  RapidServletContextListener.loadFormAdapters(servletContext);
-
 				themes = RapidServletContextListener.loadThemes(servletContext);
-
 				devices = Devices.load(servletContext).size();
 
+				// reset upload mime types so they are reloaded
+				rapidServlet.resetMimeTypes();
+
+				// show result message
 				result.put("message",
 					databaseDrivers + " database driver" + (databaseDrivers == 1 ? "" : "s") + ", " +
 					connectionAdapters + " connection adapter" + (connectionAdapters == 1 ? "" : "s") + ", " +

@@ -36,6 +36,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    <canUserAdd>true</canUserAdd>
 	    <canUserMove>true</canUserMove>
 	    <canUserAddPeers>true</canUserAddPeers>
+	    <canValidate>true</canValidate>
 	    	    
 	    <properties>
 	        
@@ -47,11 +48,32 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	        </property>
 	        
 	        <property>
+	            <key>message</key>
+	            <name>Message</name>
+	            <changeValueJavaScript>text</changeValueJavaScript>
+	            <refreshHtml>true</refreshHtml>
+	            <helpHtml>An alternative message that can be displayed - the default is "Drop files here to upload".</helpHtml>	            
+	        </property>
+
+	        <property>
+	            <key>dictCancelUpload</key>
+	            <name>Cancel message</name>
+	            <changeValueJavaScript>text</changeValueJavaScript>
+	            <helpHtml>An alternative message that can be displayed for the cancel link instead of the default "Cancel upload"</helpHtml>	            
+	        </property>
+	        
+	        <property>
+	            <key>dictRemoveFile</key>
+	            <name>Remove message</name>
+	            <changeValueJavaScript>text</changeValueJavaScript>
+	            <helpHtml>An alternative message that can be displayed for the remove link instead of the default "Remove file"</helpHtml>	            
+	        </property>
+	        
+	        <property>
 	            <key>acceptedFiles</key>
 	            <name>Accepted files</name>
 	            <changeValueJavaScript>text</changeValueJavaScript>
-	            <getValuesFunction> return "application/pdf,image/bmp,image/gif,image/jpeg,image/png"</getValuesFunction>
-	            <helpHtml>A comma separated list of mime types or file extensions. Eg.: image/*,application/pdf,.psd</helpHtml>
+	            <helpHtml>A comma separated list of mime types or file extensions. Eg.: image/*,application/pdf,.psd - by default Rapid accpets .bmp, .gif, .jpg, .png, .pdf</helpHtml>
 	        </property>
 	        
 	        <property>
@@ -59,6 +81,39 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <name>Max files</name>
 	            <changeValueJavaScript>integer</changeValueJavaScript>
 	            <helpHtml>Maximum number of files allowed to be uploaded.</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>resizeWidth</key>
+	            <name>Resize width</name>
+	            <changeValueJavaScript>integer</changeValueJavaScript>
+	            <helpHtml>If set, images will be resized to this width in pixels before being uploaded. If resizeHeight is not provided, the original aspect ratio of the file will be preserved.</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>resizeHeight</key>
+	            <name>Resize height</name>
+	            <changeValueJavaScript>integer</changeValueJavaScript>
+	            <helpHtml>If set, images will be resized to this height in pixels before being uploaded. If resizeWidth is not provided, the original aspect ratio of the file will be preserved.</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>resizeQuality</key>
+	            <name>Resize quality</name>
+	            <changeValueJavaScript>integer</changeValueJavaScript>
+	            <helpHtml>The quality of the resized images - a number between 0 and 100</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>resizeMethod</key>
+	            <name>Resize method</name>
+	            <changeValueJavaScript>select</changeValueJavaScript>
+	            <getValuesFunction>
+	                 <![CDATA[
+	                return [["","Please select"],["contain","contain"],["crop","crop"]];
+	               	]]>
+	            </getValuesFunction>
+	            <helpHtml>How the images should be scaled down in case both resizeWidth and resizeHeight are provided.</helpHtml>
 	        </property>
 	        	 	                  	      
 	    </properties>
@@ -76,7 +131,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <type>javascript</type>
 	            <contents>
 	                <![CDATA[
-Dropzone.autoDiscover = false;
+if (window["Dropzone"]) Dropzone.autoDiscover = false;
 	                ]]>
 	            </contents>
 	        </resource>
@@ -98,15 +153,25 @@ return "<div class='upload dropzone' id='" + this.id + "'><input type='hidden' n
 	    
 	    <initDesignJavaScript>
 	        <![CDATA[
-new _pageIframeWindow[0].Dropzone("div#" + this.id, { url: "~"});
+new _pageIframeWindow[0].Dropzone("div#" + this.id, { 
+	url: "~",
+	dictDefaultMessage: this.message
+});
 	        ]]>
 	    </initDesignJavaScript>
 	    
 	    <getDetailsFunction>	        
 	        <![CDATA[
 return {
+  message: this.message,
+  dictCancelUpload: this.dictCancelUpload,
+  dictRemoveFile: this.dictRemoveFile,
   acceptedFiles: this.acceptedFiles,
-  maxFiles: this.maxFiles
+  maxFiles: this.maxFiles,
+  resizeWidth: this.resizeWidth,
+  resizeHeight: this.resizeHeight,  
+  resizeQuality: this.resizeQuality / 100,
+  resizeMethod: this.resizeMethod
 };
 			]]>	        	        
 	    </getDetailsFunction>	    
@@ -126,16 +191,51 @@ return "#" + this.id;
 	       			 ]]>
 	            </getAppliesToFunction>
 	        </style>
+	        <style>
+	            <name>Images</name>
+	            <getAppliesToFunction>
+					<![CDATA[
+return "#" + this.id + " div.dz-image";
+	       			 ]]>
+	            </getAppliesToFunction>
+	        </style>
+	        <style>
+	            <name>Messages</name>
+	            <getAppliesToFunction>
+					<![CDATA[
+return "#" + this.id + " span";
+	       			 ]]>
+	            </getAppliesToFunction>
+	        </style>
+	        <style>
+	            <name>Remove link</name>
+	            <getAppliesToFunction>
+					<![CDATA[
+return "#" + this.id + " a.dz-remove";
+	       			 ]]>
+	            </getAppliesToFunction>
+	        </style>
+	        	        
 	    </styles>
 	    
 	   	<initJavaScript>
 	        <![CDATA[
 var dz = new Dropzone("div#" + id, { 
 	url: "~?a=" + _appId + "&v=" + _appVersion + "&action=uploadImage", 
-	acceptedFiles: details.acceptedFiles,
-	capture: "camera", 
+	addRemoveLinks: true,
+	capture: "camera",
+	hiddenInputContainer: "div#" + id,
+	dictCancelUploadConfirmation: null,
+	dictRemoveFileConfirmation: null,
+	dictDefaultMessage: details.message,
+	dictCancelUpload: details.dictCancelUpload,
+	dictRemoveFile: details.dictRemoveFile,
+	acceptedFiles: (details.acceptedFiles ? acceptedFiles : "image/bmp,image/gif,image/jpeg,image/png,application/pdf"),	 
 	maxFiles: details.maxFiles,
-	hiddenInputContainer: "div#" + id 
+	resizeWidth: details.resizeWidth,
+	resizeHeight: details.resizeHeight,  
+	resizeQuality: details.resizeQuality,
+	resizeMethod: details.resizeMethod
 });
 dz.on("success", function(file) {
     var i = $("#" + id + "files");
@@ -145,7 +245,17 @@ dz.on("success", function(file) {
     } else {
     	files = "";
     }
-    files += file.name;
+    if (file.xhr && file.xhr.response) {
+    	files += file.xhr.response;
+    } else {
+    	files += file.name;
+    }
+    i.val(files);
+});
+dz.on("removedfile", function(file) {
+    var i = $("#" + id + "files");
+    var files = i.val();
+    if (files) 	files = files.replace(",,","").replace(file.name,"");
     i.val(files);
 });
 	        ]]>
