@@ -3,7 +3,7 @@
 
 <!-- 
 
-Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -111,18 +111,18 @@ if (this.hidden) this.object.hide();
 	    </saveJavaScript>
 	    
 	    <events>
-	        <event>
-	            <type>mouseover</type>
-	            <name>Mouse over</name>
-	        </event>
-	        <event>
-	            <type>mouseout</type>
-	            <name>Mouse out</name>
-	        </event>
-	        <event>
+	    	<event>
 	            <type>click</type>
 	            <name>Click</name>
-	        </event>	        
+	        </event>
+	        <event>
+	            <type>mouseenter</type>
+	            <name>Mouse enter</name>
+	        </event>
+	        <event>
+	            <type>mouseleave</type>
+	            <name>Mouse leave</name>
+	        </event>	              
 	    </events>
 	    
 	    <styles>       
