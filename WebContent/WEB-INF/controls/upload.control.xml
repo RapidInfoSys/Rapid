@@ -153,10 +153,11 @@ return "<div class='upload dropzone' id='" + this.id + "'><input type='hidden' n
 	    
 	    <initDesignJavaScript>
 	        <![CDATA[
-new _pageIframeWindow[0].Dropzone("div#" + this.id, { 
-	url: "~",
-	dictDefaultMessage: this.message
-});
+var options = {
+	url: "~"
+}
+if (this.message) options.dictDefaultMessage = this.message;
+new _pageIframeWindow[0].Dropzone("div#" + this.id, options);
 	        ]]>
 	    </initDesignJavaScript>
 	    
@@ -181,6 +182,61 @@ return {
 return $("#" + id + "files").val();
 	        ]]>
 	    </getDataFunction>
+	    
+	    <setDataJavaScript>
+	        <![CDATA[
+var value = null;
+if (data != null && data !== undefined) {	
+	data = makeDataObject(data, field);
+	if (data.rows && data.rows[0]) {	        		
+		if (field && data.fields) {
+			for (var i in data.fields) {
+				if (data.fields[i] && data.fields[i].toLowerCase() == field.toLowerCase()) {
+					value = data.rows[0][i];
+					break;
+				}
+			}
+		} else {
+			value = data.rows[0][0];
+		}
+	}
+}
+var control = $("#" + id);
+control.find("#" + id + "files").val(value);
+var dzs = window["dropzones"];
+if (dzs) {
+	var dz = dzs[id];
+	if (dz) {
+		if (value) {
+			var files = value.split(",");
+			for (var i in files) {
+				var fileName = files[i]; 
+				var file = JSON.parse(sessionStorage.getItem(fileName));
+				if (file) {
+					file.name = fileName;
+					dz.emit("addedfile", file);
+					if (file.url) dz.emit("thumbnail", file, file.url);
+					dz.emit("complete", file);
+				}
+			}
+			if (dz.options.maxFiles) dz.options.maxFiles = dz.options.maxFiles - files.length;
+		} else {
+			dz.removeAllFiles();
+			control.find("div.dz-preview.dz-complete").remove();
+			control.find("div.dz-message").show();
+		}
+	}
+}
+if (changeEvents) control.trigger("change");
+	        ]]>
+	    </setDataJavaScript>
+	    
+	    <events>
+	        <event>
+	            <type>change</type>
+	            <name>Change</name>
+	        </event>	  	              	        
+	    </events>
 	 
 	    <styles>
 	        <style>
@@ -215,49 +271,74 @@ return "#" + this.id + " a.dz-remove";
 	       			 ]]>
 	            </getAppliesToFunction>
 	        </style>
-	        	        
 	    </styles>
 	    
 	   	<initJavaScript>
 	        <![CDATA[
-var dz = new Dropzone("div#" + id, { 
+var options = {
 	url: "~?a=" + _appId + "&v=" + _appVersion + "&action=uploadImage", 
 	addRemoveLinks: true,
 	capture: "camera",
 	hiddenInputContainer: "div#" + id,
 	dictCancelUploadConfirmation: null,
-	dictRemoveFileConfirmation: null,
-	dictDefaultMessage: details.message,
-	dictCancelUpload: details.dictCancelUpload,
-	dictRemoveFile: details.dictRemoveFile,
-	acceptedFiles: (details.acceptedFiles ? acceptedFiles : "image/bmp,image/gif,image/jpeg,image/png,application/pdf"),	 
-	maxFiles: details.maxFiles,
-	resizeWidth: details.resizeWidth,
-	resizeHeight: details.resizeHeight,  
-	resizeQuality: details.resizeQuality,
-	resizeMethod: details.resizeMethod
-});
+	dictRemoveFileConfirmation: null
+}
+if (details.message) options.dictDefaultMessage = details.message
+if (details.dictCancelUpload) options.dictCancelUpload = details.dictCancelUpload;
+if (details.dictRemoveFile) options.dictRemoveFile = details.dictRemoveFile;
+if (details.acceptedFiles) options.acceptedFiles = details.acceptedFiles;
+if (details.maxFiles) options.maxFiles = details.maxFiles;
+if (details.resizeWidth) options.resizeWidth = details.resizeWidth;
+if (details.resizeHeight) options.resizeHeight = details.resizeHeight;
+if (details.resizeQuality) options.resizeQuality = details.resizeQuality;
+if (details.resizeMethod) options.resizeMethod = details.resizeMethod;
+var dz = new Dropzone("div#" + id, options);
 dz.on("success", function(file) {
-    var i = $("#" + id + "files");
-    var files = i.val();
-    if (files) {
-    	files += ",";
-    } else {
-    	files = "";
-    }
-    if (file.xhr && file.xhr.response) {
-    	files += file.xhr.response;
-    } else {
-    	files += file.name;
-    }
-    i.val(files);
+	var i = $("#" + id + "files");
+	var files = i.val();
+	if (files) {
+		files += ",";
+	} else {
+		files = "";
+	}
+	if (file.xhr && file.xhr.response) {
+		files += file.xhr.response;
+	} else {
+		files += file.name;
+	}
+	i.val(files);
+	var data = {size: file.size};
+	sessionStorage.setItem(file.name, JSON.stringify(data));
+	$("#" + id).trigger("change");
+});
+dz.on("thumbnail", function(file, dataUrl) {
+	var data = {size: file.size, url: dataUrl};
+	sessionStorage.setItem(file.name, JSON.stringify(data));
 });
 dz.on("removedfile", function(file) {
-    var i = $("#" + id + "files");
-    var files = i.val();
-    if (files) 	files = files.replace(",,","").replace(file.name,"");
-    i.val(files);
+	var c = $("#" + id + "files");
+	var files = c.val();
+	if (files) 	{
+		var fileList = "";
+    	files = files.split(",");
+    	var skipped = false;
+    	for (var i in files) {
+    		var f = files[i];
+    		if (f == file.name && !skipped){
+    			skipped = true;
+    		} else {
+    			fileList += f + ",";
+    		}
+    	}
+    	if (fileList.substr(fileList.length-1,1) == ",") fileList = fileList.substr(0, fileList.length-1) 
+    	c.val(fileList);
+    }
+    $("#" + id).trigger("change");
 });
+var dzs = window["dropzones"];
+if (!dzs) dzs = {};
+dzs[id] = dz;
+window["dropzones"] = dzs;
 	        ]]>
 	    </initJavaScript>
 	    

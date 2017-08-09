@@ -58,7 +58,7 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 
 	private List<JSONObject> _jsonLogins = null;
 	private String[] _ipChecks = null;
-	private boolean _publicAccess = false;
+
 
 	public FormAuthenticationAdapter(FilterConfig filterConfig) {
 		// call the super
@@ -77,10 +77,6 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 			 // log
 			 _logger.info("IP addresses will be checked against " + ipCheck + " for access to sensitive resources.");
 		 }
-		 // look for whether public access is allowed
-		 _publicAccess  = Boolean.parseBoolean(filterConfig.getInitParameter(INIT_PARAM_PUBLIC_ACCESS));
-		 // add this to the context
-		 filterConfig.getServletContext().setAttribute(INIT_PARAM_PUBLIC_ACCESS, _publicAccess);
 		 // log
 		 _logger.info("Form authentication filter initialised.");
 

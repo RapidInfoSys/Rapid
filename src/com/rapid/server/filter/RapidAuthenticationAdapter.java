@@ -40,11 +40,16 @@ public abstract class RapidAuthenticationAdapter {
 	public static final String PUBLIC_ACCESS_USER = "public";
 
 	protected ServletContext _servletContext;
+	protected boolean _publicAccess = false;
 
 	public ServletContext getServletContext() { return _servletContext; }
 
 	public RapidAuthenticationAdapter(FilterConfig filterConfig) {
 		_servletContext = filterConfig.getServletContext();
+		 // look for whether public access is allowed
+		 _publicAccess  = Boolean.parseBoolean(filterConfig.getInitParameter(INIT_PARAM_PUBLIC_ACCESS));
+		 // add this to the context
+		 filterConfig.getServletContext().setAttribute(INIT_PARAM_PUBLIC_ACCESS, _publicAccess);
 	}
 
 	public abstract ServletRequest process(ServletRequest request, ServletResponse response) throws IOException, ServletException;

@@ -252,9 +252,9 @@ public class RapidHttpServlet extends HttpServlet {
 	}
 
 	// whether the connection adapter allows the public unauthenticated access
-	public boolean isPublic() { 
-		// return the parsed value of the parameter
-		return Boolean.parseBoolean((String) getServletContext().getAttribute(RapidAuthenticationAdapter.INIT_PARAM_PUBLIC_ACCESS)); 
+	public boolean isPublic() {
+		// return the  value of the parameter - this is set in the RapidAuthenticationAdapter
+		return (Boolean) getServletContext().getAttribute(RapidAuthenticationAdapter.INIT_PARAM_PUBLIC_ACCESS);
 	}
 
 	// allowed upload mimetypes - set in web.xml
