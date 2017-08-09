@@ -237,14 +237,13 @@ public class Database extends Action {
 				if (control != null) {
 					if ("grid".equals(control.getType())) {
 						if (show) {
-							js += "  $('#" + control.getId() + "').showLoading();\n";
+							js += "$('#" + control.getId() + "').showLoading();\n";
 						} else {
-							js += "  $('#" + control.getId() + "').hideLoading();\n";
+							js += "$('#" + control.getId() + "').hideLoading();\n";
 						}
 					}
 				}
 			}
-
 		}
 		return js;
 	}
@@ -345,6 +344,70 @@ public class Database extends Action {
 		return js;
 	}
 
+	// private function to get outputs into a string, resued by child database actions
+	private String getOutputsJavaScript(ServletContext servletContext, Application application, Page page, List<Parameter> outputs) {
+		// the outputs array we're going to make
+		String jsOutputs = "";
+		// loop the output parameters
+		for (int i = 0; i < outputs.size(); i++) {
+			// get the parameter
+			Parameter output = outputs.get(i);
+			// get the id
+			String outputId = output.getItemId();
+			// get the id parts
+			String[] idParts = outputId.split("\\.");
+			// if there is more than 1 part we are dealing with set properties, for now just update the output id
+			if (idParts.length > 1) outputId = idParts[0];
+
+			// get the control the data is going into
+			Control outputControl = page.getControl(outputId);
+			// assume we found it
+			boolean pageControl = true;
+			// if not found in the page
+			if (outputControl == null) {
+				// try the application
+				outputControl = application.getControl(servletContext, outputId);
+				// set page control to false
+				pageControl = false;
+			}
+			// check we got one
+			if (outputControl == null) {
+				jsOutputs += "      // output not found for " + outputId + "\n";
+			} else {
+				// get any details we may have
+				String details = outputControl.getDetailsJavaScript(application, page);
+				// if there are two parts this is a property
+				if (idParts.length > 1) {
+					// if we have some details
+					if (details != null) {
+						// if this is a page control
+						if (pageControl) {
+							// the details will already be in the page so we can use the short form
+							details = outputControl.getId() + "details";
+						}
+					}
+					// get the property from the second id part
+					String property = idParts[1];
+					// append the set property call
+					jsOutputs += "      setProperty_" + outputControl.getType() +  "_" + property + "(ev,'" + outputControl.getId() + "','" + output.getField() + "'," + details + ",data);\n";
+				} else {
+					// set to empty string or clean up
+					if (details == null) {
+						details = "";
+					} else {
+						details = ", details: " + details;
+					}
+					// append the javascript outputs
+					jsOutputs += "{id: '" + outputControl.getId() + "', type: '" + outputControl.getType() + "', field: '" + output.getField() + "'" + details + "},";
+				} // property / control check
+			} // control found check
+		} // outputs loop
+		// remove the last comma
+		if (outputs.size() > 0) jsOutputs = jsOutputs.substring(0, jsOutputs.length() - 1);
+		// return
+		return jsOutputs;
+	}
+
 	@Override
 	public String getJavaScript(RapidRequest rapidRequest, Application application, Page page, Control control, JSONObject jsonDetails) throws Exception {
 
@@ -375,7 +438,7 @@ public class Database extends Action {
 				// if there are some
 				if (_childDatabaseActions.size() > 0) {
 					// add a collection into the parent
-					js += "  query.childQueries = [];\n";
+					js += "query.childQueries = [];\n";
 					// count them
 					int i = 1;
 					// loop them
@@ -433,7 +496,7 @@ public class Database extends Action {
 			}
 
 			// hide the loading javascript (if applicable)
-			if (_showLoading) js += "      " + getLoadingJS(page, outputs, false);
+			if (_showLoading) js += "    " + getLoadingJS(page, outputs, false);
 
 			// this avoids doing the errors if the page is unloading or the back button was pressed
 			js += "    if (server.readyState > 0) {\n";
@@ -488,76 +551,35 @@ public class Database extends Action {
 			if (outputs != null) {
 				// open if data check
 				js += "    if (data) {\n";
-				// the outputs array we're going to make
-				String jsOutputs = "";
-				// loop the output parameters
-				for (int i = 0; i < outputs.size(); i++) {
-					// get the parameter
-					Parameter output = outputs.get(i);
-					// get the id
-					String outputId = output.getItemId();
-					// get the id parts
-					String[] idParts = outputId.split("\\.");
-					// if there is more than 1 part we are dealing with set properties, for now just update the output id
-					if (idParts.length > 1) outputId = idParts[0];
-
-					// get the control the data is going into
-					Control outputControl = page.getControl(outputId);
-					// assume we found it
-					boolean pageControl = true;
-					// if not found in the page
-					if (outputControl == null) {
-						// try the application
-						outputControl = application.getControl(rapidServlet.getServletContext(), outputId);
-						// set page control to false
-						pageControl = false;
-					}
-					// check we got one
-					if (outputControl == null) {
-						js += "      // output not found for " + outputId + "\n";
-					} else {
-
-						// get any details we may have
-						String details = outputControl.getDetailsJavaScript(application, page);
-
-						// if there are two parts this is a property
-						if (idParts.length > 1) {
-
-							// if we have some details
-							if (details != null) {
-								// if this is a page control
-								if (pageControl) {
-									// the details will already be in the page so we can use the short form
-									details = outputControl.getId() + "details";
-								}
-							}
-
-							// get the property from the second id part
-							String property = idParts[1];
-							// append the set property call
-							js += "      setProperty_" + outputControl.getType() +  "_" + property + "(ev,'" + outputControl.getId() + "','" + output.getField() + "'," + details + ",data);\n";
-
-						} else {
-
-							// set to empty string or clean up
-							if (details == null) {
-								details = "";
-							} else {
-								details = ", details: " + details;
-							}
-							// append the javascript outputs
-							jsOutputs += "{id: '" + outputControl.getId() + "', type: '" + outputControl.getType() + "', field: '" + output.getField() + "'" + details + "},";
-						} // property / control check
-					} // control found check
-				} // outputs loop
+				// get the outputs
+				String jsOutputs = getOutputsJavaScript(rapidServlet.getServletContext(), application, page, outputs);
 				// if we added to outputs
 				if (jsOutputs.length() > 0) {
-					// remove the last comma
-					jsOutputs = jsOutputs.substring(0, jsOutputs.length() - 1);
 					// add the outputs property
 					js += "      var outputs = [" + jsOutputs + "];\n";
 					// send them them and the data to the database action
 					js += "      Action_database(ev,'" + getId() + "', data, outputs);\n";
+					// if we are expecing child action results
+					// check for any child database actions
+					if (_childDatabaseActions != null) {
+						// loop them
+						for (int i = 0; i < _childDatabaseActions.size(); i++) {
+							// get the outputs
+							List<Parameter> childOutputs = _childDatabaseActions.get(i).getQuery().getOutputs();
+							// if it has out puts
+							if (childOutputs != null) {
+								// if it really has some
+								if (childOutputs.size() > 0) {
+									// get the name of this
+									String childName = "childAction" + (i + 1);
+									// get the outputs
+									js += "      var " + childName + "Outputs = [" + getOutputsJavaScript(rapidServlet.getServletContext(), application, page, childOutputs) + "]\n";
+									// get the data
+									js += "      Action_database(ev,'" + getId() + "', data, " + childName + "Outputs,'" + childName + "');\n";
+								}
+							}
+						}
+					}
 				} // outputs js length check
 				// close if data check
 				js += "    }\n";

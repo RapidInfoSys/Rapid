@@ -3,7 +3,7 @@
 
 <!-- 
 
-Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -200,16 +200,32 @@ function getDatabaseActionInputData(multiRow, inputs, sourceId, sourceData) {
 	    	    	    	    	     
 	    <actionJavaScript>
 	        <![CDATA[ 
-function Action_database(ev, actionId, data, outputs) {
+function Action_database(ev, actionId, data, outputs, childField) {
 	// check we got data and somewhere to put it
-	if (data && outputs) {
-		// check the returned sequence is higher than any others received so far
-		if (data.sequence > getDatabaseActionMaxSequence(actionId)) {
-			// retain this sequence as the new highest
-			_databaseActionMaxSequence[actionId] = data.sequence;
-			for (var i in outputs) {
-				var output = outputs[i];			
-				window["setData_" + output.type](ev, output.id, output.field, output.details, data);
+	if (data && outputs) {		
+		// if there is a child field
+		if (childField && data.fields) {
+			// loop fields
+			for (var i in data.fields) {
+				// look for a field in the parent matching the childField
+				if (data.fields[i] && data.fields[i].toLowerCase() == childField.toLowerCase()) {
+					// promote the data from child
+					data = data.rows[0][i];
+					// we're done
+					break;
+				}
+			}
+		}
+		// check we have data
+		if (data) {
+			// check the returned sequence is higher than any others received so far
+			if (!data.sequence || data.sequence > getDatabaseActionMaxSequence(actionId)) {
+				// retain this sequence as the new highest
+				if (data.sequence) _databaseActionMaxSequence[actionId] = data.sequence;
+				for (var i in outputs) {
+					var output = outputs[i];			
+					window["setData_" + output.type](ev, output.id, output.field, output.details, data);
+				}
 			}
 		}
 	}
