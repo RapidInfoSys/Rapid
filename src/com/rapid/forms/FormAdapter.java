@@ -789,7 +789,7 @@ public abstract class FormAdapter {
 			// if null
 			if (allFormDetails == null) {
 				// log
-				_logger.debug("Creating user session form details store for user " + rapidRequest.getUserName() + " from " + rapidRequest.getRequest().getRemoteAddr());
+				_logger.trace("Creating user session form details store for user " + rapidRequest.getUserName() + " from " + rapidRequest.getRequest().getRemoteAddr());
 				// make some
 				allFormDetails = new HashMap<String, UserFormDetails>();
 				// add to session
@@ -802,7 +802,7 @@ public abstract class FormAdapter {
 			// check we got some
 			if (formDetails == null) {
 				// log
-				_logger.debug("No form details of " + formKey + " for user " + rapidRequest.getUserName() + " from " + rapidRequest.getRequest().getRemoteAddr());
+				_logger.trace("No form details of " + formKey + " for user " + rapidRequest.getUserName() + " from " + rapidRequest.getRequest().getRemoteAddr());
 				// get the application
 				Application application = rapidRequest.getApplication();
 				// assume no start page
@@ -827,7 +827,7 @@ public abstract class FormAdapter {
 					// we're ok to request new form details
 					newFormAllowed = true;
 					// log
-					_logger.debug("New form allowed");
+					_logger.trace("New form allowed");
 				} else {
 					// get the security adapter
 					SecurityAdapter security = application.getSecurityAdapter();
@@ -837,7 +837,7 @@ public abstract class FormAdapter {
 							// we're ok to request new form details
 							newFormAllowed = true;
 							// log
-							_logger.debug("New form allowed for designer");
+							_logger.trace("New form allowed for designer");
 						}
 					} catch (SecurityAdapaterException e) {}
 				}
@@ -851,11 +851,11 @@ public abstract class FormAdapter {
 					// store the form id in the session - THIS IS A TEMPORARY MEASURE TO ENSURE USER FORM DETAILS ARE NOT CROSSING OVER TO OTHER USERS !!!!!!!!!!!
 					rapidRequest.getRequest().getSession(false).setAttribute(USER_FORM_ID, formDetails.getId());
 					// log
-					_logger.debug("New form details requested, form id is " + formDetails.getId());
+					_logger.trace("New form details requested, form id is " + formDetails.getId());
 				}
 			} else {
 				// log
-				_logger.debug("Form details retrived for user " + rapidRequest.getUserName() + " from " + rapidRequest.getRequest().getRemoteAddr() + ", form id is " + formDetails.getId());
+				_logger.trace("Form details retrived for user " + rapidRequest.getUserName() + " from " + rapidRequest.getRequest().getRemoteAddr() + ", form id is " + formDetails.getId());
 				try {
 					// get the session form id
 					String formId = (String) rapidRequest.getRequest().getSession(false).getAttribute(USER_FORM_ID);
