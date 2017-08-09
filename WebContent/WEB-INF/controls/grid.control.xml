@@ -515,12 +515,10 @@ function getGridSelectedRow(id, ev) {
 	    </resources>
 	    
 	    <getHtmlFunction>
-	        <![CDATA[
-	        
-var headerHtml = "";
+	        <![CDATA[ 
+var headerHtml = "<tr" + (this.columnHeadings ? "" : " style='display:none;'") + ">";
 var rowHtml = "<tr><td>No columns</td></tr>";
 if (this.columns.length > 0) {
-	var headerHtml = "<tr" + (this.columnHeadings ? "" : " style='display:none;'") + ">";
 	var rowHtml = "<tr>";
 	var columnCount = 0;
 	for (var i in this.columns) {
