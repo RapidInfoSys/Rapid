@@ -1033,62 +1033,67 @@ public class Rapid extends RapidHttpServlet {
 
 							} else {
 
-								// check the content type is allowed
-								if (getUploadMimeTypes().contains(contentType)) {
+								// check image name does not contain any control characters
+								if (imageName.indexOf("..") < 0 && imageName.indexOf("/") < 0 && imageName.indexOf("\\") < 0) {
 
-									// get the bytes
-									byte[] bytes = getUploadMimeTypeBytes().get(contentType);
+									// check the content type is allowed
+									if (getUploadMimeTypes().contains(contentType)) {
 
-									// if we got some
-									if (bytes != null) {
+										// get the bytes
+										byte[] bytes = getUploadMimeTypeBytes().get(contentType);
 
-										// check the jpg, gif, png, bmp, or pdf file signature (from http://en.wikipedia.org/wiki/List_of_file_signatures)
-										if (Bytes.findPattern(bodyBytes, bytes, bytesOffset, bytes.length) > -1) {
+										// if we got some
+										if (bytes != null) {
 
-											try {
+											// check the jpg, gif, png, bmp, or pdf file signature (from http://en.wikipedia.org/wiki/List_of_file_signatures)
+											if (Bytes.findPattern(bodyBytes, bytes, bytesOffset, bytes.length) > -1) {
 
-												// create the path
-												String imagePath = "uploads/" +  app.getId() + "/" + imageName;
-												// servers with public access must use the secure upload location
-												if (this.isPublic()) imagePath = "WEB-INF/" + imagePath;
-												// create a file
-												File imageFile = new File(getServletContext().getRealPath(imagePath));
-												// create app folder if need be
-												imageFile.getParentFile().mkdir();
-												// create a file output stream to save the data to
-												FileOutputStream fos = new FileOutputStream(imageFile);
-												// write the body bytes to the stream
-												fos.write(bodyBytes, bytesOffset, bodyBytes.length - bytesOffset - boundary.length());
-												// close the stream
-												fos.close();
+												try {
 
-												// log the file creation
-												logger.debug("Saved image file " + imagePath);
+													// create the path
+													String imagePath = "uploads/" +  app.getId() + "/" + imageName;
+													// servers with public access must use the secure upload location
+													if (this.isPublic()) imagePath = "WEB-INF/" + imagePath;
+													// create a file
+													File imageFile = new File(getServletContext().getRealPath(imagePath));
+													// create app folder if need be
+													imageFile.getParentFile().mkdir();
+													// create a file output stream to save the data to
+													FileOutputStream fos = new FileOutputStream(imageFile);
+													// write the body bytes to the stream
+													fos.write(bodyBytes, bytesOffset, bodyBytes.length - bytesOffset - boundary.length());
+													// close the stream
+													fos.close();
 
-												// print just the file name
-												out.print(imageFile.getName());
+													// log the file creation
+													logger.debug("Saved image file " + imagePath);
 
-												// close the writer
-												out.close();
+													// print just the file name
+													out.print(imageFile.getName());
 
-												// we passed the checks
-												passed = true;
+													// close the writer
+													out.close();
 
-											} catch (Exception ex) {
+													// we passed the checks
+													passed = true;
 
-												// log
-												logger.error("Error saving uploaded file : " + ex.getMessage(), ex);
+												} catch (Exception ex) {
 
-												// rethrow
-												throw new Exception("Error uploading file");
+													// log
+													logger.error("Error saving uploaded file : " + ex.getMessage(), ex);
 
-											}
+													// rethrow
+													throw new Exception("Error uploading file");
 
-										} // signature check
+												}
 
-									} // bytes check
+											} // signature check
 
-								}  // content type check
+										} // bytes check
+
+									}  // content type check
+
+								} // control character check
 
 							} // upload file name check
 

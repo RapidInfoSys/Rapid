@@ -301,21 +301,26 @@ dz.on("success", function(file) {
 	} else {
 		files = "";
 	}
+	var fileName = file.name;
 	if (file.xhr && file.xhr.response) {
-		files += file.xhr.response;
-	} else {
-		files += file.name;
+		fileName = file.xhr.response;
+		file.upload.filename = fileName;
 	}
+	files += fileName;
 	i.val(files);
 	var data = {size: file.size};
-	sessionStorage.setItem(file.name, JSON.stringify(data));
+	sessionStorage.setItem(fileName, JSON.stringify(data));
 	$("#" + id).trigger("change");
 });
 dz.on("thumbnail", function(file, dataUrl) {
+	var fileName = file.name;
+	if (file.upload && file.upload.filename) fileName = file.upload.filename
 	var data = {size: file.size, url: dataUrl};
-	sessionStorage.setItem(file.name, JSON.stringify(data));
+	sessionStorage.setItem(fileName, JSON.stringify(data));
 });
 dz.on("removedfile", function(file) {
+	var fileName = file.name;
+	if (file.upload && file.upload.filename) fileName = file.upload.filename
 	var c = $("#" + id + "files");
 	var files = c.val();
 	if (files) 	{
@@ -324,13 +329,13 @@ dz.on("removedfile", function(file) {
     	var skipped = false;
     	for (var i in files) {
     		var f = files[i];
-    		if (f == file.name && !skipped){
+    		if (f == fileName && !skipped){
     			skipped = true;
     		} else {
     			fileList += f + ",";
     		}
     	}
-    	if (fileList.substr(fileList.length-1,1) == ",") fileList = fileList.substr(0, fileList.length-1) 
+    	if (fileList.substr(fileList.length-1,1) == ",") fileList = fileList.substr(0, fileList.length-1);
     	c.val(fileList);
     }
     $("#" + id).trigger("change");
