@@ -326,7 +326,9 @@ function getExistingActionOptions(selectId, ignoreId) {
 		var event = _page.events[i];
 		for (var j in event.actions) {
 			var action = event.actions[j];
-			if (action.id != ignoreId) eventJS += "<option value='" + action.id + "' " + (action.id == selectId ? "selected='selected'" : "") + ">" + (j*1+1) + " - "  + action.type + "</option>";
+			var text =  (j*1+1) + " - "  + action.type;
+			if (action.comments) text += " - " + action.comments;
+			if (action.id != ignoreId) eventJS += "<option value='" + action.id + "' " + (action.id == selectId ? "selected='selected'" : "") + ">" + text + "</option>";
 		}			
 		if (eventJS) options += "<optgroup label='" + _page.name + "." + event.type + "'>" + eventJS + "</optgroup>";
 	}
