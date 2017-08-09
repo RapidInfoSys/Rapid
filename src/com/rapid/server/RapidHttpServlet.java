@@ -257,7 +257,7 @@ public class RapidHttpServlet extends HttpServlet {
 		return (Boolean) getServletContext().getAttribute(RapidAuthenticationAdapter.INIT_PARAM_PUBLIC_ACCESS);
 	}
 
-	// allowed upload mimetypes - set in web.xml
+	// allowed upload mimetypes - set in web.xml with uploadMimeTypes, must correspond with uploadMimeTypeBytes
 	public List<String> getUploadMimeTypes() {
 		// if we don't have one yet
 		if (_uploadMimeTypes == null) {
@@ -277,7 +277,7 @@ public class RapidHttpServlet extends HttpServlet {
 		return _uploadMimeTypes;
 	}
 
-	// allowed upload mimetypes - set in web.xml
+	// allowed upload mimetypes - set in web.xml with uploadMimeTypeBytes, must correspond with uploadMimeTypes
 	public Map<String, byte[]> getUploadMimeTypeBytes() {
 		// if we don't have one yet
 		if (_uploadMimeTypeBytes == null) {
