@@ -112,6 +112,15 @@ public class Control extends Action {
 				js += "find('." + styleClass + "').removeClass('" + styleClass + "');";
 			} else if ("showError".equals(actionType)) {
 				js += "showError(server, status, message);";
+			} else if ("scrollTo".equals(actionType)) {
+				// check if page
+				if (page.getId().equals(controlId)) {
+					// scroll to top of page
+					js = "$('body').scrollTop(0);";
+				} else {
+					// scroll to control y position
+					js = "$('body').scrollTop(" + js + "offset().top);";
+				}
 			} else {
 				// just call the action type (hide/show/toggle/hideDialogue)
 				js += actionType + "();";
