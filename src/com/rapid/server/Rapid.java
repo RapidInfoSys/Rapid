@@ -1017,6 +1017,11 @@ public class Rapid extends RapidHttpServlet {
 								}
 							}
 
+							// create a writer
+							PrintWriter out = response.getWriter();
+							// assume not passed
+							boolean passed = false;
+
 							// check we got one
 							if (imageName == null) {
 
@@ -1027,9 +1032,6 @@ public class Rapid extends RapidHttpServlet {
 								logger.debug("Rapid POST response (400) : Image name must be provided");
 
 							} else {
-
-								// create a writer
-								PrintWriter out = response.getWriter();
 
 								// check the content type is allowed
 								if (getUploadMimeTypes().contains(contentType)) {
@@ -1069,6 +1071,9 @@ public class Rapid extends RapidHttpServlet {
 												// close the writer
 												out.close();
 
+												// we passed the checks
+												passed = true;
+
 											} catch (Exception ex) {
 
 												// log
@@ -1079,22 +1084,25 @@ public class Rapid extends RapidHttpServlet {
 
 											}
 
-										} else {
-
-											// log
-											logger.debug("Rapid POST response (403) : Unrecognised file type must be .jpg, .gif, .png, .bmp, or .pdf or set in uploadMimeTypes in web.xml");
-
-											// send forbidden response
-											response.setStatus(400);
-											// write message
-											out.print("Unrecognised file type");
-
 										} // signature check
 
 									} // bytes check
-								} // content type check
+
+								}  // content type check
 
 							} // upload file name check
+
+							// if we didn't pass the file checks
+							if (!passed) {
+
+								logger.debug("Rapid POST response (403) : Unrecognised file type must be .jpg, .gif, .png, .bmp, or .pdf or set in uploadMimeTypes in web.xml");
+
+								// send forbidden response
+								response.setStatus(400);
+								// write message
+								out.print("Unrecognised file type");
+
+							}
 
 						} // action type check
 
