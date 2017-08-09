@@ -953,14 +953,11 @@ public class Rapid extends RapidHttpServlet {
 										String ext = null;
 										// loop them
 										for (String header : headers) {
-
-
-											// CHECK FOR FILENAME AND PRESERVE FOR NON-PUBLIC FILES, use this.isPublic()
 											// get the parts
 											String[] headerParts = header.split(":");
 											// if we had a pair
 											if (headerParts.length > 1) {
-												// content disposition - where the filename is, but only if not public
+												// content disposition - where the filename is, but only if this server isn't allowing public access
 												if (!this.isPublic()) {
 													if (headerParts[0].toLowerCase().trim().equals("content-disposition")) {
 														// get content parts
@@ -995,7 +992,7 @@ public class Rapid extends RapidHttpServlet {
 										}
 										// if we got an extension
 										if (ext != null) {
-											// instances with public access have their files renamed for safety - if non-public we will already have dug the name out of the headers above
+											// instances with public access have their files renamed for safety - if non-public we will already have dug the name out of the headers above, and not set the imageName
 											if (imageName == null) {
 												// date formatter
 												SimpleDateFormat df = new SimpleDateFormat("yyMMddhhmmssS");
