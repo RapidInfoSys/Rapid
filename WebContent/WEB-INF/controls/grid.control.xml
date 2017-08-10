@@ -385,81 +385,6 @@ function sortGridByColumn(ev, id, details, column, asc) {
 	}
 } 
 
-function sizeGridFixedHeaderColumns(control) {
-	// make sure it's a table
-	if (!control.is("table")) control = control.find("table").last();
-	// assume it isn't hidden
-	var hidden = false;	
-	// check visibilty
-	if (!control.css("display") == "none") { 
-		hidden = true;
-		control.parent().show();
-	}
-	// get the visible header cells
-	var hcells = control.prev().find("tr:first-child").children(":visible");
-	// remove any css for width
-	hcells.css("width","");
-	// get the visible body cells
-	var bcells = control.find("tr:nth-child(2)").children(":visible");
-	// if there are body cells
-	if (bcells.length > 0) {
-		// remove any previous min-widths
-		hcells.css("min-width","initial");
-		bcells.css("min-width","initial");
-		// loop them
-		for (var i = 0; i < bcells.length; i++) {
-			// get the header cell
-			var hcell = $(hcells.get(i));
-			// get the header cell width
-			var hwidth = hcell.outerWidth(); // must be outer width so h and b include padding and can be compared
-			
-			// get the body cell
-			var bcell = $(bcells.get(i));
-			// get the body cell width
-			var bwidth = bcell.outerWidth();
-			
-			// compare widths
-			if (hwidth < bwidth) {
-				
-				// subtract padding from all header cells
-				//bwidth = bwidth - parseInt(hcell.css("padding-left")) - parseInt(hcell.css("padding-right")) - parseInt(hcell.css("border-left")) - parseInt(hcell.css("border-right"));
-				
-				// adjust for borders - first cell
-				if (i == 0) bwidth = bwidth + parseInt(bcell.css("border-left")) + Math.max(0, parseInt(bcell.next().css("border-left")) - parseInt(bcell.css("border-right")))/2;
-				
-				// middle cells width must be shorter by half the difference between this cells left border and previous cells right border (but only from 2nd cell to 2nd last)
-				if (i > 0 && i < bcells.length - 1) bwidth = bwidth - (Math.max(0, parseInt(bcell.prev().css("border-right")) - parseInt(bcell.css("border-left"))) - Math.max(0, parseInt(bcell.next().css("border-left")) - parseInt(bcell.css("border-right"))))/2;
-				
-				// last cell
-				if (i == bcells.length - 1) bwidth = bwidth - Math.max(0, parseInt(bcell.prev().css("border-right")) - parseInt(bcell.css("border-left")))/2;
-				
-				// set the min width
-				hcell.css("min-width",bwidth);
-				
-			} else if (hwidth > bwidth) {
-			
-				// subtract padding from all body cells
-				hwidth = hwidth - parseInt(bcell.css("padding-left")) - parseInt(bcell.css("padding-right")) - parseInt(bcell.css("border-left")) - parseInt(bcell.css("border-right"));
-				
-				// adjust for borders - first cell
-				if (i == 0) hwidth = hwidth + parseInt(hcell.css("border-left")) + Math.max(0, parseInt(hcell.next().css("border-left")) - parseInt(hcell.css("border-right")))/2;
-				
-				// middle cells width must be shorter by half the difference between this cells left border and previous cells right border (but only from 2nd cell to 2nd last)
-				if (i > 0 && i < bcells.length - 1) hwidth = hwidth - (Math.max(0, parseInt(hcell.prev().css("border-right")) - parseInt(hcell.css("border-left"))) - Math.max(0, parseInt(hcell.next().css("border-left")) - parseInt(hcell.css("border-right"))))/2;
-				
-				// last cell
-				if (i == bcells.length - 1) hwidth = hwidth - Math.max(0, parseInt(hcell.prev().css("border-right")) - parseInt(hcell.css("border-left")))/2;
-				
-				// set the min width (less body padding left and right)
-				bcell.css("min-width",hwidth);
-				
-			}
-		}
-	}
-	// hide again if that was the initial state
-	if (hidden) control.parent().hide();
-}
-
 // get the index of the selected row, ignoring rows without rowStyle1 and rowStyle2 which can be introduced by custom code
 function getGridSelectedRowNumber(id, ev) {
 	// assume we're not going to find it
@@ -546,19 +471,16 @@ if (this.columns.length > 0) {
 	headerHtml += "</tr>";
 	rowHtml += "</tr>";
 }
-	        
-var style = "";
-if (this.scrollV) style += "display:inline-block;overflow-y:" + this.scrollV + ";max-height:" + this.scrollHeight + ";";
-	        
+	                
 // check for fixed header
 if (this.scrollV && this.fixedHeader) {
 	// return a container div with the table inside (note that scroll h is on the container)
-	return "<div id='" + this.id + "' style='display:inline-block;" + (this.scrollH ? "overflow-x:" + this.scrollH + ";max-width:" + this.scrollWidth + ";" : "") + "' class='" + getStyleClasses(this) + "'><table style='" + style + "' class='grid'>" + headerHtml + rowHtml.replace("<tr>","<tr class='rowStyle1'>") + rowHtml.replace("<tr>","<tr class='rowStyle2'>") + "</table></div>";
+	return "<div id='" + this.id + "' style='display:inline-block;" + (this.scrollH ? "overflow-x:" + this.scrollH + ";max-width:" + this.scrollWidth + ";" : "") + "' class='" + getStyleClasses(this) + "'><table class='grid'>" + headerHtml + rowHtml.replace("<tr>","<tr class='rowStyle1'>") + rowHtml.replace("<tr>","<tr class='rowStyle2'>") + "</table></div>";
 } else {
 	// h styling is on the table if no fixed header row
 	if (this.scrollH) style += "display:inline-block;overflow-x:" + this.scrollH + ";max-width:" + this.scrollWidth + ";";
 	// return a simple table
-	return "<table id='" + this.id + "' style='" + style + "' class='grid" + getStyleClasses(this) + "'>" + headerHtml + rowHtml.replace("<tr>","<tr class='rowStyle1'>") + rowHtml.replace("<tr>","<tr class='rowStyle2'>") + "</table>";
+	return "<table id='" + this.id + "' class='grid" + getStyleClasses(this) + "'>" + headerHtml + rowHtml.replace("<tr>","<tr class='rowStyle1'>") + rowHtml.replace("<tr>","<tr class='rowStyle2'>") + "</table>";
 }
 	        ]]>
 	    </getHtmlFunction>
@@ -604,8 +526,17 @@ if (this.dataStorageType) {
 } else {
 	this.canBeUsedFromOtherPages = false;
 }
-// only set fixed header if both V scrolling and fixed
-if (this.scrollV && this.fixedHeader) details.fixedHeader = true;
+// if scrollH set header and width
+if (this.scrollH) {
+	details.scrollH = this.scrollH;
+	details.scrollWidth = this.scrollWidth;
+}
+// if scrollV set scroll, height, and header
+if (this.scrollV) {
+	details.scrollV = this.scrollV;
+	details.scrollHeight = this.scrollHeight;
+	details.fixedHeader = this.fixedHeader;	
+}
 return details;
 			]]>	        	        
 	    </getDetailsFunction>
@@ -793,7 +724,66 @@ if (data !== undefined) {
 	if (details && details.dataStorageType) saveGridDataStoreData(id, details, data);
 	
 	// if we have a fixed header row
-	if (details && details.fixedHeader) sizeGridFixedHeaderColumns(control);
+	if (details && details.scrollV && details.scrollHeight) {
+		
+	    // for very large tables you can remove the lines below and wrap the table with <div> in the mark-up and assign height and overflow property  
+	    var oTblDiv = $("<div/>");
+	    oTblDiv.css({
+	    	"display":"inline-block",
+	    	"height": details.scrollHeight,
+	    	"overflow-y": details.scrollV
+	    });               
+	    control.wrap(oTblDiv);
+	
+	    // save original width
+	    control.attr("data-item-original-width", control.width());
+	    control.find('thead tr td').each(function(){
+	        $(this).attr("data-item-original-width",$(this).width());
+	    }); 
+	    control.find('tbody tr:eq(0) td').each(function(){
+	        $(this).attr("data-item-original-width",$(this).width());
+	    });                 
+	
+	    // clone the original table
+	    var newTbl = control.clone();
+	
+		// remove table body from new table
+	    newTbl.find('tr:not(:first-child)').remove();
+	    // add class that hides header
+	    control.find('tr:first-child').css("visibility","hidden");
+		      
+		// add the new table
+	    control.parent().parent().prepend(newTbl);
+		// wrap the new table
+	    newTbl.wrap("<div style='display:inline-block'/>");
+	    // get the old table parent
+	    var parent = control.parent();
+	    // move the old table parent after the new table
+	    parent.insertAfter(newTbl);
+	    	
+	    // if horizontal scrolling
+	    if (details.scrollH && details.scrollWidth) {	    	
+	    	// style the parent accordingly
+			parent.css({
+		    	"width": details.scrollWidth,
+		    	"overflow-x": details.scrollH
+		    });
+	    } 
+	
+	    // replace ORIGINAL COLUMN width                
+	    newTbl.width(newTbl.attr('data-item-original-width'));
+	    newTbl.find('thead tr td').each(function(){
+	        $(this).width($(this).attr("data-item-original-width"));
+	    });     
+	    control.width(control.attr('data-item-original-width'));      
+	    control.find('tbody tr:eq(0) td').each(function(){
+	        $(this).width($(this).attr("data-item-original-width"));
+	    });
+	    
+	    // shift the new table up behind the fixed header
+	    control.css("margin-top",-newTbl.height());
+				
+	}
 	
 	// if we click on a row that isn't the first one
 	control.children().last().children("tr:not(:first)").click( function() {
@@ -898,11 +888,6 @@ return "#" + this.id + " .rowSelect";
 // get the control
 var control = $("#" + id);
 
-// resize on show
-control.on("show", {control: control},  function(ev) {
-	sizeGridFixedHeaderColumns(ev.data.control);
-});
-
 // make sure it's a table
 if (!control.is("table")) control = control.find("table").last();
        
@@ -948,19 +933,6 @@ if (details) {
 			saveGridDataStoreData(id, details, data);
 		});
 	} // datastorage type check
-	// if fixed headers
-	if (details.fixedHeader) {
-		// clone control
-		var headerTable = control.clone(true);		
-		// remove all rows except the top one
-		headerTable.find("tr:not(:first-child)").remove();
-		// remove the style attribute as this all applies only to the second table with the data in it
-		headerTable.removeAttr("style");
-		// hide the top row from the proper table
-		control.find("tr:first-child").hide();
-		// append the header table above control
-		control.before(headerTable);
-	}
 } 
 	        ]]>	        
 	    </initJavaScript>
@@ -1219,8 +1191,6 @@ if (details && details.dataStorageType) {
 		saveGridDataStoreData(id, details, gridData);
 	}
 } 
-
-
 	   	            ]]>
 	   	        </setPropertyJavaScript>		   	                
 	   	    </runtimeProperty>
@@ -1275,7 +1245,6 @@ if (details && details.dataStorageType) {
 } else {
 	return $("#" + id).find("tr").size() - 1;
 }
-     
 			        ]]>	  	   	            
 	   	        </getPropertyFunction>	   	        
 	   	    </runtimeProperty>
