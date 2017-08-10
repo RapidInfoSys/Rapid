@@ -484,7 +484,6 @@ if (this.columns.length > 0) {
 			columnCount ++;
 		} else {
 			headerHtml += "<td style='display:none;'>" + column.title + "</td>";
-			headerHtml += "</td>";
 			rowHtml += "<td style='display:none;'></td>"
 		}
 	}
@@ -494,6 +493,8 @@ if (this.columns.length > 0) {
 	}
 	headerHtml += "</tr>";
 	rowHtml += "</tr>";
+} else {
+	headerHtml += "<td>No columns</td>"
 }
 	                
 // check for scrolling
