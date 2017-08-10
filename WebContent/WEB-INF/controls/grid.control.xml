@@ -167,19 +167,27 @@ table.grid span.sort {
 	margin-left: 5px;
 }
 
-div.gridHiddenVScroll {
+div.gridScroll {
 	display: inline-block;
 }
 
-div.gridHiddenVScrollHeader {
+div.gridScroll table {
+	width: 100%;
+}
+
+div.gridScrollHeader {
 	overflow-y: hidden;
 }
 
-div.gridHiddenVScrollHeader table.grid tr:not(:first-child) {
+div.gridScrollHeader table {
+	width: calc(100% - 16px) !important;	
+}
+
+div.gridScrollHeader table.grid tr:not(:first-child) {
 	visibility: hidden;
 }
 
-div.gridHiddenVScrollBody table.grid tr:first-child {
+div.gridScrollBody table.grid tr:first-child {
 	visibility: hidden;
 }
 	                ]]>
@@ -491,7 +499,7 @@ if (this.columns.length > 0) {
 // check for scrolling
 if (this.scrollH || this.scrollV) {
 	// return a container div with the table inside
-	return "<div id='" + this.id + "' style='display:inline-block;" + (this.scrollH ? "overflow-x:" + this.scrollH + ";max-width:" + this.scrollWidth + ";" : "") + "' class='" + getStyleClasses(this) + "'><table class='grid'>" + headerHtml + rowHtml.replace("<tr>","<tr class='rowStyle1'>") + rowHtml.replace("<tr>","<tr class='rowStyle2'>") + "</table></div>";
+	return "<div id='" + this.id + "' style='display:inline-block;" + (this.scrollH ? "overflow-x:" + this.scrollH + ";max-width:" + this.scrollWidth + ";" : "") + "' class='gridScroll" + getStyleClasses(this) + "'><table class='grid'>" + headerHtml + rowHtml.replace("<tr>","<tr class='rowStyle1'>") + rowHtml.replace("<tr>","<tr class='rowStyle2'>") + "</table></div>";
 } else {
 	// return a simple table
 	return "<table id='" + this.id + "' class='grid" + getStyleClasses(this) + "'>" + headerHtml + rowHtml.replace("<tr>","<tr class='rowStyle1'>") + rowHtml.replace("<tr>","<tr class='rowStyle2'>") + "</table>";
@@ -762,19 +770,18 @@ if (data !== undefined) {
 		if (details.fixedHeader) {
 		
 			// if we haven't applied it yet
-			if (!control.parent().is(".gridHiddenVScrollBody")) {
+			if (!control.parent().is(".gridScrollBody")) {
 		
 			    // create and style the wrapper
-			    var oTblDiv = $("<div class='gridHiddenVScrollBody' />");
+			    var oTblDiv = $("<div class='gridScrollBody' />");
 			    oTblDiv.css({
 			    	"height": details.scrollHeight,
 			    	"overflow-y": details.scrollV
 			    });
 			    // wrap it
 			    control.wrap(oTblDiv);
-			
-			    // save original width
-			    control.attr("data-item-original-width", control.width());
+
+			    // save original column widths			    			    
 			    control.find('thead tr td').each(function(){
 			        $(this).attr("data-item-original-width",$(this).width());
 			    }); 
@@ -788,7 +795,7 @@ if (data !== undefined) {
 			    newTbl.attr("id",id + "header");
 			    				
 				// set the class on the parent on the new table (this is the control root)
-			    newTbl.parent().addClass("gridHiddenVScroll");	      
+			    newTbl.parent().addClass("gridScroll");	      
 				// get the old table parent
 			    var parent = control.parent();
 				// add the new table
@@ -796,10 +803,9 @@ if (data !== undefined) {
 			    // move the old table parent after the new table
 			    parent.insertAfter(newTbl);
 			    // wrap the new table
-			    newTbl.wrap("<div class='gridHiddenVScrollHeader' />")
+			    newTbl.wrap("<div class='gridScrollHeader' />")
 			    				    			
-			    // replace ORIGINAL COLUMN width                
-			    newTbl.width(newTbl.attr('data-item-original-width'));
+			    // replace original column widths
 			    newTbl.find('thead tr td').each(function(){
 			        $(this).width($(this).attr("data-item-original-width"));
 			    });     
@@ -820,14 +826,18 @@ if (data !== undefined) {
 		} else {
 		
 			// check not applied already
-			if (!control.parent().is(".gridHiddenVScroll")) {
+			if (!control.parent().is(".gridScrollApplied")) {
 
+				// remove the table id
+				control.removeAttr("id")
 				// create and style the wrapper
-			    var oTblDiv = $("<div class='gridHiddenVScroll' />");
+			    var oTblDiv = $("<div class='gridScroll' id='" + id + "' />");
 			    oTblDiv.css({
 			    	"height": details.scrollHeight,
 			    	"overflow-y": details.scrollV
 			    });
+			    // retain that we have applied the scroll
+			    oTblDiv.addClass("gridScrollApplied");
 			    // wrap it
 			    control.wrap(oTblDiv);
 			    
