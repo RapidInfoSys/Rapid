@@ -372,7 +372,7 @@ public class Database extends Action {
 			}
 			// check we got one
 			if (outputControl == null) {
-				jsOutputs += "      // output not found for " + outputId + "\n";
+				jsOutputs += " /* output not found for " + outputId + "*/ ";
 			} else {
 				// get any details we may have
 				String details = outputControl.getDetailsJavaScript(application, page);
