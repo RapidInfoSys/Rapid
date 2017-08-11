@@ -5271,7 +5271,7 @@ var _formObjects = {
 		"contact": {"name" : "Contact", "attributes" : [["","Please select..."],["phone","Phone number"],["mobile","Mobile number"],["home","Home number"],["work","Work number"],["email","Email address"]]},
 		"file": {"name" : "File"},
 		"note": {"name" : "Note", "attributes" : [["","Please select..."],["general","General"]]},
-		"party": {"name" : "Party", "attributes" : [["","Please select..."],["title","Title"],["forename","Forename"],["surname","Surname"],["dob","Date of birth"],["gender","Gender"],["ethnicity","Ethnicity"],["language","Language"],["religion","Religion"],["sexorientation","Sexual orientation"]]},
+		"party": {"name" : "Party", "attributes" : [["","Please select..."],["title","Title"],["forename","Forename"],["surname","Surname"],["dob","Date of birth"],["gender","Gender"],["ethnicity","Ethnicity"],["immigration","Immigration status"],["language","Language"],["religion","Religion"],["sexorientation","Sexual orientation"]]},
 		"partyAddress": {"name" : "Party address", "attributes" : _formAddressAttributes},
 		"partyQuestion": {"name" : "Party question"},
 		"question": {"name" : "Question"}
