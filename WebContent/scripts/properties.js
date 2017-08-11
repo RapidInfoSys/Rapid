@@ -5270,7 +5270,7 @@ var _formObjects = {
 		"address": {"name" : "Address", "attributes" : _formAddressAttributes},
 		"contact": {"name" : "Contact", "attributes" : [["","Please select..."],["phone","Phone number"],["mobile","Mobile number"],["home","Home number"],["work","Work number"],["email","Email address"]]},
 		"file": {"name" : "File"},
-		"note": {"name" : "Note", "attributes" : [["","Please select..."],["general","General"]]},
+		"note": {"name" : "Note", "attributes" : [["","Please select..."],["case","Case"],["party","Party"]]},
 		"party": {"name" : "Party", "attributes" : [["","Please select..."],["title","Title"],["forename","Forename"],["surname","Surname"],["dob","Date of birth"],["gender","Gender"],["ethnicity","Ethnicity"],["immigration","Immigration status"],["language","Language"],["religion","Religion"],["sexorientation","Sexual orientation"]]},
 		"partyAddress": {"name" : "Party address", "attributes" : _formAddressAttributes},
 		"partyQuestion": {"name" : "Party question"},
