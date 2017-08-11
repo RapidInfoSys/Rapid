@@ -888,7 +888,7 @@ public class Designer extends RapidHttpServlet {
 
 							}
 
-						} else if ("pages".equals(actionName) || "summary".equals(actionName) || "detail".equals(actionName)) {
+						} else if ("pages".equals(actionName) || "questions".equals(actionName) || "summary".equals(actionName) || "detail".equals(actionName)) {
 
 							// set response as text
 							response.setContentType("text/text");
@@ -920,14 +920,22 @@ public class Designer extends RapidHttpServlet {
 									if (label.length() > 0) label = " - " + label;
 								}
 
-								// print the page name
-								out.print(page.getId() + " " + page.getName() + label);
+								if ("questions".equals(actionName))  {
+									out.print(page.getName() + label);
+								} else {
+									// print the page name
+									out.print(page.getId() + " " + page.getName() + label);
+								}
 
-								// check summary
-								if ("summary".equals(actionName) || "detail".equals(actionName)) {
+								// check questions, summary, detail
+								if ("questions".equals(actionName) || "summary".equals(actionName) || "detail".equals(actionName)) {
 
 									// print the number of controls
-									out.print(" - number of controls: " + page.getAllControls().size() + "\r\n");
+									if ("questions".equals(actionName)) {
+										out.print("\r\n");
+									} else {
+										out.print(" - number of controls: " + page.getAllControls().size() + "\r\n");
+									}
 
 									// if detail
 									if ("detail".equals(actionName)) {
@@ -939,8 +947,8 @@ public class Designer extends RapidHttpServlet {
 										out.print("HideHeaderFooter\t" + page.getHideHeaderFooter() + "\n");
 									}
 
-									// print the page events details
-									printEventsDetails(page.getEvents(), out);
+									// if questions
+									if (!"questions".equals(actionName)) printEventsDetails(page.getEvents(), out);
 
 									// get the controls
 									List<Control> controls = page.getAllControls();
@@ -961,8 +969,13 @@ public class Designer extends RapidHttpServlet {
 												// exclude panels, hidden values, and datastores for summary
 												if ("detail".equals(actionName) || (!"panel".equals(type) && !("hiddenvalue").equals(type) && !("dataStore").equals(type))) {
 
-													// print the control name
-													out.print(control.getId() +"\t" + type + "\t" + name + "\t" + label + "\n");
+													if ("questions".equals(actionName))  {
+														// print the control label
+														if (label != null && !control.getType().contains("button")) out.print("\t" + label + "\n");
+													} else {
+														// print the control details
+														out.print(control.getId() +"\t" + type + "\t" + name + "\t" + label + "\n");
+													}
 
 													// if details
 													if ("detail".equals(actionName)) {
