@@ -139,7 +139,7 @@ function Control(controlType, parentControl, jsonControl, loadComplexObjects, pa
 					// give this control a new, unique id when pasting
 					if (paste) {					
 						// set a unique ID for this control
-						this.id = _controlAndActionPrefix + _page.id + "_C" + _nextId + "_";
+						this.id = _page.id + "_C" + _nextId + "_" + _controlAndActionSuffix;
 						// if this is the rapid app, prefix it
 						if (_version.id == "rapid") this.id = "rapid_" + this.id;
 						// check the pasteMap
@@ -231,6 +231,22 @@ function Control(controlType, parentControl, jsonControl, loadComplexObjects, pa
 						// set the new name
 						this.name = newName;
 					}
+					// if form
+					if (_version.isForm) {
+						// keep looping until the form conflict is resolved
+						while (getControlConflict(this,"form")) {
+							// check formObjectNumber
+							if (this.formObjectNumber) {
+								// increment the formObjectNumber
+								this.formObjectNumber ++;
+							} else {
+								// set to one
+								this.formObjectNumber = 1;
+							}
+							// break at 100 to stop loop
+							if (this.formObjectNumber > 100) break;
+						}
+					}
 				}
 				// add to paste controls
 				_pasteControls.push(this);
@@ -272,7 +288,7 @@ function Control(controlType, parentControl, jsonControl, loadComplexObjects, pa
 		} else {
 			
 			// set a unique ID for this control (the last underscore is to stop _C12 being replaced by _C1)
-			this.id = _controlAndActionPrefix + _page.id + "_C" + _nextId + "_";
+			this.id = _page.id + "_C" + _nextId + "_" + _controlAndActionSuffix;
 			// inc the next id
 			_nextId++;
 			// if this is the rapid app append a prefix so as not to be affected by any app they are used with
@@ -679,18 +695,20 @@ function getControlById(id, control) {
 }
 
 // returns the page with a control of the same name
-function getControlConflict(c) {
+function getControlConflict(c, type) {
+	// if type is null it's name
+	if (!type) type = "name";
 	// assume no conflict
 	var conflict = "";
-	// only if c has a name
-	if (c.name) {
+	// only if c has a name or formObject
+	if ((type == "name" && c.name) || (type == "form" && c.formObject)) {
 		// get all controls on this page
 		var controls = getControls();
 		// loop them
 		for (var i in controls) {
 			var control = controls[i];
-			// if it has a name and is for a form
-			if (control.name && c.id != control.id && c.name == control.name) {
+			// check name or form 
+			if (c.id != control.id && ((type == "name" && control.name && c.name == control.name) || (type == "form" && c.formObject == control.formObject && c.formObjectAttribute == control.formObjectAttribute && c.formObjectNumber == control.formObjectNumber))) {
 				// get the control class
 				var controlClass = _controlTypes[control.type];
 				// only if it can be used for form page visibility (form control)
@@ -706,7 +724,7 @@ function getControlConflict(c) {
 			for (var i in _pasteControls) {
 				var control = _pasteControls[i];
 				// if it has a name and is for a form
-				if (control.name && c.id != control.id && c.name == control.name) {
+				if (c.id != control.id && ((type == "name" && control.name && c.name == control.name) || (type == "form" && c.formObject == control.formObject && c.formObjectAttribute == control.formObjectAttribute && c.formObjectNumber == control.formObjectNumber))) {
 					// get the control class
 					var controlClass = _controlTypes[control.type];
 					// only if it can be used for form page visibility (form control)
@@ -726,7 +744,7 @@ function getControlConflict(c) {
 				if (page.id != _page.id) {
 					for (var j in page.controls) {
 						var pc = page.controls[j];
-						if (pc.name && c.id != pc.id && c.name == pc.name) {
+						if (c.id != control.id && ((type == "name" && pc.name && c.name == pc.name) || (type == "form" && c.formObject == control.formObject && c.formObjectAttribute == control.formObjectAttribute && c.formObjectNumber == control.formObjectNumber ))) {
 							// get the control class
 							var controlClass = _controlTypes[pc.type];
 							// only if it can be used for form page visibility (form control)
@@ -741,10 +759,21 @@ function getControlConflict(c) {
 			}
 		}
 	}
-	if (conflict) {
-		c._conflict = conflict;
-	} else {
-		c._conflict = null;
+	// update control conflict flag if name
+	if (type == "name") {
+		if (conflict) {
+			c._conflict = conflict;
+		} else {
+			c._conflict = null;
+		}
+	}
+	// update control form conflict flag if form
+	if (type == "form") {
+		if (conflict) {
+			c._formConflict = conflict;
+		} else {
+			c._formConflict = null;
+		}
 	}
 	// return
 	return conflict;

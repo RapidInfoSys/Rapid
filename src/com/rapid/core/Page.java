@@ -494,14 +494,16 @@ public class Page {
 				String id2 = obj2.getId();
 				if (id1 == null) return -1;
 				if (id2 == null) return -1;
-				id1 = id1.replace("_", "");
-				id2 = id2.replace("_", "");
-				int pos = id1.lastIndexOf("A");
-				if (pos < 0) return -1;
-				id1 = id1.substring(pos + 1);
-				pos = id2.lastIndexOf("A");
-				if (pos < 0) return 1;
-				id2 = id2.substring(pos + 1);
+				int startPos = id1.lastIndexOf("_A");
+				if (startPos < 0) return -1;
+				int endPos = id1.indexOf("_", startPos + 2);
+				if (endPos < 0) endPos = id1.length();
+				id1 = id1.substring(startPos + 2, endPos);
+				startPos = id2.lastIndexOf("_A");
+				if (startPos < 0) return 1;
+				endPos = id2.indexOf("_", startPos + 2);
+				if (endPos < 0) endPos = id2.length();
+				id2 = id2.substring(startPos + 2, endPos);
 				return (Integer.parseInt(id1) - Integer.parseInt(id2));
 			}
 		});

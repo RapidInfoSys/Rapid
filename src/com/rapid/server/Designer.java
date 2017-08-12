@@ -45,6 +45,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -281,12 +282,12 @@ public class Designer extends RapidHttpServlet {
 							// add the local date format
 							jsonSystemData.put("localDateFormat", getLocalDateFormat());
 
-							// look for a controlAndActionPrefix
-							String controlAndActionPrefix = request.getServletContext().getInitParameter("controlAndActionPrefix");
+							// look for a controlAndActionSuffix
+							String controlAndActionSuffix = request.getServletContext().getInitParameter("controlAndActionSuffix");
 							// update to empty string if not present - this is the default and expected for older versions of the web.xml
-							if (controlAndActionPrefix == null) controlAndActionPrefix = "";
+							if (controlAndActionSuffix == null) controlAndActionSuffix = "";
 							// add the controlAndActionPrefix
-							jsonSystemData.put("controlAndActionPrefix", controlAndActionPrefix);
+							jsonSystemData.put("controlAndActionSuffix", controlAndActionSuffix);
 
 							// put into output string
 							output = jsonSystemData.toString();
@@ -1055,7 +1056,163 @@ public class Designer extends RapidHttpServlet {
 
 							} // got application
 
-						} // export
+						} else if ("updateids".equals(actionName)) {
+
+							// get a writer from the response
+							PrintWriter out = response.getWriter();
+
+							// check we have admin too
+							if (rapidSecurity.checkUserRole(rapidRequest, Rapid.ADMIN_ROLE)) {
+
+								// retain the ServletContext
+								ServletContext servletContext = rapidRequest.getRapidServlet().getServletContext();
+
+								// get the suffix
+								String suffix = rapidRequest.getRapidServlet().getControlAndActionSuffix();
+
+								// set response as text
+								response.setContentType("text/text");
+
+								// get the application
+								Application application = rapidRequest.getApplication();
+
+								// print the app name and version
+								out.print("Application : " + application.getName() + "/" + application.getVersion() + "\n");
+
+								// get the page headers
+								PageHeaders pageHeaders = application.getPages().getSortedPages();
+
+								// get the pages config folder
+								File appPagesFolder = new File(application.getConfigFolder(servletContext) + "/pages");
+
+								// check it exists
+								if (appPagesFolder.exists()) {
+
+									// loop the page headers
+									for (PageHeader pageHeader : pageHeaders) {
+
+										// get the page
+										Page page = application.getPages().getPage(getServletContext(), pageHeader.getId());
+
+										// print the page name and id
+										out.print("\nPage : " + page.getName() + "/" + page.getId() + "\n\n");
+
+										// loop the files
+										for (File pageFile : appPagesFolder.listFiles()) {
+
+											// if this is a page.xml file
+											if (pageFile.getName().endsWith(".page.xml")) {
+
+												// assume no id's found
+
+												// read the copy to a string
+												String pageXML = Strings.getString(pageFile);
+
+												// get all page controls
+												List<Control> controls = page.getAllControls();
+
+												// loop controls
+												for (Control control : controls) {
+
+													// get old/current id
+													String id = control.getId();
+
+													// assume new id will be the same
+													String newId = id;
+
+													// drop suffix if starts with it
+													if (newId.startsWith(suffix)) newId = newId.substring(suffix.length());
+
+													// add suffix to end
+													newId += suffix;
+
+													// check if id in file
+													if (pageXML.contains(id)) {
+
+														// show old and new id
+														out.print(id + " ---> " + newId + " found in page file " + pageFile + "\n");
+
+														// replace
+														pageXML = pageXML.replace(id, newId);
+
+													}
+
+												}
+
+												// get all page actions
+												List<Action> actions = page.getAllActions();
+
+												// loop actions
+												for (Action action : actions) {
+
+													// get old/current id
+													String id = action.getId();
+
+													// assume new id will be the same
+													String newId = id;
+
+													// drop suffix if starts with it
+													if (newId.startsWith(suffix)) newId = newId.substring(suffix.length());
+
+													// add suffix to end
+													newId += suffix;
+
+													// check if id in file
+													if (pageXML.contains(id)) {
+
+														// show old and new id
+														out.print(id + " ---> " + newId + " found in page file " + pageFile + "\n");
+
+														// replace
+														pageXML = pageXML.replace(id, newId);
+
+													}
+
+												}
+
+												// save it back
+												Strings.saveString(pageXML, pageFile);
+
+											} //page ending check
+
+										} // page file loop
+
+									} //page loop
+
+									// get the application file
+									File applicationFile = new File(application.getConfigFolder(servletContext) + "/application.xml");
+
+									// if it exists
+									if (applicationFile.exists()) {
+
+										// reload the application from file
+										Application reloadedApplication = Application.load(servletContext, applicationFile, true);
+
+										// replace it into the applications collection
+										getApplications().put(reloadedApplication);
+
+									}
+
+
+								} // app pages folder exists
+
+							} else {
+
+								// not authenticated
+								response.setStatus(403);
+
+								// say so
+								out.print("Not authorised");
+
+							}
+
+							// close the writer
+							out.close();
+
+							// send it immediately
+							out.flush();
+
+						} // action name check
 
 					} else {
 

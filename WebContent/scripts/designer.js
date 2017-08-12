@@ -59,8 +59,8 @@ var _actions = [];
 var _styleClasses = [];
 // the local date format
 var _localDateFormat = "dd/MM/yyyy";
-// the controlAndActionPrefix, default to empty space
-var _controlAndActionPrefix = "";
+// the controlAndActionSuffix, used to avoid conflicts in ids from other environments, default to empty space
+var _controlAndActionSuffix = "";
 // the styling targets that we display guidlines for
 var _guideLines = ".table td, .panel, .r-panel, .r-text, .flowLayoutCell { border: 1px dashed #ccc; margin: -1px; }";
 
@@ -2569,8 +2569,8 @@ $(document).ready( function() {
         		// look for localDateformat and retain if so. If not initial UK format will be retained if not
         		if (systemData.localDateFormat) _localDateFormat = systemData.localDateFormat;
         		
-        		// look for controlAndActionPrefix and retain if so. If not initial blank place will be retained
-        		if (systemData.controlAndActionPrefix) _controlAndActionPrefix = systemData.controlAndActionPrefix;
+        		// look for controlAndActionSuffix and retain if so. If not initial blank place will be retained
+        		if (systemData.controlAndActionSuffix) _controlAndActionSuffix = systemData.controlAndActionSuffix;
         		
         		// now load the apps
     	    	loadApps();	

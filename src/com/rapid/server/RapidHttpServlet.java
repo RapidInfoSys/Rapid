@@ -235,14 +235,14 @@ public class RapidHttpServlet extends HttpServlet {
 		return new SimpleDateFormat((String) getServletContext().getAttribute("localDateTimeFormat"));
 	}
 
-	// any control prefix
-	public String getControlAndActionPrefix() {
+	// any control and action suffix
+	public String getControlAndActionSuffix() {
 		// look for a controlAndActionPrefix
-		String controlAndActionPrefix = getServletContext().getInitParameter("controlAndActionPrefix");
+		String controlAndActionSuffix = getServletContext().getInitParameter("controlAndActionSuffix");
 		// update to empty string if not present - this is the default and expected for older versions of the web.xml
-		if (controlAndActionPrefix == null) controlAndActionPrefix = "";
+		if (controlAndActionSuffix == null) controlAndActionSuffix = "";
 		// return
-		return controlAndActionPrefix;
+		return controlAndActionSuffix;
 	}
 
 	// whether page names are used as ids

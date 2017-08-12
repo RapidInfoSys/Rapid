@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2014 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -53,7 +53,7 @@ function Action(actionType, jsonAction, paste, undo) {
 				// when pasting use incremented ids
 				if (paste) {
 					// set a unique ID for this control (the under score is there to stop C12 being replaced by C1)
-					this.id = _controlAndActionPrefix + _page.id + "_A" + _nextId + "_";
+					this.id = _page.id + "_A" + _nextId + "_" + _controlAndActionSuffix;
 					// check the pasteMap
 					if (_pasteMap[jsonAction.id]) {
 						this.id = jsonAction.id;
@@ -135,7 +135,7 @@ function Action(actionType, jsonAction, paste, undo) {
 		} else {
 			
 			// set a unique ID for this action (with the final underscore the stops C12 being replaced by C1)
-			this.id = _controlAndActionPrefix + _page.id + "_A" + _nextId + "_";
+			this.id = _page.id + "_A" + _nextId + "_" + _controlAndActionSuffix;
 						
 			// if the action class has properties set them here
 			if (actionClass.properties) {

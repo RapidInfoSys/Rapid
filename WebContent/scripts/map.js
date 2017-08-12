@@ -53,6 +53,13 @@ function createMapEntry(list, c) {
 		conflict = getControlConflict(c);
 		// if we got one 
 		if (conflict) conflict = "<img src='images/conflict_16x16.png' title='Page \"" + conflict + "\" has a control with the same name' class='conflictimgage'/>";
+		// if this is a form
+		if (_version.isForm) {
+			// look for any form conflict
+			conflict = getControlConflict(c, "form");
+			// if we got one 
+			if (conflict) conflict = "<img src='images/conflict_16x16.png' title='Page \"" + conflict + "\" has a control with the same form integration' class='conflictimgage'/>";
+		}
 	}
 
 	// create the list entry

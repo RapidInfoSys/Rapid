@@ -5279,6 +5279,8 @@ var _formObjects = {
 
 // this is for advanced form integration
 function Property_formObject(cell, propertyObject, property, details) {
+	// show any conflict message
+	if (propertyObject._formConflict) cell.closest("tr").before("<tr><td colspan='2' class='formConflict propertyHeader'>Page \"" + propertyObject._formConflict + "\" has a control with the same form integration</td></tr>");
 	// update the property getValuesFunction
 	property.getValuesFunction = "return _formObjects";
 	// send it in the select

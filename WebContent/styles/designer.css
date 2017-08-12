@@ -451,7 +451,7 @@ table.propertiesPanelTable {
 	font-family: 'Open Sans', Arial;
 }
 
-table.propertiesPanelTable td.conflict {
+table.propertiesPanelTable td.conflict, table.propertiesPanelTable td.formConflict{
 	max-width:50px;
 	width:100%;	
 	font-weight: bold;

@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2015 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -225,10 +225,8 @@ public class RapidFormAdapter extends FormAdapter {
 		int controlIdPos = controlId.substring(0, controlId.length() - 1).lastIndexOf("_");
 		// check we have enough to include the page
 		if (controlIdPos > 1) {
-			// get any control and action prefix
-			String prefix = rapidRequest.getRapidServlet().getControlAndActionPrefix();
-			// get the page id from the first part, ignoring any prefix
-			String pageId = controlId.substring(prefix.length(), controlIdPos);
+			// get the page id from the first part of the id
+			String pageId = controlId.substring(0, controlIdPos);
 			// get all user form page values
 			Map<String,FormPageControlValues> userFormPageControlValues = getUserFormPageControlValues(rapidRequest);
 			// if there are control values stored

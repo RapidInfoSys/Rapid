@@ -679,7 +679,7 @@ public class Database extends Action {
 								// get page id pos
 								int pageIdPos = id.indexOf(pageId);
 								// if it looks like a control, or a system value (bit of extra safety checking)
-								if (pageIdPos >= 0 && id.indexOf("_C") >pageIdPos || id.indexOf("System.") == 0) {
+								if (pageIdPos == 0 && id.indexOf("_C") > pageIdPos || id.indexOf("System.") == 0) {
 									// loop the json inputs looking for the value
 									if (jsonInputData != null) {
 										for (int j = 0; j < jsonFields.length(); j++) {
