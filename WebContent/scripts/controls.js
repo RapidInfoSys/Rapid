@@ -708,7 +708,7 @@ function getControlConflict(c, type) {
 		for (var i in controls) {
 			var control = controls[i];
 			// check name or form 
-			if (c.id != control.id && ((type == "name" && control.name && c.name == control.name) || (type == "form" && c.formObject == control.formObject && c.formObjectAttribute == control.formObjectAttribute && c.formObjectNumber == control.formObjectNumber))) {
+			if (c.id != control.id && ((type == "name" && control.name && c.name == control.name) || (type == "form" && c.formObject == control.formObject && c.formObjectAttribute == control.formObjectAttribute && c.formObjectNumber == control.formObjectNumber && c.formObjectType == control.formObjectType))) {
 				// get the control class
 				var controlClass = _controlTypes[control.type];
 				// only if it can be used for form page visibility (form control)
@@ -724,7 +724,7 @@ function getControlConflict(c, type) {
 			for (var i in _pasteControls) {
 				var control = _pasteControls[i];
 				// if it has a name and is for a form
-				if (c.id != control.id && ((type == "name" && control.name && c.name == control.name) || (type == "form" && c.formObject == control.formObject && c.formObjectAttribute == control.formObjectAttribute && c.formObjectNumber == control.formObjectNumber))) {
+				if (c.id != control.id && ((type == "name" && control.name && c.name == control.name) || (type == "form" && c.formObject == control.formObject && c.formObjectAttribute == control.formObjectAttribute && c.formObjectNumber == control.formObjectNumber && c.formObjectType == control.formObjectType))) {
 					// get the control class
 					var controlClass = _controlTypes[control.type];
 					// only if it can be used for form page visibility (form control)
@@ -744,7 +744,7 @@ function getControlConflict(c, type) {
 				if (page.id != _page.id) {
 					for (var j in page.controls) {
 						var pc = page.controls[j];
-						if (c.id != control.id && ((type == "name" && pc.name && c.name == pc.name) || (type == "form" && c.formObject == control.formObject && c.formObjectAttribute == control.formObjectAttribute && c.formObjectNumber == control.formObjectNumber ))) {
+						if (c.id != control.id && ((type == "name" && pc.name && c.name == pc.name) || (type == "form" && c.formObject == control.formObject && c.formObjectAttribute == control.formObjectAttribute && c.formObjectNumber == control.formObjectNumber && c.formObjectType == control.formObjectType))) {
 							// get the control class
 							var controlClass = _controlTypes[pc.type];
 							// only if it can be used for form page visibility (form control)

@@ -492,12 +492,13 @@ function showProperties(control) {
 				// retrieve a property object from the control class
 				var property = properties[i];
 				// if we support integration properties and this is a formControl check for special form integration properties (a bit like action comments)
-				if (control.type != "page" && _version.canSupportIntegrationProperties && property.key == "label" && properties[properties.length - 1].key != "formObjectAttribute") {
+				if (control.type != "page" && _version.canSupportIntegrationProperties && property.key == "label" && properties[properties.length - 1].key != "formObjectType") {
 					// add form properties
 					properties.push({"name":"Form integration","changeValueJavaScript":"gap", "setConstructValueFunction": "return 'Form integration'"});
 					properties.push({"key":"formObject","name":"Form object","refreshProperties": true, "helpHtml":"The type of object that control is holding data for in the form. Used for advanced form integration."});
-					properties.push({"key":"formObjectNumber","name":"Number","refreshProperties": true, "helpHtml":"A number relevant to the type of data object. For example 1, for the first address, 2 for the second, etc. Decimals are also allowed, for example party question 1.2 would be the second question for the first party"});
-					properties.push({"key":"formObjectAttribute","name":"Attribute","refreshProperties": true, "helpHtml":"A further attribute of the object. For example a party title or forename, or address start date"});					
+					properties.push({"key":"formObjectNumber","name":"Number", "helpHtml":"A number relevant to the type of data object. For example 1, for the first address, 2 for the second, etc. Decimals are also allowed, for example party question 1.2 would be the second question for the first party"});
+					properties.push({"key":"formObjectAttribute","name":"Attribute", "helpHtml":"A further attribute of the object. For example a party title or forename, or address start date"});
+					properties.push({"key":"formObjectType","name":"Type", "helpHtml":"A type for the object. For example a notepad general or medical type, or an address application or contact address"});
 				}
 				// add a row
 				propertiesTable.append("<tr></tr>");
@@ -873,6 +874,7 @@ function Property_text(cell, propertyObject, property, details) {
 			if (propertyObject._conflict) cell.closest("table").find("tr:nth-child(2)").after("<tr><td colspan='2' class='conflict propertyHeader'>Page \"" + propertyObject._conflict + "\" has a control with the same name</td></tr>");			
 		}));
 	}
+
 }
 
 // a handler for inputs that must be integer numbers
@@ -5267,14 +5269,19 @@ var _formAddressAttributes = [["","Please select..."],["address","Full address"]
 
 // a global for form objects
 var _formObjects = {
-		"address": {"name" : "Address", "attributes" : _formAddressAttributes},
+		"address": {"name" : "Address", "attributes" : _formAddressAttributes, "type" : true},
 		"contact": {"name" : "Contact", "attributes" : [["","Please select..."],["phone","Phone number"],["mobile","Mobile number"],["home","Home number"],["work","Work number"],["email","Email address"]]},
-		"file": {"name" : "File"},
-		"note": {"name" : "Note", "attributes" : [["","Please select..."],["case","Case"],["party","Party"]]},
+		"file": {"name" : "File", "type" : true},
+		"note": {"name" : "Note", "attributes" : [["","Please select..."],["case","Case"],["party","Party"]], "type": true},
 		"party": {"name" : "Party", "attributes" : [["","Please select..."],["title","Title"],["forename","Forename"],["surname","Surname"],["dob","Date of birth"],["gender","Gender"],["ethnicity","Ethnicity"],["immigration","Immigration status"],["language","Language"],["religion","Religion"],["sexorientation","Sexual orientation"]]},
-		"partyAddress": {"name" : "Party address", "attributes" : _formAddressAttributes},
+		"partyAddress": {"name" : "Party address", "attributes" : _formAddressAttributes, "type" : true},
 		"partyQuestion": {"name" : "Party question"},
 		"question": {"name" : "Question"}
+}
+
+// check any form object conflicts
+function checkFormObjectConflicts(cell, propertyObject, property) {
+	
 }
 
 // this is for advanced form integration
@@ -5287,7 +5294,7 @@ function Property_formObject(cell, propertyObject, property, details) {
 	Property_select(cell, propertyObject, property, details);
 }
 
-//this is for advanced form integration
+// this is for advanced form integration
 function Property_formObjectAttribute(cell, propertyObject, property, details) {
 	// only if there is a formObject set and it has attributes
 	if (propertyObject.formObject && _formObjects[propertyObject.formObject].attributes) {
@@ -5301,8 +5308,20 @@ function Property_formObjectAttribute(cell, propertyObject, property, details) {
 	}
 } 
 
-//this is for advanced form integration
+// this is for advanced form integration
 function Property_formObjectNumber(cell, propertyObject, property, details) {
 	// this is a number - decimals could be 
 	Property_number(cell, propertyObject, property, details);
+}
+
+// this is for advanced form integration
+function Property_formObjectType(cell, propertyObject, property, details) {
+	// only if there is a formObject set and it has attributes
+	if (propertyObject.formObject && _formObjects[propertyObject.formObject].type) {
+		// add a text property
+		Property_text(cell, propertyObject, property, details);
+	} else {
+		// remove this row
+		cell.closest("tr").remove();		
+	}
 } 
