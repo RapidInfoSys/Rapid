@@ -5277,7 +5277,7 @@ var _formObjects = {
 		"contact": {"name" : "Contact", "roles" : _formObjectRoles["PL"], "number" : true, "types" : [["","Please select..."],["email","Email address"],["mobile","Mobile number"],["phone","Phone number"],["home","Home number"],["work","Work number"]], "attributes" : [["value","Value"],["startDate","Start date"],["endDate","End date"]]},
 		"document": {"name" : "Document"},
 		"note": {"name" : "Note", "roles" : _formObjectRoles["CPL"], "types" : [["GENERAL","General"],["MEDICAL","Medical"]]},
-		"party": {"name" : "Party", "roles" : _formObjectRoles["PL"], "number" : true, "types": [["PERSON","Person"],["DOCTOR","Doctor"],["LANDLORD","Landlord"],["LETAGENT","Lettings agent"],["SOLICITOR","Solicitor"],["SUPTWORKER","Support worker"]], "attributes" : [["","Please select..."],["title","Title"],["forename","Forename"],["surname","Surname"],["dob","Date of birth"],["gender","Gender"],["ethnicity","Ethnicity"],["name","Organisation name"]]},
+		"party": {"name" : "Party", "roles" : _formObjectRoles["PL"], "number" : true, "types": [["PERSON","Person"],["DOCTOR","Doctor"],["LANDLORD","Landlord"],["LETAGENT","Lettings agent"],["SOLICITOR","Solicitor"],["SUPTWORKER","Support worker"],["OTHER","Other"]], "attributes" : [["","Please select..."],["title","Title"],["forename","Forename"],["surname","Surname"],["dob","Date of birth"],["gender","Gender"],["ethnicity","Ethnicity"],["name","Organisation name"]]},
 		"question": {"name" : "Question", "roles" : _formObjectRoles["CPL"], "number" : true}
 }
 
