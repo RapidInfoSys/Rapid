@@ -495,10 +495,10 @@ function showProperties(control) {
 				if (control.type != "page" && _version.canSupportIntegrationProperties && property.key == "label" && properties[properties.length - 1].key != "formObjectType") {
 					// add form properties
 					properties.push({"name":"Form integration","changeValueJavaScript":"gap", "setConstructValueFunction": "return 'Form integration'"});
-					properties.push({"key":"formObject","name":"Form object","refreshProperties": true, "helpHtml":"The type of object that control is holding data for in the form. Used for advanced form integration."});
-					properties.push({"key":"formObjectNumber","name":"Number", "helpHtml":"A number relevant to the type of data object. For example 1, for the first address, 2 for the second, etc. Decimals are also allowed, for example party question 1.2 would be the second question for the first party"});
-					properties.push({"key":"formObjectAttribute","name":"Attribute", "helpHtml":"A further attribute of the object. For example a party title or forename, or address start date"});
-					properties.push({"key":"formObjectType","name":"Type", "helpHtml":"A type for the object. For example a notepad general or medical type, or an address application or contact address"});
+					properties.push({"key":"formObject","name":"Object", "refreshProperties": true, "helpHtml":"The object that the control is holding data for in the form. Used for advanced form integration."}); // refreshProperties shows the dynamic properties below				
+					properties.push({"key":"formObjectRole","name":"Role", "helpHtml":"The role of the object. For example a case party, linked party, or the case itself."});
+					properties.push({"key":"formObjectNumber","name":"Number", "helpHtml":"A number relevant to the type of data object. For example 1, for the first address, 2 for the second, etc. Decimals are also allowed, for example party question 1.2 would be the question 2 for the first party. If blank 1 will be used."});
+					properties.push({"key":"formObjectType","name":"Type", "helpHtml":"A type for the object, or role. For example a contact email, mobile or telephone, notepad general or medical type, or an address physical or postal address."});
 				}
 				// add a row
 				propertiesTable.append("<tr></tr>");
@@ -887,7 +887,7 @@ function Property_integer(cell, propertyObject, property, details) {
 	// get a reference to the form control
 	var input = cell.children().last();
 	// add a listener to set the property back if not an integer
-	addListener( input.change( function(ev) {
+	addListener( input.keyup( function(ev) {
 		var input = $(ev.target);
 		var val = input.val();    
 		// check integer match
@@ -911,11 +911,11 @@ function Property_number(cell, propertyObject, property, details) {
 	// get a reference to the form control
 	var input = cell.children().last();
 	// add a listener to set the property back if not an integer
-	addListener( input.change( function(ev) {
+	addListener( input.keyup( function(ev) {
 		var input = $(ev.target);
 		var val = input.val();    
-		// check integer match
-		if (val.match(new RegExp("^(\\d*\\.)?\\d+$"))) {
+		// check decimal match
+		if (val.match(new RegExp("^\\d*?\\.?\\d*$"))) {
 			// update value
 			updateProperty(cell, propertyObject, property, details, ev.target.value);						
 		} else {
@@ -5264,19 +5264,20 @@ function Property_dateSelectOtherMonths(cell, propertyObject, property, details)
 	}
 }
 
-// a global for form address attributes
-var _formAddressAttributes = [["","Please select..."],["address","Full address"],["startDate","Start date"],["endDate","End date"]];
+// globals for common formObjectRoles
+var _formObjectRoles = {
+	"PL" : [["caseParty","Case party"],["linkParty","Link party"]],
+	"CPL" : [["case","Case"],["caseParty","Case party"],["linkParty","Link party"]]
+}
 
 // a global for form objects
 var _formObjects = {
-		"address": {"name" : "Address", "attributes" : _formAddressAttributes, "types" : true},
-		"contact": {"name" : "Contact", "attributes" : [["","Please select..."],["phone","Phone number"],["mobile","Mobile number"],["home","Home number"],["work","Work number"],["email","Email address"]]},
-		"file": {"name" : "File", "types" : true},
-		"note": {"name" : "Note", "attributes" : [["","Please select..."],["case","Case"],["party","Party"]], "types": true},
-		"party": {"name" : "Party", "attributes" : [["","Please select..."],["title","Title"],["forename","Forename"],["surname","Surname"],["dob","Date of birth"],["gender","Gender"],["ethnicity","Ethnicity"],["immigration","Immigration status"],["language","Language"],["religion","Religion"],["sexorientation","Sexual orientation"]]},
-		"partyAddress": {"name" : "Party address", "attributes" : _formAddressAttributes, "types" : true},
-		"partyQuestion": {"name" : "Party question"},
-		"question": {"name" : "Question"}
+		"address": {"name" : "Address", "roles" : _formObjectRoles["PL"], "types": [["PHYSICAL","Physical address"],["POSTAL","Postal address"]], "number" : true},
+		"contact": {"name" : "Contact", "roles" : _formObjectRoles["PL"], "types" : [["","Please select..."],["email","Email address"],["mobile","Mobile number"],["phone","Phone number"],["home","Home number"],["work","Work number"]], "number" : true},
+		"document": {"name" : "Document"},
+		"note": {"name" : "Note", "roles" : _formObjectRoles["CPL"], "types" : [["GENERAL","General"],["MEDICAL","Medical"]]},
+		"party": {"name" : "Party", "roles" : _formObjectRoles["PL"], "types" : [["","Please select..."],["title","Title"],["forename","Forename"],["surname","Surname"],["dob","Date of birth"],["gender","Gender"],["ethnicity","Ethnicity"]], "number": true},
+		"question": {"name" : "Question", "roles" : _formObjectRoles["CPL"], "number": true}
 }
 
 // check any form object conflicts
@@ -5295,23 +5296,29 @@ function Property_formObject(cell, propertyObject, property, details) {
 }
 
 // this is for advanced form integration
-function Property_formObjectAttribute(cell, propertyObject, property, details) {
+function Property_formObjectRole(cell, propertyObject, property, details) {
 	// only if there is a formObject set and it has attributes
-	if (propertyObject.formObject && _formObjects[propertyObject.formObject].attributes) {
+	if (propertyObject.formObject && _formObjects[propertyObject.formObject].roles) {
 		// update the property getValuesFunction
-		property.getValuesFunction = "return _formObjects['" + propertyObject.formObject + "'].attributes";
+		property.getValuesFunction = "return _formObjects['" + propertyObject.formObject + "'].roles";
 		// send it in the select
 		Property_select(cell, propertyObject, property, details);
 	} else {
 		// remove this row
 		cell.closest("tr").remove();		
 	}
-} 
+}
 
-// this is for advanced form integration
+//this is for advanced form integration
 function Property_formObjectNumber(cell, propertyObject, property, details) {
-	// this is a number - decimals could be 
-	Property_number(cell, propertyObject, property, details);
+	// only if there is a formObject set and it has number = true
+	if (propertyObject.formObject && _formObjects[propertyObject.formObject].number) {
+		// add a number property
+		Property_number(cell, propertyObject, property, details);
+	} else {
+		// remove this row
+		cell.closest("tr").remove();		
+	}
 }
 
 // this is for advanced form integration
@@ -5320,10 +5327,14 @@ function Property_formObjectType(cell, propertyObject, property, details) {
 	if (propertyObject.formObject && _formObjects[propertyObject.formObject].types) {
 		// update the property getValuesFunction
 		property.getValuesFunction = "return _formObjects['" + propertyObject.formObject + "'].types";
+		// if there is a value in the first type default to it
+		if (_formObjects[propertyObject.formObject].types[0]) propertyObject[property.key] = _formObjects[propertyObject.formObject].types[0][0]; 
 		// send it in the select
 		Property_select(cell, propertyObject, property, details);
 	} else {
 		// remove this row
 		cell.closest("tr").remove();		
 	}
-} 
+}
+
+
