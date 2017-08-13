@@ -5269,12 +5269,12 @@ var _formAddressAttributes = [["","Please select..."],["address","Full address"]
 
 // a global for form objects
 var _formObjects = {
-		"address": {"name" : "Address", "attributes" : _formAddressAttributes, "type" : true},
+		"address": {"name" : "Address", "attributes" : _formAddressAttributes, "types" : true},
 		"contact": {"name" : "Contact", "attributes" : [["","Please select..."],["phone","Phone number"],["mobile","Mobile number"],["home","Home number"],["work","Work number"],["email","Email address"]]},
-		"file": {"name" : "File", "type" : true},
-		"note": {"name" : "Note", "attributes" : [["","Please select..."],["case","Case"],["party","Party"]], "type": true},
+		"file": {"name" : "File", "types" : true},
+		"note": {"name" : "Note", "attributes" : [["","Please select..."],["case","Case"],["party","Party"]], "types": true},
 		"party": {"name" : "Party", "attributes" : [["","Please select..."],["title","Title"],["forename","Forename"],["surname","Surname"],["dob","Date of birth"],["gender","Gender"],["ethnicity","Ethnicity"],["immigration","Immigration status"],["language","Language"],["religion","Religion"],["sexorientation","Sexual orientation"]]},
-		"partyAddress": {"name" : "Party address", "attributes" : _formAddressAttributes, "type" : true},
+		"partyAddress": {"name" : "Party address", "attributes" : _formAddressAttributes, "types" : true},
 		"partyQuestion": {"name" : "Party question"},
 		"question": {"name" : "Question"}
 }
@@ -5317,9 +5317,11 @@ function Property_formObjectNumber(cell, propertyObject, property, details) {
 // this is for advanced form integration
 function Property_formObjectType(cell, propertyObject, property, details) {
 	// only if there is a formObject set and it has attributes
-	if (propertyObject.formObject && _formObjects[propertyObject.formObject].type) {
-		// add a text property
-		Property_text(cell, propertyObject, property, details);
+	if (propertyObject.formObject && _formObjects[propertyObject.formObject].types) {
+		// update the property getValuesFunction
+		property.getValuesFunction = "return _formObjects['" + propertyObject.formObject + "'].types";
+		// send it in the select
+		Property_select(cell, propertyObject, property, details);
 	} else {
 		// remove this row
 		cell.closest("tr").remove();		
