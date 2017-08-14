@@ -708,7 +708,7 @@ function getControlConflict(c, type) {
 		for (var i in controls) {
 			var control = controls[i];
 			// check name or form 
-			if (c.id != control.id && ((type == "name" && control.name && c.name == control.name) || (type == "form" && c.formObject == control.formObject && c.formObjectRole == control.formObjectRole && c.formObjectNumber == control.formObjectNumber && c.formObjectAttribute == control.formObjectAttribute))) {
+			if (c.id != control.id && ((type == "name" && control.name && c.name == control.name) || (type == "form" && c.formObject == control.formObject && c.formObjectRole == control.formObjectRole && c.formObjectNumber == control.formObjectNumber && c.formObjectType == control.formObjectType  && c.formObjectAttribute == control.formObjectAttribute))) {
 				// get the control class
 				var controlClass = _controlTypes[control.type];
 				// only if it can be used for form page visibility (form control)
