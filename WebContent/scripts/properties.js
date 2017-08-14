@@ -5273,12 +5273,12 @@ var _formObjectRoles = {
 
 // a global for form objects
 var _formObjects = {
-		"address": {"name" : "Address", "roles" : _formObjectRoles["PL"], "number" : true, "types": [["PHYSICAL","Physical address"],["POSTAL","Postal address"]], "attributes" : [["address","Full address"],["startDate","Start date"],["endDate","End date"]]},
-		"contact": {"name" : "Contact", "roles" : _formObjectRoles["PL"], "number" : true, "types" : [["","Please select..."],["email","Email address"],["mobile","Mobile number"],["phone","Phone number"],["home","Home number"],["work","Work number"]], "attributes" : [["value","Value"],["startDate","Start date"],["endDate","End date"]]},
-		"document": {"name" : "Document", "types" : [["GENERAL","General"],["MEDICAL","Medical"],["TENANCY","Tenacy"]]},
+		"address": {"name" : "Address", "roles" : _formObjectRoles["PL"], "types": [["PHYSICAL","Physical address"],["POSTAL","Postal address"]], "attributes" : [["address","Full address"],["startDate","Start date"],["endDate","End date"]]},
+		"contact": {"name" : "Contact", "roles" : _formObjectRoles["PL"], "types" : [["","Please select..."],["email","Email address"],["mobile","Mobile number"],["phone","Phone number"],["home","Home number"],["work","Work number"]], "attributes" : [["value","Value"],["startDate","Start date"],["endDate","End date"]]},
+		"document": {"name" : "Document", "roles" : _formObjectRoles["CPL"], "types" : [["GENERAL","General"],["MEDICAL","Medical"],["TENANCY","Tenacy"]]},
 		"note": {"name" : "Note", "roles" : _formObjectRoles["CPL"], "types" : [["GENERAL","General"],["MEDICAL","Medical"],["TENANCY","Tenacy"]]},
-		"party": {"name" : "Party", "roles" : _formObjectRoles["PL"], "number" : true, "types": [["PERSON","Person"],["DOCTOR","Doctor"],["LANDLORD","Landlord"],["LETAGENT","Lettings agent"],["SOLICITOR","Solicitor"],["SUPTWORKER","Support worker"],["OTHER","Other"]], "attributes" : [["","Please select..."],["title","Title"],["forename","Forename"],["surname","Surname"],["dob","Date of birth"],["gender","Gender"],["ethnicity","Ethnicity"],["name","Organisation name"],["relationship","Relationship"],["startDate","Start date"],["endDate","End date"]]},
-		"question": {"name" : "Question", "roles" : _formObjectRoles["CPL"], "number" : true}
+		"party": {"name" : "Party", "roles" : _formObjectRoles["PL"], "types": [["PERSON","Person"],["DOCTOR","Doctor"],["LANDLORD","Landlord"],["LETAGENT","Lettings agent"],["SOLICITOR","Solicitor"],["SUPTWORKER","Support worker"],["OTHER","Other"]], "attributes" : [["","Please select..."],["title","Title"],["forename","Forename"],["surname","Surname"],["dob","Date of birth"],["gender","Gender"],["ethnicity","Ethnicity"],["name","Organisation name"],["relationship","Relationship"],["startDate","Start date"],["endDate","End date"]]},
+		"question": {"name" : "Question", "roles" : _formObjectRoles["CPL"]}
 }
 
 // this is for advanced form integration
@@ -5307,8 +5307,8 @@ function Property_formObjectRole(cell, propertyObject, property, details) {
 
 // this is for advanced form integration
 function Property_formObjectNumber(cell, propertyObject, property, details) {
-	// only if there is a formObject set and it has number = true
-	if (propertyObject.formObject && _formObjects[propertyObject.formObject].number) {
+	//  if there is a formObject set and it is not document or note / case
+	if (propertyObject.formObject && !((propertyObject.formObject == "document" || propertyObject.formObject == "note") && propertyObject.formObjectRole == "case")) {
 		// add a number property
 		Property_number(cell, propertyObject, property, details);
 	} else {
