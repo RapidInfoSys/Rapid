@@ -1154,8 +1154,8 @@ public class Designer extends RapidHttpServlet {
 													// drop suffix if starts with it
 													if (newId.startsWith(suffix)) newId = newId.substring(suffix.length());
 
-													// add suffix to end
-													newId += suffix;
+													// add suffix to end if not there already
+													if (!newId.endsWith("_" + suffix)) newId += suffix;
 
 													// check if id in file
 													if (pageXML.contains(id)) {
