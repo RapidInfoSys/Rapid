@@ -5276,9 +5276,9 @@ var _formObjectRoles = {
 var _formObjects = {
 		"address": {"name" : "Address", "roles" : _formObjectRoles["PL"], "types": [["PHYSICAL","Physical address"],["POSTAL","Postal address"]], "attributes" : [["address","Full address"],["startDate","Start date"],["endDate","End date"],["addressType","Type"]]},
 		"contact": {"name" : "Contact", "roles" : _formObjectRoles["PL"], "types" : [["","Please select..."],["email","Email address"],["mobile","Mobile number"],["phone","Phone number"],["home","Home number"],["work","Work number"]], "attributes" : [["value","Value"],["startDate","Start date"],["endDate","End date"]]},
-		"document": {"name" : "Document", "roles" : _formObjectRoles["CPL"], "types" : [["GENERAL","General"],["MEDICAL","Medical"],["TENANCY","Tenancy"]]},
-		"note": {"name" : "Note", "roles" : _formObjectRoles["CPL"], "types" : [["GENERAL","General"],["MEDICAL","Medical"],["TENANCY","Tenancy"]]},
-		"party": {"name" : "Party", "roles" : _formObjectRoles["PL"], "types": [["PERSON","Person"],["DOCTOR","Doctor"],["LANDLORD","Landlord"],["LETAGENT","Lettings agent"],["SOLICITOR","Solicitor"],["SUPTWORKER","Support worker"],["OTHER","Other"]], "attributes" : [["","Please select..."],["title","Title"],["forename","Forename"],["surname","Surname"],["dob","Date of birth"],["gender","Gender"],["ethnicity","Ethnicity"],["name","Organisation name"],["relationship","Relationship"],["isMain","Is main case party"],["isJoint","Is joint case party"],["isWith","Is with main case party"],["startDate","Start date"],["endDate","End date"]]},
+		"document": {"name" : "Document", "roles" : _formObjectRoles["CPL"], "types" : [["OTHER","Other"],["MEDICAL","Medical"],["TENANCY","Tenancy"]]},
+		"note": {"name" : "Note", "roles" : _formObjectRoles["CPL"], "types" : [["OTHER","Other"],["MEDICAL","Medical"],["TENANCY","Tenancy"]]},
+		"party": {"name" : "Party", "roles" : _formObjectRoles["PL"], "types": [["OTHER","Other"],["DOCTOR","Doctor"],["LANDLORD","Landlord"],["LETAGENT","Lettings agent"],["SOLICITOR","Solicitor"],["SUPTWORKER","Support worker"]], "attributes" : [["","Please select..."],["title","Title"],["forename","Forename"],["surname","Surname"],["dob","Date of birth"],["gender","Gender"],["ethnicity","Ethnicity"],["name","Organisation name"],["relationship","Relationship"],["isMain","Is main case party"],["isJoint","Is joint case party"],["isWith","Is with main case party"],["startDate","Start date"],["endDate","End date"]]},
 		"question": {"name" : "Question", "roles" : _formObjectRoles["CPL"]}
 }
 
