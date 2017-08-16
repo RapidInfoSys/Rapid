@@ -279,6 +279,8 @@ if (data != null && data !== undefined) {
 }
 // if the control is not the text itself find the element we want
 if (!control.is("[data-for=text]")) control = control.find("[data-for=text]");
+// if no value make nbsp
+if (!value) value = "&nbsp;";
 // set value
 control.html(value);
 			]]>
