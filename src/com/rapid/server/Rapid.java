@@ -312,6 +312,18 @@ public class Rapid extends RapidHttpServlet {
 													if (!formDetails.getSubmitted()) formAdapter.setMaxPage(rapidRequest, formDetails, page.getId());
 												} // pages remaining check
 											} // page visible loop
+
+											// if this page has session values
+											if (page.getSessionVariables() != null) {
+												// loop them
+												for (String variable : page.getSessionVariables()) {
+													// look for session values
+													String value = (String) rapidRequest.getSessionAttribute(variable);
+													// if we got one update it's value
+													if (value != null) formAdapter.setFormPageVariableValue(rapidRequest, formDetails.getId(), variable, value);
+												}
+											}
+
 										} // dialogue check
 
 									} else {
@@ -350,17 +362,6 @@ public class Rapid extends RapidHttpServlet {
 								logger.debug("Rapid GET response (404) : Page not found");
 
 							} else {
-
-								// if this page has session values
-								if (page.getSessionVariables() != null) {
-									// loop them
-									for (String variable : page.getSessionVariables()) {
-										// look for session values
-										String value = (String) rapidRequest.getSessionAttribute(variable);
-										// if we got one update it's value
-										if (value != null) formAdapter.setFormPageVariableValue(rapidRequest, formDetails.getId(), variable, value);
-									}
-								}
 
 								// get the pageId
 								String pageId = page.getId();
