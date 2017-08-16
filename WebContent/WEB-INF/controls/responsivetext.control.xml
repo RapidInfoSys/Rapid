@@ -250,8 +250,12 @@ if (style && style.indexOf("min-height:15px;") > -1 && this.childControls && thi
 var control = $("#" + id);
 // if the control is not the text itself find the element we want
 if (!control.is("[data-for=text]")) control = control.find("[data-for=text]");
+// get the value
+var val = control.html();
+// update to empty if &nbsp; (from set)
+if (val == "&nbsp;") val = "";
 // return
-return control.html();
+return val;
 			]]>
 	    </getDataFunction>
 	    
