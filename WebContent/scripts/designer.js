@@ -1658,7 +1658,7 @@ function loadVersion(forceLoad) {
     	} // app control loop  
     	
     	// when the mouse moves down on any control button
-    	designControls.find("li").on("mousedown touchstart", function(ev) {		
+    	designControls.find("li").on("mousedown", function(ev) {		
 			
 			// clear down property dialogues for good measure
 			hideDialogues();
@@ -2769,7 +2769,7 @@ $(document).ready( function() {
 	// the cover for the control we are inserting into
 	_selectionInsertCover = $("#selectionInsertCover");
 	
-	_selectionBorder.on("mousedown touchstart", coverMouseDown );
+	_selectionBorder.on("mousedown", coverMouseDown );
 	
 	// the div into which all the styles go
 	_stylesPanelDiv = $("#stylesPanelDiv");
@@ -2860,7 +2860,7 @@ $(document).ready( function() {
 	});
 
 	// if we click on the cover (have we hit a control)
-	$("#designCover").on("mousedown touchstart", coverMouseDown ); // cover mouseDown	
+	$("#designCover").on("mousedown", coverMouseDown ); // cover mouseDown	
 	
 	// administration
 	$("#appAdmin").click( function(ev) {
@@ -3434,6 +3434,43 @@ $(document).ready( function() {
 	        }
 	    }
 	});
+	
+	
+	$(document).on("touchstart touchmove touchend", function(ev){
+		
+		if (target.is("div.designCover, div#selectionBorder, li.design-control")) {
+			
+			var e = ev.originalEvent;
+			var t = e.changedTouches[0];			
+			var name;
+			
+			switch(e.type) {
+				case "touchstart":
+					name = "mousedown";
+					$("html").css("overflow","hidden");
+					$("ul#pageMapList").css("overflow","hidden");
+				break;  
+				case "touchend":
+					name = "mouseup";
+					$("html").css("overflow","initial");
+					$("ul#pageMapList").css("overflow","auto");
+				break;
+				case "touchmove": 
+					name = "mousemove"; 
+				break;
+				default: return;
+			}
+			
+			var mouseEvent = document.createEvent("MouseEvent");
+			mouseEvent.initMouseEvent(name, true, true, window, 1, t.screenX, t.screenY, t.clientX, t.clientY, false, false, false, false, 0, null);
+			t.target.dispatchEvent(mouseEvent);
+
+			ev.preventDefault();
+			
+		}
+		
+		
+	});
 							
 });
 
@@ -3540,7 +3577,7 @@ function sizeControlsList(width) {
 }
 
 //if the mouse moves anywhere
-$(document).on("mousemove touchmove", function(ev) {
+$(document).on("mousemove", function(ev) {
 	
 	if (_controlPanelSize) {
 	
@@ -3721,7 +3758,7 @@ $(document).on("mousemove touchmove", function(ev) {
 }); // mousemove
 
 // if the mouse is upped anywhere
-$(document).on("mouseup touchend", function(ev) {
+$(document).on("mouseup", function(ev) {
 	
 	_mouseDown = false;
 	_mouseDownXOffset = 0;
