@@ -3438,6 +3438,8 @@ $(document).ready( function() {
 	
 	$(document).on("touchstart touchmove touchend", function(ev){
 		
+		var target = $(ev.target);
+		
 		if (target.is("div.designCover, div#selectionBorder, li.design-control")) {
 			
 			var e = ev.originalEvent;
