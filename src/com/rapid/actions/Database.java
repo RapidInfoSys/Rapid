@@ -674,12 +674,8 @@ public class Database extends Action {
 								if (field != null && !"".equals(field)) id += "." + field;
 								// retain the value
 								String value = null;
-								// get the page id
-								String pageId = rapidRequest.getPage().getId();
-								// get page id pos
-								int pageIdPos = id.indexOf(pageId);
 								// if it looks like a control, or a system value (bit of extra safety checking)
-								if (pageIdPos == 0 && id.indexOf("_C") > pageIdPos || id.indexOf("System.") == 0) {
+								if (id.indexOf("_C") > 0 || id.indexOf("System.") == 0) {
 									// loop the json inputs looking for the value
 									if (jsonInputData != null) {
 										for (int j = 0; j < jsonFields.length(); j++) {
