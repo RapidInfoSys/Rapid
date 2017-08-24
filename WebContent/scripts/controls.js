@@ -694,6 +694,37 @@ function getControlById(id, control) {
 	return foundControl;
 }
 
+// properties to check
+var _controlFormConflictCheckProperties = ["formObject","formObjectRole","formObjectType","formObjectAttribute","formObjectPartyNumber","formObjectAddressNumber","formObjectQuestionNumber","formObjectText"];
+
+// compares 2 controls for a conflict
+function checkControlConflict(c1, c2) {
+	// assume no matches
+	var propertyMatch = 0;
+	// make sure different controls
+	if (c1.id != c2.id) {
+		// loop properties to check
+		for (var i in _controlFormConflictCheckProperties) {
+			// get the property key
+			var p = _controlFormConflictCheckProperties[i];
+			// check for match
+			if (c1[p] == c2[p]) {
+				// increment count if so
+				propertyMatch ++;
+			} else {
+				// bail on first non-match
+				break;
+			}
+		}
+	}
+	// check if all matched
+	if (propertyMatch == _controlFormConflictCheckProperties.length) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
 // returns the page with a control of the same name
 function getControlConflict(c, type) {
 	// if type is null it's name
@@ -708,7 +739,7 @@ function getControlConflict(c, type) {
 		for (var i in controls) {
 			var control = controls[i];
 			// check name or form 
-			if (c.id != control.id && ((type == "name" && control.name && c.name == control.name) || (type == "form" && c.formObject == control.formObject && c.formObjectRole == control.formObjectRole && c.formObjectNumber == control.formObjectNumber && c.formObjectType == control.formObjectType  && c.formObjectAttribute == control.formObjectAttribute))) {
+			if (c.id != control.id && ((type == "name" && control.name && c.name == control.name) || (type == "form" && checkControlConflict(c, control)))) {
 				// get the control class
 				var controlClass = _controlTypes[control.type];
 				// only if it can be used for form page visibility (form control)
@@ -724,7 +755,7 @@ function getControlConflict(c, type) {
 			for (var i in _pasteControls) {
 				var control = _pasteControls[i];
 				// if it has a name and is for a form
-				if (c.id != control.id && ((type == "name" && control.name && c.name == control.name) || (type == "form" && c.formObject == control.formObject && c.formObjectRole == control.formObjectRole && c.formObjectNumber == control.formObjectNumber && c.formObjectType == control.formObjectType && c.formObjectAttribute == control.formObjectAttribute))) {
+				if (c.id != control.id && ((type == "name" && control.name && c.name == control.name) || (type == "form" && checkControlConflict(c, control)))) {
 					// get the control class
 					var controlClass = _controlTypes[control.type];
 					// only if it can be used for form page visibility (form control)
@@ -744,7 +775,7 @@ function getControlConflict(c, type) {
 				if (page.id != _page.id) {
 					for (var j in page.controls) {
 						var pc = page.controls[j];
-						if (c.id != control.id && ((type == "name" && pc.name && c.name == pc.name) || (type == "form" && c.formObject == control.formObject && c.formObjectRole == control.formObjectRole && c.formObjectNumber == control.formObjectNumber && c.formObjectType == control.formObjectType && c.formObjectAttribute == control.formObjectAttribute))) {
+						if (c.id != control.id && ((type == "name" && pc.name && c.name == pc.name) || (type == "form" && checkControlConflict(c, control)))) {
 							// get the control class
 							var controlClass = _controlTypes[pc.type];
 							// only if it can be used for form page visibility (form control)

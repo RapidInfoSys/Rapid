@@ -53,8 +53,8 @@ function createMapEntry(list, c) {
 		conflict = getControlConflict(c);
 		// if we got one 
 		if (conflict) conflict = "<img src='images/conflict_16x16.png' title='Page \"" + conflict + "\" has a control with the same name' class='conflictimgage'/>";
-		// if this is a form
-		if (_version.isForm) {
+		// if no regular conflict and this is a form (without the existing conflict check it will be wiped out by a successful form conflict pass)
+		if (!conflict && _version.isForm) {
 			// look for any form conflict
 			conflict = getControlConflict(c, "form");
 			// if we got one 

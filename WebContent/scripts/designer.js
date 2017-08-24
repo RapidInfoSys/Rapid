@@ -3011,6 +3011,8 @@ $(document).ready( function() {
 			        	loadPages(_page.id, false);
 			        	// reposition the selection in case controls moved during the reload
 			        	positionAndSizeBorder(_selectedControl);
+			        	// rebuild the page map to clear up any conflict messages
+			        	buildPageMap(true);
 			        	// enable close button
 			        	$("#rapid_P11_C10_").enable().focus();
 			        	// auto close after 1 second
