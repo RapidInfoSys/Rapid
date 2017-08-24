@@ -497,9 +497,10 @@ function showProperties(control) {
 					properties.push({"name":"Form integration","changeValueJavaScript":"gap", "setConstructValueFunction": "return 'Form integration'"});
 					properties.push({"key":"formObject","name":"Object", "refreshProperties": true, "helpHtml":"The object that the control is holding data for in the form. Used for advanced form integration."}); // refreshProperties shows the dynamic properties below				
 					properties.push({"key":"formObjectRole","name":"Role", "refreshProperties": true, "helpHtml":"The role of the object. For example a case party, linked party, or the case itself."}); // refreshProperties allows party / case party to not show the type (used only for linked parties)
-					properties.push({"key":"formObjectNumber","name":"Number", "helpHtml":"A number relevant to the type of data object. For example 1, for the first address, 2 for the second, etc. Decimals are also allowed, for example party question 1.2 would be the question 2 for the first party. If blank 1 will be used."});
+					properties.push({"key":"formObjectPartyNumber","name":"Party number", "helpHtml":"A number identifying the party. The main or first party is 1. Keep the number the same use attributes to specify the other values for the same party."});
 					properties.push({"key":"formObjectType","name":"Type", "helpHtml":"A type for the object, or role. For example a contact email, mobile or telephone, notepad general or medical type, or an address physical or postal address."});
 					properties.push({"key":"formObjectAttribute","name":"Attribute", "helpHtml":"A further attribute of the object, for example a parties title, or address start date."});
+					properties.push({"key":"formObjectQuestionNumber","name":"Question number", "helpHtml":"The question number in the application with which this form is integrating"});
 					properties.push({"key":"formObjectText","name":"Prologue", "helpHtml":"Text that will appear in the note before the contents of the control."});
 				}
 				// add a row
@@ -5309,11 +5310,64 @@ function Property_formObjectRole(cell, propertyObject, property, details) {
 }
 
 // this is for advanced form integration
-function Property_formObjectNumber(cell, propertyObject, property, details) {
-	//  if there is a formObject set and it is not document or note / case
-	if (propertyObject.formObject && !((propertyObject.formObject == "document" || propertyObject.formObject == "note") && propertyObject.formObjectRole == "case")) {
+function Property_formObjectPartyNumber(cell, propertyObject, property, details) {
+	//  if there is a formObject set and it is not a case document, note, or  question
+	if (propertyObject.formObject && !((propertyObject.formObject == "document" || propertyObject.formObject == "note" || propertyObject.formObject == "question") && propertyObject.formObjectRole == "case")) {
+		// if it's not been set yet
+		if (!propertyObject[property.key]) {
+			// assume default value is 0
+			var value = 0;
+			// get all controls on this page
+			var controls = getControls();
+			// loop them backwards
+			for (var i = controls.length; i > 0; i--) {
+				// get  the control
+				var control = controls[i-1];
+				// if we got one and it has a formObjectPartyNumber
+				if (control && control.formObjectPartyNumber) {
+					// set value
+					value = control.formObjectPartyNumber;
+					// we're done
+					break;
+				}
+			}
+			// if we didn't find a value and there are other pages
+			if (!value && _page && _pages) {
+				// assume not previous page
+				var prevPage = false;
+				// loop the pages backwards
+				for (var i = _pages.length; i > 0; i--) {
+					// if the page is before this one
+					if (prevPage) {
+						// if controls on this page
+						if (_pages[i-1].controls) {
+							// loop page controls backwards
+							for (var j = _pages[i-1].controls.length; j > 0; j--) {
+								// get the control
+								var control = _pages[i-1].controls[j-1];
+								// if eligible and has a control.formObjectPartyNumber
+								if (control.pageVisibility && control.name && control.formObjectPartyNumber) {
+									// set value
+									value = control.formObjectPartyNumber;
+									// we're done!
+									break;
+								}					
+							}			
+						} // control loop
+						// break here if we have a value
+						if (value) break;
+					} // prev check
+					// if this is the current page the next one will be previous
+					if (_pages[i-1].id == _page.id) prevPage = true;
+				} // page loop
+			}
+			// if still no value set to 1
+			if (!value) value = 1;
+			// set value
+			propertyObject[property.key] = value;
+		}
 		// add a number property
-		Property_number(cell, propertyObject, property, details);
+		Property_integer(cell, propertyObject, property, details);
 	} else {
 		// remove this row
 		cell.closest("tr").remove();		
@@ -5352,7 +5406,19 @@ function Property_formObjectAttribute(cell, propertyObject, property, details) {
 	}
 }
 
-//this is for advanced form integration
+// this is for advanced form integration
+function Property_formObjectQuestionNumber(cell, propertyObject, property, details) {
+	//  if there is a formObject set and it's a question
+	if (propertyObject.formObject && propertyObject.formObject == "question") {
+		// add a number property
+		Property_integer(cell, propertyObject, property, details);
+	} else {
+		// remove this row
+		cell.closest("tr").remove();		
+	}
+}
+
+// this is for advanced form integration
 function Property_formObjectText(cell, propertyObject, property, details) {
 	// only if there is a formObject set and it is a note object
 	if (propertyObject.formObject && propertyObject.formObject == "note") {

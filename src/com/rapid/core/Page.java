@@ -606,6 +606,7 @@ public class Page {
 							if (jsonControlClass.optString("setDataJavaScript", null) != null) jsonControl.put("output", true);
 							if (canBeUsedFromOtherPages) jsonControl.put("otherPages", true);
 							if (canBeUsedForFormPageVisibilty) jsonControl.put("pageVisibility", true);
+							if (control.getProperty("formObjectPartyNumber") != null) jsonControl.put("formObjectPartyNumber", control.getProperty("formObjectPartyNumber"));
 
 							// look for any runtimeProperties
 							JSONObject jsonProperty = jsonControlClass.optJSONObject("runtimeProperties");
