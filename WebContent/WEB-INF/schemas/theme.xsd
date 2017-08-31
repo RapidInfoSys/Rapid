@@ -147,7 +147,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 			
 			This wil be provided in a future version in conjunction with the form adapter 
 			
-			<xs:element name="formSummaryHeaderHtml" minOccurs="0">
+			<xs:element name="formSummaryStartHtml" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>HTML that will be included immediately after the body element in the form summary.
 					</xs:documentation>
@@ -161,7 +161,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 			
 			<xs:element name="formSummaryPageStartHtml" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>HTML that will be included before each page's group of controls with form summary labels.
+					<xs:documentation>HTML that will be included before each page's group of controls with form summary labels. [[title]] will include the title of the page
 					</xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
@@ -195,7 +195,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 				</xs:simpleType>
 			</xs:element>
 	
-			<xs:element name="formSummaryFooterHtml" minOccurs="0">
+			<xs:element name="formSummaryEndHtml" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>HTML that will be included immediately before the closing body element in the form summary.
 					</xs:documentation>
