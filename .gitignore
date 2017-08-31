@@ -2,4 +2,4 @@ build
 .classpath
 .settings
 /bin/
-/bin/
+.DS_Store
