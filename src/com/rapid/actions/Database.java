@@ -389,7 +389,7 @@ public class Database extends Action {
 					// get the property from the second id part
 					String property = idParts[1];
 					// append the set property call
-					jsOutputs += "      setProperty_" + outputControl.getType() +  "_" + property + "(ev,'" + outputControl.getId() + "','" + output.getField() + "'," + details + ",data);\n";
+					jsOutputs += "setProperty_" + outputControl.getType() +  "_" + property + "(ev,'" + outputControl.getId() + "','" + output.getField() + "'," + details + ",data),";
 				} else {
 					// set to empty string or clean up
 					if (details == null) {
