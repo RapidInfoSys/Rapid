@@ -345,9 +345,11 @@ public class Database extends Action {
 	}
 
 	// private function to get outputs into a string, resued by child database actions
-	private String getOutputsJavaScript(ServletContext servletContext, Application application, Page page, List<Parameter> outputs) {
+	private String getOutputsJavaScript(ServletContext servletContext, Application application, Page page, List<Parameter> outputs, String childName) {
 		// the outputs array we're going to make
 		String jsOutputs = "";
+		// any property outputs that must be done separately;
+		String jsPropertyOutputs = "";
 		// loop the output parameters
 		for (int i = 0; i < outputs.size(); i++) {
 			// get the parameter
@@ -388,8 +390,8 @@ public class Database extends Action {
 					}
 					// get the property from the second id part
 					String property = idParts[1];
-					// append the set property call
-					jsOutputs += "setProperty_" + outputControl.getType() +  "_" + property + "(ev,'" + outputControl.getId() + "','" + output.getField() + "'," + details + ",data),";
+					// append the set property output call
+					jsPropertyOutputs += "setProperty_" + outputControl.getType() +  "_" + property + "(ev,'" + outputControl.getId() + "','" + output.getField() + "'," + details + ",data);\n";
 				} else {
 					// set to empty string or clean up
 					if (details == null) {
@@ -402,8 +404,12 @@ public class Database extends Action {
 				} // property / control check
 			} // control found check
 		} // outputs loop
-		// remove the last comma
+		// remove the last comma from any conventional outputs
 		if (outputs.size() > 0) jsOutputs = jsOutputs.substring(0, jsOutputs.length() - 1);
+		// wrap the outputs with their variable
+		jsOutputs = "var outputs" + childName + " = [" + jsOutputs + "]";
+		// if jsPropertyOutputs, add them before
+		if (jsPropertyOutputs.length() > 0) jsOutputs = jsPropertyOutputs.trim().replace("\n", "\n      ") + "\n      " + jsOutputs;
 		// return
 		return jsOutputs;
 	}
@@ -551,36 +557,34 @@ public class Database extends Action {
 			if (outputs != null) {
 				// open if data check
 				js += "    if (data) {\n";
-				// get the outputs
-				String jsOutputs = getOutputsJavaScript(rapidServlet.getServletContext(), application, page, outputs);
-				// if we added to outputs
-				if (jsOutputs.length() > 0) {
-					// add the outputs property
-					js += "      var outputs = [" + jsOutputs + "];\n";
+				// if there are parent outputs
+				if (outputs.size() > 0) {
+					// add the parent outputs property
+					js += "      " + getOutputsJavaScript(rapidServlet.getServletContext(), application, page, outputs, "") + ";\n";
 					// send them them and the data to the database action
 					js += "      Action_database(ev,'" + getId() + "', data, outputs);\n";
-					// if we are expecing child action results
-					// check for any child database actions
-					if (_childDatabaseActions != null) {
-						// loop them
-						for (int i = 0; i < _childDatabaseActions.size(); i++) {
-							// get the outputs
-							List<Parameter> childOutputs = _childDatabaseActions.get(i).getQuery().getOutputs();
-							// if it has out puts
-							if (childOutputs != null) {
-								// if it really has some
-								if (childOutputs.size() > 0) {
-									// get the name of this
-									String childName = "childAction" + (i + 1);
-									// get the outputs
-									js += "      var " + childName + "Outputs = [" + getOutputsJavaScript(rapidServlet.getServletContext(), application, page, childOutputs) + "]\n";
-									// get the data
-									js += "      Action_database(ev,'" + getId() + "', data, " + childName + "Outputs,'" + childName + "');\n";
-								}
+				}
+				// if we are expecting child action results
+				// check for any child database actions
+				if (_childDatabaseActions != null) {
+					// loop them
+					for (int i = 0; i < _childDatabaseActions.size(); i++) {
+						// get the outputs
+						List<Parameter> childOutputs = _childDatabaseActions.get(i).getQuery().getOutputs();
+						// if it has out puts
+						if (childOutputs != null) {
+							// if it really has some
+							if (childOutputs.size() > 0) {
+								// get the name of this child
+								String childName = "childAction" + (i + 1);
+								// get the outputs
+								js += "      " + getOutputsJavaScript(rapidServlet.getServletContext(), application, page, childOutputs, childName) + ";\n";
+								// get the data
+								js += "      Action_database(ev,'" + getId() + "', data, " + "outputs" + childName + ",'" + childName + "');\n";
 							}
 						}
 					}
-				} // outputs js length check
+				}
 				// close if data check
 				js += "    }\n";
 			} // outputs null check
