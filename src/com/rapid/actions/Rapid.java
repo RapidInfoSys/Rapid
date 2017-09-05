@@ -2461,7 +2461,7 @@ public class Rapid extends Action {
 					// if there is an old password - should always be
 					if (oldPassword != null) {
 						// only if the new password is different from the old one
-						if (password.equals(oldPassword)) {
+						if (!password.equals(oldPassword)) {
 							// get all applications
 							Applications applications = rapidRequest.getRapidServlet().getApplications();
 							// loop them
