@@ -3,7 +3,7 @@
 
 <!-- 
 
-Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -153,6 +153,13 @@ if (data !== undefined) {
 				}
 				if (!foundField) control.val(data.rows[0][0]);
 			} else {
+				// html we are creating
+				var html = "";
+				// assume no last group
+				var lastGroup = "";
+				// assume no group
+				var group = "";
+				// loop rows
 				for (var i in data.rows) {
 					var row = data.rows[i];
 					var text = "";
@@ -162,14 +169,29 @@ if (data !== undefined) {
 							if (data.fields[j]) {
 								if (data.fields[j].toLowerCase() == "text") text = data.rows[i][j];
 								if (data.fields[j].toLowerCase() == "value") value = data.rows[i][j];
+								if (data.fields[j].toLowerCase() == "group") group = data.rows[i][j];
 							}
 						}
 					}
 					if (!text) text = row[0];
 					if (value == null && row[1]) value = row[1];
-					if (value != null) value = "value='" + value + "'";
-					control.append("<option " + value + ">" + text + "</option>");
-				}
+					if (value != null) value = "value='" + value + "'";					
+					// check for group and/or change
+					if (group != lastGroup) {
+						// close last group if need be
+						if (lastGroup)html += "</optgroup>";	
+						// open group if there is one
+						if (group) html += "<optgroup label='" + group + "'>";						
+					}
+					// remember last group
+					lastGroup = group;
+					// append option
+					html += "<option " + value + ">" + text + "</option>";
+				} // loop
+				// close last group if need be
+				if (lastGroup) html += "</optgroup>";
+				// add html if there was some
+				if (html) control.append(html);
 			}
 		}
 	}
