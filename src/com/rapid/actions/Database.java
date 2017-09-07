@@ -617,6 +617,19 @@ public class Database extends Action {
 		return js;
 	}
 
+	private String getJsonInputValue(JSONArray jsonFields, JSONArray jsonRow, String id) {
+		for (int j = 0; j < jsonFields.length(); j++) {
+			// get the id from the fields
+			String jsonId = jsonFields.optString(j);
+			// if the id we want matches this one
+			if (id.equalsIgnoreCase(jsonId)) {
+				// return the value
+				return jsonRow.optString(j,null);
+			}
+		}
+		return null;
+	}
+
 
 	public JSONObject doQuery(RapidRequest rapidRequest, JSONObject jsonAction, Application application, DataFactory df) throws Exception {
 
@@ -680,17 +693,22 @@ public class Database extends Action {
 								String value = null;
 								// if it looks like a control, or a system value (bit of extra safety checking)
 								if (id.indexOf("_C") > 0 || id.indexOf("System.") == 0) {
-									// loop the json inputs looking for the value
-									if (jsonInputData != null) {
-										for (int j = 0; j < jsonFields.length(); j++) {
-											// get the id from the fields
-											String jsonId = jsonFields.optString(j);
-											// if the id we want matches this one
-											if (id.toLowerCase().equals(jsonId.toLowerCase())) {
-												// get the value
-												value = jsonRow.optString(j,null);
-												// no need to keep looking
-												break;
+									// get the value from the json inputs
+									value = getJsonInputValue(jsonFields, jsonRow, id);
+								} else {
+									// didn't look like a control so check page variables
+									if (rapidRequest.getPage() != null) {
+										// check for page variables
+										if (rapidRequest.getPage().getSessionVariables() != null) {
+											// loop them
+											for (String variable : rapidRequest.getPage().getSessionVariables()) {
+												// if this is the variable
+												if (variable.equalsIgnoreCase(id)) {
+													// get the value
+													value = getJsonInputValue(jsonFields, jsonRow, id);
+													// no need to keep looking in the page variables
+													break;
+												}
 											}
 										}
 									}

@@ -542,7 +542,7 @@ public class Control {
 				// check control
 				if (control == null) {
 					// if still null look for it in page variables
-					return "getPageVariableValue('" + id + "')";
+					return " getPageVariableValue('" + id + "','" + page.getId() + "')";
 				} else {
 					// assume no field
 					String fieldJS = "null";

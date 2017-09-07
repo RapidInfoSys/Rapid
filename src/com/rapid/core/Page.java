@@ -1181,7 +1181,7 @@ public class Page {
     }
 
 	// this private method writes JS specific to the user
-	private void writeUserJS(Writer writer, RapidRequest rapidRequest, Application application, User user) throws RapidLoadingException, IOException {
+	private void writeUserJS(Writer writer, RapidRequest rapidRequest, Application application, User user) throws RapidLoadingException, IOException, JSONException {
 
 		// open js
 		writer.write("    <script type='text/javascript'>\n");
@@ -1191,13 +1191,17 @@ public class Page {
 		List<String> pageVariables = application.getPageVariables(rapidRequest.getRapidServlet().getServletContext());
 		// if we got some
 		if (pageVariables != null) {
+			// prepare json to hold page variables
+			JSONObject jsonPageVariables = new JSONObject();
 			// loop them
 			for (String pageVariable : pageVariables) {
 				// look for a value in the session
 				String value = (String) rapidRequest.getSessionAttribute(pageVariable);
-				// if we got one print it as escaped html
-				if (value != null) writer.write("var _pageVariable_" + pageVariable + " = '" + Html.escape(value) + "';\n");
+				// if we got one add html escapes value to json object
+				if (value != null) jsonPageVariables.put(pageVariable, Html.escape(value));
 			}
+			// write page variables
+			writer.write("var _pageVariables_" + _id + " = " + jsonPageVariables + ";\n");
 		}
 		// close js
 		writer.write("    </script>\n");

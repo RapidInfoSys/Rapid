@@ -866,15 +866,15 @@ function toPixels(size) {
 	}
 }
 
-function getPageVariableValue(name) {
-	var value = $.getUrlVar(name);
-	if (value) {
-		return value;
-	} else if (window["_pageVariable_" + name]) {
-		return window["_pageVariable_" + name]; 
-	} else {
-		return null;
+function getPageVariableValue(name, pageId) {
+	var value = null;
+	if (pageId && window["_pageVariables_" + pageId]) {
+		value = window["_pageVariables_" + pageId][name];
 	}
+	if (!value) {
+		value = $.getUrlVar(name);
+	}
+	return value;
 }
 
 function Event_initForm(id) {
