@@ -1068,8 +1068,6 @@ button:disabled {
 }
 
 input[type=checkbox] {
-  width: 10px !important;
-  height: 10px !important;
   vertical-align: middle;
   outline: none;
   cursor: pointer;
