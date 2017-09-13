@@ -226,6 +226,8 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 							session.setAttribute(RapidFilter.SESSION_VARIABLE_INDEX_PATH, customIndexPath);
 							// remember this custom login
 							loginPath = customLoginPath;
+							// add cache defeating to try and stop the 302 from custom login .jsp pages to index.jsp
+							RapidFilter.noCache(response);
 							// we're done
 							break;
 						}
