@@ -664,12 +664,12 @@ function getDialogue(cell, propertyObject, property, details, width, title, opti
 	// add the data-dialogueId to the cell
 	cell.attr("data-dialogueId", dialogueId);
 	
+	// change the cursor
+	cell.css("cursor","pointer");
+	
 	// retrieve the dialogue
 	var dialogue = $("#propertiesDialogues").find("#" + dialogueId);
-			
-	// get the name of the function that requested this dialogue
-	var propertyFunction = arguments.callee.caller.name;
-			
+
 	// if we couldn't retrieve one, make it now
 	if (!dialogue[0]) {		
 		// add the div
@@ -740,13 +740,13 @@ function getDialogue(cell, propertyObject, property, details, width, title, opti
 	}	
 	
 	// listener to show the dialogue 
-	addListener(cell.click({dialogueId: dialogueId, propertyFunction: propertyFunction}, function(ev) {
+	addListener(cell.click({dialogueId: dialogueId, propertyFunction: arguments.callee.caller}, function(ev) {
 		// retrieve the dialogue using the id
 		var dialogue = $("#propertiesDialogues").find("#" + ev.data.dialogueId);
 		// if it doesn't exist 
 		if (!dialogue[0]) {
 			//call the original property function
-			window[ev.data.propertyFunction](cell, propertyObject, property, details);
+			propertyFunction(cell, propertyObject, property, details);
 			// get it again
 			dialogue = $("#propertiesDialogues").find("#" + ev.data.dialogueId);
 		}		

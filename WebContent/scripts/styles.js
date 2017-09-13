@@ -304,11 +304,10 @@ function cursorToEnd(element) {
 			var selection = window.getSelection();
 			selection.removeAllRanges();
 			var range = document.createRange();
-			range.setStart(element,1);
-			range.setEnd(element,1);			
+			range.setStart(element,0);
+			range.setEnd(element,0);
 			selection.addRange(range);
 		}
-		
 	}	
 }
 

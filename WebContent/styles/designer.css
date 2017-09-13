@@ -13,6 +13,7 @@ body {
 	padding: 0px;
 	margin: 0px;	
 	background-color: #ccc;
+	overflow-x: hidden;
 	-webkit-user-drag: none;
 	-khtml-user-drag: none;
 	-moz-user-drag: -moz-none;
@@ -554,6 +555,11 @@ td.styleCell.validationFail {
 	display: none;
 	padding-left: 3px;	
 	z-index:10016;
+}
+
+#styleInput:focus {
+	outline: none;
+ 	box-shadow: 0 0 5px red;;
 }
 
 #styleHint {
