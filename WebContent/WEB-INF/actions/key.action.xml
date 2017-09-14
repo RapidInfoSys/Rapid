@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<actions xmlVersion="1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../schemas/action.xsd">
+
+<!-- 
+
+Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
+
+gareth.edwards@rapid-is.co.uk
+
+
+This file is part of the Rapid Application Platform
+
+Rapid is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version. The terms require you to include
+the original copyright, and the license notice in all redistributions.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
+
+ -->
+
+    <action>
+    
+        <type>key</type>        
+        <name>Key</name>	        
+	    <class>com.rapid.actions.Key</class>
+	    <helpHtml>This action checks key events and runs child actions accordingly. If added to the page it will listen to all page key down events.</helpHtml>
+	    
+	    <addToNewApplications>true</addToNewApplications>
+	     	    	
+	    <properties>
+	        	        
+	        <property>
+	            <key>keyCode</key>
+	            <name>Key</name>
+	            <setConstructValueFunction>return "";</setConstructValueFunction>
+	            <changeValueJavaScript>select</changeValueJavaScript>
+	            <getValuesFunction>return [["","Please select...",""],["8","backspace"],["9","tab"],["13","enter"],["16","shift"],["17","ctrl"],["18","alt"],["19","pause/break"],["20","capslock"],["27","escape"],["33","pageup"],["34","pagedown"],["35","end"],["36","home"],["37","leftarrow"],["38","uparrow"],["39","rightarrow"],["40","downarrow"],["45","insert"],["46","delete"],["48","0"],["49","1"],["50","2"],["51","3"],["52","4"],["53","5"],["54","6"],["55","7"],["56","8"],["57","9"],["65","a"],["66","b"],["67","c"],["68","d"],["69","e"],["70","f"],["71","g"],["72","h"],["73","i"],["74","j"],["75","k"],["76","l"],["77","m"],["78","n"],["79","o"],["80","p"],["81","q"],["82","r"],["83","s"],["84","t"],["85","u"],["86","v"],["87","w"],["88","x"],["89","y"],["90","z"],["91","leftwindowkey"],["92","rightwindowkey"],["93","selectkey"],["96","numpad0"],["97","numpad1"],["98","numpad2"],["99","numpad3"],["100","numpad4"],["101","numpad5"],["102","numpad6"],["103","numpad7"],["104","numpad8"],["105","numpad9"],["106","multiply"],["107","add"],["109","subtract"],["110","decimalpoint"],["111","divide"],["112","f1"],["113","f2"],["114","f3"],["115","f4"],["116","f5"],["117","f6"],["118","f7"],["119","f8"],["120","f9"],["121","f10"],["122","f11"],["123","f12"],["144","numlock"],["145","scrolllock"],["186","semi-colon"],["187","equalsign"],["188","comma"],["189","dash"],["190","period"],["191","forwardslash"],["192","graveaccent"],["219","openbracket"],["220","backslash"],["221","closebraket"],["222","singlequote"],];</getValuesFunction>
+	            <helpHtml>The key to respond to.</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>extra</key>
+	            <name>Extra</name>
+	            <setConstructValueFunction>return "";</setConstructValueFunction>
+	            <changeValueJavaScript>select</changeValueJavaScript>
+	            <getValuesFunction>return [["","Please select...",""],["altKey","alt"],["ctrlKey","ctrl"],["metaKey","meta"],["shiftKey","shift"],["ctrlKey,altKey","ctrl + alt"],["ctrlKey,shiftKey","ctrl + shift"]];</getValuesFunction>
+	            <helpHtml>Extra behaviour that may influence the desired behaviour like holding the shift key.</helpHtml>
+	        </property>
+	        	        	    	        
+	        <property>
+	            <key>actions</key>
+	            <name>Actions</name>
+	            <changeValueJavaScript>childActions</changeValueJavaScript>
+	            <helpHtml>Actions to perform on the key event.</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>preventDefault</key>
+	            <name>Prevent default</name>
+	            <changeValueJavaScript>checkbox</changeValueJavaScript>
+	            <helpHtml>Whether to try to prevent the default behaviour of this key. For example to stop F11 showing the page in full screen</helpHtml>
+	        </property>
+	        
+	    </properties>
+	    	        
+    </action> 
+</actions>
