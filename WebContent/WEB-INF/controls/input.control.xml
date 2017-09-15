@@ -168,6 +168,10 @@ if (changeEvents) control.trigger("change");
 	            <name>Click</name>
 	        </event>
 	        <event>
+	            <type>keydown</type>
+	            <name>Key down</name>
+	        </event>
+	        <event>
 	            <type>keyup</type>
 	            <name>Key up</name>
 	        </event>

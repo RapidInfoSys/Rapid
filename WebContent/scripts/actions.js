@@ -209,14 +209,18 @@ function getCopyActionName(sourceId) {
 			}
 		} else if (_copyAction.actionType) {
 			// use the property name
-			actionName = _copyAction.propertyName + " (" + actionsCount + ")";
+			actionName = _copyAction.propertyName + " (" + actionsCount + ")";			
 		}
 								
-	} else {
+	} 
+	// if we haven't got a name yet which may happen with single controls, or ones with their own actions collection
+	if (actionName == "unknown") {
 		// get the action class
 		var actionClass = _actionTypes[_copyAction.type];
 		// get the name
 		actionName = actionClass.name;
+		// specify to ignore the actions collection
+		_copyAction.ignoreActionsCollection = true;
 	}
 	return actionName;
 }
@@ -289,8 +293,8 @@ function showEvents(control) {
 										if (_copyAction) {
 											// reset the paste map
 											_pasteMap = {};
-											// check for actions collection
-											if (_copyAction.actions) {
+											// check for actions collection that we want to be the root of the paste
+											if (_copyAction.actions && !_copyAction.ignoreActionsCollection) {
 												// loop them
 												for (var j in _copyAction.actions) {
 													// create a new object from the action
