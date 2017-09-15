@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<security>
+    <roles>
+        <description>Manage application in Rapid Admin</description>
+        <name>RapidAdmin</name>
+    </roles>
+    <roles>
+        <description>Design application in Rapid Designer</description>
+        <name>RapidDesign</name>
+    </roles>
+    <users>
+        <description>Admin user</description>
+        <deviceDetails></deviceDetails>
+        <name>admin</name>
+        <password>admin</password>
+        <roles>RapidAdmin</roles>
+        <roles>RapidDesign</roles>
+    </users>
+</security>
