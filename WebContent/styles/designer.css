@@ -964,6 +964,7 @@ Tip styles
 	width: -moz-max-content;
 	margin-left:3px;
 	margin-right:3px;
+	padding: 2px 0;
 }
 
 #tipDivButtons select {
