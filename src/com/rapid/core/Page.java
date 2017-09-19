@@ -1549,7 +1549,7 @@ public class Page {
 		writer.write("<!DOCTYPE html>\n");
 
 		// open the html
-		writer.write("<html>\n");
+		writer.write("<html lang=\"en\">\n");
 
 		// get any theme
     	Theme theme = application.getTheme(rapidServlet.getServletContext());
