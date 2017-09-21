@@ -395,11 +395,12 @@ function checkDirty() {
 	}
 }
 
-// reusable function for removing the header and footer before adding new controls or saving
+//reusable function for removing the header and footer before adding new controls or saving
 function removeHeaderAndFooter() {
 	// remove the header and footer - loop all child elements of the page object
 	if (_page && _page.object) {
-		_page.object.children().each( function() {
+		// use contents rather than children as it includes comments and text
+		_page.object.contents().each( function() {
 			// get ref to element
 			var e = $(this);
 			// get id
