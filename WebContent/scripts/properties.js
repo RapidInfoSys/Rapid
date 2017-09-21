@@ -5281,7 +5281,8 @@ var _formObjects = {
 		"document": {"name" : "Document", "roles" : _formObjectRoles["CPL"], "types" : [["OTHER","Other"],["MEDICAL","Medical"],["TENANCY","Tenancy"]]},
 		"note": {"name" : "Note", "roles" : _formObjectRoles["CPL"], "types" : [["OTHER","Other"],["MEDICAL","Medical"],["TENANCY","Tenancy"]]},
 		"party": {"name" : "Party", "roles" : _formObjectRoles["PL"], "types": [["OTHER","Other"],["DOCTOR","Doctor"],["LANDLORD","Landlord"],["LETAGENT","Lettings agent"],["SOLICITOR","Solicitor"],["SUPTWORKER","Support worker"]], "attributes" : [["","Please select..."],["title","Title"],["forename","Forename"],["surname","Surname"],["dob","Date of birth"],["gender","Gender"],["ethnicity","Ethnicity"],["name","Organisation name"],["relationship","Relationship"],["isJoint","Is joint case party"],["isWith","Is with main case party"],["startDate","Start date"],["endDate","End date"]]},
-		"question": {"name" : "Question", "roles" : _formObjectRoles["CPL"]}
+		"question": {"name" : "Question", "roles" : _formObjectRoles["CPL"]},
+		"other" : {"name" : "Other"}
 }
 
 // this is for advanced form integration
@@ -5448,7 +5449,7 @@ function Property_formObjectQuestionNumber(cell, propertyObject, property, detai
 // this is for advanced form integration
 function Property_formObjectText(cell, propertyObject, property, details) {
 	// only if there is a formObject set and it is a note object
-	if (propertyObject.formObject && propertyObject.formObject == "note") {
+	if (propertyObject.formObject && (propertyObject.formObject == "note" || propertyObject.formObject == "other")) {
 		// send it in the bigtext
 		Property_bigtext(cell, propertyObject, property, details);
 	} else {
