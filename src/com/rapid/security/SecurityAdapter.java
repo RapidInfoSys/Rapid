@@ -441,4 +441,18 @@ public abstract class SecurityAdapter {
 	// check a named userName/password combination
 	public abstract boolean checkUserPassword(RapidRequest rapidRequest, String userName, String password) throws SecurityAdapaterException;
 
+	// public methods
+
+	// check a passwords for whether it is complex enough
+	public boolean checkPasswordComplexity(RapidRequest rapidRequest, String password) {
+		// always true unless overridden
+		return false;
+	}
+
+	// a description of what complexity is required
+	public String getPasswordComplexityDescription(RapidRequest rapidRequest, String password) {
+		// no rules, unless overridden
+		return "Any password is accepted";
+	}
+
 }

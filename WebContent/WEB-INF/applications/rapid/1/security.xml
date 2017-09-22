@@ -19,11 +19,12 @@
         <password>admin</password>
         <roles>RapidAdmin</roles>
         <roles>RapidDesign</roles>
-        <!-- <roles>RapidSuper</roles> -->
+        <roles>RapidSuper</roles>
     </users>
     <users>
         <description>Design user</description>
         <deviceDetails></deviceDetails>
+        <email></email>
         <name>design</name>
         <password>design</password>
         <roles>RapidDesign</roles>

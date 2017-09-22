@@ -397,9 +397,9 @@ function checkDirty() {
 
 //reusable function for removing the header and footer before adding new controls or saving
 function removeHeaderAndFooter() {
-	// remove the header and footer - loop all child elements of the page object
+	// remove the header and footer - first check if page and page object
 	if (_page && _page.object) {
-		// use contents rather than children as it includes comments and text
+		// - loop all child elements of the page object use contents rather than children as it includes comments and text
 		_page.object.contents().each( function() {
 			// get ref to element
 			var e = $(this);

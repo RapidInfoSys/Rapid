@@ -3,7 +3,7 @@
 
 <!-- 
 
-Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -91,6 +91,7 @@ return [
  ["NEWUSERROLE","New user role"],
  ["DELUSERROLE","Delete user role"],
  ["SAVEUSER","Save user description, email, password, device, and roles"],
+ ["CHECKPASSWORDCOMPLEXITY","Check password complexity"],
  ["NEWPARAM","New parameter"],
  ["DELPARAM","Delete parameter"],
  ["SAVEPARAM","Save parameter"],
@@ -668,6 +669,30 @@ function Action_rapid(ev, appId, pageId, controlId, actionId, actionType, rapidA
 				};	
 			}															
 		break;
+		case "CHECKPASSWORDCOMPLEXITY" :
+			if (rapidApp) {
+				$("#rapid_P0_C852_").removeClass("validation");
+				data = { actionType: actionType, appId: "rapid", version: _appVersion, password: $("#rapid_P0_C843_").val() }; 
+			} else {
+				$("#rapid_P0_C279").removeClass("validation");
+				data = { actionType: actionType, appId: $("#rapid_P0_C43").val(), version: $("#rapid_P0_C1044_").val(), password: $("#rapid_P0_C231").val()	};				
+			}
+			if (data.password == "********") {
+				if (successCallback) successCallback(data);
+				return true;
+			} else {
+				callback = function(data, rapidApp) {
+	 				if (!data.complexPass) {
+	 					if (data.rapidApp) {
+	 						$("#rapid_P0_C852_").html(data.message).addClass("validation");
+	 					} else {
+	 						$("#rapid_P0_C279").html(data.message).addClass("validation");
+	 					}
+	 					return false;
+	 				}
+				};
+			}
+		break;
 		case "NEWPARAM" :
 			data = { actionType: actionType, appId: $("#rapid_P0_C43").val(), version: $("#rapid_P0_C1044_").val() };
 		break;
@@ -809,8 +834,11 @@ function Action_rapid(ev, appId, pageId, controlId, actionId, actionType, rapidA
         success: function(data) {
         	// re-enable target if a button
 			if (target.is("button")) target.enable();
-       		if (callback) callback(data);
-       		if (successCallback) successCallback(data);        	
+       		if (callback) {
+       			var result = callback(data);
+       			if (result == false) return false;
+       		}
+       		if (successCallback) successCallback(data);
         }
 	});
 }	        

@@ -2537,6 +2537,35 @@ public class Rapid extends Action {
 				// set the result message
 				result.put("message", "User details saved");
 
+			} else if ("CHECKPASSWORDCOMPLEXITY".equals(action)) {
+
+				// get the password
+				String password = jsonAction.getString("password");
+
+				// get the security for this app
+				SecurityAdapter security = app.getSecurityAdapter();
+
+				// check complexity
+				boolean complexPass = security.checkPasswordComplexity(rapidRequest, password);
+
+				// add check result
+				result.put("complexPass", complexPass);
+				// add whether rapid app
+				result.put("rapidApp", "rapid".equals(app.getId()));
+
+				// check passed
+				if (complexPass) {
+
+					// set the result message
+					result.put("message", "Password is sufficiently complex");
+
+				} else {
+
+					// set the result message
+					result.put("message", security.getPasswordComplexityDescription(rapidRequest, password));
+
+				}
+
 			} else if ("NEWPARAM".equals(action)) {
 
 				// add a new parameter to the collection
