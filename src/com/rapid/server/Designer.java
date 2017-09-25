@@ -714,17 +714,17 @@ public class Designer extends RapidHttpServlet {
 								// if there was one
 								if (theme != null) {
 									// check for headerHtmlDesigner
-									if (jsonPage.has("headerHtmlDesigner")) {
+									if (theme.getHeaderHtmlDesigner() != null) {
 										// add headerHtmlDesigner html
-										jsonPage.put("headerHtmlDesigner", theme.getHeaderHtml());
+										jsonPage.put("headerHtml", theme.getHeaderHtmlDesigner());
 									} else {
 										// add header html
 										jsonPage.put("headerHtml", theme.getHeaderHtml());
 									}
 									// check for footerHtmlDesigner
-									if (jsonPage.has("footerHtmlDesigner")) {
+									if (theme.getFooterHtmlDesigner() != null) {
 										// add footerHtmlDesigner html
-										jsonPage.put("footerHtmlDesigner", theme.getFooterHtml());
+										jsonPage.put("footerHtml", theme.getFooterHtmlDesigner());
 									} else {
 										// add footer html
 										jsonPage.put("footerHtml", theme.getFooterHtml());

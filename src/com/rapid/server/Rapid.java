@@ -43,6 +43,7 @@ import java.util.Random;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -95,7 +96,12 @@ public class Rapid extends RapidHttpServlet {
 
 	public static void gotoStartPage(HttpServletRequest request, HttpServletResponse response, Application app, boolean invalidate) throws IOException {
 		// clear the session if requested to
-		if (invalidate) request.getSession().invalidate();
+		if (invalidate) {
+			// get the session without creating a new one
+			HttpSession session = request.getSession(false);
+			// invalidate the session if we are asked to
+			if (session != null) session.invalidate();
+		}
 		// go to the start page
 		response.sendRedirect("~?a=" + app.getId() + "&v=" + app.getVersion());
 	}
