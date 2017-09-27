@@ -31,10 +31,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.DatatypeConverter;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -621,6 +623,17 @@ public class Webservice extends Action {
 						}
 
 					}
+
+			        String auth = getProperty("auth");
+			        if("true".equalsIgnoreCase(auth)) {
+			        	String authType = getProperty("authType");
+			        	if("basic".equalsIgnoreCase(authType)) {
+				        	String username = getProperty("authUsername");
+				        	String password = getProperty("authPassword");
+			        		String encoded = DatatypeConverter.printBase64Binary((username+":"+password).getBytes(StandardCharsets.UTF_8));
+			        		connection.setRequestProperty("Authorization", "Basic "+encoded);
+			        	}
+			        }
 
 					// if a body has been specified
 					if (body.length() > 0) {

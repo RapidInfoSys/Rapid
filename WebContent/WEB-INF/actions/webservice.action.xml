@@ -68,7 +68,42 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <workflowOutput>true</workflowOutput>
 	            <helpHtml>Sets actions to be carried out for when the webservice has not been successful.</helpHtml>
 	        </property>
+	        
+	        <!-- new properties: authentication yes/no (checkbox), type (dropdown), username, password (last 3 conditional on auth = true) -->
 	            
+	        <property>
+	            <key>auth</key>
+	            <name>Use authentication</name>
+	            <changeValueJavaScript>checkbox</changeValueJavaScript>
+	            <refreshProperties>true</refreshProperties>
+	            <helpHtml>Whether to use authentication when requesting the webservice.</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>authType</key>
+	            <name>Authorisation type</name>
+	            <setConstructValueFunction>return "basic";</setConstructValueFunction>
+	            <changeValueJavaScript>webserviceAuthType</changeValueJavaScript>
+	            <getValuesFunction>
+					return [["basic","basic"]];
+				</getValuesFunction>
+	            <helpHtml></helpHtml>
+	        </property>
+
+	        <property>
+	            <key>authUsername</key>
+	            <name>User name</name>
+	            <changeValueJavaScript>webserviceAuthProperty</changeValueJavaScript>
+	            <helpHtml>Specify the service user name.</helpHtml>
+	        </property>
+	            
+	        <property>
+	            <key>authPassword</key>
+	            <name>Password</name>
+	            <changeValueJavaScript>webserviceAuthProperty</changeValueJavaScript>
+	            <helpHtml>Specify the service user name.</helpHtml>
+	        </property>
+
 	    </properties>
 	    
 	    <resources>
