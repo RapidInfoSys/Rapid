@@ -303,6 +303,7 @@ button.ui-button::-moz-focus-inner{border:0;padding:0}
 .ui-slider-vertical .ui-slider-handle{left:-.3em;margin-left:0;margin-bottom:-.6em}
 .ui-slider-vertical .ui-slider-range{left:0;width:100%}
 .ui-datepicker .ui-datepicker-prev,.ui-datepicker .ui-datepicker-prev-hover{left:2px}
+.ui-datepicker .ui-datepicker-calendar td span { text-align: center;}
 .ui-slider-vertical .ui-slider-range-min{bottom:0}
 .ui-slider-vertical .ui-slider-range-max{top:0}
 .ui-tabs{position:relative;zoom:1;border:none;background:0 0}

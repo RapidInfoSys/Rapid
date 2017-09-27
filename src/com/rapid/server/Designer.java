@@ -713,11 +713,22 @@ public class Designer extends RapidHttpServlet {
 								Theme theme = application.getTheme(getServletContext());
 								// if there was one
 								if (theme != null) {
-									// add header html
-									jsonPage.put("headerHtml", theme.getHeaderHtml());
-									// add footer html
-									jsonPage.put("footerHtml", theme.getFooterHtml());
-
+									// check for headerHtmlDesigner
+									if (theme.getHeaderHtmlDesigner() != null) {
+										// add headerHtmlDesigner html
+										jsonPage.put("headerHtml", theme.getHeaderHtmlDesigner());
+									} else {
+										// add header html
+										jsonPage.put("headerHtml", theme.getHeaderHtml());
+									}
+									// check for footerHtmlDesigner
+									if (theme.getFooterHtmlDesigner() != null) {
+										// add footerHtmlDesigner html
+										jsonPage.put("footerHtml", theme.getFooterHtmlDesigner());
+									} else {
+										// add footer html
+										jsonPage.put("footerHtml", theme.getFooterHtml());
+									}
 								}
 
 								// print it to the output

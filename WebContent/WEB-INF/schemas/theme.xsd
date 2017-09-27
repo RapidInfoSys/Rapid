@@ -143,6 +143,30 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 				</xs:simpleType>
 			</xs:element>
 			
+			<xs:element name="headerHtmlDesigner" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>HTML that will be included immediately after the body element in all pages when loaded in the Rapid Designer. This is to allow unsafe or conflicting JavaScript libraries to be removed.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+	
+			<xs:element name="footerHtmlDesigner" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>HTML that will be included immediately before the closing body element in all pages when loaded in the Rapid Designer. This is to allow unsafe or conflicting JavaScript libraries to be removed.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			
 			<!--
 			
 			This wil be provided in a future version in conjunction with the form adapter 
