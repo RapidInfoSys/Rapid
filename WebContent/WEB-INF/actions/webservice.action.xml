@@ -101,7 +101,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <key>authPassword</key>
 	            <name>Password</name>
 	            <changeValueJavaScript>webserviceAuthProperty</changeValueJavaScript>
-	            <helpHtml>Specify the service user name.</helpHtml>
+	            <helpHtml>Specify the service password.</helpHtml>
 	        </property>
 
 	    </properties>
