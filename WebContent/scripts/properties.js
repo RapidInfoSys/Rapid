@@ -5457,3 +5457,27 @@ function Property_formObjectText(cell, propertyObject, property, details) {
 		cell.closest("tr").remove();		
 	}
 }
+
+//this is for advanced form integration
+function Property_webserviceAuthType(cell, propertyObject, property, details) {
+	// only if there is a formObject set and it is a note object
+	if (propertyObject.auth && (propertyObject.auth == true || propertyObject.auth == "true")) {
+		// create a select property handler
+		Property_select(cell, propertyObject, property, details);
+	} else {
+		// remove this row
+		cell.closest("tr").remove();
+	}
+}
+
+//this is for web service authorisation
+function Property_webserviceAuthProperty(cell, propertyObject, property, details) {
+	// only if there is a formObject set and it is a note object
+	if (propertyObject.auth && (propertyObject.auth == true || propertyObject.auth == "true")) {
+		// create a select property handler
+		Property_text(cell, propertyObject, property, details);
+	} else {
+		// remove this row
+		cell.closest("tr").remove();
+	}
+}

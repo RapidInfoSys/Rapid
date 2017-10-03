@@ -2,7 +2,7 @@
 
 <!-- 
 
-Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -48,7 +48,7 @@ In the "Targets" tab empty "After a 'Clean'" and "Manual Build". For "Auto Build
 	<property file="build.properties" />
 
 	<target name="info">
-		<echo>Custom Rapid builder v 1.1</echo>
+		<echo>Custom Rapid builder v 1.2</echo>
 	</target>
 
 	<target name="clean">
@@ -77,6 +77,7 @@ In the "Targets" tab empty "After a 'Clean'" and "Manual Build". For "Auto Build
 				<exclude name="**/logs/Rapid*.log" /> <!-- exclude all log files -->
 				<exclude name="**/web.xml" /> <!-- don't overwrite user web.xml -->
 				<exclude name="**/applications/**" /> <!-- exclude all applications -->
+				<exclude name="**/_backups/**" /> <!-- exclude all backups -->
 			</fileset>
 			<fileset dir="${rapid_base}/WebContent">
 			    <exclude name="**/rapid/*/security.xml" />  <!-- don't overwrite user security.xml for Rapid Admin and Rapid Design -->
