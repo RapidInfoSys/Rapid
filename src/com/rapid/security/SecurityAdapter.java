@@ -446,7 +446,7 @@ public abstract class SecurityAdapter {
 	// check a passwords for whether it is complex enough
 	public boolean checkPasswordComplexity(RapidRequest rapidRequest, String password) {
 		// always true unless overridden
-		return false;
+		return true;
 	}
 
 	// a description of what complexity is required
