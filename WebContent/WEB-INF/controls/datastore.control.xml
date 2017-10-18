@@ -148,15 +148,25 @@ return {type:this.type, storageType: this.storageType};
 var data = getDataStoreData(id, details, field);
 if (data) {		
 	if (data.rows && data.fields) {
-		if (data.rows[0] && field) {
+		if (data.rows.length > 0 && field) {
 			for (var i in data.fields) {
 				if (data.fields[i] && data.fields[i].toLowerCase() == field.toLowerCase()) {
-					var value = data.rows[0][i];
-					if (value !== undefined) {
-						return value;
+					if (data.rows.length > 1) {
+						var d = {fields:[field], rows:[]};
+						for (var j in data.rows) {
+							var value = data.rows[j][i];
+							if (value !== undefined) {
+								d.rows.push([value]);
+							} else {
+								d.rows.push([null]);
+							}
+						}
+						return d;
 					} else {
-						break;
-					}					
+						var value = data.rows[0][i];
+						if (value !== undefined) return value;						
+					}	
+					break;
 				}
 			}
 			return null;
