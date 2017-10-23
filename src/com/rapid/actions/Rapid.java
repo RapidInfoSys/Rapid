@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -161,7 +162,43 @@ public class Rapid extends Action {
 		newApp.setDescription(description);
 		newApp.setCreatedBy(rapidRequest.getUserName());
 		newApp.setCreatedDate(new Date());
-		newApp.setSecurityAdapterType("rapid");
+
+		// look for the new app security adapter parameter
+		String newAppSecurityAdapter = rapidServlet.getInitParameter("newapp.securityAdpter");
+		// check we got one
+		if (newAppSecurityAdapter == null) {
+			// no default so go for Rapid
+			newApp.setSecurityAdapterType("rapid");
+		} else {
+			// set the one given
+			newApp.setSecurityAdapterType(newAppSecurityAdapter);
+		}
+
+		// look for any new app parameters parameter
+		String newAppParameters = rapidServlet.getInitParameter("newapp.parameters");
+		// check we got one
+		if (newAppSecurityAdapter != null) {
+			// trim it
+			newAppParameters = newAppParameters.trim();
+			// if it looks like an object
+			if (newAppParameters.startsWith("{")) {
+				// read to object
+				JSONObject jsonNewAppParameterObject = new JSONObject(newAppParameters);
+				// get keys iterator
+				Iterator<String> keys = jsonNewAppParameterObject.keys();
+				// get app parameters
+				List<Parameter> parameters = newApp.getParameters();
+				// loop keys
+				while (keys.hasNext()) {
+					// get key
+					String key = keys.next();
+					// get value
+					String value = jsonNewAppParameterObject.getString(key);
+					// add to app parameters
+					parameters.add(new Parameter(key, value));
+				}
+			}
+		}
 
 		// if this is a form
 		if ("F".equals(type)) {

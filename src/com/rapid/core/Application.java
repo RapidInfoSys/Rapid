@@ -240,10 +240,14 @@ public class Application {
 		public String getValue() { return _value; }
 		public void setValue(String value) { _value = value; }
 
-		// constructor
+		// constructors
 		public Parameter() {
 			_name = "";
 			_value = "";
+		}
+		public Parameter(String name, String value) {
+			_name = name;
+			_value = value;
 		}
 
 	}
