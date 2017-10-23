@@ -163,8 +163,11 @@ public class Rapid extends Action {
 		newApp.setCreatedBy(rapidRequest.getUserName());
 		newApp.setCreatedDate(new Date());
 
+		// get the context
+		ServletContext servletContext = rapidServlet.getServletContext();
+
 		// look for the new app security adapter parameter
-		String newAppSecurityAdapter = rapidServlet.getInitParameter("newapp.securityAdpter");
+		String newAppSecurityAdapter = servletContext.getInitParameter("newapp.securityAdpter");
 		// check we got one
 		if (newAppSecurityAdapter == null) {
 			// no default so go for Rapid
@@ -175,7 +178,7 @@ public class Rapid extends Action {
 		}
 
 		// look for any new app parameters parameter
-		String newAppParameters = rapidServlet.getInitParameter("newapp.parameters");
+		String newAppParameters = servletContext.getInitParameter("newapp.parameters");
 		// check we got one
 		if (newAppSecurityAdapter != null) {
 			// trim it
@@ -209,7 +212,7 @@ public class Rapid extends Action {
 		}
 
 		// initialise the application
-		newApp.initialise(rapidServlet.getServletContext(), true);
+		newApp.initialise(servletContext, true);
 
 		// initialise the list of actions
 		List<String> actionTypes = new ArrayList<String>();
