@@ -185,7 +185,7 @@ public class Datacopy extends Action {
 						if (destinationControl == null) {
 							
 							// data copies not found return a comment
-							js = "// data destination not found for " + destinationId;
+							js += "// data destination not found for " + destinationId + "\n";
 							
 						} else {
 							
@@ -284,7 +284,7 @@ public class Datacopy extends Action {
 				if (jsonDataDestinations == null) {
 					
 					// data source destinations not found return a comment
-					js = "// data source destinations not found for " + getId();
+					js += "// data source destinations not found for " + getId() + "\n";
 					
 				} else {
 					
