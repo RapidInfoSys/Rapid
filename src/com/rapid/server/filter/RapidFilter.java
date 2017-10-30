@@ -147,6 +147,9 @@ public class RapidFilter implements Filter {
 			}
 		}
 
+		// online.htm doesn't need authentication
+		if ("/online.htm".equals(path)) requiresAuthentication = false;
+
 		// safety doesn't need authentication
 		if ("/safety".equals(path)) requiresAuthentication = false;
 

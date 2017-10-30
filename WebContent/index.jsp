@@ -9,7 +9,7 @@
 
 /*
 
-Copyright (C) 2014 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -108,7 +108,7 @@ $(document).ready( function() {
 	if (securityAdapter.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRequest.getUserPassword())) {
 
 		// check for the admin role	
-		if (securityAdapter.checkUserRole(rapidRequest, "RapidAdmin")) {
+		if (securityAdapter.checkUserRole(rapidRequest, com.rapid.server.Rapid.ADMIN_ROLE)) {
 %>
 <div class="body">
 	<a href="~?a=rapid"><img src="images/administration_183x123.png" /><span id="admin">Admin</span></a>
@@ -117,7 +117,7 @@ $(document).ready( function() {
 		}
 		
 		// check for the design role
-		if (securityAdapter.checkUserRole(rapidRequest, "RapidDesign")) {
+		if (securityAdapter.checkUserRole(rapidRequest, com.rapid.server.Rapid.DESIGN_ROLE)) {
 %>
 <div class="body">
 	<a href="design.jsp"><img src="images/designer_183x123.png" /><span id="design">Design</span></a>
