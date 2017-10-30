@@ -140,27 +140,52 @@ public class Logic extends Action {
 				String leftSide = _value1.getArgument(rapidRequest, application, page);
 				// get the right side
 				String rightSide = _value2.getArgument(rapidRequest, application, page);
-				// construct the condition simply
-				js = leftSide + " " + _operation + " " + rightSide;
-				// assume no brackets required
-				boolean brackets = false;
 				// get the leftId
 				String leftId = _value1.getId();
-				// if left side is System.true or System.false or System.null
-				if ("System.true".equals(leftId) || "System.false".equals(leftId) || "System.null".equals(leftId)) {
-					// add an or clause with the literal
-					js += " || " + "'" + leftId.replace("System.", "") + "' "  + _operation + " " + rightSide;
-					// going to need extra brackets
-					brackets = true;
-				}
 				// get the rightId
 				String rightId = _value2.getId();
-				// if right side is System.true or System.false or System.null
-				if ("System.true".equals(rightId) || "System.false".equals(rightId) || "System.null".equals(rightId)) {
-					// add an or clause with the literal
-					js += " || " + leftSide + " " + _operation + " '" + rightId.replace("System.", "") + "'";
+				// assume no brackets required
+				boolean brackets = false;
+				// empty is a special case
+				if ("System.empty".equals(leftId) || "System.empty".equals(rightId)) {
+
 					// going to need extra brackets
 					brackets = true;
+
+					// check which side the empty is on
+					if ("System.empty".equals(leftId)) {
+						// if on the left set to undefined or no value
+						leftSide = "undefined || !" + rightSide;
+					} else {
+						// if on the right set  to undefined or no value
+						rightSide = "undefined || !" + leftSide;
+					}
+
+					// construct the condition with an additional = (so ===, !===, etc)
+					js = leftSide + " " + _operation + "= " + rightSide;
+
+				} else {
+
+					// construct the condition simply
+					js = leftSide + " " + _operation + " " + rightSide;
+
+					// if left side is System.true or System.false or System.null
+					if ("System.true".equals(leftId) || "System.false".equals(leftId) || "System.null".equals(leftId)) {
+						// add an or clause with the literal
+						js += " || " + "'" + leftId.replace("System.", "") + "' "  + _operation + " " + rightSide;
+						// going to need extra brackets
+						brackets = true;
+					}
+
+
+					// if right side is System.true or System.false or System.null
+					if ("System.true".equals(rightId) || "System.false".equals(rightId) || "System.null".equals(rightId)) {
+						// add an or clause with the literal
+						js += " || " + leftSide + " " + _operation + " '" + rightId.replace("System.", "") + "'";
+						// going to need extra brackets
+						brackets = true;
+					}
+
 				}
 				// if we needed brackets
 				if (brackets) js = "(" + js + ")";

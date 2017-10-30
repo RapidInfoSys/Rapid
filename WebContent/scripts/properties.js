@@ -87,7 +87,7 @@ function getRolesOptions(selectRole, ignoreRoles) {
 }
 
 // different system properties for inputs
-var _systemValues = ["app id","app version","page id","user name","online","mobile","mobile version","true","false","null","field"];
+var _systemValues = ["app id","app version","page id","page name","page title","user name","online","mobile","mobile version","true","false","null","empty","field"];
 
 // this function returns system values
 function getSystemValueOptions(selectId) {
@@ -303,15 +303,27 @@ function getEventOptions(selectId) {
 		var id = "page." + event.type;
 		options += "<option value='" + id + "' " + (selectId  == id ? "selected='selected'" : "") + ">" + id + "</option>";			
 	}
-	var controls = getControls();	
+	// get all controls
+	var controls = getControls();
+	// loop the controls
 	for (var i in controls) {
-		for (var j in controls[i].events) {
-			var event = controls[i].events[j];
-			// only if there are some actions
-			if (event.actions && event.actions.length > 0) {
-				var id = controls[i].id + "." + event.type;
-				var text = controls[i].name + "." + event.type;
-				options += "<option value='" + id + "' " + (selectId  == id ? "selected='selected'" : "") + ">" + text + "</option>";
+		// get this one
+		var control = control[i];
+		// if it exists and has an id and name and events
+		if (control && control.id && control.name && control.events) {
+			// loop the events
+			for (var j in control.events) {
+				// get this events
+				var event = control.events[j];
+				// only if this event has some actions
+				if (event.actions && event.actions.length > 0) {
+					// set the if for this event
+					var id = control.id + "." + event.type;
+					// set the text to display
+					var text = control.name + "." + event.type;
+					// append as an option
+					options += "<option value='" + id + "' " + (selectId  == id ? "selected='selected'" : "") + ">" + text + "</option>";
+				}
 			}
 		}
 	}
