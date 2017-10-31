@@ -497,6 +497,11 @@ public class Control {
 						// pass the field as a value
 						return "_userName";
 
+					} else if ("empty".equals(type)) {
+
+						// empty equates to null
+						return "null";
+
 					} else if ("field".equals(type)) {
 
 						// work out if field is numeric
