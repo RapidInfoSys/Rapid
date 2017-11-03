@@ -57,7 +57,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <changeValueJavaScript>select</changeValueJavaScript>
 	            <getValuesFunction>
 	                <![CDATA[
-return ["grey","white","black"];
+return ["grey","white","black", "green"];
 					]]>
 	            </getValuesFunction>
 	            <refreshHtml>true</refreshHtml>
@@ -84,6 +84,10 @@ return ["grey","white","black"];
 	        <resource>
 	            <type>file</type>
 	            <contents>images/controls/slidepanel/slidepanel_white_48x48.png</contents>
+	        </resource>
+	        <resource>
+	            <type>file</type>
+	            <contents>images/controls/slidepanel/slidepanel_green_48x48.png</contents>
 	        </resource>
 	        <resource>
 	            <type>css</type>
@@ -215,6 +219,7 @@ var image = "slidepanel_48x48.png";
 switch (this.colour) {
 	case "white": image = "slidepanel_white_48x48.png"; break;
 	case "black": image = "slidepanel_black_48x48.png"; break;
+	case "green": image = "slidepanel_green_48x48.png"; break;
 }
 this.object.children("img").attr("src","images/controls/slidepanel/" + image);
 	        ]]>
