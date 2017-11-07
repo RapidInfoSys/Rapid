@@ -214,6 +214,8 @@ if (this.readonly) {
 	// remove attribute
 	o.removeAttr("readonly");
 }
+// assume no placeholder
+var placeholder = "";
 // get format
 switch (this.format) {
 	case "dd/mm/yy":
