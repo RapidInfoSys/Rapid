@@ -72,7 +72,7 @@ public class Rapid extends RapidHttpServlet {
 
 	// these are held here and referred to globally
 
-	public static final String VERSION = "2.4.1"; // the master version of this Rapid server instance
+	public static final String VERSION = "2.4.2"; // the master version of this Rapid server instance
 	public static final String MOBILE_VERSION = "1"; // the mobile version. update it if you want all mobile devices to run app updates on their next version check
 	public static final String DESIGN_ROLE = "RapidDesign";
 	public static final String WORKFLOW_ROLE = "RapidWorkflow";
@@ -499,23 +499,17 @@ public class Rapid extends RapidHttpServlet {
 		// fake a delay for testing slow servers
 		//try { Thread.sleep(3000); } catch (InterruptedException e) {}
 
-		// this byte buffer is used for reading the post data
-		byte[] byteBuffer = new byte[1024];
-
-		// read bytes from request body into our own byte array (this means we can deal with images)
-		InputStream input = request.getInputStream();
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		for (int length = 0; (length = input.read(byteBuffer)) > -1;) outputStream.write(byteBuffer, 0, length);
-		byte[] bodyBytes = outputStream.toByteArray();
-
 		// get a logger
 		Logger logger = getLogger();
 
 		// log
-		logger.debug("Rapid POST request : " + request.getQueryString() + " bytes=" + bodyBytes.length);
+		logger.debug("Rapid POST request : " + request.getQueryString() + " bytes=" + request.getContentLength());
 
 		// create a Rapid request
 		RapidRequest rapidRequest = new RapidRequest(this, request);
+		
+		// read back the body bytes
+		byte[] bodyBytes = rapidRequest.getBodyBytes();
 
 		try {
 

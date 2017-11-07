@@ -25,6 +25,8 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 
 package com.rapid.server;
 
+import java.io.ByteArrayOutputStream;
+
 /*
 
 This class wraps an HttpRequest and provides a number of useful methods for retrieving common Rapid objects
@@ -32,6 +34,7 @@ This class wraps an HttpRequest and provides a number of useful methods for retr
 */
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.util.Enumeration;
 
@@ -60,6 +63,7 @@ public class RapidRequest {
 	private Page _page;
 	private Control _control;
 	private Action _action;
+	private byte[] _bodyBytes;
 
 	// properties
 
@@ -71,6 +75,7 @@ public class RapidRequest {
 	public Page getPage() { return _page; }
 	public Control getControl() { return _control; }
 	public Action getAction() { return _action; }
+	public byte[] getBodyBytes() { return _bodyBytes; }
 
 	// allow overriding the action name - useful for later logic
 	public String getActionName() { return _actionName; }
@@ -177,6 +182,29 @@ public class RapidRequest {
 			String[] values = _request.getParameterValues(name);
 			// store the first value
 			if (values != null) _request.getSession().setAttribute(name, values[0]);
+		}
+		// read the body bytes if POST
+		if ("POST".equals(request.getMethod())) {
+			
+			// this byte buffer is used for reading the post data
+			byte[] byteBuffer = new byte[1024];
+			
+			try {
+				
+				// read bytes from request body into our own byte array (this means we can deal with images)
+				InputStream input = request.getInputStream();
+				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+				for (int length = 0; (length = input.read(byteBuffer)) > -1;) outputStream.write(byteBuffer, 0, length);
+				_bodyBytes = outputStream.toByteArray();
+				
+			} catch (IOException ex) {
+
+				// get the logger
+				Logger logger = rapidServlet.getLogger();
+				// log the exception
+				logger.error("Failed to read body bytes when creating Rapid request", ex);
+			}
+			
 		}
 	}
 
