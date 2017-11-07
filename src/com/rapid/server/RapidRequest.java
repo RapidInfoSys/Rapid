@@ -126,8 +126,30 @@ public class RapidRequest {
 		_request = request;
 		// retain the session
 		_session = request.getSession(false);
-		// store the user name from the session
+		// get the user name from the session
 		_userName = (String) getSessionAttribute(RapidFilter.SESSION_VARIABLE_USER_NAME);
+		// read the body bytes if POST - this must be done before reading parameters to have first dibs on the input stream
+		if ("POST".equals(request.getMethod())) {
+			// this byte buffer is used for reading the post data
+			byte[] byteBuffer = new byte[1024];
+
+			try {
+
+				// read bytes from request body into our own byte array (this means we can deal with images)
+				InputStream input = request.getInputStream();
+				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+				for (int length = 0; (length = input.read(byteBuffer)) > -1;) outputStream.write(byteBuffer, 0, length);
+				_bodyBytes = outputStream.toByteArray();
+
+			} catch (IOException ex) {
+
+				// get the logger
+				Logger logger = rapidServlet.getLogger();
+				// log the exception
+				logger.error("Failed to read body bytes when creating Rapid request", ex);
+			}
+
+		}
 		// look for an action parameter
 		_actionName = request.getParameter("action");
 		// look for an appId
@@ -183,29 +205,7 @@ public class RapidRequest {
 			// store the first value
 			if (values != null) _request.getSession().setAttribute(name, values[0]);
 		}
-		// read the body bytes if POST
-		if ("POST".equals(request.getMethod())) {
-			
-			// this byte buffer is used for reading the post data
-			byte[] byteBuffer = new byte[1024];
-			
-			try {
-				
-				// read bytes from request body into our own byte array (this means we can deal with images)
-				InputStream input = request.getInputStream();
-				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-				for (int length = 0; (length = input.read(byteBuffer)) > -1;) outputStream.write(byteBuffer, 0, length);
-				_bodyBytes = outputStream.toByteArray();
-				
-			} catch (IOException ex) {
 
-				// get the logger
-				Logger logger = rapidServlet.getLogger();
-				// log the exception
-				logger.error("Failed to read body bytes when creating Rapid request", ex);
-			}
-			
-		}
 	}
 
 	// can also instantiate a rapid request with just an application object (this is used by the rapid action)
