@@ -25,13 +25,11 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 
 package com.rapid.server;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
@@ -1285,17 +1283,13 @@ public class Designer extends RapidHttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+		// get the rapid request
 		RapidRequest rapidRequest = new RapidRequest(this, request);
 
 		try {
 
+			// assume no output
 			String output = "";
-
-			// read bytes from request body into our own byte array (this means we can deal with images)
-			InputStream input = request.getInputStream();
-			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-			for (int length = 0; (length = input.read(_byteBuffer)) > -1;) outputStream.write(_byteBuffer, 0, length);
-			byte[] bodyBytes = outputStream.toByteArray();
 
 			// get the rapid application
 			Application rapidApplication = getApplications().get("rapid");
@@ -1319,6 +1313,9 @@ public class Designer extends RapidHttpServlet {
 						Application application = rapidRequest.getApplication();
 
 						if (application != null) {
+
+							// get the body bytes from the request
+							byte[] bodyBytes = rapidRequest.getBodyBytes();
 
 							if ("savePage".equals(rapidRequest.getActionName())) {
 
