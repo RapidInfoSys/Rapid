@@ -553,10 +553,11 @@ public class Database extends Action {
 			// hide the loading javascript (if applicable)
 			if (_showLoading) js += "  " + getLoadingJS(page, outputs, false);
 
+			// open if data check
+			js += "    if (data) {\n";
+			
 			// check there are outputs
 			if (outputs != null) {
-				// open if data check
-				js += "    if (data) {\n";
 				// if there are parent outputs
 				if (outputs.size() > 0) {
 					// add the parent outputs property
@@ -564,40 +565,42 @@ public class Database extends Action {
 					// send them them and the data to the database action
 					js += "      Action_database(ev,'" + getId() + "', data, outputs);\n";
 				}
-				// if we are expecting child action results
-				// check for any child database actions
-				if (_childDatabaseActions != null) {
-					// loop them
-					for (int i = 0; i < _childDatabaseActions.size(); i++) {
-						// get the outputs
-						List<Parameter> childOutputs = _childDatabaseActions.get(i).getQuery().getOutputs();
-						// if it has out puts
-						if (childOutputs != null) {
-							// if it really has some
-							if (childOutputs.size() > 0) {
-								// get the name of this child
-								String childName = "childAction" + (i + 1);
-								// get the outputs
-								js += "      " + getOutputsJavaScript(rapidServlet.getServletContext(), application, page, childOutputs, childName) + ";\n";
-								// get the data
-								js += "      Action_database(ev,'" + getId() + "', data, " + "outputs" + childName + ",'" + childName + "');\n";
-								// get any child database action success actions
-								List<Action> childSuccessActions = _childDatabaseActions.get(i).getSuccessActions();
-								// if we got some
-								if (childSuccessActions != null) {
-									// loop them
-									for (Action childSuccessAction : childSuccessActions) {
-										// add it to the js
-										js += "      " + childSuccessAction.getJavaScript(rapidRequest, application, page, control, jsonDetails).replace("\n", "\n      ") + "\n";
-									}
+			} // outputs null check
+			
+			// if we are expecting child action results
+			// check for any child database actions
+			if (_childDatabaseActions != null) {
+				// loop them
+				for (int i = 0; i < _childDatabaseActions.size(); i++) {
+					// get the outputs
+					List<Parameter> childOutputs = _childDatabaseActions.get(i).getQuery().getOutputs();
+					// if it has out puts
+					if (childOutputs != null) {
+						// if it really has some
+						if (childOutputs.size() > 0) {
+							// get the name of this child
+							String childName = "childAction" + (i + 1);
+							// get the outputs
+							js += "      " + getOutputsJavaScript(rapidServlet.getServletContext(), application, page, childOutputs, childName) + ";\n";
+							// get the data
+							js += "      Action_database(ev,'" + getId() + "', data, " + "outputs" + childName + ",'" + childName + "');\n";
+							// get any child database action success actions
+							List<Action> childSuccessActions = _childDatabaseActions.get(i).getSuccessActions();
+							// if we got some
+							if (childSuccessActions != null) {
+								// loop them
+								for (Action childSuccessAction : childSuccessActions) {
+									// add it to the js
+									js += "      " + childSuccessAction.getJavaScript(rapidRequest, application, page, control, jsonDetails).replace("\n", "\n      ") + "\n";
 								}
 							}
 						}
 					}
 				}
-				// close if data check
-				js += "    }\n";
-			} // outputs null check
+			}
+			
+			// close if data check
+			js += "    }\n";
 
 			// if there is a working page (from the details)
 			if (workingPage != null) {
