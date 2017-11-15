@@ -584,20 +584,20 @@ public class Database extends Action {
 							js += "      " + getOutputsJavaScript(rapidServlet.getServletContext(), application, page, childOutputs, childName) + ";\n";
 							// get the data
 							js += "      Action_database(ev,'" + getId() + "', data, " + "outputs" + childName + ",'" + childName + "');\n";
-							// get any child database action success actions
-							List<Action> childSuccessActions = _childDatabaseActions.get(i).getSuccessActions();
-							// if we got some
-							if (childSuccessActions != null) {
-								// loop them
-								for (Action childSuccessAction : childSuccessActions) {
-									// add it to the js
-									js += "      " + childSuccessAction.getJavaScript(rapidRequest, application, page, control, jsonDetails).replace("\n", "\n      ") + "\n";
-								}
-							}
+						} // output length check
+					} // output null check
+					// get any child database action success actions
+					List<Action> childSuccessActions = _childDatabaseActions.get(i).getSuccessActions();
+					// if we got some
+					if (childSuccessActions != null) {
+						// loop them
+						for (Action childSuccessAction : childSuccessActions) {
+							// add it to the js
+							js += "      " + childSuccessAction.getJavaScript(rapidRequest, application, page, control, jsonDetails).replace("\n", "\n      ") + "\n";
 						}
 					}
-				}
-			}
+				} // child action loop
+			} // child action check
 			
 			// close if data check
 			js += "    }\n";
