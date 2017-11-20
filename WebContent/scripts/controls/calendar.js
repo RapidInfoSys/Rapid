@@ -151,7 +151,7 @@ function calendarUpdate(id) {
 	days.each(function() {
 		var dayCell = $(this);			
 		if (day > 0 && day <= monthDays) {
-			dayCell.html(day).removeClass("calendarNonDay").addClass("calendarDay");
+			dayCell.html(day).removeClass("calendarNonDay").addClass("calendarDay").attr("data-day", day);
 			if (day == today.getDate() && month == today.getMonth() && year == today.getFullYear()) dayCell.addClass("calendarToday");
 			if (day == date.getDate() && month == date.getMonth() && year == date.getFullYear()) dayCell.addClass("calendarSelectedDay");
 		} else {

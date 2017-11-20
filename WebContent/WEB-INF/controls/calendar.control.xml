@@ -57,8 +57,8 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 switch (_localDateFormat) {
 	case "MM/dd/yyyy": return "m/d/Y";
 	case "yyyy-MM-dd": return "Y-m-d";
-	default: return return "d/m/Y";
 }
+return "d/m/Y";
 	            </setConstructValueFunction>	            
 	            <changeValueJavaScript>select</changeValueJavaScript>
 	            <getValuesFunction>
@@ -130,8 +130,7 @@ return html;
 	    </getHtmlFunction> 
 	    	    	    
 	    <rebuildJavaScript>
-	        <![CDATA[	           
-	        
+	        <![CDATA[
 var id = this.id;
 var details = this.details;	        
 var date = null;
