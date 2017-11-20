@@ -308,7 +308,7 @@ function getEventOptions(selectId) {
 	// loop the controls
 	for (var i in controls) {
 		// get this one
-		var control = control[i];
+		var control = controls[i];
 		// if it exists and has an id and name and events
 		if (control && control.id && control.name && control.events) {
 			// loop the events

@@ -1337,6 +1337,16 @@ public class RapidServletContextListener extends Log4jServletContextListener imp
 			// store the jaxb context in RapidHttpServlet
 			RapidHttpServlet.setJAXBContext(jaxbContext);
 
+			try {
+				// get the extras.min.js file - this is a common cause of bugs on upgrades and will be rebuilt by the first reloaded app
+				File extrasMin = new File(servletContext.getRealPath("/") + "/scripts_min/extras.min.js");
+				// delete the extras.min.js file if present
+				if (extrasMin.exists()) extrasMin.delete();
+			} catch (Exception ex) {
+				// just log
+				_logger.info("Failed to delete extras.min.js", ex);
+			}
+
 			// load the devices
 			Devices.load(servletContext);
 
