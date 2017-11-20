@@ -245,12 +245,6 @@ public class RapidHttpServlet extends HttpServlet {
 		return controlAndActionSuffix;
 	}
 
-	// whether page names are used as ids
-	public boolean getPageNameIds() {
-		// return the parsed value of the parameter
-		return Boolean.parseBoolean(getServletContext().getInitParameter("pageNameIds"));
-	}
-
 	// whether the connection adapter allows the public unauthenticated access
 	public boolean isPublic() {
 		// return the  value of the parameter - this is set in the RapidAuthenticationAdapter

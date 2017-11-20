@@ -878,10 +878,11 @@ public class Rapid extends Action {
 						// add the description
 						result.put("description", app.getDescription());
 						// add whether to show control ids
+						result.put("pageNameIds", app.getPageNameIds());
+						// add whether to show control ids
 						result.put("showControlIds", app.getShowControlIds());
 						// add whether to show action ids
 						result.put("showActionIds", app.getShowActionIds());
-
 						// add the form settings
 						result.put("isForm", app.getIsForm());
 						// add the form adapter
@@ -1643,6 +1644,7 @@ public class Rapid extends Action {
 				String formAdapter = jsonAction.optString("formAdapter");
 				boolean isForm = jsonAction.optBoolean("isForm");
 				String startPageId = jsonAction.optString("startPageId","");
+				boolean pageNameIds = jsonAction.optBoolean("pageNameIds");
 				boolean showControlIds = jsonAction.optBoolean("showControlIds");
 				boolean showActionIds = jsonAction.optBoolean("showActionIds");
 
@@ -1679,6 +1681,7 @@ public class Rapid extends Action {
 				app.setFormAdapterType(formAdapter);
 				app.setIsForm(isForm);
 				app.setStartPageId(startPageId);
+				app.setPageNameIds(pageNameIds);
 				app.setShowControlIds(showControlIds);
 				app.setShowActionIds(showActionIds);
 
@@ -2152,7 +2155,10 @@ public class Rapid extends Action {
 				String description = jsonAction.optString("description").trim();
 
 				// assume designer set id
-				boolean nameIds = rapidServlet.getPageNameIds();
+				boolean nameIds = false;
+
+				// this parameter existed against the entire system for just a single version of Rapid 2.4.1 before being moved to each application from 2.4.2
+				if (Boolean.parseBoolean(servletContext.getInitParameter("pageNameIds")) || rapidActionRequest.getApplication().getPageNameIds()) nameIds = true;
 
 				// check nameIds and set accordingly
 				if (nameIds) id = name;

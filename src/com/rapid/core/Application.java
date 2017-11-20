@@ -482,7 +482,7 @@ public class Application {
 	// instance variables
 	private int _xmlVersion, _status, _applicationBackupsMaxSize, _pageBackupsMaxSize;
 	private String _id, _version, _name, _title, _description, _startPageId, _themeType, _styles, _statusBarColour, _statusBarHighlightColour, _statusBarTextColour, _statusBarIconColour, _functions, _securityAdapterType, _storePasswordDuration, _formAdapterType, _createdBy, _modifiedBy, _formEmailFrom, _formEmailTo, _formEmailAttachmentType, _formFileType, _formFilePath, _formFileUserName, _formFilePassword, _formWebserviceURL, _formWebserviceType, _formWebserviceSOAPAction;
-	private boolean _isForm, _showConrolIds, _showActionIds, _deviceSecurity, _formEmail, _formFile, _formWebservice;
+	private boolean _isForm, _pageNameIds, _showConrolIds, _showActionIds, _deviceSecurity, _formEmail, _formFile, _formWebservice;
 	private Date _createdDate, _modifiedDate;
 	private Map<String,Integer> _pageOrders;
 	private SecurityAdapter _securityAdapter;
@@ -550,6 +550,10 @@ public class Application {
 	// whether form settings checkbox has been ticked or not
 	public boolean getIsForm() { return _isForm; }
 	public void setIsForm(boolean isForm) { _isForm = isForm; }
+
+	// whether page id's are sequential numbers (the traditional way) or the page name (for more complex apps with page naming conventions)
+	public boolean getPageNameIds() { return _pageNameIds; }
+	public void setPageNameIds(boolean pageNameIds) { _pageNameIds = pageNameIds; }
 
 	// whether control ids should be shown when designing this app
 	public boolean getShowControlIds() { return _showConrolIds; }
