@@ -116,15 +116,23 @@ public class Navigate extends Action {
 			// check we have some
 			if (_sessionVariables != null) {
 				// loop
-				for (SessionVariable sessionVariable : _sessionVariables) {					
-					// get the data getter command
-					String getter = Control.getDataJavaScript(rapidRequest.getRapidServlet().getServletContext(), application, page, sessionVariable.getItemId(), sessionVariable.getField());
-					// if we didn't get anything update to empty string
-					if (getter == null) getter = "''";
-					if (getter.length() == 0) getter = "''";
-					// build the concatinating string
-					sessionVariables += "&" + sessionVariable.getName() + "=' + " +  getter + " + '";									
-				}
+				for (SessionVariable sessionVariable : _sessionVariables) {
+					// get the item id from which we are to get the value for this session/page variable
+					String itemId = sessionVariable.getItemId();
+					// null check
+					if (itemId != null) {
+						// length check
+						if (itemId.length() > 0) {
+							// get the data getter command
+							String getter = Control.getDataJavaScript(rapidRequest.getRapidServlet().getServletContext(), application, page, itemId, sessionVariable.getField());
+							// if we didn't get anything update to empty string
+							if (getter == null) getter = "''";
+							if (getter.length() == 0) getter = "''";
+							// build the concatenating string
+							sessionVariables += "&" + sessionVariable.getName() + "=' + " +  getter + " + '";		
+						} // length check
+					} // null check
+				} // loop
 			}
 			// build the action string (also used in mobile action for online check type)
 			String action = "Action_navigate('~?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + pageId; 
