@@ -141,7 +141,7 @@ if (data !== undefined) {
 	} else {		
 		data = makeDataObject(data, field);
 		if (data.rows && data.fields) {
-			if (field && data.rows[0]) {
+			if (field && data.rows.length > 0) {
 				var foundField = false;
 				for (var i in data.fields) {
 					if (data.fields[i] && field.toLowerCase() == data.fields[i].toLowerCase()) {
@@ -226,7 +226,7 @@ return "#" + this.id;
 	                <![CDATA[
 var	data = makeDataObject(data, field);        
 var control = $("#" + id);
-if (data && data.rows) {
+if (data && data.rows & data.rows.length > 0) {
 	var foundField = false;
 	if (field) {
 		for (var i in data.fields) {
