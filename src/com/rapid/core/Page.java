@@ -1197,8 +1197,8 @@ public class Page {
 			for (String pageVariable : pageVariables) {
 				// look for a value in the session
 				String value = (String) rapidRequest.getSessionAttribute(pageVariable);
-				// if we got one add html escapes value to json object
-				if (value != null) jsonPageVariables.put(pageVariable, Html.escape(value));
+				// if we got one add it
+				if (value != null) jsonPageVariables.put(pageVariable, value);
 			}
 			// write page variables
 			writer.write("var _pageVariables_" + _id + " = " + jsonPageVariables + ";\n");
