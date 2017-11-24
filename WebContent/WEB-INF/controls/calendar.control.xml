@@ -327,6 +327,8 @@ var calendar = $("#" + id);
 var date = new Date();
 calendar.attr("data-year",date.getFullYear());
 calendar.attr("data-month",date.getMonth());
+if(details.selectToday)
+	calendar.attr("data-date",date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate());
 calendarUpdate(id);  	        	  
 	        ]]>
 	    </initJavaScript>
