@@ -226,7 +226,7 @@ return "#" + this.id;
 	                <![CDATA[
 var	data = makeDataObject(data, field);        
 var control = $("#" + id);
-if (data && data.rows & data.rows.length > 0) {
+if (data && data.rows && data.rows.length > 0) {
 	var foundField = false;
 	if (field && data.fields && data.fields.length > 0) {
 		for (var i in data.fields) {
