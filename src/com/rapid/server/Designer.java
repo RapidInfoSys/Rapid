@@ -1540,52 +1540,87 @@ public class Designer extends RapidHttpServlet {
 									}
 
 								} else {
+									
+									// check the verb
+									if (sql.toLowerCase().startsWith("select") || sql.toLowerCase().startsWith("with") || sql.toLowerCase().startsWith("exec")) {
 
-									ResultSet rs = df.getPreparedResultSet(rapidRequest, sql, parameters);
-
-									ResultSetMetaData rsmd = rs.getMetaData();
-
-									int cols = rsmd.getColumnCount();
-
-									if (outputs > cols) throw new Exception(outputs + " outputs, but only " + cols + " column" + (cols > 1 ? "s" : "") + " selected");
-
-									for (int i = 0; i < outputs; i++) {
-
-										JSONObject jsonOutput = jsonOutputs.getJSONObject(i);
-
-										String field = jsonOutput.optString("field","");
-
-										if (!"".equals(field)) {
-
-											field = field.toLowerCase();
-
-											boolean gotOutput = false;
-
-											for (int j = 0; j < cols; j++) {
-
-												String sqlField = rsmd.getColumnLabel(j + 1).toLowerCase();
-
-												if (field.equals(sqlField)) {
-													gotOutput = true;
-													break;
+										ResultSet rs = df.getPreparedResultSet(rapidRequest, sql, parameters);
+	
+										ResultSetMetaData rsmd = rs.getMetaData();
+	
+										int cols = rsmd.getColumnCount();
+	
+										if (outputs > cols) throw new Exception(outputs + " outputs, but only " + cols + " column" + (cols > 1 ? "s" : "") + " selected");
+	
+										for (int i = 0; i < outputs; i++) {
+	
+											JSONObject jsonOutput = jsonOutputs.getJSONObject(i);
+	
+											String field = jsonOutput.optString("field","");
+	
+											if (!"".equals(field)) {
+	
+												field = field.toLowerCase();
+	
+												boolean gotOutput = false;
+	
+												for (int j = 0; j < cols; j++) {
+	
+													String sqlField = rsmd.getColumnLabel(j + 1).toLowerCase();
+	
+													if (field.equals(sqlField)) {
+														gotOutput = true;
+														break;
+													}
+	
 												}
-
+	
+												if (!gotOutput) {
+													rs.close();
+													df.close();
+													throw new Exception("Field \"" + field + "\" from output " + (i + 1) + " is not present in selected columns");
+												}
+	
 											}
-
-											if (!gotOutput) {
-												rs.close();
-												df.close();
-												throw new Exception("Field \"" + field + "\" from output " + (i + 1) + " is not present in selected columns");
-											}
-
+	
 										}
-
+	
+										// close the recordset
+										rs.close();
+										// close the data factory
+										df.close();
+										
+									} else {
+										
+										// check the verb
+										if (sql.toLowerCase().startsWith("insert") || sql.toLowerCase().startsWith("update")) {
+											
+											// loop the outputs
+											for (int i = 0; i < outputs; i++) {
+												
+												// get the output
+												JSONObject jsonOutput = jsonOutputs.getJSONObject(i);
+		
+												// get it's field, if present
+												String field = jsonOutput.optString("field","");
+		
+												// if we got a field
+												if (!"".equals(field)) {
+		
+													field = field.toLowerCase();
+		
+													if (!"rows".equals(field)) throw new Exception("Field \"" + field + "\" from output " + (i + 1) + " can only be \"rows\"");
+												
+												}
+		
+											}
+											
+										} else {
+											
+											throw new Exception("SQL statement not recognised");
+											
+										}
 									}
-
-									// close the recordset
-									rs.close();
-									// close the data factory
-									df.close();
 
 								}
 
