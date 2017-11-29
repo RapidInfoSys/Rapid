@@ -1766,6 +1766,8 @@ public class Page {
 					} catch (Exception ex) {
 						// log the error
 						rapidServlet.getLogger().error("Error create page form values", ex);
+						// write a dummy Event_setFormValues with alert and redirect to start page
+						writer.write("var _formSubmitted = false;\nfunction Event_setFormValues() {\n  alert('Error with form values : " + ex.getMessage().replace("'", "\\'") + "');\n  window.location.href='~?a=" + application.getId() + "'\n};\n\n");
 					}
 
 				}
