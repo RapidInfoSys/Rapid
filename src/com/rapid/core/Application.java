@@ -2186,7 +2186,7 @@ public class Application {
 						// create a file writer for it for now
 						fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(pageFile), "UTF-8"));
 						// for now get a printWriter to write the page html
-						page.writeHtml(rapidServlet, null, rapidRequest, this, user, fw, false);
+						page.writeHtml(rapidServlet, null, rapidRequest, this, user, fw, false, true);
 						// close it
 						fw.close();
 						// add the file to the zip with a root path
@@ -2201,7 +2201,7 @@ public class Application {
 						// create a file writer for it for now
 						fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(pageFile), "UTF-8"));
 						// for now get a printWriter to write the page html
-						page.writeHtml(rapidServlet, null, rapidRequest, this, user, fw, false);
+						page.writeHtml(rapidServlet, null, rapidRequest, this, user, fw, false, true);
 						// close it
 						fw.close();
 						// add the file to the zip with a root path

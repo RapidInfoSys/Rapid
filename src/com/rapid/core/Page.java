@@ -1181,27 +1181,33 @@ public class Page {
     }
 
 	// this private method writes JS specific to the user
-	private void writeUserJS(Writer writer, RapidRequest rapidRequest, Application application, User user) throws RapidLoadingException, IOException, JSONException {
+	private void writeUserJS(Writer writer, RapidRequest rapidRequest, Application application, User user, Boolean download) throws RapidLoadingException, IOException, JSONException {
 
 		// open js
 		writer.write("    <script type='text/javascript'>\n");
-		// print user
-		if (user != null) writer.write("var _userName = '" + user.getName() + "';\n");
-		// get app page variables
-		List<String> pageVariables = application.getPageVariables(rapidRequest.getRapidServlet().getServletContext());
-		// if we got some
-		if (pageVariables != null) {
-			// prepare json to hold page variables
-			JSONObject jsonPageVariables = new JSONObject();
-			// loop them
-			for (String pageVariable : pageVariables) {
-				// look for a value in the session
-				String value = (String) rapidRequest.getSessionAttribute(pageVariable);
-				// if we got one add it
-				if (value != null) jsonPageVariables.put(pageVariable, value);
+		// if download
+		if (download) {
+			// just write RapidMobile
+			writer.write("var _userName = 'RapidMobile';\n");
+		} else {
+			// print user
+			if (user != null) writer.write("var _userName = '" + user.getName() + "';\n");
+			// get app page variables
+			List<String> pageVariables = application.getPageVariables(rapidRequest.getRapidServlet().getServletContext());
+			// if we got some
+			if (pageVariables != null) {
+				// prepare json to hold page variables
+				JSONObject jsonPageVariables = new JSONObject();
+				// loop them
+				for (String pageVariable : pageVariables) {
+					// look for a value in the session
+					String value = (String) rapidRequest.getSessionAttribute(pageVariable);
+					// if we got one add it
+					if (value != null) jsonPageVariables.put(pageVariable, value);
+				}
+				// write page variables
+				writer.write("var _pageVariables_" + _id + " = " + jsonPageVariables + ";\n");
 			}
-			// write page variables
-			writer.write("var _pageVariables_" + _id + " = " + jsonPageVariables + ";\n");
 		}
 		// close js
 		writer.write("    </script>\n");
@@ -1543,7 +1549,7 @@ public class Page {
 	}
 
 	// this routine produces the entire page
-	public void writeHtml(RapidHttpServlet rapidServlet, HttpServletResponse response, RapidRequest rapidRequest,  Application application, User user, Writer writer, boolean designerLink) throws JSONException, IOException, RapidLoadingException {
+	public void writeHtml(RapidHttpServlet rapidServlet, HttpServletResponse response, RapidRequest rapidRequest,  Application application, User user, Writer writer, boolean designerLink, boolean download) throws JSONException, IOException, RapidLoadingException {
 
 		// this doctype is necessary (amongst other things) to stop the "user agent stylesheet" overriding styles
 		writer.write("<!DOCTYPE html>\n");
@@ -1597,7 +1603,7 @@ public class Page {
 		    		// get fresh head links
 		    		writer.write(getHeadLinks(rapidServlet, application, !designerLink));
 		    		// write the user-specific JS
-		    		writeUserJS(writer, rapidRequest, application, user);
+		    		writeUserJS(writer, rapidRequest, application, user, download);
 		    		// get fresh js and css
 		    		writer.write(getHeadCSS(rapidRequest, application, !designerLink));
 		    		// open the script
@@ -1612,7 +1618,7 @@ public class Page {
 		    		// get the cached head links
 		    		writer.write(_cachedHeadLinks);
 		    		// write the user-specific JS
-		    		writeUserJS(writer, rapidRequest, application, user);
+		    		writeUserJS(writer, rapidRequest, application, user, download);
 		    		// get the cached head js and css
 		    		writer.write(_cachedHeadCSS);
 		    		// open the script

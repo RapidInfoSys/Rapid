@@ -25,12 +25,10 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 
 package com.rapid.server;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -396,13 +394,13 @@ public class Rapid extends RapidHttpServlet {
 										boolean designerLink = true;
 
 										// set designer link to false if action is dialogue
-										if ("dialogue".equals(rapidRequest.getActionName())) designerLink = false;
+										if ("dialogue".equals(rapidRequest.getActionName())) designerLink =  false;
 
 										// set the response type
 										response.setContentType("text/html");
 
 										// write the page html
-										page.writeHtml(this, response, rapidRequest, app, user, out, designerLink);
+										page.writeHtml(this, response, rapidRequest, app, user, out, designerLink, false);
 
 										// close the writer
 										out.close();
@@ -507,7 +505,7 @@ public class Rapid extends RapidHttpServlet {
 
 		// create a Rapid request
 		RapidRequest rapidRequest = new RapidRequest(this, request);
-		
+
 		// read back the body bytes
 		byte[] bodyBytes = rapidRequest.getBodyBytes();
 
