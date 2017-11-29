@@ -225,8 +225,11 @@ public class DataFactory {
 		return _connection;
 	}
 
-	public boolean getReadOnly(boolean readOnly) { return _readOnly; }
-	public void setReadOnly(boolean readOnly) {	_readOnly = readOnly; }
+	public boolean getAutoCommit() { return _autoCommit; }
+	public void setAutoCommit(boolean autoCommit) {	_autoCommit = autoCommit; }
+	
+	public boolean getReadOnly() { return _readOnly; }
+	public void setReadOnly(boolean readOnly) {	_readOnly = readOnly; }		
 
 	private void populateStatement(PreparedStatement statement, ArrayList<Parameter> parameters, int startColumn, boolean checkParameters) throws SQLException {
 
