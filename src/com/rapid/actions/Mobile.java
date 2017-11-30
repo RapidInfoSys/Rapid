@@ -729,7 +729,7 @@ public class Mobile extends Action {
 							// get any working / loading page
 							String workingPage = getProperty("onlineWorking");
 							// if there was one
-							if (workingPage != null) {
+							if (workingPage != null && !workingPage.equals("")) {
 								// show working page as a dialogue
 								js += "  if (Action_navigate) Action_navigate('~?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + workingPage + "&action=dialogue',true,'" + getId() + "');\n";
 								// record that we have a working page in the details
