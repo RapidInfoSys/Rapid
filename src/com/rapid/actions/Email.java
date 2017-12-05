@@ -25,6 +25,9 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 
 package com.rapid.actions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.ServletContext;
 
 import org.json.JSONArray;
@@ -38,13 +41,39 @@ import com.rapid.core.Page;
 import com.rapid.server.RapidHttpServlet;
 import com.rapid.server.RapidRequest;
 
+
 public class Email extends Action {
 	
+	private List<Action> _successActions, _errorActions, _childActions;
+
+	// properties	
+	public List<Action> getSuccessActions() { return _successActions; }
+	public void setSuccessActions(List<Action> successActions) { _successActions = successActions; }
+
+	public List<Action> getErrorActions() { return _errorActions; }
+	public void setErrorActions(List<Action> errorActions) { _errorActions = errorActions; }
+
 	// parameterless constructor (required for jaxb)
 	public Email() { super(); }
 	// designer constructor
 	public Email(RapidHttpServlet rapidServlet, JSONObject jsonAction) throws Exception { 
 		super(rapidServlet, jsonAction);				
+
+		// save all key/values from the json into the properties
+		for (String key : JSONObject.getNames(jsonAction)) {
+			// add all json properties to our properties, except for query
+			if (!"successActions".equals(key) && !"errorActions".equals(key)) addProperty(key, jsonAction.get(key).toString());
+		}
+
+		// grab any successActions
+		JSONArray jsonSuccessActions = jsonAction.optJSONArray("successActions");
+		// if we had some instantiate our collection
+		if (jsonSuccessActions != null) _successActions = Control.getActions(rapidServlet, jsonSuccessActions);
+
+		// grab any errorActions
+		JSONArray jsonErrorActions = jsonAction.optJSONArray("errorActions");
+		// if we had some instantiate our collection
+		if (jsonErrorActions != null) _errorActions = Control.getActions(rapidServlet, jsonErrorActions);
 	}
 	
 	// protected instance methods
@@ -60,6 +89,22 @@ public class Email extends Action {
 	}
 	
 	// overrides
+	@Override
+	public List<Action> getChildActions() {
+		// initialise and populate on first get
+		if (_childActions == null) {
+			// our list of all child actions
+			_childActions = new ArrayList<Action>();
+			// add child success actions
+			if (_successActions != null) 
+				_childActions.addAll(_successActions);
+			// add child error actions
+			if (_errorActions != null) {
+				_childActions.addAll(_errorActions);
+			}
+		}
+		return _childActions;
+	}
 	
 	@Override
 	public String getJavaScript(RapidRequest rapidRequest, Application application, Page page, Control control, JSONObject jsonDetails) throws Exception {
@@ -130,20 +175,32 @@ public class Email extends Action {
 	        
 	        // add any js for additional data
 	        js += getAdditionalDataJS(rapidRequest, application, page, control, jsonDetails);
-	        	       			
+	        
 			// open the ajax call
 	        js += "$.ajax({ url : '~?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + page.getId() + controlParam + "&act=" + getId() + "', type: 'POST', contentType: 'application/json', dataType: 'json',\n";
 	        js += "  data: JSON.stringify(data),\n";
-	        js += "  error: function(server, status, fields, rows) {\n";
-	        // this avoids doing the errors if the page is unloading or the back button was pressed
-	        js += "    if (server.readyState > 0) {\n";
-	        // show the server exception message
-	        js += "      alert('Error with email action : ' + server.responseText||message);\n";	
-	        // close unloading check
-	        js += "    }\n";				       
-	        // close error actions
+	        js += "  error: function(data) {\n";
+
+			// add any error actions
+			if (_errorActions != null) {
+				// loop the actions
+				for (Action action : _errorActions) {
+					js += "    " + action.getJavaScript(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n  ") + "\n";
+				}
+			}
+	        
+	        js += "  },\n";
+	        js += "  success: function(data) {\n";
+
+	        
+			// add any error actions
+			if (_successActions != null) {
+				for (Action action : _successActions) {
+					js += "    " + action.getJavaScript(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n  ") + "\n";
+				}
+			}
+	        
 	        js += "  }\n";
-	        // close ajax call
 	        js += "});\n";
         }
 
