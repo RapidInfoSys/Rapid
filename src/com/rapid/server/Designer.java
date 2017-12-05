@@ -1899,15 +1899,16 @@ public class Designer extends RapidHttpServlet {
 
 												// if we have one
 												if (security != null) {
-
 													// assume we don't have the user
 													boolean gotUser = false;
 													// get the current users record from the adapter
 													User user = security.getUser(rapidRequest);
 													// check the current user is present in the app's security adapter
 													if (user != null) {
+														// make a rapid request in the name of the import application
+														RapidRequest importRapidRequest = new RapidRequest(this, request, appNew);
 														// now check the current user password is correct too
-														if (security.checkUserPassword(rapidRequest, userName, rapidRequest.getUserPassword())) {
+														if (security.checkUserPassword(importRapidRequest, userName, rapidRequest.getUserPassword())) {
 															// we have the right user with the right password
 															gotUser = true;
 														} else {

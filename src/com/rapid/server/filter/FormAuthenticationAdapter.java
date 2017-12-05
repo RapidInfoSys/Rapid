@@ -214,14 +214,19 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 				if (_jsonLogins == null) _jsonLogins = (List<JSONObject>) req.getServletContext().getAttribute("jsonLogins");
 				// if we have custom logins
 				if (_jsonLogins != null) {
+					
+					// get the query string
+					String queryString = request.getQueryString();
+					
 					// loop the login pages
 					for (JSONObject jsonLogin : _jsonLogins) {
 						// get the custom login path
 						String customLoginPath = jsonLogin.optString("path").trim();
 						// get the custom index
 						String customIndexPath = jsonLogin.optString("index").trim();
+						
 						// if the request is for a custom login page
-						if (requestPath.endsWith(customLoginPath)) {
+						if (requestPath.endsWith(customLoginPath) || (queryString != null && customLoginPath.endsWith(queryString))) {
 							// put the index path in the session
 							session.setAttribute(RapidFilter.SESSION_VARIABLE_INDEX_PATH, customIndexPath);
 							// remember this custom login
@@ -309,8 +314,13 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 						// retain the request path in the session
 						session.setAttribute("requestPath", authorisationRequestPath);
 
-						// send a redirect to load the login page
-						response.sendRedirect(loginPath);
+						// send a redirect to load the login page unless the login path (from the custom login) is the request path (this creates a redirect)
+						if (authorisationRequestPath.equals(loginPath) && request.getHeader("User-Agent").contains("RapidMobile")) {
+							// send a 401 with the login path to get RapidMobile to authenticate
+							response.sendError(401, "location=" + loginPath);
+						} else {
+							response.sendRedirect(loginPath);
+						}
 
 					}
 
