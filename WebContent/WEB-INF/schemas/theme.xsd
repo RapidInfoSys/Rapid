@@ -27,11 +27,11 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
  -->
 
 	<xs:annotation>
-		<xs:documentation>The schema for .template.xml files</xs:documentation>
+		<xs:documentation>The schema for .theme.xml files</xs:documentation>
 	</xs:annotation>
 	<xs:element name="template">
 		<xs:annotation>
-			<xs:documentation>Each .template.xml file describes a single template
+			<xs:documentation>Each .theme.xml file describes a single template
 			</xs:documentation>
 		</xs:annotation>
 		
@@ -40,8 +40,8 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 			
 				<xs:element name="type">
 					<xs:annotation>
-						<xs:documentation>The template type is used to uniquely identify
-							this template, it should not contain spaces or punctuation
+						<xs:documentation>The theme type is used to uniquely identify
+							this theme, it should not contain spaces or punctuation
 						</xs:documentation>
 					</xs:annotation>
 					<xs:simpleType>
@@ -53,7 +53,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 									
 				<xs:element name="name">
 					<xs:annotation>
-						<xs:documentation>The template name is used presented to users
+						<xs:documentation>The theme name is used presented to users
 							when describing, or logging something about this control
 						</xs:documentation>
 					</xs:annotation>
@@ -108,7 +108,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 				
 				<xs:element name="css">
 					<xs:annotation>
-						<xs:documentation>The template name is used presented to users
+						<xs:documentation>The theme name is used presented to users
 							when describing, or logging something about this control
 						</xs:documentation>
 					</xs:annotation>
