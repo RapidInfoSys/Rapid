@@ -233,15 +233,21 @@ public class DataFactory {
 
 	private void populateStatement(PreparedStatement statement, ArrayList<Parameter> parameters, int startColumn, boolean checkParameters) throws SQLException {
 
-		ParameterMetaData parameterMetaData = statement.getParameterMetaData();
+		// some jdbc drivers can't get parameter metadata for insert / update
+		boolean isUpdateOrInsert = _sql.trim().toLowerCase().startsWith("insert") || _sql.trim().toLowerCase().startsWith("update");
+		boolean isSqlServer = _connectionAdapter._connectionString.contains("sqlserver");
+
+		ParameterMetaData parameterMetaData = null;
+		if(!isUpdateOrInsert && !isSqlServer)
+			parameterMetaData = statement.getParameterMetaData();
 
 		if (checkParameters && parameters == null) {
 
-			if (parameterMetaData.getParameterCount() > 0) throw new SQLException("SQL has " + parameterMetaData.getParameterCount() + " parameters, none provided");
+			if (parameterMetaData!=null && parameterMetaData.getParameterCount() > 0) throw new SQLException("SQL has " + parameterMetaData.getParameterCount() + " parameters, none provided");
 
 		} else {
 
-			if (checkParameters && parameterMetaData.getParameterCount() - startColumn != parameters.size()) throw new SQLException("SQL has " + parameterMetaData.getParameterCount() + " parameters, " + (parameters.size() - startColumn) + " provided");
+			if (parameterMetaData!=null && checkParameters && parameterMetaData.getParameterCount() - startColumn != parameters.size()) throw new SQLException("SQL has " + parameterMetaData.getParameterCount() + " parameters, " + (parameters.size() - startColumn) + " provided");
 
 			int i = startColumn;
 
