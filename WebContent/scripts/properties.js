@@ -758,7 +758,7 @@ function getDialogue(cell, propertyObject, property, details, width, title, opti
 		// if it doesn't exist 
 		if (!dialogue[0]) {
 			//call the original property function
-			propertyFunction(cell, propertyObject, property, details);
+			ev.data.propertyFunction(cell, propertyObject, property, details);
 			// get it again
 			dialogue = $("#propertiesDialogues").find("#" + ev.data.dialogueId);
 		}		
