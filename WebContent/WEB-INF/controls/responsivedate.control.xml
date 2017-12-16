@@ -341,7 +341,20 @@ o.attr("placeholder",placeholder);
 // set format
 o.datepicker({
     dateFormat: this.format
-}).datepicker(  "setDate", this.value );	
+}).datepicker(  "setDate", this.value );
+// find the label
+var l = this.object.find("label");
+// if there is a label
+if (this.responsiveLabel) {
+	// if we already have one
+	if (l[0]) {
+		l.html(this.responsiveLabel);
+	} else {
+		o.before("<label for='" + this.id + "input'>" + this.responsiveLabel + "</label>");
+	}
+} else {
+	l.remove();
+}
 	        ]]>		    
 		</rebuildJavaScript>
 				
