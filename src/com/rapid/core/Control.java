@@ -477,6 +477,11 @@ public class Control {
 						// whether rapid mobile is present
 						return "_pageTitle";
 
+					} else if ("device".equals(type)) {
+
+						// the user agent string from the front-end, note that database and webservice actions use the back-end user agent string from the action request
+						return "navigator.userAgent";
+
 					} else if ("mobile".equals(type)) {
 
 						// whether rapid mobile is present
