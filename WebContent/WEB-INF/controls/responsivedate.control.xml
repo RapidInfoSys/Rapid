@@ -296,16 +296,11 @@ if (this.responsiveLabel) {
 }
 	        ]]>
 	    </getHtmlFunction>
-	    
+
 		<rebuildJavaScript>
 	        <![CDATA[
-// update the responsive class
-var classes = this.object.attr("class").split(' ');
-// loop and remove if responsive
-for (var i in classes) {
-	var c = classes[i]; 
-	if (c.indexOf("col-") == 0) this.object.removeClass(c);
-}
+// remove all classes, then add back important ones
+this.object.removeAttr("class").addClass("r-date").addClass(getStyleClasses(this));
 // add any responsive classes back
 if (this.extraSmall) this.object.addClass("col-" + this.extraSmall);
 if (this.small) this.object.addClass("col-" + this.small);
@@ -357,7 +352,7 @@ if (this.responsiveLabel) {
 }
 	        ]]>		    
 		</rebuildJavaScript>
-				
+				 
 		<saveJavaScript>
 	        <![CDATA[
 // this class needs removing so jQueryUI knows to rebuild properly	        
