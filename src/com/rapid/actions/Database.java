@@ -555,7 +555,7 @@ public class Database extends Action {
 
 			// open if data check
 			js += "    if (data) {\n";
-			
+
 			// check there are outputs
 			if (outputs != null) {
 				// if there are parent outputs
@@ -566,7 +566,7 @@ public class Database extends Action {
 					js += "      Action_database(ev,'" + getId() + "', data, outputs);\n";
 				}
 			} // outputs null check
-			
+
 			// if we are expecting child action results
 			// check for any child database actions
 			if (_childDatabaseActions != null) {
@@ -598,7 +598,7 @@ public class Database extends Action {
 					}
 				} // child action loop
 			} // child action check
-			
+
 			// close if data check
 			js += "    }\n";
 
@@ -706,8 +706,14 @@ public class Database extends Action {
 								String value = null;
 								// if it looks like a control, or a system value (bit of extra safety checking)
 								if (id.indexOf("_C") > 0 || id.indexOf("System.") == 0) {
-									// get the value from the json inputs
-									value = getJsonInputValue(jsonFields, jsonRow, id);
+									// device is a special case
+									if (id.equals("System.device")) {
+										// get the device from the request
+										value = rapidRequest.getDevice();
+									} else {
+										// get the value from the json inputs
+										value = getJsonInputValue(jsonFields, jsonRow, id);
+									}
 								} else {
 									// didn't look like a control so check page variables
 									if (rapidRequest.getPage() != null) {

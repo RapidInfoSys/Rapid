@@ -544,8 +544,44 @@ public class Webservice extends Action {
 					do {
 						// get the input
 						JSONObject input = jsonInputs.getJSONObject(index);
-						// url escape the value
-						String value = XML.escape(input.optString("value"));
+						// get the input id
+						String id = input.getString("id");
+						// get the input field
+						String field = input.optString("field");
+						// add field to id if present
+						if (field != null && !"".equals(field)) id += "." + field;
+						// retain the value
+						String value = null;
+						// if it looks like a control, or a system value (bit of extra safety checking)
+						if (id.indexOf("_C") > 0 || id.indexOf("System.") == 0) {
+							// device is a special case
+							if (id.equals("System.device")) {
+								// get the device from the request
+								value = rapidRequest.getDevice();
+							} else {
+								// get the value from the json inputs
+								value = XML.escape(input.optString("value"));
+							}
+						} else {
+							// didn't look like a control so check page variables
+							if (rapidRequest.getPage() != null) {
+								// check for page variables
+								if (rapidRequest.getPage().getSessionVariables() != null) {
+									// loop them
+									for (String variable : rapidRequest.getPage().getSessionVariables()) {
+										// if this is the variable
+										if (variable.equalsIgnoreCase(id)) {
+											// get the value from the inputs
+											value = XML.escape(input.optString("value"));
+											// no need to keep looking in the page variables
+											break;
+										}
+									}
+								}
+							}
+						}
+						// if still null try the session
+						if (value == null) value = (String) rapidRequest.getSessionAttribute(id);
 						// replace the ? with the input value
 						body = body.substring(0, pos) + value + body.substring(pos + 1);
 						// look for the next question mark
