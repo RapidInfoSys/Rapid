@@ -635,29 +635,33 @@ public class Webservice extends Action {
 					if ("SOAP".equals(_request.getType())) {
 						connection.setRequestProperty("Content-Type", "text/xml; charset=UTF-8");
 						connection.setRequestProperty("SOAPAction", action);
-					} else if ("JSON".equals(_request.getType())) {
-						connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-						if (action.length() > 0) connection.setRequestProperty("Action", action);
-					} else if ("XML".equals(_request.getType())) {
-						connection.setRequestProperty("Content-Type", "text/xml; charset=UTF-8");
+					} else if ("JSON".equals(_request.getType()) || "XML".equals(_request.getType())) {
 						// if there is an action
 						if (action.length() > 0) {
+							// get it in upper case
+							String actionUpper = action.toUpperCase();
 							// if it's one of the special restful verbs
-							if ("GET".equals(action.toUpperCase())
-								|| "POST".equals(action.toUpperCase())
-								|| "HEAD".equals(action.toUpperCase())
-								|| "OPTIONS".equals(action.toUpperCase())
-								|| "PUT".equals(action.toUpperCase())
-								|| "DELETE".equals(action.toUpperCase())
-								|| "TRACE".equals(action.toUpperCase())
+							if ("GET".equals(actionUpper)
+								|| "POST".equals(actionUpper)
+								|| "HEAD".equals(actionUpper)
+								|| "OPTIONS".equals(actionUpper)
+								|| "PUT".equals(actionUpper)
+								|| "DELETE".equals(actionUpper)
+								|| "TRACE".equals(actionUpper)
 							) {
 								// set the request method
-								connection.setRequestMethod(action.toUpperCase());
+								connection.setRequestMethod(actionUpper);
 							} else {
+								// set it as was
 								connection.setRequestProperty("Action", action);
 							}
 						}
-
+						// now set the type
+						if ("JSON".equals(_request.getType())) {
+							connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+						} else {
+							connection.setRequestProperty("Content-Type", "text/xml; charset=UTF-8");
+						}
 					}
 
 			        String auth = getProperty("auth");

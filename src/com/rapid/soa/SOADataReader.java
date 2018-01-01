@@ -28,6 +28,7 @@ package com.rapid.soa;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -971,16 +972,15 @@ public interface SOADataReader {
 			private SOAElement _rootElement;
 
 			public SOAElement getRootElement() {
+
 				return _rootElement;
+
 			}
 
 			// we extend the constructor so we can make our own special array branches
 
 			public SOAJSONArray(JSONTokener x) throws JSONException {
 				super();
-
-				// mark the current branch as an array
-				_currentElement.setIsArray(true);
 
 		        if (x.nextClean() != '[') {
 		            throw x.syntaxError("A JSONArray text must start with '['");
@@ -1005,8 +1005,27 @@ public interface SOADataReader {
 							// validate the current branch
 				            validateElement(_currentKey);
 
+				            // create root if we need one
+							if (_rootElement == null) _rootElement = new SOAElement("root", true);
+
 							// put any string values back in the relevant column
-							if (o.getClass().equals(String.class)) _columnParents.get(_currentColumn).setValue((String) o);
+							if (o.getClass().equals(String.class)) {
+								String s = (String) o;
+								_columnParents.get(_currentColumn).setValue(s);
+								_rootElement.addChildElement(new SOAElement(_currentKey, s));
+							}
+
+							// if this is an object add as children and then close array to make new row
+							if (o.getClass().equals(SOAJSONObject.class)) {
+								SOAJSONObject soaJsonObject = (SOAJSONObject) o;
+								Iterator<String> keys = soaJsonObject.keys();
+								while(keys.hasNext()) {
+									String key = keys.next();
+									_rootElement.addChildElement(new SOAElement(key, soaJsonObject.getString(key)));
+								}
+								_rootElement.closeArray();
+
+							}
 
 							//--------------------------------------- End of code particular to creating the SOA -----------------------------------
 
@@ -1056,9 +1075,10 @@ public interface SOADataReader {
 
 			SOAElement rootElement = null;
 
-			if (jsonTokener.nextClean() == '{') {
+			char c = jsonTokener.nextClean();
+			jsonTokener.back();
 
-				jsonTokener.back();
+			if (c == '{') {
 
 				SOAJSONObject soaJsonObject = new SOAJSONObject(jsonTokener);
 
@@ -1066,9 +1086,7 @@ public interface SOADataReader {
 
 			}
 
-			if (jsonTokener.nextClean() == '[') {
-
-				jsonTokener.back();
+			if (c == '[') {
 
 				SOAJSONArray soaJsonArray = new SOAJSONArray(jsonTokener);
 
