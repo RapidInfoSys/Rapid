@@ -826,9 +826,10 @@ public interface SOADataReader {
 
 		public class SOAJSONObject extends JSONObject {
 
+			private SOAElement _rootElement;
+
 			public SOAElement getRootElement() {
-				if (_columnParents.size() > 0) return _columnParents.get(0);
-				return null;
+				return _rootElement;
 			}
 
 			// override the putOnce as it signals a JSONObject has finished being created so we can set its value and validate it
@@ -882,6 +883,30 @@ public interface SOADataReader {
 
 		            // create a new branch for this key (reused in TreeElementJSONArray) - but not if authentication key at 0,0
 		            if (!"authentication".equals(key) || _currentColumn > 0 || _currentRow > 0) newElement(false);
+
+		            // if this is column 0
+		            if (_currentColumn < 1) {
+			            // check if root element is null
+			            if (_rootElement == null) {
+			            	// set root to current - easiest if only 1
+			            	_rootElement = _currentElement;
+			            } else {
+			            	// root element has been set by previous activity so check if we know it is an array
+			            	if (_rootElement.getIsArray()) {
+			            		// all subsequent elements can be added as children to the array
+			            		_rootElement.addChildElement(_currentElement);
+			            	} else {
+			            		// make a special root element to hold the children on the root level
+			            		SOAElement rootElement = new SOAElement("root", true);
+			            		// add the single root from before
+			            		rootElement.addChildElement(_rootElement);
+			            		// add this element
+			            		rootElement.addChildElement(_currentElement);
+			            		// update that the root is the array element we just created
+			            		_rootElement = rootElement;
+			            	}
+			            }
+		            }
 
 		            // inc the column
 					_currentColumn ++;
@@ -1017,49 +1042,43 @@ public interface SOADataReader {
 
 		}
 
-		@Override
-		public SOAData read(String string) throws SOAReaderException {
+		private SOAData read(JSONTokener jsonTokener) throws JSONException {
 
 			reset();
 
-			SOAElement rootElement;
+			SOAJSONObject dataTreeJSONObject = new SOAJSONObject(jsonTokener);
+
+			return new SOAData(dataTreeJSONObject.getRootElement(), _soaSchema);
+
+		}
+
+		@Override
+		public SOAData read(String string) throws SOAReaderException {
 
 			try {
 
-				SOAJSONObject dataTreeJSONObject = new SOAJSONObject(new SOAJSONTokener(string));
-
-				rootElement = dataTreeJSONObject.getRootElement();
+				return read(new SOAJSONTokener(string));
 
 			} catch (Exception e) {
 
 				throw new SOAReaderException(e);
 
 			}
-
-			return new SOAData(rootElement, _soaSchema);
 
 		}
 
 		@Override
 		public SOAData read(InputStream stream) throws SOAReaderException {
 
-			reset();
-
-			SOAElement rootElement;
-
 			try {
 
-				SOAJSONObject dataTreeJSONObject = new SOAJSONObject(new SOAJSONTokener(stream));
-
-				rootElement = dataTreeJSONObject.getRootElement();
+				return read(new SOAJSONTokener(stream));
 
 			} catch (Exception e) {
 
 				throw new SOAReaderException(e);
 
 			}
-
-			return new SOAData(rootElement, _soaSchema);
 
 		}
 
