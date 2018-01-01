@@ -786,10 +786,12 @@ public interface SOADataReader {
 		                return string;
 		            case '{':
 		                this.back();
-		                return new SOAJSONObject(this);
+		                SOAJSONObject soaJsonObject = new SOAJSONObject(this);
+		                return soaJsonObject;
 		            case '[':
 		                this.back();
-		                return new SOAJSONArray(this);
+		                SOAJSONArray soaJsonArray = new SOAJSONArray(this);
+		                return soaJsonArray;
 		        }
 
 		        /*
@@ -966,6 +968,12 @@ public interface SOADataReader {
 
 		public class SOAJSONArray extends JSONArray {
 
+			private SOAElement _rootElement;
+
+			public SOAElement getRootElement() {
+				return _rootElement;
+			}
+
 			// we extend the constructor so we can make our own special array branches
 
 			public SOAJSONArray(JSONTokener x) throws JSONException {
@@ -1046,9 +1054,29 @@ public interface SOADataReader {
 
 			reset();
 
-			SOAJSONObject dataTreeJSONObject = new SOAJSONObject(jsonTokener);
+			SOAElement rootElement = null;
 
-			return new SOAData(dataTreeJSONObject.getRootElement(), _soaSchema);
+			if (jsonTokener.nextClean() == '{') {
+
+				jsonTokener.back();
+
+				SOAJSONObject soaJsonObject = new SOAJSONObject(jsonTokener);
+
+				rootElement = soaJsonObject.getRootElement();
+
+			}
+
+			if (jsonTokener.nextClean() == '[') {
+
+				jsonTokener.back();
+
+				SOAJSONArray soaJsonArray = new SOAJSONArray(jsonTokener);
+
+				rootElement = soaJsonArray.getRootElement();
+
+			}
+
+			return new SOAData(rootElement, _soaSchema);
 
 		}
 
