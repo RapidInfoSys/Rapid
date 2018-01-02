@@ -28,6 +28,7 @@ package com.rapid.soa;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -786,10 +787,12 @@ public interface SOADataReader {
 		                return string;
 		            case '{':
 		                this.back();
-		                return new SOAJSONObject(this);
+		                SOAJSONObject soaJsonObject = new SOAJSONObject(this);
+		                return soaJsonObject;
 		            case '[':
 		                this.back();
-		                return new SOAJSONArray(this);
+		                SOAJSONArray soaJsonArray = new SOAJSONArray(this);
+		                return soaJsonArray;
 		        }
 
 		        /*
@@ -826,9 +829,10 @@ public interface SOADataReader {
 
 		public class SOAJSONObject extends JSONObject {
 
+			private SOAElement _rootElement;
+
 			public SOAElement getRootElement() {
-				if (_columnParents.size() > 0) return _columnParents.get(0);
-				return null;
+				return _rootElement;
 			}
 
 			// override the putOnce as it signals a JSONObject has finished being created so we can set its value and validate it
@@ -882,6 +886,30 @@ public interface SOADataReader {
 
 		            // create a new branch for this key (reused in TreeElementJSONArray) - but not if authentication key at 0,0
 		            if (!"authentication".equals(key) || _currentColumn > 0 || _currentRow > 0) newElement(false);
+
+		            // if this is column 0
+		            if (_currentColumn < 1) {
+			            // check if root element is null
+			            if (_rootElement == null) {
+			            	// set root to current - easiest if only 1
+			            	_rootElement = _currentElement;
+			            } else {
+			            	// root element has been set by previous activity so check if we know it is an array
+			            	if (_rootElement.getIsArray()) {
+			            		// all subsequent elements can be added as children to the array
+			            		_rootElement.addChildElement(_currentElement);
+			            	} else {
+			            		// make a special root element to hold the children on the root level
+			            		SOAElement rootElement = new SOAElement("root", true);
+			            		// add the single root from before
+			            		rootElement.addChildElement(_rootElement);
+			            		// add this element
+			            		rootElement.addChildElement(_currentElement);
+			            		// update that the root is the array element we just created
+			            		_rootElement = rootElement;
+			            	}
+			            }
+		            }
 
 		            // inc the column
 					_currentColumn ++;
@@ -941,13 +969,18 @@ public interface SOADataReader {
 
 		public class SOAJSONArray extends JSONArray {
 
+			private SOAElement _rootElement;
+
+			public SOAElement getRootElement() {
+
+				return _rootElement;
+
+			}
+
 			// we extend the constructor so we can make our own special array branches
 
 			public SOAJSONArray(JSONTokener x) throws JSONException {
 				super();
-
-				// mark the current branch as an array
-				_currentElement.setIsArray(true);
 
 		        if (x.nextClean() != '[') {
 		            throw x.syntaxError("A JSONArray text must start with '['");
@@ -972,8 +1005,27 @@ public interface SOADataReader {
 							// validate the current branch
 				            validateElement(_currentKey);
 
+				            // create root if we need one
+							if (_rootElement == null) _rootElement = new SOAElement("root", true);
+
 							// put any string values back in the relevant column
-							if (o.getClass().equals(String.class)) _columnParents.get(_currentColumn).setValue((String) o);
+							if (o.getClass().equals(String.class)) {
+								String s = (String) o;
+								_columnParents.get(_currentColumn).setValue(s);
+								_rootElement.addChildElement(new SOAElement(_currentKey, s));
+							}
+
+							// if this is an object add as children and then close array to make new row
+							if (o.getClass().equals(SOAJSONObject.class)) {
+								SOAJSONObject soaJsonObject = (SOAJSONObject) o;
+								Iterator<String> keys = soaJsonObject.keys();
+								while(keys.hasNext()) {
+									String key = keys.next();
+									_rootElement.addChildElement(new SOAElement(key, soaJsonObject.getString(key)));
+								}
+								_rootElement.closeArray();
+
+							}
 
 							//--------------------------------------- End of code particular to creating the SOA -----------------------------------
 
@@ -1017,22 +1069,28 @@ public interface SOADataReader {
 
 		}
 
-		@Override
-		public SOAData read(String string) throws SOAReaderException {
+		private SOAData read(JSONTokener jsonTokener) throws JSONException {
 
 			reset();
 
-			SOAElement rootElement;
+			SOAElement rootElement = null;
 
-			try {
+			char c = jsonTokener.nextClean();
+			jsonTokener.back();
 
-				SOAJSONObject dataTreeJSONObject = new SOAJSONObject(new SOAJSONTokener(string));
+			if (c == '{') {
 
-				rootElement = dataTreeJSONObject.getRootElement();
+				SOAJSONObject soaJsonObject = new SOAJSONObject(jsonTokener);
 
-			} catch (Exception e) {
+				rootElement = soaJsonObject.getRootElement();
 
-				throw new SOAReaderException(e);
+			}
+
+			if (c == '[') {
+
+				SOAJSONArray soaJsonArray = new SOAJSONArray(jsonTokener);
+
+				rootElement = soaJsonArray.getRootElement();
 
 			}
 
@@ -1041,17 +1099,11 @@ public interface SOADataReader {
 		}
 
 		@Override
-		public SOAData read(InputStream stream) throws SOAReaderException {
-
-			reset();
-
-			SOAElement rootElement;
+		public SOAData read(String string) throws SOAReaderException {
 
 			try {
 
-				SOAJSONObject dataTreeJSONObject = new SOAJSONObject(new SOAJSONTokener(stream));
-
-				rootElement = dataTreeJSONObject.getRootElement();
+				return read(new SOAJSONTokener(string));
 
 			} catch (Exception e) {
 
@@ -1059,7 +1111,20 @@ public interface SOADataReader {
 
 			}
 
-			return new SOAData(rootElement, _soaSchema);
+		}
+
+		@Override
+		public SOAData read(InputStream stream) throws SOAReaderException {
+
+			try {
+
+				return read(new SOAJSONTokener(stream));
+
+			} catch (Exception e) {
+
+				throw new SOAReaderException(e);
+
+			}
 
 		}
 
