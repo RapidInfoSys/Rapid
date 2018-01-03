@@ -474,11 +474,11 @@ $("#" + id).html("loading...");
 	            <getPropertyFunction>
 	                <![CDATA[
 var data = null;
-var chart = _charts[id];
-if (chart) {
-	var selection = _charts[id].chart.getSelection();
+var c = _charts[id];
+if (c && c.chart) {
+	var selection = c.chart.getSelection();
 	if (selection && selection.length > 0) {
-		var chartData = _charts[id].data;
+		var chartData = c.data;
 		if (chartData && chartData.fields && chartData.rows) {
 			if (selection[0].column) {
 				data = {
