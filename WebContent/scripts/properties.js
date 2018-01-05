@@ -87,7 +87,7 @@ function getRolesOptions(selectRole, ignoreRoles) {
 }
 
 // different system properties for inputs
-var _systemValues = ["app id","app version","page id","page name","page title","user name","online","mobile","mobile version","true","false","null","empty","field"];
+var _systemValues = ["app id","app version","page id","page name","page title","user name","device","online","mobile","mobile version","true","false","null","empty","field"];
 
 // this function returns system values
 function getSystemValueOptions(selectId) {
@@ -758,7 +758,7 @@ function getDialogue(cell, propertyObject, property, details, width, title, opti
 		// if it doesn't exist 
 		if (!dialogue[0]) {
 			//call the original property function
-			propertyFunction(cell, propertyObject, property, details);
+			ev.data.propertyFunction(cell, propertyObject, property, details);
 			// get it again
 			dialogue = $("#propertiesDialogues").find("#" + ev.data.dialogueId);
 		}		
@@ -2381,7 +2381,7 @@ function Property_webserviceRequest(cell, propertyObject, property, details) {
 	cell.text(text);
 	
 	// add inputs table, body, and outputs table
-	table.append("<tr><td colspan='2' rowspan='3' style='padding:0px;vertical-align: top;'><table class='dialogueTable'><tr><td><b>Input</b></td><td colspan='2'><b>Field</b></td></tr></table></td><td class='normalInputs' colspan='2' style='width:500px;padding:0 6px;'><b style='display:block;'>Request type</b><input type='radio' name='WSType" + propertyObject.id + "' value='SOAP'/>SOAP<input type='radio' name='WSType" + propertyObject.id + "' value='JSON'/>JSON<input type='radio' name='WSType" + propertyObject.id + "' value='XML'/>XML/Restful<b style='display:block;margin-top:5px;margin-bottom:5px;'>URL</b><input class='WSUrl' /></br><b style='display:block;margin-top:5px;margin-bottom:5px;'>Action</b><input class='WSAction' /><b style='display:block;margin-top:5px;margin-bottom:2px;'>Body</b><textarea style='width:100%;min-height:200px;' class='WSBody'></textarea><b style='display:block;'>Response transform</b><textarea style='width:100%;' class='WSTransform'></textarea><b style='display:block;;margin-bottom:5px;'>Response root element</b><input class='WSRoot' style='margin-bottom:5px;' /></td><td colspan='2' rowspan='3' style='padding:0px;vertical-align: top;'><table class='dialogueTable'><tr><td><b>Field</b></td><td colspan='2'><b>Output</b></td></tr></table></td></tr>");
+	table.append("<tr><td colspan='2' rowspan='3' style='padding:0px;vertical-align: top;'><table class='dialogueTable'><tr><td><b>Input</b></td><td colspan='2'><b>Field</b></td></tr></table></td><td class='normalInputs' colspan='2' style='width:500px;padding:0 6px;'><b style='display:block;'>Request type</b><input type='radio' name='WSType" + propertyObject.id + "' value='SOAP'/>SOAP<input type='radio' name='WSType" + propertyObject.id + "' value='JSON'/>JSON<input type='radio' name='WSType" + propertyObject.id + "' value='XML'/>XML<b style='display:block;margin-top:5px;margin-bottom:5px;'>URL</b><input class='WSUrl' /></br><b style='display:block;margin-top:5px;margin-bottom:5px;'>Action</b><input class='WSAction' /><b style='display:block;margin-top:5px;margin-bottom:2px;'>Body</b><textarea style='width:100%;min-height:200px;' class='WSBody'></textarea><b style='display:block;'>Response transform</b><textarea style='width:100%;' class='WSTransform'></textarea><b style='display:block;;margin-bottom:5px;'>Response root element</b><input class='WSRoot' style='margin-bottom:5px;' /></td><td colspan='2' rowspan='3' style='padding:0px;vertical-align: top;'><table class='dialogueTable'><tr><td><b>Field</b></td><td colspan='2'><b>Output</b></td></tr></table></td></tr>");
 	
 	// find the inputs table
 	var inputsTable = table.children().last().children().first().children().last();
