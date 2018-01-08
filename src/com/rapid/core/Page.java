@@ -952,7 +952,7 @@ public class Page {
 			case Resource.JAVASCRIPT:
 				if (application.getStatus() == Application.STATUS_LIVE) {
 					try {
-						resourceHtml = "    <script type='text/javascript'>" + Minify.toString(resource.getContent(),Minify.JAVASCRIPT) + "</script>";
+						resourceHtml = "    <script type='text/javascript'>" + Minify.toString(resource.getContent(),Minify.JAVASCRIPT, "JavaScript resource " + resource.getName()) + "</script>";
 					} catch (IOException ex) {
 						resourceHtml = "    <script type='text/javascript'>/* Failed to minify resource " + resource.getName() + " JavaScript : " + ex.getMessage() + "*/</script>";
 					}
@@ -963,7 +963,7 @@ public class Page {
 			case Resource.CSS:
 				if (application.getStatus() == Application.STATUS_LIVE) {
 					try {
-						resourceHtml = "    <style>" + Minify.toString(resource.getContent(), Minify.CSS) + "</style>";
+						resourceHtml = "    <style>" + Minify.toString(resource.getContent(), Minify.CSS, "") + "</style>";
 					} catch (IOException ex) {
 						resourceHtml = "    <style>/* Failed to minify resource " + resource.getName() + " CSS : " + ex.getMessage() + "*/<style>";
 					}
@@ -1232,7 +1232,7 @@ public class Page {
 			if (application.getStatus() == Application.STATUS_LIVE) {
 				try {
 					// get string to itself minified
-					pageCss = Minify.toString(pageCss, Minify.CSS);
+					pageCss = Minify.toString(pageCss, Minify.CSS, "Page head CSS");
 				} catch (IOException ex) {
 					// add error and resort to unminified
 					pageCss = "\n/*\n\n Failed to minify the css : " + ex.getMessage() + "\n\n*/\n\n" + pageCss;
@@ -1455,7 +1455,7 @@ public class Page {
 			if (application.getStatus() == Application.STATUS_LIVE) {
 				try {
 					// minify the js before adding
-					stringBuilder.append(Minify.toString(jsStringBuilder.toString(),Minify.JAVASCRIPT));
+					stringBuilder.append(Minify.toString(jsStringBuilder.toString(),Minify.JAVASCRIPT, "Page JavaScript"));
 				} catch (IOException ex) {
 					// add the error
 					stringBuilder.append("\n\n/* Failed to minify JavaScript : " + ex.getMessage() + " */\n\n");
