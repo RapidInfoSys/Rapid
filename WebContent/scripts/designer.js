@@ -1451,9 +1451,12 @@ function loadPages(selectedPageId, forceLoad) {
 	
 	// lock the ui
 	loadLock(3);
+	
+	// if a page is not selected try the url
+	if (!selectedPageId) selectedPageId = $.getUrlVar("p");
 				
 	$.ajax({
-    	url: "designer?action=getPages&a=" + _version.id + "&v=" + _version.version,
+    	url: "designer?action=getPages&a=" + _version.id + "&v=" + _version.version + "&p=" + selectedPageId,
     	type: "GET",
     	contentType: "application/json",
         dataType: "json",            
@@ -1478,8 +1481,6 @@ function loadPages(selectedPageId, forceLoad) {
         	_pageOrderChanged = false;
         	// reset the page order reset to false
         	_pageOrderReset = false;
-        	// if a page is not selected try the url
-        	if (!selectedPageId) selectedPageId = $.getUrlVar("p");
         	// build the select options for each page
         	var options = "";
         	// retain the pages

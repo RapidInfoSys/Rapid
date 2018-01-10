@@ -635,8 +635,14 @@ public class Designer extends RapidHttpServlet {
 										// add them if there are some
 										if (pageVisibilityConditions != null) if (pageVisibilityConditions.size() > 0) jsonPage.put("visibilityConditions", pageVisibilityConditions);
 									}
+									// assume no designer page provided
+									String designerPageId = null;
+									// try and get one
+									Page designerPage = rapidRequest.getPage();
+									// set id if there was one
+									if (designerPage != null) designerPageId = designerPage.getId();
 									// get a collection of other page controls we can access from this page
-									JSONArray jsonOtherPageControls = page.getOtherPageControls(this, includePageVisibiltyControls, rapidRequest.getPage().getId());
+									JSONArray jsonOtherPageControls = page.getOtherPageControls(this, includePageVisibiltyControls, designerPageId);
 									// only add the property if there are some
 									if (jsonOtherPageControls.length() > 0) jsonPage.put("controls", jsonOtherPageControls);
 									// check if the start page and add property if so
