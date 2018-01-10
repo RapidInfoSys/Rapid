@@ -51,7 +51,7 @@ This action runs JQuery functions against specific controls
 	                // default to the selected control if one hasn't been specified
 	                if (!this.control  && _selectedControl && _selectedControl.name) this.control = _selectedControl.id;
 	                // return the list of all controls on the page with the one for this action selected
-	                return "<option value=''>Please select...</option><option value='" + _page.id + "'>page</option>" + getControlOptions(this.control);
+	                return "<option value=''>Please select...</option><optgroup label='Page'><option value='" + _page.id + "'>page</option></optgroup>" + getControlOptions(this.control);
 	               	]]>
 	            </getValuesFunction>
 	            <helpHtml>Selects a control on the page to apply the action to.</helpHtml>

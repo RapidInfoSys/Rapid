@@ -57,6 +57,26 @@ function getControlOptions(selectId, ignoreId, type) {
 		// note how only control with names are included, and type is only matched if included
 		if (control.id != ignoreId && control.name && (!type || type == control.type)) options += "<option value='" + control.id + "' " + (control.id == selectId ? "selected='selected'" : "") + ">" + control.name + "</option>"; 
 	}
+	// wrap if we had some
+	if (options) options = "<optgroup label='Page controls'>" + options + "</optgroup>";
+	// assume no other page controls added
+	var otherPageControls = false;
+	// other page controls can be used for input
+	if (_page && _pages) {
+		for (var i in _pages) {			
+			if (_pages[i].id != _page.id && _pages[i].controls) {				
+				var pageControlOptions = "";												
+				for (var j in _pages[i].controls) {
+					var otherPageControl = _pages[i].controls[j];					
+					if (otherPageControl.otherPages) {
+						pageControlOptions +=  "<option value='" + otherPageControl.id + "' " + (otherPageControl.id == selectId ? "selected='selected'" : "") + ">" + otherPageControl.name + "</option>"; 
+					}
+				}
+				// if we got some wrap and add to options 
+				if (pageControlOptions) options += "<optgroup label='" + _pages[i].name + " - " + _pages[i].title + "'>" + pageControlOptions + "</optgroup>";
+			}
+		}		
+	}
 	return options;
 }
 
@@ -202,18 +222,18 @@ function getDataOptions(selectId, ignoreId, input) {
 										pageControlOptions += "<option value='" + control.id + "." + control.runtimeProperties[k].type + "' selected='selected' >" + control.name + "." + control.runtimeProperties[k].name + "</option>";
 									} else {
 										pageControlOptions += "<option value='" + control.id + "." + control.runtimeProperties[k].type + "' >" + control.name + "." + control.runtimeProperties[k].name + "</option>";
-									}	
+									}
 								}
-							}						
+							}
 						}
-					}					
+					}
 				}
 				
 				if (pageControlOptions) options += "<optgroup label='" + _pages[i].name + " - " + _pages[i].title + "'>" + pageControlOptions + "</optgroup>";
 			
-			}			
+			}
 		}
-	}	
+	}
 	// system values, only for inputs - these are defined in an array above this function
 	if (input && _systemValues) {
 		options += getSystemValueOptions(selectId);		
@@ -324,6 +344,15 @@ function getEventOptions(selectId) {
 					// append as an option
 					options += "<option value='" + id + "' " + (selectId  == id ? "selected='selected'" : "") + ">" + text + "</option>";
 				}
+			}
+		}
+	}
+	
+	// other page events and action can be used for input
+	if (_page && _pages) {
+		for (var i in _pages) {			
+			if (_pages[i].id != _page.id && _pages[i].events) {
+								
 			}
 		}
 	}

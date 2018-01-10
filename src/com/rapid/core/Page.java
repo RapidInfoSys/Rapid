@@ -654,18 +654,16 @@ public class Page {
 				// if this control can be used from other pages
 				if (canBeUsedFromOtherPages || canBeUsedForFormPageVisibilty || includeFromDialogue) {
 
-					// assume it can't be used from a dialogue - we check the getters, setters, and properties
-					boolean canBeUsedFromDialogue = false;
-
 					// get the control details
 					JSONObject jsonControlClass = rapidServlet.getJsonControl(control.getType());
 
 					// check we got one
 					if (jsonControlClass != null) {
 
-						// get the name - no need to include if we don't have one
+						// get the name
 						String controlName = control.getName();
 
+						// no need to include if we don't have one
 						if (controlName != null) {
 
 							// make a JSON object with what we need about this control
@@ -673,14 +671,8 @@ public class Page {
 							jsonControl.put("id", control.getId());
 							jsonControl.put("type", control.getType());
 							jsonControl.put("name", controlName);
-							if (jsonControlClass.optString("getDataFunction", null) != null) {
-								jsonControl.put("input", true);
-								canBeUsedFromDialogue = true;
-							}
-							if (jsonControlClass.optString("setDataJavaScript", null) != null) {
-								jsonControl.put("output", true);
-								canBeUsedFromDialogue = true;
-							}
+							if (jsonControlClass.optString("getDataFunction", null) != null) 	jsonControl.put("input", true);
+							if (jsonControlClass.optString("setDataJavaScript", null) != null) jsonControl.put("output", true);
 							if (canBeUsedFromOtherPages) jsonControl.put("otherPages", true);
 							if (canBeUsedForFormPageVisibilty) jsonControl.put("pageVisibility", true);
 							if (control.getProperty("formObjectAddressNumber") != null) jsonControl.put("formObjectAddressNumber", control.getProperty("formObjectAddressNumber"));
@@ -716,14 +708,8 @@ public class Page {
 									JSONObject jsonRuntimeProperty = new JSONObject();
 									jsonRuntimeProperty.put("type", jsonProperty.get("type"));
 									jsonRuntimeProperty.put("name", jsonProperty.get("name"));
-									if (jsonProperty.optString("getPropertyFunction", null) != null) {
-										jsonRuntimeProperty.put("input", true);
-										canBeUsedFromDialogue = true;
-									}
-									if (jsonProperty.optString("setPropertyJavaScript", null) != null) {
-										jsonRuntimeProperty.put("output", true);
-										canBeUsedFromDialogue = true;
-									}
+									if (jsonProperty.optString("getPropertyFunction", null) != null) jsonRuntimeProperty.put("input", true);
+									if (jsonProperty.optString("setPropertyJavaScript", null) != null) jsonRuntimeProperty.put("output", true);
 									if (jsonProperty.optBoolean("canBeUsedForFormPageVisibilty")) jsonRuntimeProperty.put("visibility", true);
 
 									// add to the collection - note further check for dialogue controls having to add in
@@ -740,19 +726,10 @@ public class Page {
 								jsonControl.put("runtimeProperties", jsonRunTimeProperties);
 							} // property loop
 
-							// if we are including from dialogue
-							if (includeFromDialogue) {
-								// if it can be used
-								if (canBeUsedFromDialogue) {
-									// set the other pages property so we see it in the designer
-									jsonControl.put("otherPages", true);
-									// add it to the collection we are returning
-									jsonControls.put(jsonControl);
-								}
-							} else {
-								// add it to the collection we are returning straight away
-								jsonControls.put(jsonControl);
-							} // includeFromDialogue check
+							// if we are including from dialogue set the other pages property so we see it in the designer
+							if (includeFromDialogue) jsonControl.put("otherPages", true);
+							// add it to the collection we are returning straight away
+							jsonControls.put(jsonControl);
 
 						} // name check
 					} // control class check
