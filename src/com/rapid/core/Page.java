@@ -40,7 +40,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
@@ -642,9 +644,11 @@ public class Page {
 	}
 
 	// iterative function for building a flat JSONArray of controls that can be used on other pages
-	private void getOtherPageChildControls(RapidHttpServlet rapidServlet, JSONArray jsonControls, List<Control> controls, boolean includePageVisibiltyControls,  Boolean includeFromDialogue) throws JSONException {
+	private void getOtherPageComponents(RapidHttpServlet rapidServlet, Map<String, JSONArray> components, List<Control> controls, boolean includePageVisibiltyControls,  Boolean includeFromDialogue) throws JSONException {
 		// check we were given some controls
 		if (controls != null) {
+			// get the array of controls
+			JSONArray jsonControls = components.get("controls");
 			// loop the controls
 			for (Control control : controls) {
 				// get if this control can be used from other pages
@@ -735,15 +739,19 @@ public class Page {
 					} // control class check
 				} // other page or visibility check
 				// run for any child controls
-				getOtherPageChildControls(rapidServlet, jsonControls, control.getChildControls(), includePageVisibiltyControls, includeFromDialogue);
+				getOtherPageComponents(rapidServlet, components, control.getChildControls(), includePageVisibiltyControls, includeFromDialogue);
 			}
 		}
 	}
 
-	// uses the above iterative method to return a flat array of controls in this page that can be used from other pages, for use in the designer
-	public JSONArray getOtherPageControls(RapidHttpServlet rapidServlet, boolean includePageVisibiltyControls, String designerPageId) throws JSONException {
-		// the array we're about to return
-		JSONArray jsonControls = new JSONArray();
+	// uses the above iterative method to return an object with flat array of controls in this page that can be used from other pages, for use in the designer
+	public Map<String,JSONArray> getOtherPageComponents(RapidHttpServlet rapidServlet, boolean includePageVisibiltyControls, String designerPageId) throws JSONException {
+		// the map of components we're about to return
+		Map<String,JSONArray> components = new HashMap<String,JSONArray>();
+		// add controls
+		components.put("controls", new JSONArray());
+		// add events
+		components.put("events", new JSONArray());
 		// assume we won't check for controls available from dialogues
 		boolean includeFromDialogue = false;
 		// if this page is different from the one we're loading in the designer
@@ -754,10 +762,11 @@ public class Page {
 			if (dialoguePageIds.contains(designerPageId)) includeFromDialogue = true;
 		}
 		// start building the array using the page controls
-		getOtherPageChildControls(rapidServlet, jsonControls, _controls, includePageVisibiltyControls, includeFromDialogue);
-		// return the controls
-		return jsonControls;
+		getOtherPageComponents(rapidServlet, components, _controls, includePageVisibiltyControls, includeFromDialogue);
+		// return the components
+		return components;
 	}
+
 
 	// used to turn either a page or control style into text for the css file
 	public String getStyleCSS(Style style) {

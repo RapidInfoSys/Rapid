@@ -454,27 +454,32 @@ public class Control {
 					// the available system values are specified above getDataOptions in designer.js
 					if ("app id".equals(type)) {
 
-						// whether rapid mobile is present
+						// the global in-page app id variable
 						return "_appId";
 
 					} else if ("app version".equals(type)) {
 
-						// whether rapid mobile is present
+						// the global in-page app version variable
 						return "_appVersion";
+
+					} else if ("parameter".equals(type)) {
+
+						// the app parameter for what was specified in the field box
+						return application.getParameterValue(field);
 
 					} else if ("page id".equals(type)) {
 
-						// whether rapid mobile is present
+						// the global in-page page id variable
 						return "_pageId";
 
 					} else if ("page name".equals(type)) {
 
-						// whether rapid mobile is present
+						// the global in-page page name variable
 						return "_pageName";
 
 					} else if ("page title".equals(type)) {
 
-						// whether rapid mobile is present
+						// the global in-page page title variable
 						return "_pageTitle";
 
 					} else if ("device".equals(type)) {
