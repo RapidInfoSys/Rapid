@@ -204,7 +204,7 @@ return [["percentage"],["value"],["label"],["none"]];
 	            <contents>
 					<![CDATA[
 					
- // thanks to https://github.com/DelvarWorld/easing-utils
+ // thanks to https://github.com/DelvarWorld/easing-utils (fix added to change const scaledTime2 to var as it wouldn't minify)
     
 function easeOutBounce( t ) {
 
@@ -216,17 +216,17 @@ function easeOutBounce( t ) {
 
     } else if( scaledTime < ( 2 / 2.75 ) ) {
 
-        const scaledTime2 = scaledTime - ( 1.5 / 2.75 );
+        var scaledTime2 = scaledTime - ( 1.5 / 2.75 );
         return ( 7.5625 * scaledTime2 * scaledTime2 ) + 0.75;
 
     } else if( scaledTime < ( 2.5 / 2.75 ) ) {
 
-        const scaledTime2 = scaledTime - ( 2.25 / 2.75 );
+        var scaledTime2 = scaledTime - ( 2.25 / 2.75 );
         return ( 7.5625 * scaledTime2 * scaledTime2 ) + 0.9375;
 
     } else {
 
-        const scaledTime2 = scaledTime - ( 2.625 / 2.75 );
+        var scaledTime2 = scaledTime - ( 2.625 / 2.75 );
         return ( 7.5625 * scaledTime2 * scaledTime2 ) + 0.984375;
 
     }
@@ -474,11 +474,11 @@ $("#" + id).html("loading...");
 	            <getPropertyFunction>
 	                <![CDATA[
 var data = null;
-var chart = _charts[id];
-if (chart) {
-	var selection = _charts[id].chart.getSelection();
+var c = _charts[id];
+if (c && c.chart) {
+	var selection = c.chart.getSelection();
 	if (selection && selection.length > 0) {
-		var chartData = _charts[id].data;
+		var chartData = c.data;
 		if (chartData && chartData.fields && chartData.rows) {
 			if (selection[0].column) {
 				data = {

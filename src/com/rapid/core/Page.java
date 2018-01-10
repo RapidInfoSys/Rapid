@@ -206,6 +206,7 @@ public class Page {
 	private String _conditionsType;
 	private Lock _lock;
 	private List<String> _formControlValues;
+	private List<String> _dialoguePageIds;
 
 	// this array is used to collect all of the lines needed in the pageload before sorting them
 	private List<String> _pageloadLines;
@@ -427,22 +428,35 @@ public class Page {
 	}
 
 	// recursively append to a list of actions from an action and it's children
-	public void getChildActions(List<Action> actions, Action action) {
-		// add this one action
-		actions.add(action);
+	public void getChildActions(List<Action> actions, Action action, String type) {
+		// if there is a type
+		if (type == null) {
+			// add this one action
+			actions.add(action);
+		} else {
+			// if types match
+			if (type.equals(action.getType())) {
+				// add action
+				actions.add(action);
+			}
+		}
 		// check there are child actions
 		if (action.getChildActions() != null) {
 			// loop them
 			for (Action childAction : action.getChildActions()) {
 				// add their actions too
-				getChildActions(actions, childAction);
+				getChildActions(actions, childAction, type);
 			}
 		}
 	}
 
-	// recursively append to a list of actions from a control and it's children
-	public void getChildActions(List<Action> actions, Control control) {
+	// overide for the above
+	public void getChildActions(List<Action> actions, Action action) {
+		getChildActions(actions, action, null);
+	}
 
+	// recursively append to a list of actions from a control and it's children
+	public void getChildActions(List<Action> actions, Control control, String type) {
 		// check this control has events
 		if (control.getEvents() != null) {
 			for (Event event : control.getEvents()) {
@@ -451,7 +465,7 @@ public class Page {
 					// loop the actions
 					for (Action action : event.getActions()) {
 						// add any child actions too
-						getChildActions(actions, action);
+						getChildActions(actions, action, type);
 					}
 				}
 			}
@@ -461,26 +475,48 @@ public class Page {
 			// loop the child controls
 			for (Control childControl : control.getChildControls()) {
 				// add their actions too
-				getChildActions(actions, childControl);
+				getChildActions(actions, childControl, type);
 			}
 		}
 	}
 
-	// get all actions in the page
-	public List<Action> getAllActions() {
+	// override for the above
+	public void getChildActions(List<Action> actions, Control control) {
+		getChildActions(actions, control, null);
+	}
+
+	// get all actions in the page of a specified type
+	public List<Action> getAllActions(String type) {
 		// instantiate the list we're going to return
 		List<Action> actions = new ArrayList<Action>();
 		// check the page events first
 		if (_events != null) {
 			for (Event event : _events) {
-				// add all event actions if not null
-				if (event.getActions() != null) actions.addAll(event.getActions());
+				// get any event actions
+				List<Action> eventActions = event.getActions();
+				// if we got some
+				if (eventActions != null) {
+					// if type is null
+					if (type == null) {
+						// add all
+						actions.addAll(eventActions);
+					} else {
+						// loop them
+						for (Action eventAction : eventActions) {
+							// if right type
+							if (type.equals(eventAction.getType())) {
+								// add
+								actions.add(eventAction);
+							}
+						}
+					}
+				}
 			}
 		}
 		// uses the tree walking function above to add all actions
 		if (_controls != null) {
 			for (Control control : _controls) {
-				getChildActions(actions, control);
+				getChildActions(actions, control, type);
 			}
 		}
 		// sort them by action id
@@ -508,6 +544,12 @@ public class Page {
 			}
 		});
 		return actions;
+	}
+
+	// get all actions in the page
+	public List<Action> getAllActions() {
+		// override for the above
+		return getAllActions(null);
 	}
 
 	// an iterative function for tree-walking child controls when searching for a specific action's control
@@ -574,17 +616,46 @@ public class Page {
 		return getChildControlActionEvent(_controls, actionId);
 	}
 
+	// gets the pages that this page can navigate to as a dialogue - we check all pages to see which can come back
+	public List<String> getDialoguePageIds() {
+		// if the internal variable has not been initialised yet
+		if (_dialoguePageIds == null) {
+			// initialise
+			_dialoguePageIds = new ArrayList<String>();
+			// get all navigation actions on this page
+			List<Action> actions = getAllActions("navigate");
+			// loop them
+			for (Action action : actions) {
+				// if this is a dialogue
+				if (Boolean.parseBoolean(action.getProperty("dialogue"))) {
+					// get the page id
+					String pageId = action.getProperty("page");
+					// if we got one
+					if (pageId != null) {
+						// add if it is something
+						if (pageId.length() > 0) _dialoguePageIds.add(pageId);
+					}
+				}
+			}
+		}
+		return _dialoguePageIds;
+	}
+
 	// iterative function for building a flat JSONArray of controls that can be used on other pages
-	private void getOtherPageChildControls(RapidHttpServlet rapidServlet, JSONArray jsonControls, List<Control> controls, boolean includePageVisibiltyControls) throws JSONException {
+	private void getOtherPageChildControls(RapidHttpServlet rapidServlet, JSONArray jsonControls, List<Control> controls, boolean includePageVisibiltyControls,  Boolean includeFromDialogue) throws JSONException {
 		// check we were given some controls
 		if (controls != null) {
 			// loop the controls
 			for (Control control : controls) {
 				// get if this control can be used from other pages
 				boolean canBeUsedFromOtherPages = control.getCanBeUsedFromOtherPages();
+				// get if this control can be used for page visibility
 				boolean canBeUsedForFormPageVisibilty = control.getCanBeUsedForFormPageVisibilty() && includePageVisibiltyControls;
 				// if this control can be used from other pages
-				if (canBeUsedFromOtherPages || canBeUsedForFormPageVisibilty) {
+				if (canBeUsedFromOtherPages || canBeUsedForFormPageVisibilty || includeFromDialogue) {
+
+					// assume it can't be used from a dialogue - we check the getters, setters, and properties
+					boolean canBeUsedFromDialogue = false;
 
 					// get the control details
 					JSONObject jsonControlClass = rapidServlet.getJsonControl(control.getType());
@@ -602,8 +673,14 @@ public class Page {
 							jsonControl.put("id", control.getId());
 							jsonControl.put("type", control.getType());
 							jsonControl.put("name", controlName);
-							if (jsonControlClass.optString("getDataFunction", null) != null) jsonControl.put("input", true);
-							if (jsonControlClass.optString("setDataJavaScript", null) != null) jsonControl.put("output", true);
+							if (jsonControlClass.optString("getDataFunction", null) != null) {
+								jsonControl.put("input", true);
+								canBeUsedFromDialogue = true;
+							}
+							if (jsonControlClass.optString("setDataJavaScript", null) != null) {
+								jsonControl.put("output", true);
+								canBeUsedFromDialogue = true;
+							}
 							if (canBeUsedFromOtherPages) jsonControl.put("otherPages", true);
 							if (canBeUsedForFormPageVisibilty) jsonControl.put("pageVisibility", true);
 							if (control.getProperty("formObjectAddressNumber") != null) jsonControl.put("formObjectAddressNumber", control.getProperty("formObjectAddressNumber"));
@@ -639,11 +716,17 @@ public class Page {
 									JSONObject jsonRuntimeProperty = new JSONObject();
 									jsonRuntimeProperty.put("type", jsonProperty.get("type"));
 									jsonRuntimeProperty.put("name", jsonProperty.get("name"));
-									if (jsonProperty.optString("getPropertyFunction", null) != null) jsonRuntimeProperty.put("input", true);
-									if (jsonProperty.optString("setPropertyJavaScript", null) != null) jsonRuntimeProperty.put("output", true);
+									if (jsonProperty.optString("getPropertyFunction", null) != null) {
+										jsonRuntimeProperty.put("input", true);
+										canBeUsedFromDialogue = true;
+									}
+									if (jsonProperty.optString("setPropertyJavaScript", null) != null) {
+										jsonRuntimeProperty.put("output", true);
+										canBeUsedFromDialogue = true;
+									}
 									if (jsonProperty.optBoolean("canBeUsedForFormPageVisibilty")) jsonRuntimeProperty.put("visibility", true);
 
-									// add to the collection
+									// add to the collection - note further check for dialogue controls having to add in
 									jsonRunTimeProperties.put(jsonRuntimeProperty);
 
 									// increment the index
@@ -655,26 +738,46 @@ public class Page {
 								} while (index < count);
 								// add the properties to what we're returning
 								jsonControl.put("runtimeProperties", jsonRunTimeProperties);
-							}
+							} // property loop
 
-							// add it to the collection we are returning
-							jsonControls.put(jsonControl);
+							// if we are including from dialogue
+							if (includeFromDialogue) {
+								// if it can be used
+								if (canBeUsedFromDialogue) {
+									// set the other pages property so we see it in the designer
+									jsonControl.put("otherPages", true);
+									// add it to the collection we are returning
+									jsonControls.put(jsonControl);
+								}
+							} else {
+								// add it to the collection we are returning straight away
+								jsonControls.put(jsonControl);
+							} // includeFromDialogue check
 
 						} // name check
 					} // control class check
 				} // other page or visibility check
 				// run for any child controls
-				getOtherPageChildControls(rapidServlet, jsonControls, control.getChildControls(), includePageVisibiltyControls);
+				getOtherPageChildControls(rapidServlet, jsonControls, control.getChildControls(), includePageVisibiltyControls, includeFromDialogue);
 			}
 		}
 	}
 
 	// uses the above iterative method to return a flat array of controls in this page that can be used from other pages, for use in the designer
-	public JSONArray getOtherPageControls(RapidHttpServlet rapidServlet, boolean includePageVisibiltyControls) throws JSONException {
+	public JSONArray getOtherPageControls(RapidHttpServlet rapidServlet, boolean includePageVisibiltyControls, String designerPageId) throws JSONException {
 		// the array we're about to return
 		JSONArray jsonControls = new JSONArray();
+		// assume we won't check for controls available from dialogues
+		boolean includeFromDialogue = false;
+		// if this page is different from the one we're loading in the designer
+		if (!_id.equals(designerPageId)) {
+			// get the list of pages we can open a dialogue to on this page if this is not the destination page itself
+			List<String> dialoguePageIds = getDialoguePageIds();
+			// if the pagein the designer is one this page navigates to on a dialogue
+			if (dialoguePageIds.contains(designerPageId)) includeFromDialogue = true;
+		}
 		// start building the array using the page controls
-		getOtherPageChildControls(rapidServlet, jsonControls, _controls, includePageVisibiltyControls);
+		getOtherPageChildControls(rapidServlet, jsonControls, _controls, includePageVisibiltyControls, includeFromDialogue);
 		// return the controls
 		return jsonControls;
 	}
@@ -952,7 +1055,7 @@ public class Page {
 			case Resource.JAVASCRIPT:
 				if (application.getStatus() == Application.STATUS_LIVE) {
 					try {
-						resourceHtml = "    <script type='text/javascript'>" + Minify.toString(resource.getContent(),Minify.JAVASCRIPT) + "</script>";
+						resourceHtml = "    <script type='text/javascript'>" + Minify.toString(resource.getContent(),Minify.JAVASCRIPT, "JavaScript resource " + resource.getName()) + "</script>";
 					} catch (IOException ex) {
 						resourceHtml = "    <script type='text/javascript'>/* Failed to minify resource " + resource.getName() + " JavaScript : " + ex.getMessage() + "*/</script>";
 					}
@@ -963,7 +1066,7 @@ public class Page {
 			case Resource.CSS:
 				if (application.getStatus() == Application.STATUS_LIVE) {
 					try {
-						resourceHtml = "    <style>" + Minify.toString(resource.getContent(), Minify.CSS) + "</style>";
+						resourceHtml = "    <style>" + Minify.toString(resource.getContent(), Minify.CSS, "") + "</style>";
 					} catch (IOException ex) {
 						resourceHtml = "    <style>/* Failed to minify resource " + resource.getName() + " CSS : " + ex.getMessage() + "*/<style>";
 					}
@@ -1232,7 +1335,7 @@ public class Page {
 			if (application.getStatus() == Application.STATUS_LIVE) {
 				try {
 					// get string to itself minified
-					pageCss = Minify.toString(pageCss, Minify.CSS);
+					pageCss = Minify.toString(pageCss, Minify.CSS, "Page head CSS");
 				} catch (IOException ex) {
 					// add error and resort to unminified
 					pageCss = "\n/*\n\n Failed to minify the css : " + ex.getMessage() + "\n\n*/\n\n" + pageCss;
@@ -1455,7 +1558,7 @@ public class Page {
 			if (application.getStatus() == Application.STATUS_LIVE) {
 				try {
 					// minify the js before adding
-					stringBuilder.append(Minify.toString(jsStringBuilder.toString(),Minify.JAVASCRIPT));
+					stringBuilder.append(Minify.toString(jsStringBuilder.toString(),Minify.JAVASCRIPT, "Page JavaScript"));
 				} catch (IOException ex) {
 					// add the error
 					stringBuilder.append("\n\n/* Failed to minify JavaScript : " + ex.getMessage() + " */\n\n");

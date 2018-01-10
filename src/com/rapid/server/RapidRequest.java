@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -195,17 +196,33 @@ public class RapidRequest {
 			}
 
 		}
-		// retain all the query string parameter values in the session
-		Enumeration<String> names = _request.getParameterNames();
-		while (names.hasMoreElements()) {
-			// get the name
-			String name = names.nextElement();
-			// get any values
-			String[] values = _request.getParameterValues(name);
-			// store the first value
-			if (values != null) _request.getSession().setAttribute(name, values[0]);
+		// if we have a page
+		if (_page != null) {
+			// get page session / page variables
+			List<String> sessionVariables = _page.getSessionVariables();
+			// get query string parameter values
+			Enumeration<String> parameterNames = _request.getParameterNames();
+			// if there were variables and values for them
+			if (sessionVariables != null && parameterNames != null) {
+				// loop parameter names
+				while (parameterNames.hasMoreElements()) {
+					// get the name
+					String parameterName = parameterNames.nextElement();
+					// if this parameter is a session / page variable - and not a sensitive one
+					if (sessionVariables.contains(parameterName)
+							&& !RapidFilter.SESSION_VARIABLE_INDEX_PATH.equals(parameterName)
+							&& !RapidFilter.SESSION_VARIABLE_USER_NAME.equals(parameterName)
+							&& !RapidFilter.SESSION_VARIABLE_USER_DEVICE.equals(parameterName)
+							&& !RapidFilter.SESSION_VARIABLE_USER_PASSWORD.equals(parameterName)
+					) {
+						// get any values
+						String[] values = _request.getParameterValues(parameterName);
+						// store the first value
+						if (values != null) _request.getSession().setAttribute(parameterName, values[0]);
+					}
+				}
+			}
 		}
-
 	}
 
 	// can also instantiate a rapid request with just an application object (this is used by the rapid action)

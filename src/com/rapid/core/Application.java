@@ -1526,7 +1526,7 @@ public class Application {
 					// print
 					ps.print(functionsParamsInserted);
 					// print minify
-					Minify.toWriter(functionsParamsInserted, pw, Minify.JAVASCRIPT);
+					Minify.toWriter(functionsParamsInserted, pw, Minify.JAVASCRIPT, "Application functions");
 				}
 			}
 			// check resource js
@@ -1538,7 +1538,7 @@ public class Application {
 				// print
 				ps.print(resourceJS.toString());
 				// print minify
-				Minify.toWriter(resourceJSParamsInserted, pw, Minify.JAVASCRIPT);
+				Minify.toWriter(resourceJSParamsInserted, pw, Minify.JAVASCRIPT, "Control and Action resources");
 			}
 			// check init js
 			if (initJS.length() > 0) {
@@ -1549,7 +1549,7 @@ public class Application {
 				// print
 				ps.print(initJS.toString());
 				// print minify
-				Minify.toWriter(initJSParamsInserted, pw, Minify.JAVASCRIPT);
+				Minify.toWriter(initJSParamsInserted, pw, Minify.JAVASCRIPT, "Control initialisation methods");
 			}
 			// check datajs
 			if (dataJS.length() > 0) {
@@ -1560,7 +1560,7 @@ public class Application {
 				// print
 				ps.print(dataJS.toString());
 				// print minify
-				Minify.toWriter(dataJSParamsInserted, pw, Minify.JAVASCRIPT);
+				Minify.toWriter(dataJSParamsInserted, pw, Minify.JAVASCRIPT, "Control getData and setData methods");
 			}
 			// check action js
 			if (actionJS.length() > 0) {
@@ -1571,7 +1571,7 @@ public class Application {
 				// print
 				ps.print(actionJS.toString());
 				// print minify
-				Minify.toWriter(actionParamsInserted, pw, Minify.JAVASCRIPT);
+				Minify.toWriter(actionParamsInserted, pw, Minify.JAVASCRIPT, "Action methods");
 			}
 
 			// close debug writer and stream
@@ -1605,7 +1605,7 @@ public class Application {
 			fos.close();
 
 			// minify it to a rapid.min.css file
-			Minify.toFile(resourceCSSWithParams + "\n" + appThemeCSSWithParams + "\n" + appCSSWithParams, applicationPath + "/rapid.min.css", Minify.CSS);
+			Minify.toFile(resourceCSSWithParams + "\n" + appThemeCSSWithParams + "\n" + appCSSWithParams, applicationPath + "/rapid.min.css", Minify.CSS, "Resource, theme, and app CSS");
 
 			// check the status
 	    	if (_status == STATUS_LIVE) {
@@ -1640,7 +1640,7 @@ public class Application {
 								// make any dirs it may need
 								jsFileMin.getParentFile().mkdirs();
 								// minify to it
-								Minify.toFile(jsFile, jsFileMin, Minify.JAVASCRIPT);
+								Minify.toFile(jsFile, jsFileMin, Minify.JAVASCRIPT, "JavaScript file " + fileName);
 							}
 							// if this application is live, update the resource to the min file
 							if (_status == STATUS_LIVE) resource.setContent(fileNameMin);
@@ -1660,7 +1660,7 @@ public class Application {
 								// make any dirs it may need
 								cssFileMin.getParentFile().mkdirs();
 								// minify to it
-								Minify.toFile(cssFile, cssFileMin, Minify.CSS);
+								Minify.toFile(cssFile, cssFileMin, Minify.CSS, "CSS file " + fileName);
 							}
 							// if this application is live, update the resource to the min file
 							if (_status == STATUS_LIVE) resource.setContent(fileNameMin);

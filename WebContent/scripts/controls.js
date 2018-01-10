@@ -180,7 +180,8 @@ function Control(controlType, parentControl, jsonControl, loadComplexObjects, pa
 						if (p && p.length >= 2) {
 							// if it looks like an array parse it with JSON
 							if (p.substr(0,1) == "[" && p.substr(p.length-1,1) == "]") {
-								p = JSON.parse(p);
+								// silently fail and revert to raw value if need be
+								try { p = JSON.parse(p); } catch(ex) {}
 							} else if (p == "true") {
 								// convert true literals to booleans
 								p = true;

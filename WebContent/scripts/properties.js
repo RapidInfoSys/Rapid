@@ -330,6 +330,21 @@ function getEventOptions(selectId) {
 	return options;
 }
 
+// this function creates the option for an existing action option
+function getExistingActionOption(action, index, selectId, ignoreId) {
+	var option = "";
+	var text =  (index*1+1) + " - "  + action.type.substr(0,1).toUpperCase() + action.type.substr(1) + " action";
+	if (action.comments) text += " : " + action.comments;
+	if (action.id != ignoreId) option = "<option value='" + action.id + "' " + (action.id == selectId ? "selected='selected'" : "") + ">" + text + "</option>";
+	return option;
+}
+
+function getExistingActionEventOptionGroup(control, event, eventJS) {
+	var name = _page.name;
+	if (control) name = control.name;
+	return "<optgroup label='" + name + " - " + event.type.substr(0,1).toUpperCase() + event.type.substr(1) + " event'>" + eventJS + "</optgroup>";
+}
+
 // this function returns a set of options for a dropdown of existing actions from current controls 
 function getExistingActionOptions(selectId, ignoreId) {
 	var options = "";
@@ -337,25 +352,21 @@ function getExistingActionOptions(selectId, ignoreId) {
 		var eventJS = "";
 		var event = _page.events[i];
 		for (var j in event.actions) {
-			var action = event.actions[j];
-			var text =  (j*1+1) + " - "  + action.type;
-			if (action.comments) text += " - " + action.comments;
-			if (action.id != ignoreId) eventJS += "<option value='" + action.id + "' " + (action.id == selectId ? "selected='selected'" : "") + ">" + text + "</option>";
+			eventJS += getExistingActionOption(event.actions[j], j, selectId, ignoreId);
 		}			
-		if (eventJS) options += "<optgroup label='" + _page.name + "." + event.type + "'>" + eventJS + "</optgroup>";
+		if (eventJS) options += getExistingActionEventOptionGroup(null, event, eventJS);
 	}
 	var controls = getControls();	
 	for (var i in controls) {
-		for (var j in controls[i].events) {
-			var eventJS = "";
-			var event = controls[i].events[j];
-			for (var k in event.actions) {
-				var action = event.actions[k];
-				if (controls[i].name) {
-					if (action.id != ignoreId) eventJS += "<option value='" + action.id + "' " + (action.id == selectId ? "selected='selected'" : "") + ">" + (k*1+1) + " - " + action.type + "</option>";
+		if (controls[i].name) {
+			for (var j in controls[i].events) {
+				var eventJS = "";
+				var event = controls[i].events[j];
+				for (var k in event.actions) {					
+					eventJS += getExistingActionOption(event.actions[k], k, selectId, ignoreId);
 				}
-			}	
-			if (eventJS) options += "<optgroup label='" + controls[i].name + "." + event.type + "'>" + eventJS + "</optgroup>";
+			}
+			if (eventJS) options += getExistingActionEventOptionGroup(controls[i], event, eventJS);
 		}
 	}
 	return options;
