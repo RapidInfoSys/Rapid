@@ -2564,9 +2564,9 @@ $(document).ready( function() {
 			
 	// load page
 	$("#pageSelect").change( function() {
-		// load the pages and the selected page
+		// load the selected page
 		if (checkDirty()) {
-			loadPages($(this).val(), true);
+			loadPage();
 		} else {
 			// revert the drop down on cancel
 			$("#pageSelect").val(_page.id);

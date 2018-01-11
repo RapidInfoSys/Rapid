@@ -635,14 +635,8 @@ public class Designer extends RapidHttpServlet {
 										// add them if there are some
 										if (pageVisibilityConditions != null) if (pageVisibilityConditions.size() > 0) jsonPage.put("visibilityConditions", pageVisibilityConditions);
 									}
-									// assume no designer page provided
-									String designerPageId = null;
-									// try and get one
-									Page designerPage = rapidRequest.getPage();
-									// set id if there was one
-									if (designerPage != null) designerPageId = designerPage.getId();
 									// get map of other page components we can access from this page
-									Map<String, JSONArray> components = page.getOtherPageComponents(this, includePageVisibiltyControls, designerPageId);
+									Map<String, JSONArray> components = page.getOtherPageComponents(this, includePageVisibiltyControls, null);
 									// if we got some
 									if (components != null) {
 										// loop the keys
