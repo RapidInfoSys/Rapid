@@ -635,7 +635,7 @@ public class Designer extends RapidHttpServlet {
 										// add them if there are some
 										if (pageVisibilityConditions != null) if (pageVisibilityConditions.size() > 0) jsonPage.put("visibilityConditions", pageVisibilityConditions);
 									}
-									// get map of other page components we can access from this page
+									// get map of other page components we can access from this page - keep desiger page id null to avoid dialogue controls and events
 									Map<String, JSONArray> components = page.getOtherPageComponents(this, includePageVisibiltyControls, null);
 									// if we got some
 									if (components != null) {
@@ -739,6 +739,43 @@ public class Designer extends RapidHttpServlet {
 										jsonPage.put("footerHtml", theme.getFooterHtml());
 									}
 								}
+
+								// create an other pages object
+								JSONObject jsonOtherPages = new JSONObject();
+								// loop the page headers
+								for (PageHeader pageHeader : application.getPages().getSortedPages()) {
+									// get this page id
+									String pageId = page.getId();
+									// if not the current page
+									if (!pageId.equals(pageHeader.getId())) {
+										// get the other page
+										Page otherPage = application.getPages().getPage(getServletContext(), pageHeader.getId());
+										// create an other page object
+										JSONObject jsonOtherPage = new JSONObject();
+										// get other page components for this page
+										Map<String, JSONArray> components = otherPage.getOtherPageComponents(this, false, pageId);
+										// if we got some
+										if (components != null) {
+											// if we got some
+											if (components.size() > 0) {
+												// loop the keys
+												for (String component : components.keySet()) {
+													// get the json
+													JSONArray jsonComponentArray = components.get(component);
+													// if we got some
+													if (jsonComponentArray != null) {
+														// add to the page if we have some
+														if (jsonComponentArray.length() > 0) jsonOtherPage.put(component, jsonComponentArray);
+													}
+												}
+												// add the other page
+												jsonOtherPages.put(otherPage.getId(), jsonOtherPage);
+											}
+										}
+									}
+								}
+								// if other pages objects add to page
+								if (jsonOtherPages.length() > 0) jsonPage.put("otherPages", jsonOtherPages);
 
 								// print it to the output
 								output = jsonPage.toString();

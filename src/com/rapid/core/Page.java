@@ -754,12 +754,15 @@ public class Page {
 		components.put("events", new JSONArray());
 		// assume we won't check for controls available from dialogues
 		boolean includeFromDialogue = false;
-		// if this page is different from the one we're loading in the designer
-		if (!_id.equals(designerPageId)) {
-			// get the list of pages we can open a dialogue to on this page if this is not the destination page itself
+		// if we are loading a specific page and need to know any other components for it and this is not the destination page itself
+		if (designerPageId != null && !_id.equals(designerPageId)) {
+			// get the list of pages we can open a dialogue to on this page
 			List<String> dialoguePageIds = getDialoguePageIds();
-			// if the pagein the designer is one this page navigates to on a dialogue
-			if (dialoguePageIds.contains(designerPageId)) includeFromDialogue = true;
+			// if designerPageId is provided and this page is different from the one we're loading in the designer
+			if (dialoguePageIds != null) {
+				// if the pagein the designer is one this page navigates to on a dialogue
+				if (dialoguePageIds.contains(designerPageId)) includeFromDialogue = true;
+			}
 		}
 		// start building the array using the page controls
 		getOtherPageComponents(rapidServlet, components, _controls, includePageVisibiltyControls, includeFromDialogue);

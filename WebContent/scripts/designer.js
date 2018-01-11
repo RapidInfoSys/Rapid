@@ -2273,9 +2273,30 @@ $(document).ready( function() {
 			    		// remove any current page style sheets
 			    		head.find("link[rel=stylesheet][href$='/" + _page.id + ".css']").remove();
 			    		
+			    		// retain any otherPages
+			    		var otherPages = page.otherPages;
+			    		// if we got some
+			    		if (otherPages) {
+			    			// remove from the page object
+			    			delete page.otherPages;
+			    			// loop the pages
+			    			for (var i in _pages) {
+			    				// get the page id
+			    				var pageId = _pages[i].id;
+			    				// look for the other page
+			    				var otherPage = otherPages[pageId];
+			    				// if this id is in the otherPages update any entries it has
+			    				if (otherPage) {
+			    					// loop keys
+			    					for (var j in otherPage) {
+			    						_pages[i][j] = otherPage[j];
+			    					}
+			    				}
+			    			}
+			    		}
+			    		
 		        		// retain the childControls
-		        		var childControls = page.controls;
-		        				        		
+		        		var childControls = page.controls;		        				        		
 		        		// remove them from the page object
 		        		delete page.controls;
 		        		
