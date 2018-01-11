@@ -748,11 +748,10 @@ public class Designer extends RapidHttpServlet {
 									String pageId = page.getId();
 									// if not the current page
 									if (!pageId.equals(pageHeader.getId())) {
-										// get the other page
-										Page otherPage = application.getPages().getPage(getServletContext(), pageHeader.getId());
-
 										// if we are loading a specific page and need to know any other components for it and this is not the destination page itself
 										if (!pageId.equals(pageHeader.getId())) {
+											// get the other page
+											Page otherPage = application.getPages().getPage(getServletContext(), pageHeader.getId());
 											// get the list of pages we can open a dialogue to on this page
 											List<String> dialoguePageIds = otherPage.getDialoguePageIds();
 											// if designerPageId is provided and this page is different from the one we're loading in the designer
