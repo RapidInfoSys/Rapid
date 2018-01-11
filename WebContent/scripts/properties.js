@@ -137,8 +137,7 @@ function getDataOptions(selectId, ignoreId, input) {
 			// get the control class
 			var controlClass = _controlTypes[control.type];
 			// if we're not ignoring the control and it has a name
-			if (controlClass && control.id != ignoreId && control.name) {
-				
+			if (controlClass && control.id != ignoreId && control.name) {				
 				// if it has a get data function (for input), or a setDataJavaScript
 				if ((input && controlClass.getDataFunction) || (!input && controlClass.setDataJavaScript)) {
 					if (control.id == selectId && !gotSelected) {
@@ -147,8 +146,7 @@ function getDataOptions(selectId, ignoreId, input) {
 					} else {
 						options += "<option value='" + control.id + "' >" + control.name + "</option>";
 					}				
-				}
-				
+				}				
 				// get any run time properties
 				var properties = controlClass.runtimeProperties;
 				// if there are runtimeProperties in the class
@@ -165,14 +163,10 @@ function getDataOptions(selectId, ignoreId, input) {
 							var key = control.id + "." + property.type;
 							// add the option
 							options += "<option value='" + key  +  "' " + (key == selectId ? "selected='selected'" : "") + ">" + control.name + "." + property.name + "</option>";
-						}
-						
+						}	
 					}
-					
 				}
-								
 			}												
-			
 		}
 		options += "</optgroup>";
 	}
@@ -182,10 +176,10 @@ function getDataOptions(selectId, ignoreId, input) {
 		options += "<optgroup label='Page variables'>";
 		for (var i in _page.sessionVariables) {
 			if (selectId == _page.sessionVariables[i] && !gotSelected) {
-				options += "<option value='" + _page.sessionVariables[i] + "' selected='selected' >" + _page.sessionVariables[i] + "</option>";
+				options += "<option value='" + escapeApos(_page.sessionVariables[i]) + "' selected='selected' >" + _page.sessionVariables[i] + "</option>";
 				gotSelected = true;
 			} else {
-				options += "<option value='" + _page.sessionVariables[i] + "' >" + _page.sessionVariables[i] + "</option>";
+				options += "<option value='" + escapeApos(_page.sessionVariables[i]) + "' >" + _page.sessionVariables[i] + "</option>";
 			}			
 		}
 		options += "</optgroup>";
@@ -193,34 +187,42 @@ function getDataOptions(selectId, ignoreId, input) {
 	
 	// other page controls can be used for input
 	if (_page && _pages) {
-
+		// loop the other pages
 		for (var i in _pages) {
-			
+			// if the loop item is no the current page and it has some controls
 			if (_pages[i].id != _page.id && _pages[i].controls) {
-				
+				// start blank options for loop page
 				var pageControlOptions = "";
-												
+				// loop controls
 				for (var j in _pages[i].controls) {
-					
+					// get this control
 					var control = _pages[i].controls[j];
-					
+					// if it can be used from other pages
 					if (control.otherPages) {
-											
+						// if we're looking for inputs and this is one, or we're not looking for inputs (outputs) and this isn't
 						if ((input && control.input) || (!input && control.output)) {
+							// if this is the control we're looking to select
 							if (selectId == control.id && !gotSelected) {
+								// add the option for the control input/output with it selected
 								pageControlOptions += "<option value='" + control.id + "' selected='selected' >" +  control.name + "</option>";
 								gotSelected = true;
 							} else {
+								// just add an option for the input/output
 								pageControlOptions += "<option value='" + control.id + "' >" + control.name + "</option>";
 							}
 						}
-						
-						if (control.runtimeProperties) {						
+						// if the control has runtime properties - also a source of inputs and outputs
+						if (control.runtimeProperties) {
+							// loop them
 							for (var k in control.runtimeProperties) {
+								// if we're looking for inputs and this is one, or we're not looking for inputs (outputs) and this isn't
 								if ((input && control.runtimeProperties[k].input) || (!input && control.runtimeProperties[k].output)) {
+									// if this is the property we're looking to select
 									if (selectId == control.id + "." + control.runtimeProperties[k].type && !gotSelected) {
+										// add the option for the property with it selected
 										pageControlOptions += "<option value='" + control.id + "." + control.runtimeProperties[k].type + "' selected='selected' >" + control.name + "." + control.runtimeProperties[k].name + "</option>";
 									} else {
+										// just add an option for the property
 										pageControlOptions += "<option value='" + control.id + "." + control.runtimeProperties[k].type + "' >" + control.name + "." + control.runtimeProperties[k].name + "</option>";
 									}
 								}
@@ -228,16 +230,13 @@ function getDataOptions(selectId, ignoreId, input) {
 						}
 					}
 				}
-				
-				if (pageControlOptions) options += "<optgroup label='" + _pages[i].name + " - " + _pages[i].title + "'>" + pageControlOptions + "</optgroup>";
-			
+				// if we got some options for the page we're looping wrap it into a group
+				if (pageControlOptions) options += "<optgroup label='" + escapeApos(_pages[i].name + " - " + _pages[i].title) + "'>" + pageControlOptions + "</optgroup>";			
 			}
 		}
 	}
 	// system values, only for inputs - these are defined in an array above this function
-	if (input && _systemValues) {
-		options += getSystemValueOptions(selectId);		
-	}
+	if (input && _systemValues) options += getSystemValueOptions(selectId);
 	// return
 	return options;
 }
@@ -290,8 +289,9 @@ function getFormValueOptions(selectId) {
 							pageControlOptions += "<option value='" + control.id + "' >" + control.name + "</option>";
 						}												
 					}					
-				}				
-				if (pageControlOptions) options += "<optgroup label='" + _pages[i].name + " - " + _pages[i].title + "'>" + pageControlOptions + "</optgroup>";			
+				}
+				// if we got options for the page we are looping wrap into a group
+				if (pageControlOptions) options += "<optgroup label='" + escapeApos(_pages[i].name + " - " + _pages[i].title) + "'>" + pageControlOptions + "</optgroup>";			
 			}			
 		}
 	}
