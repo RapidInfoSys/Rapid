@@ -643,12 +643,14 @@ public class Page {
 		return _dialoguePageIds;
 	}
 
-	// iterative function for building a flat JSONArray of controls that can be used on other pages
+	// iterative function for building a flat JSONArray of controls that can be used on other pages, will also add events if including from a dialogue
 	private void getOtherPageComponents(RapidHttpServlet rapidServlet, Map<String, JSONArray> components, List<Control> controls, boolean includePageVisibiltyControls,  Boolean includeFromDialogue) throws JSONException {
 		// check we were given some controls
 		if (controls != null) {
 			// get the array of controls
 			JSONArray jsonControls = components.get("controls");
+			// get the array of events
+			JSONArray jsonEvents = components.get("events");
 			// loop the controls
 			for (Control control : controls) {
 				// get if this control can be used from other pages
@@ -730,8 +732,33 @@ public class Page {
 								jsonControl.put("runtimeProperties", jsonRunTimeProperties);
 							} // property loop
 
-							// if we are including from dialogue set the other pages property so we see it in the designer
-							if (includeFromDialogue) jsonControl.put("otherPages", true);
+							// if we are including from dialogue
+							if (includeFromDialogue) {
+								// set the other pages property so we see it in the designer
+								jsonControl.put("otherPages", true);
+								// get any events for this control
+								List<Event> events = control.getEvents();
+								// if we got some
+								if (events != null) {
+
+									//////////////////////////////// MAKE A JSON EVENT TO STORE IF THERE ARE ACTIONS /////////////////////////////////
+
+									// loop them
+									for (Event event : events) {
+										// get any actions
+										List<Action> actions = event.getActions();
+										// if there were some
+										if (actions != null) {
+											// if there were some
+											if (actions.size() > 0) {
+												// remember this event
+
+											}
+										}
+
+									}
+								}
+							}
 							// add it to the collection we are returning straight away
 							jsonControls.put(jsonControl);
 
@@ -750,8 +777,6 @@ public class Page {
 		Map<String,JSONArray> components = new HashMap<String,JSONArray>();
 		// add controls
 		components.put("controls", new JSONArray());
-		// add events
-		components.put("events", new JSONArray());
 		// assume we won't check for controls available from dialogues
 		boolean includeFromDialogue = false;
 		// if we are loading a specific page and need to know any other components for it and this is not the destination page itself
@@ -762,6 +787,8 @@ public class Page {
 			if (dialoguePageIds != null) {
 				// if the pagein the designer is one this page navigates to on a dialogue
 				if (dialoguePageIds.contains(designerPageId)) includeFromDialogue = true;
+				// add events as we now want to include those too
+				components.put("events", new JSONArray());
 			}
 		}
 		// start building the array using the page controls

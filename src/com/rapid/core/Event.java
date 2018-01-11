@@ -26,6 +26,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 package com.rapid.core;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -40,7 +41,7 @@ public class Event {
 	// instance variables
 
 	private String _type, _extra, _filter;
-	private ArrayList<Action> _actions;
+	private List<Action> _actions;
 
 	// properties
 
@@ -57,8 +58,8 @@ public class Event {
 	public void setFilter(String filter) { _filter = filter; }
 
 	// these are the actions to perform when this event occurs to the control in which its sitting
-	public ArrayList<Action> getActions() { return _actions; }
-	public void setActions(ArrayList<Action> actions) { _actions = actions; }
+	public List<Action> getActions() { return _actions; }
+	public void setActions(List<Action> actions) { _actions = actions; }
 
 	// constructors
 
