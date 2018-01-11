@@ -750,26 +750,38 @@ public class Designer extends RapidHttpServlet {
 									if (!pageId.equals(pageHeader.getId())) {
 										// get the other page
 										Page otherPage = application.getPages().getPage(getServletContext(), pageHeader.getId());
-										// create an other page object
-										JSONObject jsonOtherPage = new JSONObject();
-										// get other page components for this page
-										Map<String, JSONArray> components = otherPage.getOtherPageComponents(this, false, pageId);
-										// if we got some
-										if (components != null) {
-											// if we got some
-											if (components.size() > 0) {
-												// loop the keys
-												for (String component : components.keySet()) {
-													// get the json
-													JSONArray jsonComponentArray = components.get(component);
+
+										// if we are loading a specific page and need to know any other components for it and this is not the destination page itself
+										if (!pageId.equals(pageHeader.getId())) {
+											// get the list of pages we can open a dialogue to on this page
+											List<String> dialoguePageIds = otherPage.getDialoguePageIds();
+											// if designerPageId is provided and this page is different from the one we're loading in the designer
+											if (dialoguePageIds != null) {
+												// if the pagein the designer is one this page navigates to on a dialogue
+												if (dialoguePageIds.contains(pageId)) {
+													// create an other page object
+													JSONObject jsonOtherPage = new JSONObject();
+													// get other page components for this page
+													Map<String, JSONArray> components = otherPage.getOtherPageComponents(this, false, pageId);
 													// if we got some
-													if (jsonComponentArray != null) {
-														// add to the page if we have some
-														if (jsonComponentArray.length() > 0) jsonOtherPage.put(component, jsonComponentArray);
+													if (components != null) {
+														// if we got some
+														if (components.size() > 0) {
+															// loop the keys
+															for (String component : components.keySet()) {
+																// get the json
+																JSONArray jsonComponentArray = components.get(component);
+																// if we got some
+																if (jsonComponentArray != null) {
+																	// add to the page if we have some
+																	if (jsonComponentArray.length() > 0) jsonOtherPage.put(component, jsonComponentArray);
+																}
+															}
+															// add the other page if it had something
+															if (jsonOtherPage.length() > 0) jsonOtherPages.put(otherPage.getId(), jsonOtherPage);
+														}
 													}
 												}
-												// add the other page
-												jsonOtherPages.put(otherPage.getId(), jsonOtherPage);
 											}
 										}
 									}

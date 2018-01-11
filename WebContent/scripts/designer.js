@@ -53,6 +53,8 @@ var _version = {};
 var _page = {};
 // a list of available pages
 var _pages = [];
+// a map of original page objects which we back up and restore for otherPageComponents
+var _pagesOriginal = {};
 // a list of available actions
 var _actions = [];
 // a list of available style classes
@@ -61,7 +63,7 @@ var _styleClasses = [];
 var _localDateFormat = "dd/MM/yyyy";
 // the controlAndActionSuffix, used to avoid conflicts in ids from other environments, default to empty space
 var _controlAndActionSuffix = "";
-// the styling targets that we display guidlines for
+// the styling targets that we display guidelines for
 var _guideLines = ".table td, .panel, .r-panel, .r-text, .flowLayoutCell { border: 1px dashed #ccc; margin: -1px; }";
 
 // the document window
@@ -1485,6 +1487,8 @@ function loadPages(selectedPageId, forceLoad) {
         	var options = "";
         	// retain the pages
         	_pages = pages;
+        	// empty the original backup
+        	_pagesOriginal = {};
         	
         	// loop them
         	for (var i in pages) {
@@ -2275,23 +2279,36 @@ $(document).ready( function() {
 			    		
 			    		// retain any otherPages
 			    		var otherPages = page.otherPages;
-			    		// if we got some
-			    		if (otherPages) {
-			    			// remove from the page object
-			    			delete page.otherPages;
-			    			// loop the pages
-			    			for (var i in _pages) {
-			    				// get the page id
-			    				var pageId = _pages[i].id;
+			    		// if we got some remove from the page object
+			    		if (otherPages) delete page.otherPages;
+			    		// loop the pages
+		    			for (var i in _pages) {
+		    				// get the page id
+		    				var pageId = _pages[i].id;			    				    			
+		    				// look for any original page
+		    				var originalPage = _pagesOriginal[i];
+		    				// if there was one
+		    				if (originalPage) {
+		    					// restore the original
+		    					_pages[i] = _pagesOriginal[i];
+		    					// remove the backup
+		    					delete _pagesOriginal[i];
+		    				}
+		    				// if there were other pages
+		    				if (otherPages) {
 			    				// look for the other page
 			    				var otherPage = otherPages[pageId];
 			    				// if this id is in the otherPages update any entries it has
 			    				if (otherPage) {
+			    					// back up the original to a new object
+			    					_pagesOriginal[i] = JSON.parse(JSON.stringify(_pages[i]));
 			    					// loop keys
 			    					for (var j in otherPage) {
-			    						_pages[i][j] = otherPage[j];
+			    						// if the key is more than 1 character (to stop the unlikely event of strings being iterated a character at a time)
+			    						if (j.length > 1) _pages[i][j] = otherPage[j];
 			    					}
 			    				}
+			    				
 			    			}
 			    		}
 			    		

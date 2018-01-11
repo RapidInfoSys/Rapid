@@ -777,26 +777,19 @@ public class Page {
 		Map<String,JSONArray> components = new HashMap<String,JSONArray>();
 		// add controls
 		components.put("controls", new JSONArray());
-		// assume we won't check for controls available from dialogues
-		boolean includeFromDialogue = false;
-		// if we are loading a specific page and need to know any other components for it and this is not the destination page itself
-		if (designerPageId != null && !_id.equals(designerPageId)) {
-			// get the list of pages we can open a dialogue to on this page
-			List<String> dialoguePageIds = getDialoguePageIds();
-			// if designerPageId is provided and this page is different from the one we're loading in the designer
-			if (dialoguePageIds != null) {
-				// if the pagein the designer is one this page navigates to on a dialogue
-				if (dialoguePageIds.contains(designerPageId)) includeFromDialogue = true;
-				// add events as we now want to include those too
-				components.put("events", new JSONArray());
-			}
+		// if we are looking for pageComponents for a particular page from the designer for dialogues
+		if (designerPageId == null) {
+			// we're not so start building the array using the page controls
+			getOtherPageComponents(rapidServlet, components, _controls, includePageVisibiltyControls, false);
+		} else {
+			// add events as we now want to include those too
+			components.put("events", new JSONArray());
+			// start building the array using the page controls
+			getOtherPageComponents(rapidServlet, components, _controls, includePageVisibiltyControls, true);
 		}
-		// start building the array using the page controls
-		getOtherPageComponents(rapidServlet, components, _controls, includePageVisibiltyControls, includeFromDialogue);
 		// return the components
 		return components;
 	}
-
 
 	// used to turn either a page or control style into text for the css file
 	public String getStyleCSS(Style style) {
