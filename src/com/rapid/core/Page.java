@@ -40,9 +40,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
@@ -644,13 +642,9 @@ public class Page {
 	}
 
 	// iterative function for building a flat JSONArray of controls that can be used on other pages, will also add events if including from a dialogue
-	private void getOtherPageComponents(RapidHttpServlet rapidServlet, Map<String, JSONArray> components, List<Control> controls, boolean includePageVisibiltyControls,  Boolean includeFromDialogue) throws JSONException {
+	private void getOtherPageControls(RapidHttpServlet rapidServlet, JSONArray jsonControls, List<Control> controls, boolean includePageVisibiltyControls, Boolean includeFromDialogue) throws JSONException {
 		// check we were given some controls
 		if (controls != null) {
-			// get the array of controls
-			JSONArray jsonControls = components.get("controls");
-			// get the array of events
-			JSONArray jsonEvents = components.get("events");
 			// loop the controls
 			for (Control control : controls) {
 				// get if this control can be used from other pages
@@ -740,9 +734,6 @@ public class Page {
 								List<Event> events = control.getEvents();
 								// if we got some
 								if (events != null) {
-
-									//////////////////////////////// MAKE A JSON EVENT TO STORE IF THERE ARE ACTIONS /////////////////////////////////
-
 									// loop them
 									for (Event event : events) {
 										// get any actions
@@ -751,8 +742,27 @@ public class Page {
 										if (actions != null) {
 											// if there were some
 											if (actions.size() > 0) {
-												// remember this event
-
+												// make a jsonObject for this event
+												JSONObject jsonEvent = new JSONObject();
+												// add the control id
+												jsonEvent.put("type", event.getType());
+												// make a jsonArray for the actions
+												JSONArray jsonActions = new JSONArray();
+												// loop the actions
+												for (Action action : actions) {
+													// make a json object for the action
+													JSONObject jsonAction = new JSONObject();
+													// add id
+													jsonAction.put("id", action.getId());
+													// add type
+													jsonAction.put("type", action.getType());
+													// add to array
+													jsonActions.put(jsonAction);
+												}
+												// add the jsonActions to the event
+												jsonEvent.put("actions", jsonActions);
+												// add the jsonEvent to the control
+												jsonControl.put("events",jsonEvent);
 											}
 										}
 
@@ -761,34 +771,29 @@ public class Page {
 							}
 							// add it to the collection we are returning straight away
 							jsonControls.put(jsonControl);
-
 						} // name check
 					} // control class check
 				} // other page or visibility check
 				// run for any child controls
-				getOtherPageComponents(rapidServlet, components, control.getChildControls(), includePageVisibiltyControls, includeFromDialogue);
+				getOtherPageControls(rapidServlet, jsonControls, control.getChildControls(), includePageVisibiltyControls, includeFromDialogue);
 			}
 		}
 	}
 
 	// uses the above iterative method to return an object with flat array of controls in this page that can be used from other pages, for use in the designer
-	public Map<String,JSONArray> getOtherPageComponents(RapidHttpServlet rapidServlet, boolean includePageVisibiltyControls, String designerPageId) throws JSONException {
-		// the map of components we're about to return
-		Map<String,JSONArray> components = new HashMap<String,JSONArray>();
-		// add controls
-		components.put("controls", new JSONArray());
+	public JSONArray getOtherPageComponents(RapidHttpServlet rapidServlet, boolean includePageVisibiltyControls, String designerPageId) throws JSONException {
+		// the list of controls we're about to return
+		JSONArray controls = new JSONArray();
 		// if we are looking for pageComponents for a particular page from the designer for dialogues
 		if (designerPageId == null) {
 			// we're not so start building the array using the page controls
-			getOtherPageComponents(rapidServlet, components, _controls, includePageVisibiltyControls, false);
+			getOtherPageControls(rapidServlet, controls, _controls, includePageVisibiltyControls, false);
 		} else {
-			// add events as we now want to include those too
-			components.put("events", new JSONArray());
 			// start building the array using the page controls
-			getOtherPageComponents(rapidServlet, components, _controls, includePageVisibiltyControls, true);
+			getOtherPageControls(rapidServlet, controls, _controls, includePageVisibiltyControls, true);
 		}
 		// return the components
-		return components;
+		return controls;
 	}
 
 	// used to turn either a page or control style into text for the css file

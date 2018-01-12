@@ -635,21 +635,10 @@ public class Designer extends RapidHttpServlet {
 										// add them if there are some
 										if (pageVisibilityConditions != null) if (pageVisibilityConditions.size() > 0) jsonPage.put("visibilityConditions", pageVisibilityConditions);
 									}
-									// get map of other page components we can access from this page - keep desiger page id null to avoid dialogue controls and events
-									Map<String, JSONArray> components = page.getOtherPageComponents(this, includePageVisibiltyControls, null);
-									// if we got some
-									if (components != null) {
-										// loop the keys
-										for (String component : components.keySet()) {
-											// get the json
-											JSONArray jsonComponentArray = components.get(component);
-											// if we got some
-											if (jsonComponentArray != null) {
-												// add to the page if we have some
-												if (jsonComponentArray.length() > 0) jsonPage.put(component, jsonComponentArray);
-											}
-										}
-									}
+									// get map of other page controls we can access from this page - keep desiger page id null to avoid dialogue controls and events
+									JSONArray jsonControls = page.getOtherPageComponents(this, includePageVisibiltyControls, null);
+									// if we got some add to the page
+									if (jsonControls != null) jsonPage.put("controls", jsonControls);
 									// check if the start page and add property if so
 									if (startPageId.equals(page.getId())) jsonPage.put("startPage", true);
 									// add the page to the collection
@@ -758,26 +747,18 @@ public class Designer extends RapidHttpServlet {
 											if (dialoguePageIds != null) {
 												// if the pagein the designer is one this page navigates to on a dialogue
 												if (dialoguePageIds.contains(pageId)) {
-													// create an other page object
-													JSONObject jsonOtherPage = new JSONObject();
 													// get other page components for this page
-													Map<String, JSONArray> components = otherPage.getOtherPageComponents(this, false, pageId);
+													JSONArray jsonControls = otherPage.getOtherPageComponents(this, false, pageId);
 													// if we got some
-													if (components != null) {
+													if (jsonControls != null) {
 														// if we got some
-														if (components.size() > 0) {
-															// loop the keys
-															for (String component : components.keySet()) {
-																// get the json
-																JSONArray jsonComponentArray = components.get(component);
-																// if we got some
-																if (jsonComponentArray != null) {
-																	// add to the page if we have some
-																	if (jsonComponentArray.length() > 0) jsonOtherPage.put(component, jsonComponentArray);
-																}
-															}
-															// add the other page if it had something
-															if (jsonOtherPage.length() > 0) jsonOtherPages.put(otherPage.getId(), jsonOtherPage);
+														if (jsonControls.length() > 0) {
+															// create an other page object
+															JSONObject jsonOtherPage = new JSONObject();
+															// add the controls to the page
+															jsonOtherPage.put("controls", jsonControls);
+															// add the other page to the page collection
+															jsonOtherPages.put(otherPage.getId(), jsonOtherPage);
 														}
 													}
 												}
