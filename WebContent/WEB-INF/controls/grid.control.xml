@@ -428,6 +428,8 @@ function getGridSelectedRowNumber(id, ev) {
 	} else {
 		// the event occured outside a row so get the table using the id
 		var grid = $("#" + id);
+		// make sure it's a table
+		if (!grid.is("table")) grid = grid.find("table").last();
 		// index is the row with the selected style within the grid
 		index = grid.find("tr.rowStyle1,tr.rowStyle2").not("[data-ignore]").index(grid.find("tr.rowSelect"));			
 	}
@@ -452,6 +454,8 @@ function getGridSelectedRow(id, ev) {
 	} else {
 		// the event occured outside a row so get the table using the id
 		var grid = $("#" + id);
+		// make sure it's a table
+		if (!grid.is("table")) grid = grid.find("table").last();
 		// row is .rowSelect
 		row = grid.find("tr.rowSelect").not("[data-ignore]");			
 	}
@@ -950,10 +954,8 @@ return "#" + this.id + " .rowSelect";
 	        <![CDATA[
 // get the control
 var control = $("#" + id);
-
 // make sure it's a table
-if (!control.is("table")) control = control.find("table").last();
-       
+if (!control.is("table")) control = control.find("table").last();     
 // check there are details	        
 if (details) {
 	// if there are columns
@@ -1011,6 +1013,7 @@ var data = null;
 if (details.dataStorageType) {
 	data = getGridDataStoreData(id, details);	
 	var grid = $("#" + id);
+	if (!grid.is("table")) grid = grid.find("table").last();
 	if (grid[0]) {
 		var rowNumber = getGridSelectedRowNumber(id, ev);
 		if (rowNumber != data.selectedRowNumber) {
@@ -1052,6 +1055,7 @@ return data;
 gridData = getGridDataStoreData(id, details);
 if (!gridData) gridData = {};
 var grid = $("#" + id);
+if (!grid.is("table")) grid = grid.find("table").last();
 if (grid[0]) {
 		var rowNumber = getGridSelectedRowNumber(id, ev);
 		if (rowNumber != gridData.selectedRowNumber) {
@@ -1221,6 +1225,8 @@ var selectedRowNumber = null;
 
 // look for the grid on this page
 var grid = $("#" + id);
+// make sure it's a table
+if (!grid.is("table")) grid = grid.find("table").last();
 // if it's present
 if (grid[0]) {
 	// get the selected row number
@@ -1282,6 +1288,8 @@ if (!gridData) gridData = {fields:[],rows:[]};
 data = makeDataObject(data, field);
 var selectedRowNumber = null;
 var grid = $("#" + id);
+// make sure it's a table
+if (!grid.is("table")) grid = grid.find("table").last();
 if (grid) grid.find("tr.rowSelect").removeClass("rowSelect");
 if (data) {
 	selectedRowNumber = data.rows[0][0];
@@ -1306,7 +1314,12 @@ if (details && details.dataStorageType) {
 		return 0;
 	}
 } else {
-	return $("#" + id).find("tr").size() - 1;
+	// get the grid
+	var grid = $("#" + id);
+	// make sure it's a table
+	if (!grid.is("table")) grid = grid.find("table").last();
+	// return number of rows
+	return grid.find("tr").size() - 1;
 }
 			        ]]>	  	   	            
 	   	        </getPropertyFunction>	   	        
