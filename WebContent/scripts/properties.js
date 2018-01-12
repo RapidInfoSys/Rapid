@@ -291,7 +291,7 @@ function getFormValueOptions(selectId) {
 					}					
 				}
 				// if we got options for the page we are looping wrap into a group
-				if (pageControlOptions) options += "<optgroup label='" + escapeApos(_pages[i].name + " - " + _pages[i].title) + "'>" + pageControlOptions + "</optgroup>";			
+				if (pageControlOptions) options += "<optgroup label='" + escapeApos(_pages[i].name + " - " + _pages[i].title) + "'>" + pageControlOptions + "</optgroup>";
 			}			
 		}
 	}
@@ -316,15 +316,24 @@ function getPageVisibilityOptions(selectId) {
 }
 
 // this function returns a set of options for a dropdown of existing events from current controls 
-function getEventOptions(selectId) {
-	var options = "";
-	for (var i in _page.events) {
-		var event = _page.events[i];
-		var id = "page." + event.type;
-		options += "<option value='" + id + "' " + (selectId  == id ? "selected='selected'" : "") + ">" + id + "</option>";			
+function getEventOptions(selectId, controls) {
+	// assume no options
+	var options = "";	
+	// assume not for the page
+	var forPage = false;
+	// if controls not provided
+	if (!controls) {
+		// remember this is for the page
+		forPage = true;
+		// loop this page
+		for (var i in _page.events) {
+			var event = _page.events[i];
+			var id = "page." + event.type;
+			options += "<option value='" + id + "' " + (selectId  == id ? "selected='selected'" : "") + ">" + id + "</option>";			
+		}
+		// get controls from this page
+		controls = getControls();
 	}
-	// get all controls
-	var controls = getControls();
 	// loop the controls
 	for (var i in controls) {
 		// get this one
@@ -349,10 +358,14 @@ function getEventOptions(selectId) {
 	}
 	
 	// other page events and action can be used for input
-	if (_page && _pages) {
-		for (var i in _pages) {			
-			if (_pages[i].id != _page.id && _pages[i].events) {
-								
+	if (forPage && _pages) {
+		for (var i in _pages) {
+			// if different from this page and there is a controls collection
+			if (_pages[i].id != _page.id && _pages[i].controls) {
+				// get any options for this page
+				var otherPageOptions = getEventOptions(selectId, _pages[i].controls);
+				// if we got some
+				if (otherPageOptions) options += "<optgroup label='" + escapeApos(_pages[i].name + " - " + _pages[i].title) + "'>" + otherPageOptions + "</optgroup>";
 			}
 		}
 	}
