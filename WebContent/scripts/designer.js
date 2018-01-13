@@ -1449,16 +1449,21 @@ function loadVersion(forceLoad) {
 }
 
 // this function loads the selected apps pages into the drop down, in case the order has changed
-function loadPages(selectedPageId, forceLoad) {
+function loadPages(selectedPageId, forceLoad, fromSave) {
 	
 	// lock the ui
 	loadLock(3);
 	
-	// if a page is not selected try the url
+	// try the url
 	if (!selectedPageId) selectedPageId = $.getUrlVar("p");
-				
+	
+	// if fromSave we need to know to include controls that could be accessed from a dialogue
+	var fromSaveParam = "";
+	// if we are reloading from a page save
+	if (fromSave) fromSaveParam = "&fromSave=true";
+	
 	$.ajax({
-    	url: "designer?action=getPages&a=" + _version.id + "&v=" + _version.version + "&p=" + selectedPageId,
+    	url: "designer?action=getPages&a=" + _version.id + "&v=" + _version.version + "&p=" + selectedPageId + fromSaveParam,
     	type: "GET",
     	contentType: "application/json",
         dataType: "json",            
@@ -2696,8 +2701,8 @@ $(document).ready( function() {
 			        	$("#rapid_P11_C7_").html("Page saved!");			        	
 			        	// set dirty to false
 			        	_dirty = false;
-			        	// reload the pages as the order may have changed, but keep the current one selected
-			        	loadPages(_page.id, false);
+			        	// reload the pages as the order may have changed, but keep the current one selected, also specify that we are going to want controls from dialogues in the collection
+			        	loadPages(_page.id, false, true);
 			        	// reposition the selection in case controls moved during the reload
 			        	positionAndSizeBorder(_selectedControl);
 			        	// rebuild the page map to clear up any conflict messages

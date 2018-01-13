@@ -869,7 +869,50 @@ public class Application {
 					// get the logger
 					Logger logger = (Logger) servletContext.getAttribute("logger");
 					// log this exception
-					logger.error("Error loading page when getting control", ex);
+					logger.error("Error getting control from application", ex);
+				}
+			} // id length > 0 check
+		} // id and page non-null check
+		// couldn't find it either in specified page, or all pages
+		return null;
+	}
+
+	// get an action by it's id
+	public Action getAction(ServletContext servletContext, String id) {
+		Action action = null;
+		// check we have pages and an id
+		if (_pages != null && id != null) {
+			// if the id is not a zero length string
+			if (id.length() > 0) {
+				// split the id parts on the underscore
+				String[] idParts = id.split("_");
+				// get the first part into a page id
+				String pageId = idParts[0];
+				try {
+					// get the specified page
+					Page page = _pages.getPage(servletContext, pageId);
+					// check we got a page
+					if (page == null) {
+						// no page matching this control id prefix so just loop all pages
+						for (String loopPageId : _pages.getPageIds()) {
+							// fetch this page
+							page = _pages.getPage(servletContext, loopPageId);
+							// look for the control
+							action = page.getAction(id);
+							// if we found it return it!
+							if (action != null) return action;
+						}
+					} else {
+						// look for the control in the page according to its prefix
+						action = page.getAction(id);
+						// return it if we found it!
+						if (action != null) return action;
+					}
+				} catch (Exception ex) {
+					// get the logger
+					Logger logger = (Logger) servletContext.getAttribute("logger");
+					// log this exception
+					logger.error("Error getting action from application", ex);
 				}
 			} // id length > 0 check
 		} // id and page non-null check
@@ -888,14 +931,14 @@ public class Application {
 	}
 
 	// get a webservice by it's name
-		public Webservice getWebserviceByName(String name) {
-			if (_webservices != null) {
-				for (Webservice webservice : _webservices) {
-					if (name.equals(webservice.getName())) return webservice;
-				}
+	public Webservice getWebserviceByName(String name) {
+		if (_webservices != null) {
+			for (Webservice webservice : _webservices) {
+				if (name.equals(webservice.getName())) return webservice;
 			}
-			return null;
 		}
+		return null;
+	}
 
 	// return the list of style classes
 	public List<String> getStyleClasses() {

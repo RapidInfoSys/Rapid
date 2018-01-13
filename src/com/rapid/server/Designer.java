@@ -635,8 +635,30 @@ public class Designer extends RapidHttpServlet {
 										// add them if there are some
 										if (pageVisibilityConditions != null) if (pageVisibilityConditions.size() > 0) jsonPage.put("visibilityConditions", pageVisibilityConditions);
 									}
-									// get map of other page controls we can access from this page - keep desiger page id null to avoid dialogue controls and events
-									JSONArray jsonControls = page.getOtherPageComponents(this, includePageVisibiltyControls, null);
+									// assume no page is selected in the designer that we want dialogue controls for
+									Boolean includeFromDialogue = false;
+									// if this loadPages was from a save
+									if (Boolean.parseBoolean(rapidRequest.getRequest().getParameter("fromSave"))) {
+										// get the page from the rapidRequest
+										Page designPage = rapidRequest.getPage();
+										// if there was one
+										if (designPage != null) {
+											// get the pageId
+											String pageId = page.getId();
+											// if we are saving a page in the designer, we will want to includeFromDialogue on all of the others
+											if (!pageId.equals(designPage.getId())) {
+												// get the list of pages we can open a dialogue to on this page
+												List<String> dialoguePageIds = page.getDialoguePageIds();
+												// if designerPageId is provided and this page is different from the one we're loading in the designer
+												if (dialoguePageIds != null) {
+													// if the page in the designer is one this page navigates to on a dialogue
+													if (dialoguePageIds.contains(pageId)) includeFromDialogue = true;
+												}
+											}
+										}
+									}
+									// get map of other page controls we can access from this page - keep designer page id null to avoid dialogue controls and events
+									JSONArray jsonControls = page.getOtherPageComponents(this, includePageVisibiltyControls, includeFromDialogue);
 									// if we got some add to the page
 									if (jsonControls != null) jsonPage.put("controls", jsonControls);
 									// check if the start page and add property if so
@@ -735,31 +757,28 @@ public class Designer extends RapidHttpServlet {
 								for (PageHeader pageHeader : application.getPages().getSortedPages()) {
 									// get this page id
 									String pageId = page.getId();
-									// if not the current page
+									// if we are loading a specific page and need to know any other components for it and this is not the destination page itself
 									if (!pageId.equals(pageHeader.getId())) {
-										// if we are loading a specific page and need to know any other components for it and this is not the destination page itself
-										if (!pageId.equals(pageHeader.getId())) {
-											// get the other page
-											Page otherPage = application.getPages().getPage(getServletContext(), pageHeader.getId());
-											// get the list of pages we can open a dialogue to on this page
-											List<String> dialoguePageIds = otherPage.getDialoguePageIds();
-											// if designerPageId is provided and this page is different from the one we're loading in the designer
-											if (dialoguePageIds != null) {
-												// if the pagein the designer is one this page navigates to on a dialogue
-												if (dialoguePageIds.contains(pageId)) {
-													// get other page components for this page
-													JSONArray jsonControls = otherPage.getOtherPageComponents(this, false, pageId);
+										// get the other page
+										Page otherPage = application.getPages().getPage(getServletContext(), pageHeader.getId());
+										// get the list of pages we can open a dialogue to on this page
+										List<String> dialoguePageIds = otherPage.getDialoguePageIds();
+										// if designerPageId is provided and this page is different from the one we're loading in the designer
+										if (dialoguePageIds != null) {
+											// if the pagein the designer is one this page navigates to on a dialogue
+											if (dialoguePageIds.contains(pageId)) {
+												// get other page components for this page
+												JSONArray jsonControls = otherPage.getOtherPageComponents(this, false, true);
+												// if we got some
+												if (jsonControls != null) {
 													// if we got some
-													if (jsonControls != null) {
-														// if we got some
-														if (jsonControls.length() > 0) {
-															// create an other page object
-															JSONObject jsonOtherPage = new JSONObject();
-															// add the controls to the page
-															jsonOtherPage.put("controls", jsonControls);
-															// add the other page to the page collection
-															jsonOtherPages.put(otherPage.getId(), jsonOtherPage);
-														}
+													if (jsonControls.length() > 0) {
+														// create an other page object
+														JSONObject jsonOtherPage = new JSONObject();
+														// add the controls to the page
+														jsonOtherPage.put("controls", jsonControls);
+														// add the other page to the page collection
+														jsonOtherPages.put(otherPage.getId(), jsonOtherPage);
 													}
 												}
 											}

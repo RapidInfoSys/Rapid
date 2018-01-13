@@ -464,8 +464,16 @@ public class Control {
 
 					} else if ("parameter".equals(type)) {
 
-						// the app parameter for what was specified in the field box
-						return application.getParameterValue(field);
+						// get the parameter value for what was specified in the field box
+						String value = application.getParameterValue(field);
+						// check we got one
+						if (value == null) {
+							// send the null if not
+							return value;
+						} else {
+							// wrap the parameter in quotes
+							return "'" + value.replace("'", "\\'")  + "'";
+						}
 
 					} else if ("page id".equals(type)) {
 

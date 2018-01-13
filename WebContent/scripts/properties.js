@@ -356,7 +356,6 @@ function getEventOptions(selectId, controls) {
 			}
 		}
 	}
-	
 	// other page events and action can be used for input
 	if (forPage && _pages) {
 		for (var i in _pages) {
@@ -373,42 +372,65 @@ function getEventOptions(selectId, controls) {
 }
 
 // this function creates the option for an existing action option
-function getExistingActionOption(action, index, selectId, ignoreId) {
+function getExistingActionOption(action, index, selectId, ignoreId, forPage) {
 	var option = "";
 	var text =  (index*1+1) + " - "  + action.type.substr(0,1).toUpperCase() + action.type.substr(1) + " action";
 	if (action.comments) text += " : " + action.comments;
-	if (action.id != ignoreId) option = "<option value='" + action.id + "' " + (action.id == selectId ? "selected='selected'" : "") + ">" + text + "</option>";
+	if (action.id != ignoreId) option = "<option value='" + action.id + "' " + (action.id == selectId ? "selected='selected'" : "") + ">" + (forPage?"":"&nbsp;&nbsp;") + text + "</option>";
 	return option;
 }
 
-function getExistingActionEventOptionGroup(control, event, eventJS) {
+function getExistingActionEventOptionGroup(control, event, eventJS, forPage) {
 	var name = _page.name;
 	if (control) name = control.name;
-	return "<optgroup label='" + name + " - " + event.type.substr(0,1).toUpperCase() + event.type.substr(1) + " event'>" + eventJS + "</optgroup>";
+	return "<optgroup label='" + (forPage?"":"&nbsp;&nbsp;") + name + " - " + event.type.substr(0,1).toUpperCase() + event.type.substr(1) + " event'>" + eventJS + "</optgroup>";
 }
 
 // this function returns a set of options for a dropdown of existing actions from current controls 
-function getExistingActionOptions(selectId, ignoreId) {
+function getExistingActionOptions(selectId, ignoreId, controls) {
+	// assume no options
 	var options = "";
-	for (var i in _page.events) {
-		var eventJS = "";
-		var event = _page.events[i];
-		for (var j in event.actions) {
-			eventJS += getExistingActionOption(event.actions[j], j, selectId, ignoreId);
-		}			
-		if (eventJS) options += getExistingActionEventOptionGroup(null, event, eventJS);
+	// assume not for the page
+	var forPage = false;
+	// if controls are not provided
+	if (!controls) {
+		// remember this is for the page
+		forPage = true;
+		// add the page events
+		for (var i in _page.events) {
+			var eventJS = "";
+			var event = _page.events[i];
+			for (var j in event.actions) {
+				eventJS += getExistingActionOption(event.actions[j], j, selectId, ignoreId, forPage);
+			}			
+			if (eventJS) options += getExistingActionEventOptionGroup(null, event, eventJS, forPage);
+		}
+		// now get the page controls
+		controls = getControls();
 	}
-	var controls = getControls();	
+	// loop the controls
 	for (var i in controls) {
 		if (controls[i].name) {
 			for (var j in controls[i].events) {
 				var eventJS = "";
 				var event = controls[i].events[j];
 				for (var k in event.actions) {					
-					eventJS += getExistingActionOption(event.actions[k], k, selectId, ignoreId);
+					eventJS += getExistingActionOption(event.actions[k], k, selectId, ignoreId, forPage);
 				}
+				if (eventJS) options += getExistingActionEventOptionGroup(controls[i], event, eventJS, forPage);
 			}
-			if (eventJS) options += getExistingActionEventOptionGroup(controls[i], event, eventJS);
+		}
+	}
+	// other page events and action can be used for input
+	if (forPage && _pages) {
+		for (var i in _pages) {
+			// if different from this page and there is a controls collection
+			if (_pages[i].id != _page.id && _pages[i].controls) {
+				// get any options for this page
+				var otherPageExistingActionOptions = getExistingActionOptions(selectId, ignoreId, _pages[i].controls);
+				// if we got some
+				if (otherPageExistingActionOptions) options += "<optgroup label='" + escapeApos(_pages[i].name + " - " + _pages[i].title) + "'>" + otherPageExistingActionOptions + "</optgroup>";
+			}
 		}
 	}
 	return options;

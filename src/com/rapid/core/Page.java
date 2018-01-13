@@ -378,6 +378,7 @@ public class Page {
 		return controls;
 	}
 
+	// find an action from a list of actions, including checking child actions
 	public Action getChildAction(List<Action> actions, String actionId) {
 		Action foundAction = null;
 		if (actions != null) {
@@ -385,7 +386,21 @@ public class Page {
 				if (action != null) {
 					if (actionId.equals(action.getId())) return action;
 					foundAction = getChildAction(action.getChildActions(), actionId);
-					if (foundAction != null) return foundAction;
+					if (foundAction != null) break;
+				}
+			}
+		}
+		return foundAction;
+	}
+
+	// find an action amongst a controls events - faster to use if we have the control already
+	public Action getChildEventsAction(List<Event> events, String actionId) {
+		Action foundAction = null;
+		if (events != null) {
+			for (Event event : events) {
+				if (event.getActions() != null) {
+					foundAction = getChildAction(event.getActions(), actionId);
+					if (foundAction != null) break;
 				}
 			}
 		}
@@ -393,19 +408,18 @@ public class Page {
 	}
 
 	// an iterative function for tree-walking child controls when searching for a specific action
-	public Action getChildControlAction(List<Control> controls, String actionId) {
+	public Action getChildControlsAction(List<Control> controls, String actionId) {
 		Action foundAction = null;
 		if (controls != null) {
 			for (Control control : controls) {
-				if (control.getEvents() != null) {
-					for (Event event : control.getEvents()) {
-						if (event.getActions() != null) {
-							foundAction = getChildAction(event.getActions(), actionId);
-							if (foundAction != null) return foundAction;
-						}
-					}
+				// look in the control events for the action
+				foundAction = getChildEventsAction(control.getEvents(), actionId);
+				// if we didn't get the action
+				if (foundAction == null) {
+					// look in the child controls
+					foundAction = getChildControlsAction(control.getChildControls(), actionId);
 				}
-				foundAction = getChildControlAction(control.getChildControls(), actionId);
+				// we're done!
 				if (foundAction != null) break;
 			}
 		}
@@ -424,7 +438,7 @@ public class Page {
 			}
 		}
 		// uses the tree walking function above to the find a particular action
-		return getChildControlAction(_controls, id);
+		return getChildControlsAction(_controls, id);
 	}
 
 	// recursively append to a list of actions from an action and it's children
@@ -573,7 +587,7 @@ public class Page {
 		return foundControl;
 	}
 
-	// find an action in the page by its id
+	// find an action's control in the page by its id
 	public Control getActionControl(String actionId) {
 		// uses the tree walking function above to the find a particular action
 		return getChildControlActionControl(_controls, actionId);
@@ -734,6 +748,8 @@ public class Page {
 								List<Event> events = control.getEvents();
 								// if we got some
 								if (events != null) {
+									// an array of events
+									JSONArray jsonEvents = new JSONArray();
 									// loop them
 									for (Event event : events) {
 										// get any actions
@@ -742,10 +758,6 @@ public class Page {
 										if (actions != null) {
 											// if there were some
 											if (actions.size() > 0) {
-												// make a jsonObject for this event
-												JSONObject jsonEvent = new JSONObject();
-												// add the control id
-												jsonEvent.put("type", event.getType());
 												// make a jsonArray for the actions
 												JSONArray jsonActions = new JSONArray();
 												// loop the actions
@@ -759,14 +771,19 @@ public class Page {
 													// add to array
 													jsonActions.put(jsonAction);
 												}
+												// make a jsonObject for this event
+												JSONObject jsonEvent = new JSONObject();
+												// add the event id
+												jsonEvent.put("type", event.getType());
 												// add the jsonActions to the event
 												jsonEvent.put("actions", jsonActions);
-												// add the jsonEvent to the control
-												jsonControl.put("events",jsonEvent);
+												// as jsonEvent to collection
+												jsonEvents.put(jsonEvent);
 											}
 										}
-
 									}
+									// add the jsonEvents to the control if we got some
+									if (jsonEvents.length() > 0) jsonControl.put("events",jsonEvents);
 								}
 							}
 							// add it to the collection we are returning straight away
@@ -781,17 +798,11 @@ public class Page {
 	}
 
 	// uses the above iterative method to return an object with flat array of controls in this page that can be used from other pages, for use in the designer
-	public JSONArray getOtherPageComponents(RapidHttpServlet rapidServlet, boolean includePageVisibiltyControls, String designerPageId) throws JSONException {
+	public JSONArray getOtherPageComponents(RapidHttpServlet rapidServlet, boolean includePageVisibiltyControls, boolean includeFromDialogue) throws JSONException {
 		// the list of controls we're about to return
 		JSONArray controls = new JSONArray();
-		// if we are looking for pageComponents for a particular page from the designer for dialogues
-		if (designerPageId == null) {
-			// we're not so start building the array using the page controls
-			getOtherPageControls(rapidServlet, controls, _controls, includePageVisibiltyControls, false);
-		} else {
-			// start building the array using the page controls
-			getOtherPageControls(rapidServlet, controls, _controls, includePageVisibiltyControls, true);
-		}
+		// start building the array using the page controls
+		getOtherPageControls(rapidServlet, controls, _controls, includePageVisibiltyControls, includeFromDialogue);
 		// return the components
 		return controls;
 	}
