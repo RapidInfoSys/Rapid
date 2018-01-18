@@ -739,7 +739,7 @@ if (data !== undefined) {
 					// get the position of this column in the data object
 					var mappedCol = columnMap[j];
 					// if we can find the column and it has data use it as the value
-					if (mappedCol && row[mappedCol]) value = row[columnMap[j]];
+					if (mappedCol && row[mappedCol] !== null) value = row[columnMap[j]];
 					// add the cell with the value and return a reference
 					var cellObject = rowObject.append("<td" + style + ">" + value + "</td>").find("td:last");
 					// apply any cell function
