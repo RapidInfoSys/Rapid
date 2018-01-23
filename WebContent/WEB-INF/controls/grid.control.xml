@@ -67,6 +67,15 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	        </property>
 	        
 	        <property>
+	            <key>multiSelect</key>
+	            <name>Multi-select?</name>
+	            <setConstructValueFunction>return [];</setConstructValueFunction>
+	            <changeValueJavaScript>checkbox</changeValueJavaScript>
+	            <refreshHtml>true</refreshHtml>
+	            <helpHtml>Whether to show a first column of checkboxes to allow multiple rows in the grid to be selected.</helpHtml>
+	        </property>
+	        
+	        <property>
 	            <key>dataStorageType</key>
 	            <name>Data store type</name>
 	            <setConstructValueFunction>return "";</setConstructValueFunction>
@@ -461,6 +470,20 @@ function getGridSelectedRow(id, ev) {
 	}
 	return row;
 }
+
+// gets the selected rows, ignoring rows without rowStyle1 and rowStyle2 which can be introduced by custom code
+function getGridMutiSelectedRows(id, ev) {
+	// assume we're not going to find any
+	var rows = null;
+	// get the grid
+	var grid = $("#" + id);
+	// make sure it's a table
+	if (!grid.is("table")) grid = grid.find("table").last();
+	// rows have .rowSelect and not data-ignore
+	rows = grid.find("tr.rowSelect").not("[data-ignore]");			
+	// return
+	return rows;
+}
            	
 	                ]]>
 	            </contents>
@@ -473,6 +496,10 @@ var headerHtml = "<tr" + (this.columnHeadings ? "" : " style='display:none;'") +
 var rowHtml = "<tr><td>No columns</td></tr>";
 if (this.columns.length > 0) {
 	var rowHtml = "<tr>";
+	if (this.multiSelect) {
+		headerHtml += "<td><input type='checkbox' class='gridMultiSelectHeader'/></td>";
+		rowHtml += "<td><input type='checkbox' class='gridMultiSelect'/></td>";
+	}
 	var columnCount = 0;
 	for (var i in this.columns) {
 		var column = this.columns[i];
@@ -565,6 +592,9 @@ if (this.styles && this.styles.length > 0) {
 		if (style.appliesTo && style.appliesTo.indexOf("rowSelect") > 0) details.rowSelect = true;
 	}
 }
+// set multiSelect
+if (this.multiSelect) details.multiSelect = true;
+// check and set data storage
 if (this.dataStorageType) {
 	this.canBeUsedFromOtherPages = true;
 	details.dataStorageType = this.dataStorageType;
@@ -729,6 +759,9 @@ if (data !== undefined) {
 			for (var i in data.rows) {
 				var row = data.rows[i];
 				var rowObject = control.append("<tr class='rowStyle" + (i % 2 + 1) + "'></tr>").find("tr:last");
+				// add multiselect
+				if (details.multiSelect) rowObject.append("<td><input type='checkbox' class='gridMultiSelect' /></td>");
+				// loop colummns
 				for (var j in details.columns) {
 					var style = "";
 					if (!details.columns[j].visible) style += "display:none;";
@@ -852,15 +885,52 @@ if (data !== undefined) {
 				
 	} // vertical scrolling
 	
-	// if we click on a row that isn't the first one
-	control.children().last().children("tr:not(:first)").click( function() {
-		// get the row 
-		var row = $(this);
-		// remove rowSelect class from all rows in the table
-		row.parent().find("tr.rowSelect").removeClass("rowSelect");
-		// add rowSelect to this row
-		row.addClass("rowSelect"); 
-	});
+	// if we have multiSelect
+	if (details.multiSelect) {
+		// fixed header clones the header and the checkbox in it so we need to put the header checbox listener back
+		if (details.scrollV && details.scrollHeight && details.fixedHeader) {
+			$("#" + id).find("input.gridMultiSelectHeader").first().change(function(ev){
+				// get the header value
+				var select = $(this).prop("checked");
+				// update rowSelect accordingly
+				if (select) {
+					control.find("tr").addClass("rowSelect");
+				} else {
+					control.find("tr").removeClass("rowSelect");
+				}
+				// update row checkboxes
+				control.find("input.gridMultiSelect").prop("checked",select);
+			});
+		}
+		// listen for rows checkbox - needs to be click to beat the listener on the row
+		control.find("input.gridMultiSelect").click(function(ev){
+			// get the input
+			var i = $(this);
+			// get the value
+			var select = i.prop("checked");
+			// add or remove class accordingly
+			if (select) {
+				i.closest("tr").addClass("rowSelect");
+			} else {
+				i.closest("tr").removeClass("rowSelect");
+			}
+			// check whether any rows without rowSelect, if not uncheck header checkboxs (includes if fixed header)
+			if (control.find("tr.rowStyle1,tr.rowStyle2").not("[data-ignore]").not(".rowSelect").length > 0) $("#" + id).find("input.gridMultiSelectHeader").prop("checked",false);
+			// stop the row click event firing
+			ev.stopPropagation();
+		});
+	
+	} else {
+		// if we click on a row that isn't the first one
+		control.children().last().children("tr:not(:first)").click( function() {
+			// get the row 
+			var row = $(this);
+			// remove rowSelect class from all rows in the table
+			row.parent().find("tr.rowSelect").removeClass("rowSelect");
+			// add rowSelect to this row
+			row.addClass("rowSelect"); 
+		});
+	}
 	
 	// apply the resizing	
 	$(window).resize(); 
@@ -988,6 +1058,21 @@ if (details) {
 			}
 		}
 	}
+	// if this is multiSelect, set up the header listener
+	if (details.multiSelect) {
+		control.find("input.gridMultiSelectHeader").change(function(ev){
+			// get the header value
+			var select = $(this).prop("checked");
+			// update rowSelect accordingly
+			if (select) {
+				control.find("tr").addClass("rowSelect");
+			} else {
+				control.find("tr").removeClass("rowSelect");
+			}
+			// update row checkboxes
+			control.find("input.gridMultiSelect").prop("checked",select);
+		});
+	}
 	// if there is a data store
 	if (details.dataStorageType) {
 		var data = getGridDataStoreData(id, details);
@@ -1027,29 +1112,68 @@ if (details.dataStorageType) {
 		data.rows = [];
 	}
 } else {
-	var row = getGridSelectedRow(id, ev);
-	if (row[0]) {
-		data = {fields:[],rows:[[]]};
-		for (var i in details.columns) {
-			data.fields.push(details.columns[i].field);
-			data.rows[0].push(row.children(":nth(" + i + ")").html());
+	if (details.multiSelect) {
+		var rows = getGridMutiSelectedRows(id, ev);
+		if (rows && rows.length > 0) {
+			data = {fields:[],rows:[]};
+			for (var i = 0; i < rows.length; i++) {
+				// get a jQuery wrapper for the row element
+				var row = $(rows[i]);
+				// prepare a data row
+				var dataRow = [];
+				// loop the columns
+				for (var j = 0; j < details.columns.length; j++) {
+					// add fields once only
+					if (i == 0) data.fields.push(details.columns[j].field);
+					// add cell html to datarow - one over because of the checkbox
+					dataRow.push(row.children(":nth(" + (j + 1) + ")").html());
+				}
+				// add datarow to row
+				data.rows.push(dataRow);
+			}
+		}
+	} else {
+		var row = getGridSelectedRow(id, ev);
+		if (row[0]) {
+			data = {fields:[],rows:[[]]};
+			for (var i in details.columns) {
+				data.fields.push(details.columns[i].field);
+				data.rows[0].push(row.children(":nth(" + i + ")").html());
+			}
 		}
 	}
 }
+// if we were provided with a field to drill into the row data
 if (field && data && data.fields && data.rows && data.rows.length > 0) {
-	var found = false;
-	for (var i in data.fields) {
-		if (data.fields[i] && data.fields[i].toLowerCase() == field.toLowerCase()) {
-			data = data.rows[0][i];
-			found = true;
-			break;
+	// check multiSelect
+	if (details.multiSelect) {
+		// create complex data object if so
+		data = {fields:[field],rows:[]};
+	}
+	// loop rows - non multi select will have only 1
+	for (var i in data.rows) {
+		var row = data.rows[i];
+		var value = null;
+		for (var j in data.fields) {
+			if (data.fields[j] && data.fields[j].toLowerCase() == field.toLowerCase()) {
+				value = data.rows[i][j];
+				break;
+			}
+		}
+		if (value != null) {
+			if (details.muliSelect) {
+				data.rows.push([]);
+				data.rows[i].push(value);
+			} else {
+				data = value;
+				break;
+			}
 		}
 	}
-	if (!found) data = null;
 }
 return data;
-			        ]]>	  	   	            
-	   	        </getPropertyFunction>	   
+			        ]]>      
+	   	        </getPropertyFunction>
 	   	        <setPropertyJavaScript>
 	   	            <![CDATA[
 gridData = getGridDataStoreData(id, details);
