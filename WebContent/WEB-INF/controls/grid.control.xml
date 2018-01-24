@@ -69,7 +69,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	        <property>
 	            <key>multiSelect</key>
 	            <name>Multi-select?</name>
-	            <setConstructValueFunction>return [];</setConstructValueFunction>
+	            <setConstructValueFunction>return false;</setConstructValueFunction>
 	            <changeValueJavaScript>checkbox</changeValueJavaScript>
 	            <refreshHtml>true</refreshHtml>
 	            <helpHtml>Whether to show a first column of checkboxes to allow multiple rows in the grid to be selected.</helpHtml>
@@ -610,7 +610,23 @@ if (this.scrollH) {
 if (this.scrollV) {
 	details.scrollV = this.scrollV;
 	details.scrollHeight = this.scrollHeight;
-	details.fixedHeader = this.fixedHeader;	
+	details.fixedHeader = this.fixedHeader;
+
+	// assume no headerHeight
+	var headerHeight = 0;
+	// get the control
+	var control = this.object;
+	// if visible
+	if (control.is(":visible")) {
+		// get the first row
+		var headerRow = control.find("tr").first();		
+		// retain this in the window as this might be called again when it's not visible
+		window[this.id + "headerHeight"] = headerRow.height();
+	}
+	// read any headerHeight set previously
+	headerHeight = window[this.id + "headerHeight"]
+	// add to details if we got one
+	if (headerHeight) details.headerHeight = headerHeight;	
 }
 return details;
 			]]>	        	        
@@ -855,11 +871,13 @@ if (data !== undefined) {
 			    });
 			    
 			    // get the header hight
-			    var headerHight = newTbl.find("tr:first-child").height();
+			    var headerHeight = newTbl.find("tr:first-child").height();
+			    // if the headerHeight is 0 this table is probably not visible use what we have in the details
+			    if (headerHeight == 0 && details.headerHeight) headerHeight = details.headerHeight;
 			    // set height of the header table wrapper
-			    newTbl.parent().css({"height":headerHight});
+			    newTbl.parent().css({"height":headerHeight});
 			    // shift the new table up behind the fixed header
-			    control.css("margin-top",-headerHight);
+			    control.css("margin-top",-headerHeight);
 			    
 			} // fixed header applied
 		    
