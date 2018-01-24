@@ -789,13 +789,15 @@ if (data !== undefined) {
 			if (data.selectedRowNumber) control.find("tr:nth(" + data.selectedRowNumber + ")").addClass("rowSelect");
 		} else {
 			for (var i in data.rows) {
+				// add a row object with the styling
+				var rowObject = control.append("<tr class='rowStyle" + (i % 2 + 1) + "'></tr>").find("tr:last");
+				// get the row
 				var row = data.rows[i];
-				var rowHtml = "<tr>";
+				// loop the row cells				
 				for (var j in row) {
-					rowHtml += "<td>" + row[j] + "</td>";
+					// add cell with value to row
+					rowObject.append("<td" + style + ">" + row[j] + "</td>");
 				}
-				rowHtml += "</tr>";
-				control.append(rowHtml);
 			}
 		} // got details and columns and data fields							
 	} // got data
