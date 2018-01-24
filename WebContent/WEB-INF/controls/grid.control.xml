@@ -774,7 +774,7 @@ if (data !== undefined) {
 					// if we can find the column and it has data use it as the value
 					if (mappedCol && row[mappedCol] !== null) value = row[columnMap[j]];
 					// add the cell with the value and return a reference
-					var cellObject = rowObject.append("<td" + style + ">" + value + "</td>").find("td:last");
+					var cellObject = rowObject.append("<td" + style + ">" + value + "</td>").children("td:last");
 					// apply any cell function
 					if (details.columns[j].f) {
 						details.columns[j].f.apply(cellObject,[id, data, field, details, value]);
