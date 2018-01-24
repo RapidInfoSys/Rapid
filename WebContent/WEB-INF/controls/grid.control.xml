@@ -527,6 +527,14 @@ if (this.columns.length > 0) {
 } else {
 	headerHtml += "<td>No columns</td>"
 }
+
+// if details and headerHeight, retain in the designer
+if (this.details) {
+	// if it's still a string parse it from JSON
+	if (typeof this.details === 'string' || this.details instanceof String) this.details = JSON.parse(this.details);
+	// if there is a headerHeight keep it in the window
+	if (this.details.headerHeight) window[this.id + "headerHeight"] = this.details.headerHeight;
+}
 	                
 // check for scrolling
 if (this.scrollH || this.scrollV) {
