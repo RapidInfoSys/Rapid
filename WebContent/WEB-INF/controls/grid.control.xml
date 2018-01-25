@@ -527,14 +527,6 @@ if (this.columns.length > 0) {
 } else {
 	headerHtml += "<td>No columns</td>"
 }
-
-// if details and headerHeight, retain in the designer
-if (this.details) {
-	// if it's still a string parse it from JSON
-	if (typeof this.details === 'string' || this.details instanceof String) this.details = JSON.parse(this.details);
-	// if there is a headerHeight keep it in the window
-	if (this.details.headerHeight) window[this.id + "headerHeight"] = this.details.headerHeight;
-}
 	                
 // check for scrolling
 if (this.scrollH || this.scrollV) {
@@ -619,22 +611,6 @@ if (this.scrollV) {
 	details.scrollV = this.scrollV;
 	details.scrollHeight = this.scrollHeight;
 	details.fixedHeader = this.fixedHeader;
-
-	// assume no headerHeight
-	var headerHeight = 0;
-	// get the control
-	var control = this.object;
-	// if visible
-	if (control.is(":visible")) {
-		// get the first row
-		var headerRow = control.find("tr").first();		
-		// retain this in the window as this might be called again when it's not visible
-		window[this.id + "headerHeight"] = headerRow.height();
-	}
-	// read any headerHeight set previously
-	headerHeight = window[this.id + "headerHeight"]
-	// add to details if we got one
-	if (headerHeight) details.headerHeight = headerHeight;	
 }
 return details;
 			]]>	        	        
@@ -878,14 +854,7 @@ if (data !== undefined) {
 			        $(this).width($(this).attr("data-item-original-width"));
 			    });
 			    
-			    // get the header hight
-			    var headerHeight = newTbl.find("tr:first-child").height();
-			    // if the headerHeight is 0 this table is probably not visible use what we have in the details
-			    if (headerHeight == 0 && details.headerHeight) headerHeight = details.headerHeight;
-			    // set height of the header table wrapper
-			    newTbl.parent().css({"height":headerHeight});
-			    // shift the new table up behind the fixed header
-			    control.css("margin-top",-headerHeight);
+			    // positioning the header has been moved to the init on window resize
 			    
 			} // fixed header applied
 		    
@@ -1085,6 +1054,27 @@ if (details) {
 				});
 			}
 		}
+	}
+	// if this is a fixed header
+	if (details.scrollV && details.fixedHeader) {
+	
+		// listen for a window resize - sent after grid population and when some controls are made visible
+		$(window).on('resize', function(){
+
+			// only if control is visible
+			if (control.is(":visible")) {
+				// get the header table
+				var headerTable =  $("#" + id).find("table").first();			
+				// get the header hight
+				var headerHeight = headerTable.find("tr:first-child").height();
+				// set height of the header table wrapper
+				headerTable.parent().css({"height":headerHeight});
+				 // shift the second table up behind the fixed header
+				control.css("margin-top",-headerHeight);
+			}
+
+		});
+	
 	}
 	// if this is multiSelect, set up the header listener
 	if (details.multiSelect) {

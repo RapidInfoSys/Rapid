@@ -358,7 +358,9 @@ $("#" + id).children("ul").children("li").each( function() {
 		} else {
 			// selected tab is table cell
 			tabs.children("div.selected").css("display","table-cell");
-		}		
+		}
+		// fire a resize as some controls may need to adjust now they are visible
+		$(window).trigger('resize');
 	});
 });	        
 	        ]]>	        	       	        
