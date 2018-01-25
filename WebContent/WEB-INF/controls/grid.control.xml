@@ -1061,8 +1061,8 @@ if (details) {
 		// listen for a window resize - sent after grid population and when some controls are made visible
 		$(window).on('resize', function(){
 
-			// only if control is visible
-			if (control.is(":visible")) {
+			// only if control is visible and a scroll body has been set up for it
+			if (control.is(":visible") && control.parent().is("div.gridScrollBody")) {
 				// get the header table
 				var headerTable =  $("#" + id).find("table").first();			
 				// get the header hight
