@@ -668,7 +668,8 @@ if (details) {
 			table.find("tr:not(:first):not([data-ignore])").each(function(i) {
 				var row = [];
 				$(this).children().each(function(i) {
-					if (details.columns[i].field) row.push($(this).html());
+					if (details.multiSelect) i--;
+					if (i >= 0 && details.columns[i].field) row.push($(this).html());
 				});
 				data.rows.push(row);
 			});
@@ -884,9 +885,9 @@ if (data !== undefined) {
 	
 	// if we have multiSelect
 	if (details.multiSelect) {
-		// fixed header clones the header and the checkbox in it so we need to put the header checbox listener back
+		// fixed header clones the header and the checkbox in it so we need to put the header checkbox listener back
 		if (details.scrollV && details.scrollHeight && details.fixedHeader) {
-			$("#" + id).find("input.gridMultiSelectHeader").first().change(function(ev){
+			$("#" + id).find("input.gridMultiSelectHeader").click( function(ev){
 				// get the header value
 				var select = $(this).prop("checked");
 				// update rowSelect accordingly
@@ -1031,12 +1032,16 @@ if (details) {
 		for (var i in details.columns) {
 			// if it has a sort
 			if (details.columns[i].sort) {
-				// get the header cell
-				var cell = $(headers.get(i));
+				// assume the index is i
+				var index = i;
+				// if we have multiselect move the index on one
+				if (details.multiSelect) index ++;
+				// get the header cell - move one on if we have multiselect
+				var cell = $(headers.get(index));
 				// change the cursor
 				cell.css("cursor","pointer");
 				// add a listener
-				cell.click( {index:i},function(ev) {
+				cell.click( {index:index},function(ev) {
 					// get the span
 					var span = $(ev.target);
 					// drill down if need be
@@ -1076,7 +1081,7 @@ if (details) {
 	}
 	// if this is multiSelect, set up the header listener
 	if (details.multiSelect) {
-		$("#" + id).find("input.gridMultiSelectHeader").first().change(function(ev){
+		$("#" + id).find("input.gridMultiSelectHeader").click( function(ev){
 			// get the header value
 			var select = $(this).prop("checked");
 			// update rowSelect accordingly

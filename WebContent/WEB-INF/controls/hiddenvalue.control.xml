@@ -105,8 +105,10 @@ this.object.remove();
 	    <getDataFunction>
 	        <![CDATA[
 var value = $("#" + id).val();
-var match = value.match(/^\-?\d*\.?\d*$/);
-if (match) value = value * 1;
+if (value) {
+	var match = value.match(/^\-?\d*\.?\d*$/);
+	if (match) value = value * 1;
+}
 return value;
 			]]>
 	    </getDataFunction>
