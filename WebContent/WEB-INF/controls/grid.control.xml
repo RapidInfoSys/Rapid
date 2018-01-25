@@ -868,7 +868,7 @@ if (data !== undefined) {
 				// create and style the wrapper
 			    var oTblDiv = $("<div class='gridScroll' id='" + id + "' />");
 			    oTblDiv.css({
-			    	"height": details.scrollHeight,
+			    	"max-height": details.scrollHeight,
 			    	"overflow-y": details.scrollV
 			    });
 			    // retain that we have applied the scroll
