@@ -899,8 +899,8 @@ if (data !== undefined) {
 				control.find("input.gridMultiSelect").prop("checked",select);
 			});
 		}
-		// listen for rows checkbox - needs to be click to beat the listener on the row
-		control.find("input.gridMultiSelect").click(function(ev){
+		// listen for rows checkbox - needs to be click to beat the listener on the row, and use id in case of fixed header
+		$("#" + id).find("input.gridMultiSelect").first().click(function(ev){
 			// get the input
 			var i = $(this);
 			// get the value
@@ -913,8 +913,6 @@ if (data !== undefined) {
 			}
 			// check whether any rows without rowSelect, if not uncheck header checkboxs (includes if fixed header)
 			if (control.find("tr.rowStyle1,tr.rowStyle2").not("[data-ignore]").not(".rowSelect").length > 0) $("#" + id).find("input.gridMultiSelectHeader").prop("checked",false);
-			// stop the row click event firing
-			ev.stopPropagation();
 		});
 	
 	} else {
