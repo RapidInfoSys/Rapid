@@ -1231,8 +1231,12 @@ public abstract class FormAdapter {
 
 
 		} catch (Exception ex) {
+			// get the error message
+			String message = ex.getMessage();
+			// set if null
+			if (message == null) message = "Check the log for details";
 			// retain the error message in the details
-			formDetails.setErrorMessage(ex.getMessage());
+			formDetails.setErrorMessage(message);
 			// rethrow
 			throw ex;
 		}
