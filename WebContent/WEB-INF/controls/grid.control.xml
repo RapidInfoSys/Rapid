@@ -900,7 +900,7 @@ if (data !== undefined) {
 			});
 		}
 		// listen for rows checkbox - needs to be click to beat the listener on the row, and use id in case of fixed header
-		$("#" + id).find("input.gridMultiSelect").first().click(function(ev){
+		$(control).find("input.gridMultiSelect").click(function(ev){
 			// get the input
 			var i = $(this);
 			// get the value
@@ -1076,7 +1076,7 @@ if (details) {
 	}
 	// if this is multiSelect, set up the header listener
 	if (details.multiSelect) {
-		control.find("input.gridMultiSelectHeader").change(function(ev){
+		$("#" + id).find("input.gridMultiSelectHeader").first().change(function(ev){
 			// get the header value
 			var select = $(this).prop("checked");
 			// update rowSelect accordingly
