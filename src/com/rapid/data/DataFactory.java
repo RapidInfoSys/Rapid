@@ -345,6 +345,8 @@ public class DataFactory {
 	public int getPreparedUpdate(RapidRequest rapidRequest, String sql, ArrayList<Parameter> parameters) throws SQLException, ClassNotFoundException, ConnectionAdapterException {
 
 		if (sql.trim().toLowerCase().startsWith("begin")) {
+			
+			_sql = sql;
 
 			CallableStatement cs = getConnection(rapidRequest).prepareCall(sql);
 
@@ -370,29 +372,31 @@ public class DataFactory {
 
 	}
 
-	public String getPreparedScalar(RapidRequest rapidRequest, String SQL, ArrayList<Parameter> parameters) throws SQLException, ClassNotFoundException, ConnectionAdapterException {
+	public String getPreparedScalar(RapidRequest rapidRequest, String sql, ArrayList<Parameter> parameters) throws SQLException, ClassNotFoundException, ConnectionAdapterException {
 
 		String result = null;
 
-		if (SQL != null) {
+		if (sql != null) {
 
-			String sqlCheck = SQL.trim().toLowerCase();
+			String sqlCheck = sql.trim().toLowerCase();
 
 			if (sqlCheck.startsWith("select")) {
 
-				_resultset = getPreparedStatement(rapidRequest, SQL, parameters).executeQuery();
+				_resultset = getPreparedStatement(rapidRequest, sql, parameters).executeQuery();
 
 				if (_resultset.next()) result = _resultset.getString(1);
 
 			} else if (sqlCheck.startsWith("insert") || sqlCheck.startsWith("update") || sqlCheck.startsWith("delete"))  {
 
-				result = Integer.toString(getPreparedUpdate(rapidRequest, SQL, parameters));
+				result = Integer.toString(getPreparedUpdate(rapidRequest, sql, parameters));
 
 			} else {
+				
+				_sql = sql;
 
 				if (_connection == null) _connection = getConnection(rapidRequest);
 
-				CallableStatement st = _connection.prepareCall("{? = call " + SQL + "}");
+				CallableStatement st = _connection.prepareCall("{? = call " + sql + "}");
 
 				_preparedStatement = st;
 
