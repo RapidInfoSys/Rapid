@@ -346,7 +346,7 @@ $("#" + id).children("ul").children("li").each( function() {
 		// remove selected from all tab header items
 		tabs.children("ul").children("li").removeClass("selected");
 		// remove selected from all tab body items and hide
-		tabs.children("div").removeClass("selected").css("display","none");
+		tabs.children("div").removeClass("selected").hide();
 		// add selected to the li we just clicked on, also get it's index, plus 2, 1 to go from zero to 1 based, the other 1 because of the headers
 		var index = $(this).addClass("selected").index() + 2;
 		// apply selected to the correct body
@@ -354,13 +354,11 @@ $("#" + id).children("ul").children("li").each( function() {
 		// check the type
 		if (horizontal) {
 			// selected tab is display block
-			tabs.children("div.selected").css("display","block");			
+			tabs.children("div.selected").css("display","block").show();			
 		} else {
 			// selected tab is table cell
-			tabs.children("div.selected").css("display","table-cell");
+			tabs.children("div.selected").css("display","table-cell").show();
 		}
-		// fire a resize as some controls may need to adjust now they are visible
-		$(window).trigger('resize');
 	});
 });	        
 	        ]]>	        	       	        
