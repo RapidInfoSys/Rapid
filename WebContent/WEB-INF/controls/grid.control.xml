@@ -471,6 +471,18 @@ function getGridSelectedRow(id, ev) {
 	return row;
 }
 
+// measures height of grid fixed headers
+function checkGridFixedHeaderHeight(id) {
+	// get the header table
+	var headerTable =  $("#" + id).find("table").first();			
+	// get the header hight
+	var headerHeight = headerTable.find("tr:first-child").height();
+	// set height of the header table wrapper
+	headerTable.parent().css({"height":headerHeight});
+	// shift the second table up behind the fixed header
+	$("#" + id).find("table").last().css("margin-top",-headerHeight);
+}
+
 // gets the selected rows, ignoring rows without rowStyle1 and rowStyle2 which can be introduced by custom code
 function getGridMutiSelectedRows(id, ev) {
 	// assume we're not going to find any
@@ -855,7 +867,8 @@ if (data !== undefined) {
 			        $(this).width($(this).attr("data-item-original-width"));
 			    });
 			    
-			    // positioning the header has been moved to the init on window resize
+			    // check and set fixed header height
+				checkGridFixedHeaderHeight(id);
 			    
 			} // fixed header applied
 		    
@@ -1061,21 +1074,15 @@ if (details) {
 	// if this is a fixed header
 	if (details.scrollV && details.fixedHeader) {
 	
-		// listen for a window resize - sent after grid population and when some controls are made visible
-		$(window).on('resize', function(){
-
+		// if any of our parents is shown re-check our heights as we wouldn't have been able to measure when hidden
+		$(control).parents().on('show', function(){
 			// only if control is visible and a scroll body has been set up for it
 			if (control.is(":visible") && control.parent().is("div.gridScrollBody")) {
-				// get the header table
-				var headerTable =  $("#" + id).find("table").first();			
-				// get the header hight
-				var headerHeight = headerTable.find("tr:first-child").height();
-				// set height of the header table wrapper
-				headerTable.parent().css({"height":headerHeight});
-				 // shift the second table up behind the fixed header
-				control.css("margin-top",-headerHeight);
+				// check fixed header height
+				checkGridFixedHeaderHeight(id);
+				// only do this once
+				return false;
 			}
-
 		});
 	
 	}
