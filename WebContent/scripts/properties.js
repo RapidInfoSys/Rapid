@@ -573,7 +573,11 @@ function showProperties(control) {
 		var properties = controlClass.properties;
 		if (properties) {
 			// (if a single it's a class not an array due to JSON class conversion from xml)
-			if ($.isArray(properties.property)) properties = properties.property;
+			if ($.isArray(properties.property)) {
+				properties = properties.property;
+			} else if (properties.property) {
+				properties = [properties.property];
+			}
 			// loop the class properties
 			for (var i = 0; i < properties.length; i++) {
 				// retrieve a property object from the control class
