@@ -315,12 +315,24 @@ public class DataFactory {
 		return _preparedStatement;
 
 	}
+	
+	private ResultSet getFirstResultSet(PreparedStatement preparedStatement) throws SQLException {
+			
+		preparedStatement.execute();
+	
+		_resultset = preparedStatement.getResultSet();
+	
+		while (_resultset == null && preparedStatement.getMoreResults()) {
+				_resultset = preparedStatement.getResultSet();
+			}
+			
+		return _resultset;
+	
+	}
 
 	public ResultSet getPreparedResultSet(RapidRequest rapidRequest, String sql, ArrayList<Parameter> parameters) throws SQLException, ClassNotFoundException, ConnectionAdapterException {
 
-		_resultset = getPreparedStatement(rapidRequest, sql, parameters).executeQuery();
-
-		return _resultset;
+		return getFirstResultSet(getPreparedStatement(rapidRequest, sql, parameters));
 
 	}
 
@@ -328,17 +340,7 @@ public class DataFactory {
 
 		Parameters params = new Parameters(parameters);
 
-		_resultset = getPreparedStatement(rapidRequest, sql, params).executeQuery();
-
-		return _resultset;
-
-	}
-
-	public ResultSet getPreparedResultSet(RapidRequest rapidRequest, String sql) throws SQLException, ClassNotFoundException, ConnectionAdapterException {
-
-		_resultset = getPreparedStatement(rapidRequest, sql, null).executeQuery();
-
-		return _resultset;
+		return getFirstResultSet(getPreparedStatement(rapidRequest, sql, params));
 
 	}
 
@@ -382,7 +384,7 @@ public class DataFactory {
 
 			if (sqlCheck.startsWith("select")) {
 
-				_resultset = getPreparedStatement(rapidRequest, sql, parameters).executeQuery();
+				_resultset = getFirstResultSet(getPreparedStatement(rapidRequest, sql, parameters));
 
 				if (_resultset.next()) result = _resultset.getString(1);
 
