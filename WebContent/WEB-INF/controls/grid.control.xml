@@ -250,13 +250,13 @@ function sortGridByColumn(ev, id, details, column, asc) {
 		var dataColumn = column;
 		
 		// check the column matches the field
-		if (data.fields[column] != field) {
+		if (field && data.fields[column] != field) {
 			// didn't match so find what it should be
 			for (var i in data.fields) {
 				if (data.fields[i] && data.fields[i].toLowerCase() == field.toLowerCase()) {
-					// 
+					// update column
 					dataColumn = i;
-					
+					// we're done
 					break;
 				}
 			}	
@@ -264,11 +264,24 @@ function sortGridByColumn(ev, id, details, column, asc) {
 	
 		// check there is data for the column
 		if (data && data.rows && data.fields[dataColumn]) {
-		
+					
 			// an array for all values in this column
 			var sortedValues = [];
-			// populate the array for each row with an object with the original index and value
-			for (var i in data.rows) sortedValues.push( {index:i, value:data.rows[i][dataColumn]} );
+			// populate the array for each row with an object with the original index, value, and if selected
+			for (var i in data.rows) sortedValues.push({ index:i, value:data.rows[i][dataColumn] });
+			
+			// get the control
+			var control = $("#" + id);
+			// make sure it's a table
+			if (!control.is("table")) control = control.find("table").last();
+			// loop any selected table rows
+			control.find("tr.rowStyle1.rowSelect,tr.rowStyle2.rowSelect").not("[data-ignore]").each( function(i){
+				// get the row
+				var selectedRow = $(this);
+				// update sortedValues at selectedRow index (less one because of header row)
+				sortedValues[selectedRow.index() - 1].selected = true;
+			});
+			
 			// determin the sort type
 			switch (details.columns[column].sort) {
 				// for n, turn both values into numbers and use that
@@ -393,18 +406,41 @@ function sortGridByColumn(ev, id, details, column, asc) {
 					
 			// create a new rows array
 			var rows = [];
-			// if asc
-			if (asc) {
-				// loop the returned sorted column values and add into the rows array from their original position
-				for (var i in sortedValues) rows.push(data.rows[sortedValues[i].index]);
-			} else {
-				// loop the returned sorted column values in reverse  and add into the rows array from their original position
-				for (var i in sortedValues) rows.push(data.rows[sortedValues[sortedValues.length - i - 1].index]);
+			// assume no row selections
+			var rowSelections = [];
+			// loop the returned sorted column values 
+			for (var i in sortedValues) {
+				// assume asc
+				var index = i;
+				// if not asc invert
+				if (!asc) index = sortedValues.length - i - 1;
+				// get the sorted value
+				var sortedValue = sortedValues[index];
+				// add into the rows array from their original position
+				rows.push(data.rows[sortedValue.index]);
+				// retain if we need to reapply selection
+				if (sortedValue.selected) rowSelections.push(i);
 			}
 			// replace the data rows with the placed rows
 			data.rows = rows;
 			// set the sorted data
 			setData_grid(ev, id, null, details, data);
+			
+			// if there are selections
+			if (rowSelections.length > 0) {
+				// get the table rows
+				var tableRows = control.find("tr.rowStyle1,tr.rowStyle2").not("[data-ignore]");
+				// loop row selections
+				for (var i in rowSelections) {
+					// get the selected row
+					var selectedRow = $(tableRows.get(rowSelections[i]));
+					// add back selection
+					selectedRow.addClass("rowSelect");
+					// if we have multiselect add tick
+					if (details.multiSelect) selectedRow.find("td:first-child input").prop("checked",true);
+				}
+			}
+			
 		}
 	}
 } 
