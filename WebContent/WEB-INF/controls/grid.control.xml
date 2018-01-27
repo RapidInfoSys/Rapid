@@ -912,23 +912,7 @@ if (data !== undefined) {
 	
 	// if we have multiSelect
 	if (details.multiSelect) {
-	
-		// fixed header clones the header and the checkbox in it so we need to put the header checkbox listener back
-		if (details.scrollV && details.scrollHeight && details.fixedHeader) {
-			$("#" + id).find("input.gridMultiSelectHeader").click( function(ev){
-				// get the header value
-				var select = $(this).prop("checked");
-				// update rowSelect accordingly
-				if (select) {
-					control.find("tr").addClass("rowSelect");
-				} else {
-					control.find("tr").removeClass("rowSelect");
-				}
-				// update row checkboxes
-				control.find("input.gridMultiSelect").prop("checked",select);
-			});
-		}
-		
+			
 		// listen for rows checkbox - needs to be click to beat the listener on the row, and use id in case of fixed header
 		$(control).find("input.gridMultiSelect").click(function(ev){
 			// get the input
@@ -941,8 +925,14 @@ if (data !== undefined) {
 			} else {
 				i.closest("tr").removeClass("rowSelect");
 			}
+			// get data rows
+			var rows = control.find("tr.rowStyle1,tr.rowStyle2").not("[data-ignore]");
 			// check whether any rows without rowSelect, if not uncheck header checkboxs (includes if fixed header)
-			if (control.find("tr.rowStyle1,tr.rowStyle2").not("[data-ignore]").not(".rowSelect").length > 0) $("#" + id).find("input.gridMultiSelectHeader").prop("checked",false);
+			if (rows.length > 0 && rows.not(".rowSelect").length == 0) {
+				$("#" + id).find("input.gridMultiSelectHeader").prop("checked",true);
+			} else {
+				$("#" + id).find("input.gridMultiSelectHeader").prop("checked",false);
+			}
 		});
 	
 	} else {
