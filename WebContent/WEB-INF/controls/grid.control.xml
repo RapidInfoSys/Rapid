@@ -188,17 +188,6 @@ div.gridScrollHeader {
 	overflow-y: hidden;
 }
 
-div.gridScrollHeader table {
-	width: calc(100% - 16px) !important;	
-}
-
-div.gridScrollHeader table.grid tr:not(:first-child) {
-	visibility: hidden;
-}
-
-div.gridScrollBody table.grid tr:first-child {
-	visibility: hidden;
-}
 	                ]]>
 				</contents>
 	        </resource>
@@ -265,7 +254,9 @@ function sortGridByColumn(ev, id, details, column, asc) {
 			// didn't match so find what it should be
 			for (var i in data.fields) {
 				if (data.fields[i] && data.fields[i].toLowerCase() == field.toLowerCase()) {
+					// 
 					dataColumn = i;
+					
 					break;
 				}
 			}	
@@ -405,10 +396,10 @@ function sortGridByColumn(ev, id, details, column, asc) {
 			// if asc
 			if (asc) {
 				// loop the returned sorted column values and add into the rows array from their original position
-				for (var i in sortedValues)  rows.push(data.rows[sortedValues[i].index]);
+				for (var i in sortedValues) rows.push(data.rows[sortedValues[i].index]);
 			} else {
 				// loop the returned sorted column values in reverse  and add into the rows array from their original position
-				for (var i in sortedValues)  rows.push(data.rows[sortedValues[sortedValues.length - i - 1].index]);
+				for (var i in sortedValues) rows.push(data.rows[sortedValues[sortedValues.length - i - 1].index]);
 			}
 			// replace the data rows with the placed rows
 			data.rows = rows;
@@ -474,13 +465,17 @@ function getGridSelectedRow(id, ev) {
 // measures height of grid fixed headers
 function checkGridFixedHeaderHeight(id) {
 	// get the header table
-	var headerTable =  $("#" + id).find("table").first();			
+	var headerTable =  $("#" + id).find("table").first();
+	// get the body table
+	var bodyTable = $("#" + id).find("table").last();
+	// make header table the same width as the body table
+	headerTable.css({"width":bodyTable.outerWidth()});
 	// get the header hight
 	var headerHeight = headerTable.find("tr:first-child").height();
 	// set height of the header table wrapper
 	headerTable.parent().css({"height":headerHeight});
 	// shift the second table up behind the fixed header
-	$("#" + id).find("table").last().css("margin-top",-headerHeight);
+	bodyTable.css({"margin-top":-headerHeight});
 }
 
 // gets the selected rows, ignoring rows without rowStyle1 and rowStyle2 which can be introduced by custom code
@@ -833,17 +828,9 @@ if (data !== undefined) {
 			    });
 			    // wrap it
 			    control.wrap(oTblDiv);
-
-			    // save original column widths			    			    
-			    control.find('thead tr td').each(function(){
-			        $(this).attr("data-item-original-width",$(this).width());
-			    }); 
-			    control.find('tbody tr:eq(0) td').each(function(){
-			        $(this).attr("data-item-original-width",$(this).width());
-			    });                 
-			
-			    // clone the original table
-			    var newTbl = control.clone();
+			    			
+			    // clone the original table, keeping any events
+			    var newTbl = control.clone(true);
 			    // update it's id
 			    newTbl.attr("id",id + "header");
 			    				
@@ -857,15 +844,6 @@ if (data !== undefined) {
 			    parent.insertAfter(newTbl);
 			    // wrap the new table
 			    newTbl.wrap("<div class='gridScrollHeader' />")
-			    				    			
-			    // replace original column widths
-			    newTbl.find('thead tr td').each(function(){
-			        $(this).width($(this).attr("data-item-original-width"));
-			    });     
-			    control.width(control.attr('data-item-original-width'));      
-			    control.find('tbody tr:eq(0) td').each(function(){
-			        $(this).width($(this).attr("data-item-original-width"));
-			    });
 			    
 			    // check and set fixed header height
 				checkGridFixedHeaderHeight(id);
@@ -898,6 +876,7 @@ if (data !== undefined) {
 	
 	// if we have multiSelect
 	if (details.multiSelect) {
+	
 		// fixed header clones the header and the checkbox in it so we need to put the header checkbox listener back
 		if (details.scrollV && details.scrollHeight && details.fixedHeader) {
 			$("#" + id).find("input.gridMultiSelectHeader").click( function(ev){
@@ -913,6 +892,7 @@ if (data !== undefined) {
 				control.find("input.gridMultiSelect").prop("checked",select);
 			});
 		}
+		
 		// listen for rows checkbox - needs to be click to beat the listener on the row, and use id in case of fixed header
 		$(control).find("input.gridMultiSelect").click(function(ev){
 			// get the input
@@ -955,8 +935,8 @@ if (data !== undefined) {
 	            <filterFunction>
 <![CDATA[
 var target = $(ev.target);
-// don't fire if the target is the top row or tbody
-if (target.closest("tr").index() == 0 || target.is("tbody")) return false;
+// don't fire if the target is the top row (except for multi select) or tbody
+if ((target.closest("tr").index() == 0 && !target.is("input.gridMultiSelectHeader")) || target.is("tbody")) return false;
 ]]>	                
 	            </filterFunction>
 	        </event>
@@ -1038,9 +1018,9 @@ if (!control.is("table")) control = control.find("table").last();
 // check there are details	        
 if (details) {
 	// if there are columns
-	if (details.columns) {				
+	if (details.columns) {		
 		// get the header cells
-		var headers = control.find("tr:first-child td");
+		var headers = $("#" + id).find("tr:first-child td");
 		// loop the columns
 		for (var i in details.columns) {
 			// if it has a sort
@@ -1054,7 +1034,7 @@ if (details) {
 				// change the cursor
 				cell.css("cursor","pointer");
 				// add a listener
-				cell.click( {index:index},function(ev) {
+				cell.click( {index:i},function(ev) {
 					// get the span
 					var span = $(ev.target);
 					// drill down if need be

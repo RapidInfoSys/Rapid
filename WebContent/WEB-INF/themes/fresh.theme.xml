@@ -516,7 +516,8 @@ input:active[type=radio]:checked:before {
 
 input[type=radio]:checked:after {
   content: '';
-  position: absolute;
+  position: relative;
+  display: block;
   margin-top: -20px;
   margin-left: 7.5px;
   border-right: 3px solid #FFF;
@@ -615,7 +616,8 @@ input:active[type=checkbox]:checked:before {
 
 input[type=checkbox]:checked:after {
   content: '';
-  position: absolute;
+  position: relative;
+  display: block;
   margin-top: -20px;
   margin-left: 7.5px;
   border-right: 3px solid #FFF;

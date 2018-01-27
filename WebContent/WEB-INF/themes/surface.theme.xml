@@ -494,7 +494,8 @@ input[type=radio]:disabled:checked:before {
 
 input[type=radio]:checked:after {
   content: '';
-  position: absolute;
+  position: relative;
+  display: block;
   margin-top: -19px;
   margin-left: 7px;
   border-right: 2px solid black;
@@ -559,7 +560,8 @@ input[type=checkbox]:disabled:checked:before {
 
 input[type=checkbox]:checked:after {
   content: '';
-  position: absolute;
+  position: relative;
+  display: block;
   margin-top: -19px;
   margin-left: 7px;
   border-right: 2px solid black;

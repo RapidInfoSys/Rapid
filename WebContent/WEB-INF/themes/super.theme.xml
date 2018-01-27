@@ -528,8 +528,9 @@ input[type=checkbox]:disabled:checked:before {
 
 input[type=checkbox]:checked:after {
   content: '';
-  position: absolute;
-  margin-top: -18.5px;
+  position: relative;
+  display: block;
+  margin-top: -20px;
   margin-left: 7.2px;
   border-right: 3px solid #005778;
   border-bottom: 3px solid #005778;
