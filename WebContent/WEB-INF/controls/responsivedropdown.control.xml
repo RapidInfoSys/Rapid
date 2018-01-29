@@ -178,7 +178,7 @@ if (this.large) classes += " col-" + this.large;
 // assume no input id required
 var inputId = "";
 // if we have a label set the id
-if (this.responsiveLabel) inputId = " id='" + this.id + "_input'";
+if (this.responsiveLabel) inputId = " id='" + this.id + "input'";
 
 // check we have options or a value list
 if (this.options || this.valueList) {
@@ -212,7 +212,7 @@ var html = "<select " + inputId + " name='" + this.id + "' class='dropdown form-
 // return
 
 if (this.responsiveLabel) {
-	return "<div id='" + this.id + "' class='r-dropdown" + classes + "'><label for='" + this.id + "input'>" + this.responsiveLabel + "</label>" + html + "</div>";
+	return "<div id='" + this.id + "' class='r-dropdown" + classes + "'><label for='" + inputId + "'>" + this.responsiveLabel + "</label>" + html + "</div>";
 } else {
 	return "<div id='" + this.id + "' class='r-dropdown" + classes + "'>" + html + "</div>";
 }

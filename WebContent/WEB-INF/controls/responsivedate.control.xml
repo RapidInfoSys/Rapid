@@ -268,7 +268,7 @@ if (this.large) classes += " col-" + this.large;
 // assume no input id required
 var inputId = "";
 // if we have a label set the id
-if (this.responsiveLabel) inputId = " id='" + this.id + "_input'";
+if (this.responsiveLabel) inputId = " id='" + this.id + "input'";
 
 var placeholder = "Choose a date";
 switch (this.format) {
@@ -290,7 +290,7 @@ if (this.readonly === undefined) this.readonly = true;
 html = "<input " + inputId + " name='" + this.id + "' " + " class='form-control' placeholder='" + placeholder + "'" + (this.readonly ? "readonly='readonly'" : "") + "/>";
 
 if (this.responsiveLabel) {
-	return "<div id='" + this.id + "' class='r-date" + classes + "'><label for='" + this.id + "input'>" + this.responsiveLabel + "</label>" + html + "</div>";
+	return "<div id='" + this.id + "' class='r-date" + classes + "'><label for='"+ inputId + "'>" + this.responsiveLabel + "</label>" + html + "</div>";
 } else {
 	return "<div id='" + this.id + "' class='r-date" + classes + "'>" + html + "</div>";
 }
