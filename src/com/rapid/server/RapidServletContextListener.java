@@ -1126,10 +1126,10 @@ public class RapidServletContextListener extends Log4jServletContextListener imp
 			// check the class extends com.rapid.security.SecurityAdapter
 			if (!Classes.extendsClass(classClass, com.rapid.core.Process.class)) throw new Exception(name + " process class " + classClass.getCanonicalName() + " must extend com.rapid.core.Process");
 			// get a constructor
-			Constructor constructor = classClass.getConstructor(ServletContext.class, String.class, Integer.TYPE);
+			Constructor constructor = classClass.getConstructor(ServletContext.class, JSONObject.class);
 
 			// create a process object from the xml
-			Process process = (Process) constructor.newInstance(servletContext, name, jsonProcess.getInt("interval"));
+			Process process = (Process) constructor.newInstance(servletContext, jsonProcess);
 			// start it
 			process.start();
 			// add it to our collection

@@ -4,40 +4,44 @@ import javax.servlet.ServletContext;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.rapid.server.RapidHttpServlet;
 
 public abstract class Process extends Thread {
 
-	// protected instance variables	
+	// protected instance variables
 	protected ServletContext _servletContext;
 	protected String _name;
 	protected int _interval;
+	protected JSONObject _parameters;
 	protected boolean _stopped;
-		
+
 	// protected static variables
 	protected Logger _logger;
-	
+
 	// constructor
-	public Process(ServletContext servletContext, String name, int interval) {
+	public Process(ServletContext servletContext, JSONObject parameters) throws JSONException {
 		// store values
 		_servletContext = servletContext;
-		_name = name;
-		_interval = interval;
+		_parameters = parameters;
+		_name = parameters.getString("name");
+		_interval = parameters.getInt("interval");
 		// get a logger
 		_logger = LogManager.getLogger(RapidHttpServlet.class);
 	}
-	
+
 	// abstract methods
 	public abstract void doProcess();
-	
+
 	// protected methods
-	
-	protected ServletContext getServletContext() { return _servletContext; }	
+
+	protected ServletContext getServletContext() { return _servletContext; }
 	protected String getProcessName() { return _name; }
 	protected int getInterval() { return _interval; }
 	protected Applications getApplications() { return (Applications) _servletContext.getAttribute("applications");	}
-	
+
 	// override methods
 	@Override
 	public void start() {
@@ -52,13 +56,13 @@ public abstract class Process extends Thread {
 			_logger.info("Process " + _name + " will not be started, interval must be greater than 0");
 		}
 	}
-		
+
 	@Override
 	public void run() {
 		// loop until stopped
 		while (!_stopped) {
 			// run the abstract method
-			doProcess();							
+			doProcess();
 			// sleep for set interval
 			try {
 				Thread.sleep(_interval * 1000);
@@ -66,15 +70,15 @@ public abstract class Process extends Thread {
 				_logger.error("Process " + _name + " was interrupted!", ex);
 				_stopped = true;
 			}
-		}		
+		}
 		// log stopped
 		_logger.error("Process " + _name + " has stopped");
 	}
-	
+
 	@Override
 	public void interrupt() {
 		_stopped = true;
-		super.interrupt();		
+		super.interrupt();
 	}
-	
+
 }
