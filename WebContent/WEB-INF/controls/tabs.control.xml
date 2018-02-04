@@ -2,7 +2,7 @@
 
 <!-- 
 
-Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -327,39 +327,54 @@ return "#" + this.id + " div.tabsPanel";
 	    	    	    	    	    
 	    <initJavaScript>
 	        <![CDATA[
-$("#" + id).children("ul").children("li").each( function() {
+	        
+// get a reference to the tabs group
+var tabs = $("#" + id);
+// assume horizontal
+horizontal = true;
+// check for vertical
+if (window[id + "details"] && window[id + "details"].tabType == "V") horizontal = false;
+// apply extra class if horizontal
+if (horizontal) {
+	tabs.children("ul").addClass("tabsHeaderH");
+} else {
+	tabs.children("ul").addClass("tabsHeaderV");
+}	        
 
-	// get a reference to the tabs group
-	var tabs = $("#" + id);
-	// assume horizontal
-	horizontal = true;
-	// check for vertical
-	if (window[id + "details"] && window[id + "details"].tabType == "V") horizontal = false;
-	// apply extra class if horizontal
-	if (horizontal) {
-		tabs.children("ul").addClass("tabsHeaderH");
+// for each tab opener
+$("#" + id).children("ul").children("li").each( function(idx) {
+
+	// get the tab opener
+	var tabOpener = $(this);
+	// get it's id
+	var tabId = tabOpener.attr("id");
+	// get the tab body for the opener
+	var tabBody = tabs.children("div[data-id=" + tabId + "]");
+	// if there is a tab body - there might not be as role permissions may mean it's not in the page
+	if (tabBody[0]) {
+		// add a listener for the opener
+		tabOpener.click( function(ev, index) {		
+			// remove selected from all tab header items
+			tabs.children("ul").children("li").removeClass("selected");
+			// remove selected from all tab body items and hide
+			tabs.children("div").removeClass("selected").hide();
+			// apply selected to the opener
+			tabOpener.addClass("selected");
+			// apply selected to the body
+			tabBody.addClass("selected");
+			// check the type and set visibility accordingly - also show to trigger any required code in children that may need to recalculate their size, i.e. grids
+			if (horizontal) {
+				// selected tab is display block
+				tabBody.css("display","block").show();			
+			} else {
+				// selected tab is table cell
+				tabBody.css("display","table-cell").show();
+			}
+		});
 	} else {
-		tabs.children("ul").addClass("tabsHeaderV");
+		// since there is no tab body to show, remove the opener
+		tabOpener.remove();
 	}
-
-	$(this).click( function(ev, index) {		
-		// remove selected from all tab header items
-		tabs.children("ul").children("li").removeClass("selected");
-		// remove selected from all tab body items and hide
-		tabs.children("div").removeClass("selected").hide();
-		// add selected to the li we just clicked on, also get it's index, plus 2, 1 to go from zero to 1 based, the other 1 because of the headers
-		var index = $(this).addClass("selected").index() + 2;
-		// apply selected to the correct body
-		tabs.children("div:nth-child(" + index + ")").addClass("selected");
-		// check the type
-		if (horizontal) {
-			// selected tab is display block
-			tabs.children("div.selected").css("display","block").show();			
-		} else {
-			// selected tab is table cell
-			tabs.children("div.selected").css("display","table-cell").show();
-		}
-	});
 });	        
 	        ]]>	        	       	        
 	    </initJavaScript>	
