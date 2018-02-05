@@ -1627,7 +1627,7 @@ public class Page {
 		writer.write("  <body>\n");
 
 		// write no permission (body is closed at the end of this method)
-		writer.write("<div class=\"image\"><img src=\"images/RapidLogo_200x134.png\" /></div><div class=\"title\"><span>" + title + "</span></div><div class=\"info\"><p>" + message + "</p></div>\n");
+		writer.write("<div class=\"image\"><img src=\"images/RapidLogo_60x40.png\" /></div><div class=\"title\"><span>" + title + "</span></div><div class=\"info\"><p>" + message + "</p></div>\n");
 
 	}
 
