@@ -240,6 +240,44 @@ a:active {
   outline: 1px dotted;
 }
 
+ul.list {
+	border-left-width: 2px;
+    border-width: 2px 2px 2px;
+    border-style: solid;
+    border-color: #E0E0E0;;
+    background-color: #FFF;
+    border-radius: 4px;
+    max-width: 200px;
+    color: black;
+}
+
+ul.list li {
+	padding: 2px 5px;
+}
+
+ul.list li.listHeader {
+	margin-left: 5px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+ul.list li.listSelected {
+	background: linear-gradient(#ddd, #fff 99%);
+}
+
+span.listSelectedCount {
+	margin : 3px 4px;
+	font-size: 0.7em;
+	border-radius: 10px;
+	border: 1px solid black;
+	padding: 1px 5px;
+} 
+
+span.listSlider {
+	margin: 0 4px;
+}
+
 span.score span.selectedScore {
   color: white;
   box-shadow: 0 0 1px 1px #38B132;

@@ -172,7 +172,7 @@ if (this.options) {
 		for (var j in values) {
 			if (values[j].trim() == value.trim()) {
 				selected = true;
-				headerText += this.options[i].text + ", ";
+				if (this.options[i].text) headerText += this.options[i].text + ", ";
 				selectedCount ++;
 			}
 		}
@@ -182,11 +182,14 @@ if (this.options) {
 }
 // check we have a header or can slide
 if (this.header || this.slide) {
-	if (this.slide && headerText) {
+	// put something in headerText if nothing
+	if (!headerText) headerText = this.header;
+	if (!headerText) headerText = "Header text";
+	if (this.slide && selectedCount > 0) {
 		headerText = headerText.substr(0, headerText.length - 2);
 		options = "<span class='listSelectedCount'>" + selectedCount + "</span><span class='listSlider'>&#xf078;</span><li class='listHeader" + (this.slide ? "" : " listVisible") + "'>" + headerText + "</li>" + options;
 	} else {
-		options = "<span class='listSelectedCount' style='display:none;'></span><span class='listSlider'>&#xf078;</span><li class='listHeader" + (this.slide ? "" : " listVisible") + "'>" + this.header + "</li>" + options;
+		options = "<span class='listSelectedCount' style='display:none;'></span><span class='listSlider'>&#xf078;</span><li class='listHeader" + (this.slide ? "" : " listVisible") + "'>" + headerText + "</li>" + options;
 	}
 }
 // place into the list
