@@ -165,10 +165,13 @@ public class RapidSecurityAdapter extends SecurityAdapter {
 			boolean gotAdminRole = false;
 			// assume we don't have the design role
 			boolean gotDesignRole = false;
+			// assume we don't have the users role
+			boolean gotUsersRole = false;
 			// loop all the roles
 			for (Role role : _security.getRoles()) {
 				if (Rapid.ADMIN_ROLE.equals(role.getName())) gotAdminRole = true;
 				if (Rapid.DESIGN_ROLE.equals(role.getName())) gotDesignRole = true;
+				if (Rapid.USERS_ROLE.equals(role.getName())) gotUsersRole = true;
 			}
 			// if no admin role
 			if (!gotAdminRole) {
@@ -184,9 +187,19 @@ public class RapidSecurityAdapter extends SecurityAdapter {
 				// record that we modified
 				modified = true;
 			}
+			// if no users role
+			if (!gotUsersRole) {
+				// add it
+				_security.getRoles().add(new Role(Rapid.USERS_ROLE, "Only manage users in Rapid Admin"));
+				// record that we modified
+				modified = true;
+			}
 
-			// save the files if we modified it
-			if (modified) save();
+			// sort and save the files if we modified it
+			if (modified) {
+				_security.getRoles().sort();
+				save();
+			}
 
 		} catch (Exception ex) {
 			_logger.error(ex);
@@ -266,7 +279,7 @@ public class RapidSecurityAdapter extends SecurityAdapter {
 	public boolean deleteRole(RapidRequest rapidRequest, String roleName) throws SecurityAdapaterException {
 		Roles roles = _security.getRoles();
 		boolean removed = roles.remove(roleName);
-		if (removed)	save();
+		if (removed) save();
 		return removed;
 	}
 

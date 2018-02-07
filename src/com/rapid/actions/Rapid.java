@@ -542,17 +542,17 @@ public class Rapid extends Action {
 						// now emulate the app we are looping
 						RapidRequest appSecurityRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), application);
 
-						// check the user password
-						if (security.checkUserPassword(appSecurityRequest, rapidRequest.getUserName(), rapidRequest.getUserPassword())) {
+						// check app permission
+						boolean permission = security.checkUserPassword(appSecurityRequest, rapidRequest.getUserName(), rapidRequest.getUserPassword());
 
-							// check the users permission to admin this application
-							boolean adminPermission = security.checkUserRole(appSecurityRequest, com.rapid.server.Rapid.ADMIN_ROLE);
+						// check the user password
+						if (permission) {
 
 							// if app is rapid do a further check
-							if (adminPermission && "rapid".equals(application.getId())) adminPermission = application.getSecurityAdapter().checkUserRole(appSecurityRequest, com.rapid.server.Rapid.SUPER_ROLE);
+							if (permission && "rapid".equals(application.getId())) permission = application.getSecurityAdapter().checkUserRole(appSecurityRequest, com.rapid.server.Rapid.SUPER_ROLE);
 
 							// if we got permssion - add this application to the list
-							if (adminPermission) {
+							if (permission) {
 								// create a json object
 								JSONObject jsonApplication = new JSONObject();
 								// add the details we want
@@ -815,17 +815,17 @@ public class Rapid extends Action {
 						// now emulate the app we are looping
 						RapidRequest appSecurityRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), application);
 
-						// check the user password
-						if (security.checkUserPassword(appSecurityRequest, rapidRequest.getUserName(), rapidRequest.getUserPassword())) {
+						// check permission
+						boolean permission = security.checkUserPassword(appSecurityRequest, rapidRequest.getUserName(), rapidRequest.getUserPassword());
 
-							// check the users permission to administer this application
-							boolean adminPermission = security.checkUserRole(appSecurityRequest, com.rapid.server.Rapid.ADMIN_ROLE);
+						// check the user password
+						if (permission) {
 
 							// if app is rapid do a further check
-							if (adminPermission && "rapid".equals(application.getId())) adminPermission = application.getSecurityAdapter().checkUserRole(appSecurityRequest, com.rapid.server.Rapid.SUPER_ROLE);
+							if (permission && "rapid".equals(application.getId())) permission = application.getSecurityAdapter().checkUserRole(appSecurityRequest, com.rapid.server.Rapid.SUPER_ROLE);
 
 							// check the RapidDesign role is present in the users roles for this application
-							if (adminPermission) {
+							if (permission) {
 
 								// make a json object for this version
 								JSONObject jsonVersion = new JSONObject();
@@ -1289,35 +1289,54 @@ public class Rapid extends Action {
 
 			} else if ("GETSEC".equals(action)) {
 
-				// get the securityAdapter type from the jsonAction
-				String securityAdapterType = jsonAction.getString("securityAdapter");
-
-				// assume the current class has not been set
-				String securityAdapterClass = "";
-
-				// get all of the available security adapters
-				JSONArray jsonSecurityAdapters = rapidServlet.getJsonSecurityAdapters();
-				// check we have some security adapters
-				if (jsonSecurityAdapters != null) {
-						// loop what we have
-					for (int i = 0; i < jsonSecurityAdapters.length(); i++) {
-						// get the item
-						JSONObject jsonSecurityAdapter = jsonSecurityAdapters.getJSONObject(i);
-						// if this is the type that came in
-						if (securityAdapterType.equals(jsonSecurityAdapter.getString("type"))) {
-							// retain the name
-							securityAdapterClass = jsonSecurityAdapter.getString("class");
-							// we're done
-							break;
-						}
-					}
-				}
-
 				// get the current app security adapter
 				SecurityAdapter security = app.getSecurityAdapter();
 
-				// if we got one
-				if (security != null) {
+				// get all of the available security adapters
+				JSONArray jsonSecurityAdapters = rapidServlet.getJsonSecurityAdapters();
+
+				// get the securityAdapter type from the jsonAction
+				String securityAdapterType = jsonAction.optString("securityAdapter", null);
+
+				// check we got one, might not have if drop down is not visible
+				if (securityAdapterType == null) {
+
+					// check we have some security adapters
+					if (security != null && jsonSecurityAdapters != null) {
+						// loop what we have
+						for (int i = 0; i < jsonSecurityAdapters.length(); i++) {
+							// get the item
+							JSONObject jsonSecurityAdapter = jsonSecurityAdapters.getJSONObject(i);
+							// if this is the type that came in
+							if (security.getClass().getCanonicalName().equals(jsonSecurityAdapter.getString("class"))) {
+								// add the adapter index as we know we don't have a drop down
+								result.put("adapterIndex", i);
+								// we're done
+								break;
+							}
+						}
+					}
+
+				} else {
+
+					// assume the current class has not been set
+					String securityAdapterClass = "";
+
+					// check we have some security adapters
+					if (jsonSecurityAdapters != null) {
+						// loop what we have
+						for (int i = 0; i < jsonSecurityAdapters.length(); i++) {
+							// get the item
+							JSONObject jsonSecurityAdapter = jsonSecurityAdapters.getJSONObject(i);
+							// if this is the type that came in
+							if (securityAdapterType.equals(jsonSecurityAdapter.getString("type"))) {
+								// retain the name
+								securityAdapterClass = jsonSecurityAdapter.getString("class");
+								// we're done
+								break;
+							}
+						}
+					}
 
 					// if it's different from what came in
 					if (!securityAdapterClass.equals(security.getClass().getCanonicalName())) {
@@ -1326,6 +1345,11 @@ public class Rapid extends Action {
 						// read it back again
 						security = app.getSecurityAdapter();
 					}
+
+				} // got security adapter type
+
+				// if we got the security
+				if (security != null) {
 
 					// recreate the rapidRequest with the selected app (so app parameters etc are available from the app in the rapidRequest)
 					rapidRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), app);
@@ -1338,11 +1362,13 @@ public class Rapid extends Action {
 
 					// if we had some roles
 					if (roles != null) {
-						// prepapre a list of just the role names (not descriptions)
+						// prepapre a list of just the role names (not descriptions) - these go in the drop down for new roles that can be added
 						List<String> roleNames = new ArrayList<String>();
 						// loop the roles
 						for (Role role : roles) {
-							roleNames.add(role.getName());
+							// we need the RapidAdmin role to add RapidAdmin or RapidDesign
+							if ((!com.rapid.server.Rapid.ADMIN_ROLE.equals(role.getName()) && !com.rapid.server.Rapid.DESIGN_ROLE.equals(role.getName())) || security.checkUserRole(rapidRequest, com.rapid.server.Rapid.ADMIN_ROLE))
+								roleNames.add(role.getName());
 						}
 						// add the rolenames
 						result.put("roleNames", roleNames);
@@ -1372,6 +1398,25 @@ public class Rapid extends Action {
 
 				// get the app security
 				SecurityAdapter security = app.getSecurityAdapter();
+
+				// get all of the available security adapters
+				JSONArray jsonSecurityAdapters = rapidServlet.getJsonSecurityAdapters();
+
+				// check we have some security adapters
+				if (security != null && jsonSecurityAdapters != null) {
+					// loop what we have
+					for (int i = 0; i < jsonSecurityAdapters.length(); i++) {
+						// get the item
+						JSONObject jsonSecurityAdapter = jsonSecurityAdapters.getJSONObject(i);
+						// if this is the type that came in
+						if (security.getClass().getCanonicalName().equals(jsonSecurityAdapter.getString("class"))) {
+							// add the adapter index as we know we don't have a drop down
+							result.put("adapterIndex", i);
+							// we're done
+							break;
+						}
+					}
+				}
 
 				// get the user
 				User user = security.getUser(rapidRequest);
@@ -1412,6 +1457,16 @@ public class Rapid extends Action {
 				result.put("currentUser", currentUser);
 
 			} else if ("GETUSERS".equals(action)) {
+
+
+				////////////////////////////////////////////////////////////////////////////
+
+				//  We need to check if we have RAPIDADMIN for the Rapid application, if not not we remove users from this list who have RAPIDADMIN for the app
+
+				//  Also note that the users user can delete themselves from the test app - this should not be allowed
+
+				////////////////////////////////////////////////////////////////////////////
+
 
 				// get the app security
 				SecurityAdapter security = app.getSecurityAdapter();
@@ -2383,6 +2438,8 @@ public class Rapid extends Action {
 				boolean useAdmin = jsonAction.optBoolean("useAdmin");
 				// check for useDesign
 				boolean useDesign = jsonAction.optBoolean("useDesign");
+				// check for useUsers
+				boolean useUsers = jsonAction.optBoolean("useUsers");
 
 				// get the security
 				SecurityAdapter security = app.getSecurityAdapter();
@@ -2401,6 +2458,9 @@ public class Rapid extends Action {
 
 				// add role if we were given one
 				if (useDesign) security.addUserRole(rapidRequest, com.rapid.server.Rapid.DESIGN_ROLE);
+
+				// add role if we were given one
+				if (useUsers) security.addUserRole(rapidRequest, com.rapid.server.Rapid.USERS_ROLE);
 
 				// set the result message
 				result.put("message", "User added");
@@ -2548,9 +2608,9 @@ public class Rapid extends Action {
 					} // old password null check
 				} // password provided
 
-				// if we are updating the rapid application we have used checkboxes for the Rapid Admin and Rapid Designer roles
+				// if we are updating the rapid application we have used checkboxes for the Rapid Admin, Rapid Designer, and user manager roles
 				if ("rapid".equals(app.getId())) {
-					// get the valud of rapidAdmin
+					// get the value of rapidAdmin
 					String useAdmin = jsonAction.optString("useAdmin");
 					// check useAdmin was sent
 					if (useAdmin != null) {
@@ -2564,9 +2624,9 @@ public class Rapid extends Action {
 							security.deleteUserRole(rapidRequest, com.rapid.server.Rapid.ADMIN_ROLE);
 						}
 					}
-					// get the valud of rapidDesign
+					// get the value of rapidDesign
 					String useDesign = jsonAction.optString("useDesign");
-					// check useAdmin was sent
+					// check useDesign was sent
 					if (useDesign != null) {
 						// check the user was given the role
 						if ("true".equals(useDesign)) {
@@ -2576,6 +2636,20 @@ public class Rapid extends Action {
 						} else {
 							// remove the role
 							security.deleteUserRole(rapidRequest, com.rapid.server.Rapid.DESIGN_ROLE);
+						}
+					}
+					// get the value of rapidUsers
+					String useUsers = jsonAction.optString("useUsers");
+					// check useUsers was sent
+					if (useUsers != null) {
+						// check the user was given the role
+						if ("true".equals(useUsers)) {
+							// add the role if the user doesn't have it already
+							if (!security.checkUserRole(rapidRequest, com.rapid.server.Rapid.USERS_ROLE))
+								security.addUserRole(rapidRequest, com.rapid.server.Rapid.USERS_ROLE);
+						} else {
+							// remove the role
+							security.deleteUserRole(rapidRequest, com.rapid.server.Rapid.USERS_ROLE);
 						}
 					}
 				}

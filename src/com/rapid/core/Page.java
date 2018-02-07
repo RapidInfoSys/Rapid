@@ -678,7 +678,7 @@ public class Page {
 						String controlName = control.getName();
 
 						// no need to include if we don't have one
-						if (controlName != null) {
+						if (controlName != null && controlName.trim().length() > 0) {
 
 							// make a JSON object with what we need about this control
 							JSONObject jsonControl = new JSONObject();

@@ -339,10 +339,13 @@ if (horizontal) {
 	tabs.children("ul").addClass("tabsHeaderH");
 } else {
 	tabs.children("ul").addClass("tabsHeaderV");
-}	        
+}
+
+// get the tab open group
+var tabOpeners = $("#" + id).children("ul");
 
 // for each tab opener
-$("#" + id).children("ul").children("li").each( function(idx) {
+tabOpeners.children("li").each( function(idx) {
 
 	// get the tab opener
 	var tabOpener = $(this);
@@ -375,7 +378,11 @@ $("#" + id).children("ul").children("li").each( function(idx) {
 		// since there is no tab body to show, remove the opener
 		tabOpener.remove();
 	}
-});	        
+});
+
+// if no tabs are selected - select the first one - this is where role html may have removed the default selected tab
+if (tabOpeners.children("li.selected").length == 0) tabOpeners.children("li").first().trigger("click");
+  
 	        ]]>	        	       	        
 	    </initJavaScript>	
 	    	    	    	    	            	    	    	        	    	    
@@ -429,7 +436,7 @@ return "<li id='" + this.id + "' class='tabsPanel'>" + this.label + "</li>";
 	    <createJavaScript>
 	        <![CDATA[
 // add a div for the panel into the tab group div (that leading space is important for creating the same gap we see at runtime)	           
-this._parent.object.append(" <div class='tabsPanel' data-id='" + this.id + "'></div>");
+this._parent.object.append("<div class='tabsPanel' data-id='" + this.id + "'></div>");
 // set this object to the div
 this.object = this._parent.object.children().last();
 	        ]]>

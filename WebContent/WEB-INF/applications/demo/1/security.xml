@@ -8,6 +8,10 @@
         <description>Design application in Rapid Designer</description>
         <name>RapidDesign</name>
     </roles>
+    <roles>
+        <description>Only manage users in Rapid Admin</description>
+        <name>RapidUsers</name>
+    </roles>
     <users>
         <description>Admin user</description>
         <deviceDetails></deviceDetails>
@@ -28,5 +32,12 @@
         <deviceDetails></deviceDetails>
         <name>user</name>
         <password>user</password>
+    </users>
+    <users>
+        <description>Manage users</description>
+        <deviceDetails></deviceDetails>
+        <email></email>
+        <name>users</name>
+        <password>users</password>
     </users>
 </security>

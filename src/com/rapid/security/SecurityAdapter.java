@@ -46,10 +46,10 @@ import com.rapid.utils.JAXB.EncryptedXmlAdapter;
 RapidAdmin and RapidDesign roles are required in the rapid application security provider to use the
 Admin and Design screens
 
-In addition, to administrate or design particular applications RapidAdmin and RapidDesign roles
+In addition, to admininstrate, design, or manager users, in particular applications RapidAdmin, RapidDesign, and RapidUsers roles
 are also required in that application's security provider
 
-Finally, to administrate or design the rapid application itself the roles RAPIDADMIN and RAPIDDESIGN
+Finally, to administrate, design, or manager users, for the rapid application itself the roles RAPIDADMIN, RAPIDDESIGN, and RAPIDUSERS
 are required in the rapid application security provider
 
 */

@@ -1605,7 +1605,7 @@ function getDataObject(object) {
 	return o;	
 }
 
-// this function creates a tree of html that is depedent on roles. Html from child nodes that have no roles is brought into the parent
+// this function creates a tree of html that is dependent on roles. Html from child nodes that have no roles is brought into the parent
 function getRoleControl(control, html) {
 	// an object to store the details at this level
 	var roleControl = {};
@@ -1615,7 +1615,7 @@ function getRoleControl(control, html) {
 	var gotChildRoles = false;
 	// get any children
 	var childControls = control.childControls;
-	// assume no child html length - this is used to determin any end html
+	// assume no child html length - this is used to determine any end html
 	var childHtmlLength = 0;
 	// if we have some
 	if (childControls && childControls.length > 0) {
@@ -1674,7 +1674,9 @@ function getRoleControl(control, html) {
 					var endPos = startPos + childHtmlLength;
 					// if we got one and there are characters remaining set our end string
 					if (endPos > 0 && endPos < html.length) {
+						// get the html from after the endPos onwards
 						var controlEndHtml = html.substr(endPos);
+						// if we got some end html keep it
 						if (controlEndHtml) roleControl.endHtml = controlEndHtml; 
 					}
 				}
