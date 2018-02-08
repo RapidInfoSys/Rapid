@@ -39,5 +39,6 @@
         <email></email>
         <name>users</name>
         <password>users</password>
+        <roles>RapidUsers</roles>
     </users>
 </security>

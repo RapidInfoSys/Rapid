@@ -20,4 +20,27 @@
         <roles>RapidAdmin</roles>
         <roles>RapidDesign</roles>
     </users>
+    <users>
+        <description>Design user</description>
+        <deviceDetails></deviceDetails>
+        <email></email>
+        <name>design</name>
+        <password>design</password>
+        <roles>RapidDesign</roles>
+    </users>
+    <users>
+        <description>Unprivileged user</description>
+        <deviceDetails></deviceDetails>
+        <email></email>
+        <name>user</name>
+        <password>user</password>
+    </users>
+    <users>
+        <description>Manage users</description>
+        <deviceDetails></deviceDetails>
+        <email></email>
+        <name>users</name>
+        <password>users</password>
+        <roles>RapidUsers</roles>
+    </users>
 </security>
