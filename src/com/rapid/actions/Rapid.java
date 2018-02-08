@@ -205,7 +205,9 @@ public class Rapid extends Action {
 
 		// if this is a form
 		if ("F".equals(type)) {
-			// add standard form adapter too
+			// set the isForm flag
+			newApp.setIsForm(true);
+			// add standard form adapter
 			newApp.setFormAdapterType("rapid");
 			// add form security
 			newApp.setSecurityAdapterType("form");
@@ -226,20 +228,17 @@ public class Rapid extends Action {
 			for (int i = 0; i < jsonActionTypes.length(); i++) {
 				// get the action
 				JSONObject jsonActionType = jsonActionTypes.getJSONObject(i);
+				// get it's type
+				String actionType = jsonActionType.getString("type");
 				// add to list if addToNewApplications is set
-				if (jsonActionType.optBoolean("addToNewApplications")) actionTypes.add(jsonActionType.getString("type"));
+				if (jsonActionType.optBoolean("addToNewApplications")) actionTypes.add(actionType);
+				// add to list if app type is D and action has addToNewDesktopApplications
+				if ("D".equals(type) && jsonActionType.optBoolean("addToNewDesktopApplications")) actionTypes.add(actionType);
+				// add to list if app type is M and action has addToNewDesktopApplications
+				if ("M".equals(type) && jsonActionType.optBoolean("addToNewMobileApplications")) actionTypes.add(actionType);
+				// add to list if app type is F and action has addToNewDesktopApplications
+				if ("F".equals(type) && jsonActionType.optBoolean("addToNewFormApplications")) actionTypes.add(actionType);
 			}
-		}
-
-		// check the new app type
-		if ("M".equals(type)) {
-			// if mobile, add mobile action
-			actionTypes.add("mobile");
-		} else if ("F".equals(type)) {
-			// set form to true
-			newApp.setIsForm(true);
-			// add form control if form
-			actionTypes.add("form");
 		}
 
 		// sort them again, just to be sure
@@ -266,7 +265,7 @@ public class Rapid extends Action {
 				boolean addNew = jsonControlType.optBoolean("addToNewApplications");
 				String addResponsiveString = jsonControlType.optString("addToNewResponsiveApplications", null);
 				boolean addResponsive = jsonControlType.optBoolean("addToNewResponsiveApplications");
-				// if this is a reponsive app
+				// if this is a responsive app
 				if (responsive) {
 					// add to list if addToNewApplications is set and not addToNewResponsiveApplications, or just addToNewResponsiveApplications
 					if ((addNew &&  addResponsiveString == null) || addResponsive) controlTypes.add(controlType);
@@ -274,26 +273,13 @@ public class Rapid extends Action {
 					// add to list if addToNewApplications is set and addToNewResponsiveApplications is not set
 					if (addNew && !addResponsive) controlTypes.add(controlType);
 				}
+				// add to list if app type is D and action has addToNewDesktopApplications
+				if ("D".equals(type) && jsonControlType.optBoolean("addToNewDesktopApplications")) actionTypes.add(controlType);
+				// add to list if app type is M and action has addToNewDesktopApplications
+				if ("M".equals(type) && jsonControlType.optBoolean("addToNewMobileApplications")) actionTypes.add(controlType);
+				// add to list if app type is F and action has addToNewDesktopApplications
+				if ("F".equals(type) && jsonControlType.optBoolean("addToNewFormApplications")) actionTypes.add(controlType);
 			}
-		}
-
-		// check the new app type
-		if ("M".equals(type)) {
-			// add flow layout control
-			controlTypes.add("flowLayout");
-			// add score control
-			controlTypes.add("pagePanel");
-			// add score control
-			controlTypes.add("slidePanel");
-			// add score control
-			controlTypes.add("signature");
-			// add score control
-			controlTypes.add("score");
-			// remove tabs
-			controlTypes.remove("tabGroup");
-		} else if ("F".equals(type)) {
-			// remove tabs
-			controlTypes.remove("tabGroup");
 		}
 
 		// sort them again, just to be sure

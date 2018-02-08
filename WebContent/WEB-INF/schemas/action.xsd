@@ -130,6 +130,27 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 									</xs:documentation>
 								</xs:annotation>
 							</xs:element>
+							<xs:element name="addToNewDesktopApplications" type="xs:boolean"
+								minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>If true will be added to new responsive applications. If false will not be added to responsive applications.
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="addToNewMobileApplications" type="xs:boolean"
+								minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>If true will be added to new responsive applications. If false will not be added to responsive applications.
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="addToNewFormApplications" type="xs:boolean"
+								minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>If true will be added to new responsive applications. If false will not be added to responsive applications.
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
 							<xs:element name="canUseWorkflow" type="xs:boolean" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>If set to true the action will be available for adding to workflow
