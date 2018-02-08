@@ -555,8 +555,8 @@ public class Rapid extends RapidHttpServlet {
 									boolean canAdd = true;
 
 									if ("rapid".equals(app.getId())) {
-										// must have RapidAdmin or RapidSuper to see Rapid app
-										canAdd = security.checkUserRole(rapidRequest, Rapid.ADMIN_ROLE) || security.checkUserRole(rapidRequest, Rapid.SUPER_ROLE);
+										// must have one of the official Rapid roles to see Rapid Admin
+										canAdd = security.checkUserRole(rapidRequest, Rapid.ADMIN_ROLE) || security.checkUserRole(rapidRequest, Rapid.DESIGN_ROLE) || security.checkUserRole(rapidRequest, Rapid.USERS_ROLE) || security.checkUserRole(rapidRequest, Rapid.SUPER_ROLE);
 									}
 
 									if (canAdd) {
@@ -573,7 +573,7 @@ public class Rapid extends RapidHttpServlet {
 										// check if we are testing
 										if (forTesting) {
 
-											// if the user has Rapid Design for this application, (or Rpaid Super if this is the rapid app)
+											// if the user has Rapid Design for this application, (or Rapid Super if this is the rapid app)
 											if (security.checkUserRole(getAppsRequest, Rapid.DESIGN_ROLE) && (!app.getId().equals("rapid") || security.checkUserRole(rapidRequest, Rapid.SUPER_ROLE))) {
 
 												// loop the versions

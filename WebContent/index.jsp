@@ -107,8 +107,8 @@ $(document).ready( function() {
 	// check the user password in the rapid application
 	if (securityAdapter.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRequest.getUserPassword())) {
 
-		// check for the admin role	
-		if (securityAdapter.checkUserRole(rapidRequest, com.rapid.server.Rapid.ADMIN_ROLE)) {
+		// check for any of the offical roles
+		if (securityAdapter.checkUserRole(rapidRequest, com.rapid.server.Rapid.ADMIN_ROLE) || securityAdapter.checkUserRole(rapidRequest, com.rapid.server.Rapid.DESIGN_ROLE) || securityAdapter.checkUserRole(rapidRequest, com.rapid.server.Rapid.USERS_ROLE) || securityAdapter.checkUserRole(rapidRequest, com.rapid.server.Rapid.SUPER_ROLE)) {
 %>
 <div class="body">
 	<a href="~?a=rapid"><img src="images/administration_183x123.png" /><span id="admin">Admin</span></a>

@@ -368,18 +368,35 @@ public class Rapid extends Action {
 
 	}
 
-	private JSONArray getSafeUsersJSON(Users users) throws JSONException {
+	private JSONArray getSafeUsersJSON(RapidRequest rapidRequest, SecurityAdapter security, boolean gotRapidAdmin, Users users) throws JSONException, SecurityAdapaterException {
 		// prepare a JSON array to send them in
 		JSONArray jsonUsers = new JSONArray();
 		// loop them
 		for (User user : users) {
-			// create a JSON object for them
-			JSONObject jsonUser = new JSONObject();
-			// add the details of this user
-			jsonUser.put("name", user.getName());
-			jsonUser.put("description", user.getDescription());
-			// add the object to the collection
-			jsonUsers.put(jsonUser);
+			// assume user is safe to add
+			boolean addUser = true;
+
+			// if we don't have the Rapid Admin role
+			if (!gotRapidAdmin) {
+				// update the rapidRequest to this user
+				rapidRequest.setUserName(user.getName());
+				// if they have the admin role we are not allowed to se them
+				if (security.checkUserRole(rapidRequest, com.rapid.server.Rapid.ADMIN_ROLE)) {
+					// don't add them
+					addUser = false;
+				}
+			}
+
+			// if user is still safe to add
+			if (addUser) {
+				// create a JSON object for them
+				JSONObject jsonUser = new JSONObject();
+				// add the details of this user
+				jsonUser.put("name", user.getName());
+				jsonUser.put("description", user.getDescription());
+				// add the object to the collection
+				jsonUsers.put(jsonUser);
+			}
 		}
 		return jsonUsers;
 	}
@@ -1340,6 +1357,9 @@ public class Rapid extends Action {
 					// recreate the rapidRequest with the selected app (so app parameters etc are available from the app in the rapidRequest)
 					rapidRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), app);
 
+					// check for if we have Rapid Admin
+					boolean gotRapidAdmin = security.checkUserRole(rapidRequest, com.rapid.server.Rapid.ADMIN_ROLE);
+
 					// get the roles
 					Roles roles = security.getRoles(rapidRequest);
 
@@ -1364,7 +1384,7 @@ public class Rapid extends Action {
 					Users users = security.getUsers(rapidRequest);
 
 					// if we got some add the users safely to the response (does not include password)
-					if (users != null) result.put("users", getSafeUsersJSON(users));
+					if (users != null) result.put("users", getSafeUsersJSON(rapidRequest, security, gotRapidAdmin, users));
 
 				} // got security
 
@@ -1444,15 +1464,8 @@ public class Rapid extends Action {
 
 			} else if ("GETUSERS".equals(action)) {
 
-
-				////////////////////////////////////////////////////////////////////////////
-
-				//  We need to check if we have RAPIDADMIN for the Rapid application, if not not we remove users from this list who have RAPIDADMIN for the app
-
-				//  Also note that the users user can delete themselves from the test app - this should not be allowed
-
-				////////////////////////////////////////////////////////////////////////////
-
+				// add the current user
+				result.put("currentUser", rapidRequest.getUserName());
 
 				// get the app security
 				SecurityAdapter security = app.getSecurityAdapter();
@@ -1460,17 +1473,20 @@ public class Rapid extends Action {
 				// if we got one
 				if (security != null) {
 
+					// check for if we have Rapid Admin
+					boolean gotRapidAdmin = security.checkUserRole(rapidRequest, com.rapid.server.Rapid.ADMIN_ROLE);
+
 					// recreate the rapidRequest with the selected app (so app parameters etc are available from the app in the rapidRequest)
 					rapidRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), app);
 
-					// get the users
+					// get the users of the selected app
 					Users users = security.getUsers(rapidRequest);
 
-					// if we got some add the users safely to the response (does not include password)
-					if (users != null) result.put("users", getSafeUsersJSON(users));
-
-					// add the current user
-					result.put("currentUser", rapidRequest.getUserName());
+					// if we got some
+					if (users != null) {
+						// put the list of users
+						result.put("users", getSafeUsersJSON(rapidRequest, security, gotRapidAdmin, users));
+					}
 
 				} // got security
 

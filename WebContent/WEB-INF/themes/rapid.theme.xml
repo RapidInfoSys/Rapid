@@ -553,9 +553,10 @@ input[type=checkbox] {
   width: 17px;
   height: 17px;
   vertical-align: middle;
-  margin-top: -9px;
-  margin-right: 13px;
+  margin-top:0px;
+  margin-bottom:5px;
   margin-left: 8px;
+  margin-right: 13px;
   outline: none;
   cursor: pointer;
 }

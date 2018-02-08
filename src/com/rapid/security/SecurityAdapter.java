@@ -297,6 +297,12 @@ public abstract class SecurityAdapter {
 
 		}
 
+		// overrides
+		@Override
+		public String toString() {
+			return _name + " : " + _description + (_deviceDetails != null && _deviceDetails.length() > 0 ? " - " + _deviceDetails : "");
+		}
+
 	}
 
 
