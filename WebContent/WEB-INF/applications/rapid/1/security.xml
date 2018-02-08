@@ -9,12 +9,12 @@
         <name>RapidDesign</name>
     </roles>
     <roles>
-        <description>Use Rapid Workflow Design to design workflow</description>
-        <name>RapidWorkflow</name>
-    </roles>
-    <roles>
         <description>Use Rapid Admin to manage users</description>
         <name>RapidUsers</name>
+    </roles>
+    <roles>
+        <description>Use Rapid Workflow Design to design workflow</description>
+        <name>RapidWorkflow</name>
     </roles>
     <users>
         <description>Admin user</description>
@@ -23,7 +23,7 @@
         <password>admin</password>
         <roles>RapidAdmin</roles>
         <roles>RapidDesign</roles>
-        <roles>RapidSuper</roles>
+        <!-- <roles>RapidSuper</roles> -->
     </users>
     <users>
         <description>Design user</description>

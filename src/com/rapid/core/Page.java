@@ -1316,7 +1316,9 @@ public class Page {
 		// if download
 		if (download) {
 			// just write RapidMobile
-			writer.write("var _userName = 'RapidMobile';\n");
+			//writer.write("var _userName = 'RapidMobile';\n");
+			// print user - the above is turned off for now until enough people download Rapid Mobile 2.4.1.3 which can send the authenticated user
+			if (user != null) writer.write("var _userName = '" + user.getName() + "';\n");
 		} else {
 			// print user
 			if (user != null) writer.write("var _userName = '" + user.getName() + "';\n");

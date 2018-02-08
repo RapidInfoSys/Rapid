@@ -512,8 +512,8 @@ public class Control {
 
 					} else if ("user".equals(type) || "user name".equals(type)) {
 
-						// pass the field as a value
-						return "_userName";
+						// if rapid mobile and the getUserName method is present use that, otherwise use the in-page variable
+						return "(typeof _rapidmobile == 'undefined' ? _userName : (_rapidmobile.getUserName ? _rapidmobile.getUserName() : _userName))";
 
 					} else if ("empty".equals(type)) {
 
