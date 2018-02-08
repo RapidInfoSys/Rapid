@@ -376,7 +376,7 @@ public class Rapid extends Action {
 			// assume user is safe to add
 			boolean addUser = true;
 
-			// if we don't have the Rapid Admin role
+			// if we don't have the high-level Rapid Admin role
 			if (!gotRapidAdmin) {
 				// update the rapidRequest to this user
 				rapidRequest.setUserName(user.getName());
@@ -679,34 +679,7 @@ public class Rapid extends Action {
 						result.put("connectionAdapters", jsonAdapters);
 					}
 
-					// fetch the security adapters
-					JSONArray jsonSecurityAdapters = rapidServlet.getJsonSecurityAdapters();
-					// check we have some security adapters
-					if (jsonSecurityAdapters != null) {
-						// prepare the security adapter collection we'll send
-						JSONArray jsonAdapters = new JSONArray();
-						// loop what we have
-						for (int i = 0; i < jsonSecurityAdapters.length(); i++) {
-							// get the item
-							JSONObject jsonSecurityAdapter = jsonSecurityAdapters.getJSONObject(i);
-							// make a simpler send item
-							JSONObject jsonSendAdapter = new JSONObject();
-							// add type
-							jsonSendAdapter.put("value", jsonSecurityAdapter.get("type"));
-							// add name
-							jsonSendAdapter.put("text", jsonSecurityAdapter.get("name"));
-							// add canManageRoles
-							jsonSendAdapter.put("canManageRoles", jsonSecurityAdapter.get("canManageRoles"));
-							// add canManageUsers
-							jsonSendAdapter.put("canManageUsers", jsonSecurityAdapter.get("canManageUsers"));
-							// add canManageUserRoles
-							jsonSendAdapter.put("canManageUserRoles", jsonSecurityAdapter.get("canManageUserRoles"));
-							// add to collection
-							jsonAdapters.put(jsonSendAdapter);
-						}
-						// add the security adapters to the result
-						result.put("securityAdapters", jsonAdapters);
-					}
+					// security adapter are in rapidAdmin or rapidUsers block further down
 
 					// fetch the form adapters
 					JSONArray jsonFormAdapters = rapidServlet.getJsonFormAdapters();
@@ -767,6 +740,7 @@ public class Rapid extends Action {
 
 				} // rapid admin check
 
+				// either rapidAdmin or rapidDesign
 				if (rapidAdmin || rapidDesign) {
 
 					// prepare the collection we'll send
@@ -834,6 +808,40 @@ public class Rapid extends Action {
 
 					// add the devices
 					result.put("devices", rapidServlet.getDevices());
+
+				}
+
+				// either rapidAdmin or rapidUsers
+				if (rapidAdmin || rapidUsers) {
+
+					// fetch the security adapters
+					JSONArray jsonSecurityAdapters = rapidServlet.getJsonSecurityAdapters();
+					// check we have some security adapters
+					if (jsonSecurityAdapters != null) {
+						// prepare the security adapter collection we'll send
+						JSONArray jsonAdapters = new JSONArray();
+						// loop what we have
+						for (int i = 0; i < jsonSecurityAdapters.length(); i++) {
+							// get the item
+							JSONObject jsonSecurityAdapter = jsonSecurityAdapters.getJSONObject(i);
+							// make a simpler send item
+							JSONObject jsonSendAdapter = new JSONObject();
+							// add type
+							jsonSendAdapter.put("value", jsonSecurityAdapter.get("type"));
+							// add name
+							jsonSendAdapter.put("text", jsonSecurityAdapter.get("name"));
+							// add canManageRoles
+							jsonSendAdapter.put("canManageRoles", jsonSecurityAdapter.get("canManageRoles"));
+							// add canManageUsers
+							jsonSendAdapter.put("canManageUsers", jsonSecurityAdapter.get("canManageUsers"));
+							// add canManageUserRoles
+							jsonSendAdapter.put("canManageUserRoles", jsonSecurityAdapter.get("canManageUserRoles"));
+							// add to collection
+							jsonAdapters.put(jsonSendAdapter);
+						}
+						// add the security adapters to the result
+						result.put("securityAdapters", jsonAdapters);
+					}
 
 				}
 
@@ -1412,34 +1420,36 @@ public class Rapid extends Action {
 					// recreate the rapidRequest with the selected app (so app parameters etc are available from the app in the rapidRequest)
 					rapidRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), app);
 
-					// check for if we have Rapid Admin
-					boolean gotRapidAdmin = security.checkUserRole(rapidRequest, com.rapid.server.Rapid.ADMIN_ROLE);
+					// if we high-level Rapid Admin or high-level Rapid Users
+					if (rapidAdmin || rapidUsers) {
 
-					// get the roles
-					Roles roles = security.getRoles(rapidRequest);
+						// get the roles
+						Roles roles = security.getRoles(rapidRequest);
 
-					// add the entire roles collection to the response
-					result.put("roles", roles);
+						// add the entire roles collection to the response
+						result.put("roles", roles);
 
-					// if we had some roles
-					if (roles != null) {
-						// prepapre a list of just the role names (not descriptions) - these go in the drop down for new roles that can be added
-						List<String> roleNames = new ArrayList<String>();
-						// loop the roles
-						for (Role role : roles) {
-							// we need the RapidAdmin role to add RapidAdmin or RapidDesign
-							if ((!com.rapid.server.Rapid.ADMIN_ROLE.equals(role.getName()) && !com.rapid.server.Rapid.DESIGN_ROLE.equals(role.getName())) || security.checkUserRole(rapidRequest, com.rapid.server.Rapid.ADMIN_ROLE))
-								roleNames.add(role.getName());
+						// if we had some roles
+						if (roles != null) {
+							// prepapre a list of just the role names (not descriptions) - these go in the drop down for new roles that can be added
+							List<String> roleNames = new ArrayList<String>();
+							// loop the roles
+							for (Role role : roles) {
+								// we need the RapidAdmin role to add RapidAdmin or RapidDesign
+								if ((!com.rapid.server.Rapid.ADMIN_ROLE.equals(role.getName()) && !com.rapid.server.Rapid.DESIGN_ROLE.equals(role.getName())) || security.checkUserRole(rapidRequest, com.rapid.server.Rapid.ADMIN_ROLE))
+									roleNames.add(role.getName());
+							}
+							// add the rolenames
+							result.put("roleNames", roleNames);
 						}
-						// add the rolenames
-						result.put("roleNames", roleNames);
-					}
+
+					} // high-level Rapid Admin check
 
 					// get the users
 					Users users = security.getUsers(rapidRequest);
 
 					// if we got some add the users safely to the response (does not include password)
-					if (users != null) result.put("users", getSafeUsersJSON(rapidRequest, security, gotRapidAdmin, users));
+					if (users != null) result.put("users", getSafeUsersJSON(rapidRequest, security, rapidAdmin, users));
 
 				} // got security
 
@@ -1522,9 +1532,6 @@ public class Rapid extends Action {
 				// if we got one
 				if (security != null) {
 
-					// check for if we have Rapid Admin
-					boolean gotRapidAdmin = security.checkUserRole(rapidRequest, com.rapid.server.Rapid.ADMIN_ROLE);
-
 					// recreate the rapidRequest with the selected app (so app parameters etc are available from the app in the rapidRequest)
 					rapidRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), app);
 
@@ -1534,7 +1541,7 @@ public class Rapid extends Action {
 					// if we got some
 					if (users != null) {
 						// put the list of users
-						result.put("users", getSafeUsersJSON(rapidRequest, security, gotRapidAdmin, users));
+						result.put("users", getSafeUsersJSON(rapidRequest, security, rapidAdmin, users));
 					}
 
 				} // got security
