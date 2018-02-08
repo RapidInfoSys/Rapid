@@ -501,14 +501,19 @@ public class Rapid extends Action {
 	@Override
 	public JSONObject doAction(RapidRequest rapidRequest, JSONObject jsonAction) throws Exception {
 
-		JSONObject result = new JSONObject();
-
-		String action = jsonAction.getString("actionType");
-
+		// get the rapid servlet for easy reference
 		RapidHttpServlet rapidServlet = rapidRequest.getRapidServlet();
 
+		// get the servel context for easy reference
 		ServletContext servletContext = rapidServlet.getServletContext();
 
+		// prepare our result object
+		JSONObject result = new JSONObject();
+
+		// get the action type
+		String action = jsonAction.getString("actionType");
+
+		// assume no new app id
 		String newAppId = null;
 
 		// assume we have no special rapid roles
@@ -538,6 +543,12 @@ public class Rapid extends Action {
 
 		// only if we had an application and one of the special Rapid roles
 		if (app != null && (rapidAdmin || rapidDesign || rapidUsers)) {
+
+			/////////////////////////////////////////////////////////
+
+			// There is still scope for extra security to arrange the actions into rapidAdmin only, rapidAdmin or rapidDesign, and rapidAdmin or rapidUsers
+
+			/////////////////////////////////////////////////////////
 
 			// recreate the rapid request using the application we wish to manipulate
 			RapidRequest rapidActionRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), app);
