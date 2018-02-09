@@ -611,8 +611,8 @@ function rebuildHtml(control) {
 			// if there ones to add, loop and add
 			if (control.classes) for (var i in control.classes) _page.object.attr("class", control.classes[i]);
 		} else if (control._parent) {
-			// get the new html
-			var html = control._getHtml();
+			// get the new html - trim to avoid issues with role control html
+			var html = control._getHtml().trim();
 			// append the new html to the page object 
 			_page.object.append(html);
 			// get a reference to the new object
