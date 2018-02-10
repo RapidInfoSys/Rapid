@@ -2502,10 +2502,10 @@ public class Rapid extends Action {
 				String password = jsonAction.getString("password");
 				// get the device details
 				String deviceDetails = jsonAction.optString("deviceDetails");
-				// check for useAdmin
-				boolean useAdmin = jsonAction.optBoolean("useAdmin");
-				// check for useDesign
-				boolean useDesign = jsonAction.optBoolean("useDesign");
+				// check for useAdmin - must have Radpid Admin to grant
+				boolean useAdmin = jsonAction.optBoolean("useAdmin") && rapidAdmin;
+				// check for useDesign - must have Radpid Admin to grant
+				boolean useDesign = jsonAction.optBoolean("useDesign") && rapidAdmin;
 				// check for useUsers
 				boolean useUsers = jsonAction.optBoolean("useUsers");
 
@@ -2568,8 +2568,8 @@ public class Rapid extends Action {
 				rapidRequest.setUserName(userName);
 				// get the role
 				String role = jsonAction.getString("role").trim();
-				// add the user role
-				security.addUserRole(rapidRequest, role);
+				// add the user role - if RapidAdmin or RapidDesign, must have rapidAdmin
+				if ((!com.rapid.server.Rapid.ADMIN_ROLE.equals(role) && !com.rapid.server.Rapid.DESIGN_ROLE.equals(role)) || rapidAdmin) security.addUserRole(rapidRequest, role);
 				// set the result message
 				result.put("message", "User role added");
 
