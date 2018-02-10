@@ -57,15 +57,30 @@ public class FormSecurityAdapter extends RapidSecurityAdapter {
 
 	@Override
 	public boolean checkUserPassword(RapidRequest rapidRequest,	String userName, String password) throws SecurityAdapaterException {
+		// assume we don't need to check the password properly
+		boolean check = false;
 		// get the action
 		String action = rapidRequest.getActionName();
 		// if there was one
 		if (action != null) {
 			// if this is an import we want to check the password properly so a fail will add the current user to the app
-			if ("import".equals(action)) return super.checkUserPassword(rapidRequest, userName, password);
+			if ("import".equals(action)) check = true;
 		}
-		// everyone is allowed
-		return true;
+		// get the request uri
+		String uri = rapidRequest.getRequest().getRequestURI();
+		// if there was one
+		if (uri != null) {
+			// if this was a login .jsp page we need to check
+			if (uri.contains("login") && uri.endsWith(".jsp")) check = true;
+		}
+		// check will be true if the request to check came from a more sensitive area
+		if (check) {
+			// check the password properly
+			return super.checkUserPassword(rapidRequest, userName, password);
+		} else {
+			// everyone is allowed
+			return true;
+		}
 	}
 
 }
