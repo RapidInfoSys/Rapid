@@ -72,6 +72,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 				<xs:element name="canManageRoles" type="xs:boolean" />
 				<xs:element name="canManageUsers" type="xs:boolean" />
 				<xs:element name="canManageUserRoles" type="xs:boolean" />
+				<xs:element name="canResetPassword" type="xs:boolean" minOccurs="0" />
 			</xs:sequence>
 			<xs:attribute name="xmlVersion" type="xs:integer" use="required">
 				<xs:annotation>

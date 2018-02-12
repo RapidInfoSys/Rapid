@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="com.rapid.core.Email" %>
+<%@ page import="com.rapid.security.SecurityAdapter" %>
 <%
 
 /*
@@ -27,7 +29,17 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+// get any message from the session
 String message = (String) session.getAttribute("message");
+
+// assume password reset is not supported
+Boolean hasPasswordReset = false;
+
+//if email is configured
+if (Email.getEmailSettings() != null) {
+	// if any app has password reset
+	hasPasswordReset = SecurityAdapter.hasPasswordReset(getServletContext());
+}
 
 %>
 <html>
@@ -51,6 +63,10 @@ String message = (String) session.getAttribute("message");
 
 <div class="body">
 
+<%
+if (hasPasswordReset) {
+%>
+
 	<form name="reset" id="RapidReset" method="post">
 		<table>
 			<tr>
@@ -63,13 +79,19 @@ String message = (String) session.getAttribute("message");
 	</form>
 	
 <% 
-if (message != null) {
-	// print the message into the page
+	// if there is a message
+	if (message != null) {
+			// print the message into the page
 %>
 			<p><%=message %></p>
 <%
-	// empty the message
-	session.setAttribute("message", null);
+		// empty the message
+		session.setAttribute("message", null);
+	}
+} else {
+%>
+	<p>Password reset is not currently enabled</p>
+<%
 }
 %>
 	

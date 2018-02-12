@@ -46,6 +46,7 @@ import org.json.JSONObject;
 import com.rapid.core.Application;
 import com.rapid.core.Applications;
 import com.rapid.core.Email;
+import com.rapid.security.SecurityAdapter;
 import com.rapid.security.SecurityAdapter.SecurityAdapaterException;
 import com.rapid.server.RapidHttpServlet;
 import com.rapid.server.RapidRequest;
@@ -511,8 +512,11 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 						// start the message
 						String message = "Your user name / password has not been recognised";
 
-						// if email is configured - add reset link
-						if (Email.getEmailSettings() != null) message += " - click <a href='reset.jsp'>here</a> to reset your password";
+						// if email is configured
+						if (Email.getEmailSettings() != null) {
+							// if any app has password reset
+							if (SecurityAdapter.hasPasswordReset(getServletContext())) message += " - click <a href='reset.jsp'>here</a> to reset your password";
+						}
 
 						// retain the authorisation attempt in the session
 						session.setAttribute("message", message);

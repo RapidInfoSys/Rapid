@@ -31,11 +31,15 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.servlet.ServletContext;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import com.rapid.core.Application;
 import com.rapid.core.Email;
@@ -466,14 +470,26 @@ public abstract class SecurityAdapter {
 
 	// the new password
 	protected String getPasswordReset(RapidRequest rapidRequest) {
+
+		// start a new password
+		String password = "";
+		// get a random
+		Random rnd = new Random();
+		// 8 chars
+		for (int i = 0; i < 8; i++) {
+			// get a random value that is a printable ascii character
+			char c = (char) (rnd.nextInt(94) + 32);
+			// get ascii and append
+			password += c;
+		}
 		// return new password
-		return "12345";
+		return password;
 	}
 
 	// the new password email
 	protected void sendPasswordReset(RapidRequest rapidRequest, String email, String password) throws AddressException, MessagingException {
 		// email user
-		Email.send(Email.getEmailSettings().getUserName(), email, "Rapid password reset", password);
+		Email.send(Email.getEmailSettings().getUserName(), email, "Rapid password reset", "Your new Rapid password is " + password + "\n\n" + "If you did not request a new password contact your Rapid administrator.");
 	}
 
 	// reset user password
@@ -509,6 +525,35 @@ public abstract class SecurityAdapter {
 		}
 		// report as false
 		return false;
+	}
+
+	// public static methods
+
+	public static boolean hasPasswordReset(ServletContext servletContext) {
+		// assume no app has password reset
+		boolean gotPasswordReset = false;
+		// fetch the security adapters
+		JSONArray jsonSecurityAdapters = (JSONArray) servletContext.getAttribute("jsonSecurityAdapters");
+		// check we have some security adapters
+		if (jsonSecurityAdapters != null) {
+			// loop what we have
+			for (int i = 0; i < jsonSecurityAdapters.length(); i++) {
+				// get the item
+				JSONObject jsonSecurityAdapter = jsonSecurityAdapters.optJSONObject(i);
+				// if we got one
+				if (jsonSecurityAdapter != null) {
+					// if this has a password reset
+					if (jsonSecurityAdapter.optBoolean("canResetPassword")) {
+						// password reset
+						gotPasswordReset = true;
+						// we're done
+						break;
+					}
+				}
+			}
+		}
+		// return
+		return gotPasswordReset;
 	}
 
 }
