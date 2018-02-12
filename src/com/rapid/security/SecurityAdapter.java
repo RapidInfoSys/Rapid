@@ -32,10 +32,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 import javax.servlet.ServletContext;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import com.rapid.core.Application;
+import com.rapid.core.Email;
 import com.rapid.server.RapidRequest;
 import com.rapid.server.filter.RapidFilter;
 import com.rapid.utils.Comparators;
@@ -459,6 +462,53 @@ public abstract class SecurityAdapter {
 	public String getPasswordComplexityDescription(RapidRequest rapidRequest, String password) {
 		// no rules, unless overridden
 		return "Any password is accepted";
+	}
+
+	// the new password
+	protected String getPasswordReset(RapidRequest rapidRequest) {
+		// return new password
+		return "12345";
+	}
+
+	// the new password email
+	protected void sendPasswordReset(RapidRequest rapidRequest, String email, String password) throws AddressException, MessagingException {
+		// email user
+		Email.send(Email.getEmailSettings().getUserName(), email, "Rapid password reset", password);
+	}
+
+	// reset user password
+	public boolean resetUserPassword(RapidRequest rapidRequest, String email) throws SecurityAdapaterException, AddressException, MessagingException {
+		// get email settings
+		Email emailSettings = Email.getEmailSettings();
+		// if we have email settings
+		if (emailSettings != null) {
+			// get users
+			Users users = getUsers(rapidRequest);
+			// if we got some
+			if (users != null) {
+				// loop them
+				for (User user : users) {
+					// get their email
+					String userEmail = user.getEmail();
+					// if they have one
+					if (userEmail != null) {
+						// if we got an email for the user
+						if (userEmail.equals(email)) {
+							// get a new password
+							String password = getPasswordReset(rapidRequest);
+							// set the password
+							user.setPassword(password);
+							// send the email
+							sendPasswordReset(rapidRequest, email, password);
+							// we're done
+							break;
+						}
+					}
+				}
+			}
+		}
+		// report as false
+		return false;
 	}
 
 }

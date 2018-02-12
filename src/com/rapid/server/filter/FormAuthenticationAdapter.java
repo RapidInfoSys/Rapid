@@ -45,6 +45,7 @@ import org.json.JSONObject;
 
 import com.rapid.core.Application;
 import com.rapid.core.Applications;
+import com.rapid.core.Email;
 import com.rapid.security.SecurityAdapter.SecurityAdapaterException;
 import com.rapid.server.RapidHttpServlet;
 import com.rapid.server.RapidRequest;
@@ -53,6 +54,7 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 
 	public static final String LOGIN_PATH = "login.jsp";
 	public static final String INDEX_PATH = "index.jsp";
+	public static final String RESET_PATH = "reset.jsp";
 
 	private static Logger _logger = LogManager.getLogger(RapidAuthenticationAdapter.class);
 
@@ -119,13 +121,13 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 				queryString = queryString.toLowerCase();
 			}
 			// if this is a sensitive resource
-			if (requestPath.startsWith("/login.jsp") || requestPath.startsWith("/design.jsp") || requestPath.startsWith("/designpage.jsp") || requestPath.startsWith("/designer") || (requestPath.startsWith("/~") && queryString.contains("a=rapid"))) {
+			if (requestPath.startsWith("/" + LOGIN_PATH) || requestPath.startsWith("/design.jsp") || requestPath.startsWith("/designpage.jsp") || requestPath.startsWith("/designer") || (requestPath.startsWith("/~") && queryString.contains("a=rapid"))) {
 				// assume no pass
 				boolean pass = false;
 				// get the client IP
 				String ip = request.getRemoteAddr();
 				// if this is for login.jsp
-				if (requestPath.startsWith("/login.jsp")) {
+				if (requestPath.startsWith("/" + LOGIN_PATH)) {
 					// get the user agent
 					String agent = request.getHeader("User-Agent");
 					// if we got one
@@ -165,6 +167,51 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 
 		// if we can return this resource without authentication
 		if (requestPath.endsWith("favicon.ico") || requestPath.startsWith("/images/") || requestPath.startsWith("/scripts") || requestPath.startsWith("/styles")) {
+
+			// proceed to the next step
+			return req;
+
+		} else if ((Email.getEmailSettings() != null && requestPath.endsWith(RESET_PATH)))  {
+
+			// look in the request for the username
+			String email = request.getParameter("email");
+
+			// if we got one
+			if (email != null) {
+
+				try {
+
+					// get the applications collection
+					Applications applications = (Applications) getServletContext().getAttribute("applications");
+
+					// if there are some applications
+					if (applications != null) {
+
+						// loop all applications
+						for (Application application : applications.get()) {
+
+							// get a Rapid request
+							RapidRequest rapidRequest = new RapidRequest(request, application);
+
+							// have the security reset this email and break once done
+							if (application.getSecurityAdapter().resetUserPassword(rapidRequest, email)) break;
+
+						}
+
+					}
+
+				} catch (Exception ex) {
+					// log the error
+					_logger.error("FormAuthenticationAdapter error resetting password", ex);
+				}
+
+				// send a message to display
+				request.getSession().setAttribute("message", "A password reset has been emailed");
+
+			}
+
+			// delay by 1sec to make brute force attacks a little harder
+			try { Thread.sleep(1000); } catch (InterruptedException e) {}
 
 			// proceed to the next step
 			return req;
@@ -214,17 +261,17 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 				if (_jsonLogins == null) _jsonLogins = (List<JSONObject>) req.getServletContext().getAttribute("jsonLogins");
 				// if we have custom logins
 				if (_jsonLogins != null) {
-					
+
 					// get the query string
 					String queryString = request.getQueryString();
-					
+
 					// loop the login pages
 					for (JSONObject jsonLogin : _jsonLogins) {
 						// get the custom login path
 						String customLoginPath = jsonLogin.optString("path").trim();
 						// get the custom index
 						String customIndexPath = jsonLogin.optString("index").trim();
-						
+
 						// if the request is for a custom login page
 						if (requestPath.endsWith(customLoginPath) || (queryString != null && customLoginPath.endsWith(queryString))) {
 							// put the index path in the session
@@ -393,7 +440,7 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 							// loop all applications
 							for (Application application : applications.get()) {
 								try {
-									// get a Rapid request
+									// get a Rapid request for the application
 									RapidRequest rapidRequest = new RapidRequest(request, application);
 									// see if the user is known to this application
 									authorised = application.getSecurityAdapter().checkUserPassword(rapidRequest, userName, userPassword);
@@ -461,8 +508,14 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 						// log that authentication was unsuccessful
 						_logger.debug("FormAuthenticationAdapter failed for " + userName + " from " + deviceDetails);
 
+						// start the message
+						String message = "Your user name / password has not been recognised";
+
+						// if email is configured - add reset link
+						if (Email.getEmailSettings() != null) message += " - click <a href='reset.jsp'>here</a> to reset your password";
+
 						// retain the authorisation attempt in the session
-						session.setAttribute("message", "Your user name / password has not been recognised");
+						session.setAttribute("message", message);
 
 						// delay by 1sec to make brute force attacks a little harder
 						try { Thread.sleep(1000); } catch (InterruptedException e) {}

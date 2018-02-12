@@ -125,8 +125,7 @@ body {
 		box-shadow: 3px 3px 3px #a88;
 	}
 	
-	.body a { 
-		font-size: 36px;
+	.body a {
 		font-weight: bold;
 		color: black;
 		text-decoration: none;
@@ -261,7 +260,6 @@ body {
 	.body a {
 		text-align: center;
 		vertical-align: middle; 
-		font-size: 30px;
 		font-weight: bold;		
 		color: black;
 	}

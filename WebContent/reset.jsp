@@ -4,7 +4,7 @@
 
 /*
 
-Copyright (C) 2014 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -32,14 +32,14 @@ String message = (String) session.getAttribute("message");
 %>
 <html>
 <head>
-	<title>Rapid - Log in</title>
+	<title>Rapid - Reset password</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 	<link rel="icon" href="favicon.ico"></link>
 	<link rel="stylesheet" type="text/css" href="styles/index.css"></link>
 </head>
 
-<body onload="document.login.userName.focus();">
+<body onload="document.reset.email.focus();">
 
 <div class="image">
 	<a href="http://www.rapid-is.co.uk"><img title="Rapid Information Systems" src="images/RapidLogo_60x40.png" /></a>	
@@ -51,16 +51,13 @@ String message = (String) session.getAttribute("message");
 
 <div class="body">
 
-	<form name="login" id="RapidLogin" method="post">
+	<form name="reset" id="RapidReset" method="post">
 		<table>
 			<tr>
-				<td>User name</td><td><input name="userName" /></td>
+				<td>Email address</td><td><input name="email" /></td>
 			</tr>
 			<tr>
-				<td>Password</td><td><input name="userPassword" type="password" /></td>
-			</tr>
-			<tr>
-				<td colspan="2" style="text-align:right;"><button type="submit">Log in</button></td>
+				<td colspan="2" style="text-align:right;"><button type="submit">Reset password</button></td>
 			</tr>		
 		</table>
 	</form>
@@ -74,7 +71,7 @@ if (message != null) {
 	// empty the message
 	session.setAttribute("message", null);
 }
-%>	
+%>
 	
 </div>
 
