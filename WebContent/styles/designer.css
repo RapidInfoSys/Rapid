@@ -1001,6 +1001,7 @@ select {
   outline: none;
   color: #FFF;
   font-family: 'Open Sans', Arial , sans-serif;
+  max-width: 100%;
 }
 
 select option {
