@@ -1180,6 +1180,9 @@ public abstract class FormAdapter {
 
 		// get the form details
 		UserFormDetails formDetails = getUserFormDetails(rapidRequest);
+		
+		// get the application 
+		Application application = rapidRequest.getApplication();
 
 		try {
 
@@ -1187,11 +1190,10 @@ public abstract class FormAdapter {
 			String formId = formDetails.getId();
 
 			// if submitted already throw exception
-			if (formDetails.getSubmitted()) throw new Exception("This form has already been submitted");
+			if (formDetails.getSubmitted()) throw new Exception("This form has already been submitted");			
 
-			// get the application and perform any 3rd party submission first so if they fail the whole thing fails
-			Application application = rapidRequest.getApplication();
-
+			// perform any 3rd party submission first so if they fail the whole thing fails
+			
 			// file
 			if (application.getFormFile()) saveFormFile(rapidRequest, formId);
 
@@ -1228,9 +1230,9 @@ public abstract class FormAdapter {
 			// retain that this form was submitted
 			addSubmittedForm(rapidRequest, formDetails.getId());
 
-
-
 		} catch (Exception ex) {
+			// log the error
+			_logger.error("Error submitting form " + formDetails.getId() + " for "  + application.getId(), ex);
 			// get the error message
 			String message = ex.getMessage();
 			// set if null
