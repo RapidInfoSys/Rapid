@@ -3070,7 +3070,7 @@ function Property_radiobuttons(cell, control, property, details) {
 		// check we don't have a value list select already
 		if (!dialogue.find("select")[0]) {
 			// add the select
-			dialogue.append("Value list <select><option value=''>None</option>" + getValueListsOptions(control.valueList) + "</select>");
+			dialogue.append("Value list<br/><select><option value=''>None</option>" + getValueListsOptions(control.valueList) + "</select>");
 			// get a reference
 			var valueListSelect = dialogue.find("select");
 			// add a listener
