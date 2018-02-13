@@ -172,51 +172,6 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 			// proceed to the next step
 			return req;
 
-		} else if ((Email.getEmailSettings() != null && requestPath.endsWith(RESET_PATH)))  {
-
-			// look in the request for the username
-			String email = request.getParameter("email");
-
-			// if we got one
-			if (email != null) {
-
-				try {
-
-					// get the applications collection
-					Applications applications = (Applications) getServletContext().getAttribute("applications");
-
-					// if there are some applications
-					if (applications != null) {
-
-						// loop all applications
-						for (Application application : applications.get()) {
-
-							// get a Rapid request
-							RapidRequest rapidRequest = new RapidRequest(request, application);
-
-							// have the security reset this email and break once done
-							if (application.getSecurityAdapter().resetUserPassword(rapidRequest, email)) break;
-
-						}
-
-					}
-
-				} catch (Exception ex) {
-					// log the error
-					_logger.error("FormAuthenticationAdapter error resetting password", ex);
-				}
-
-				// send a message to display
-				request.getSession().setAttribute("message", "A password reset has been emailed");
-
-			}
-
-			// delay by 1sec to make brute force attacks a little harder
-			try { Thread.sleep(1000); } catch (InterruptedException e) {}
-
-			// proceed to the next step
-			return req;
-
 		} else {
 
 			// if it's a resource that requires authentication
@@ -232,11 +187,13 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 			String loginPath = LOGIN_PATH;
 			// assume default index page
 			String indexPath = INDEX_PATH;
+			// assume default password reset path
+			String resetPath = RESET_PATH;
 
 			// assume no userName
 			String userName = null;
 
-			// create a new session
+			// create a new session, if we need one
 			HttpSession session = request.getSession();
 
 			// look in the session for username
@@ -247,7 +204,60 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 			// if we got one use it
 			if (sessionIndexPath != null) indexPath = sessionIndexPath;
 
-			// check if we got one
+			// look in the session for the password reset path
+			String sessionResetPath = (String) session.getAttribute(RapidFilter.SESSION_VARIABLE_PASSWORDRESET_PATH);
+			// if we got one use it
+			if (sessionResetPath != null) resetPath = sessionResetPath;
+
+			// if email is enabled and we requested the password reset
+			if ((Email.getEmailSettings() != null && requestPath.endsWith(resetPath)))  {
+
+				// look in the request for the username
+				String email = request.getParameter("email");
+
+				// if we got one
+				if (email != null) {
+
+					try {
+
+						// get the applications collection
+						Applications applications = (Applications) getServletContext().getAttribute("applications");
+
+						// if there are some applications
+						if (applications != null) {
+
+							// loop all applications
+							for (Application application : applications.get()) {
+
+								// get a Rapid request
+								RapidRequest rapidRequest = new RapidRequest(request, application);
+
+								// have the security reset this email and break once done
+								if (application.getSecurityAdapter().resetUserPassword(rapidRequest, email)) break;
+
+							}
+
+						}
+
+					} catch (Exception ex) {
+						// log the error
+						_logger.error("FormAuthenticationAdapter error resetting password", ex);
+					}
+
+					// send a message to display
+					request.getSession().setAttribute("message", "A new password has been emailed - click <a href='" + loginPath + "'>here</a> to log in");
+
+				}
+
+				// delay by 1sec to make brute force attacks a little harder
+				try { Thread.sleep(1000); } catch (InterruptedException e) {}
+
+				// proceed to the next step
+				return req;
+
+			} // password reset page request
+
+			// check if we got a user name
 			if (userName == null) {
 
 				_logger.trace("No userName found in session");
@@ -272,11 +282,15 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 						String customLoginPath = jsonLogin.optString("path").trim();
 						// get the custom index
 						String customIndexPath = jsonLogin.optString("index").trim();
+						// get any password reset
+						String customPasswordReset = jsonLogin.optString("passwordreset",null);
 
 						// if the request is for a custom login page
 						if (requestPath.endsWith(customLoginPath) || (queryString != null && customLoginPath.endsWith(queryString))) {
 							// put the index path in the session
 							session.setAttribute(RapidFilter.SESSION_VARIABLE_INDEX_PATH, customIndexPath);
+							// put the password reset page in the session if there is one
+							if (customPasswordReset != null) session.setAttribute(RapidFilter.SESSION_VARIABLE_PASSWORDRESET_PATH, customPasswordReset.trim());
 							// remember this custom login
 							loginPath = customLoginPath;
 							// add cache defeating to try and stop the 302 from custom login .jsp pages to index.jsp
@@ -510,12 +524,13 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 						_logger.debug("FormAuthenticationAdapter failed for " + userName + " from " + deviceDetails);
 
 						// start the message
-						String message = "Your user name / password has not been recognised";
+						String message = "Your user name or password has not been recognised";
 
 						// if email is configured
 						if (Email.getEmailSettings() != null) {
+
 							// if any app has password reset
-							if (SecurityAdapter.hasPasswordReset(getServletContext())) message += " - click <a href='reset.jsp'>here</a> to reset your password";
+							if (SecurityAdapter.hasPasswordReset(getServletContext())) message += " - click <a href='" + resetPath + "'>here</a> to reset your password";
 						}
 
 						// retain the authorisation attempt in the session

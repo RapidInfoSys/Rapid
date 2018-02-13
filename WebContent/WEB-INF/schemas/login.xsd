@@ -55,6 +55,17 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>
+				<xs:element name="passwordreset" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>The path of the password reset page for this custom login
+						</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:minLength value="1" />
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
 			</xs:sequence>
 			<xs:attribute name="xmlVersion" type="xs:integer" use="required">
 				<xs:annotation>
