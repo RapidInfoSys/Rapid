@@ -208,15 +208,15 @@ function getGridDataStoreData(id, details) {
 			dataString = sessionStorage[_appId + id];
 		break;
 		case "P" :
-			dataString = window[id + "datastore"];			
+			data = window[id + "datastore"];			
 		break;
 	}
-	if (dataString) {
+	if (dataString && !$.isPlainObject(dataString)) {
 		data = JSON.parse(dataString);
-		if (data) {
-			if (!data.fields) data.fields = [];
-			if (!data.rows) data.rows = [];
-		}
+	}
+	if (data) {
+		if (!data.fields) data.fields = [];
+		if (!data.rows) data.rows = [];
 	}
 	return data;
 }
@@ -230,7 +230,7 @@ function saveGridDataStoreData(id, details, data) {
 			sessionStorage[_appId + id] = JSON.stringify(data);
 		break;
 		case "P" :
-			window[id + "datastore"] = JSON.stringify(data);
+			window[id + "datastore"] = data;
 		break;
 	}
 }	
