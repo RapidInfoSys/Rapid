@@ -208,7 +208,7 @@ function getGridDataStoreData(id, details) {
 			dataString = sessionStorage[_appId + id];
 		break;
 		case "P" :
-			dataString = window[_appId + "datastore"];			
+			dataString = window[id + "datastore"];			
 		break;
 	}
 	if (dataString) {
