@@ -230,7 +230,7 @@ function saveGridDataStoreData(id, details, data) {
 			sessionStorage[_appId + id] = JSON.stringify(data);
 		break;
 		case "P" :
-			window[_appId + "datastore"] = JSON.stringify(data);
+			window[id + "datastore"] = JSON.stringify(data);
 		break;
 	}
 }	
