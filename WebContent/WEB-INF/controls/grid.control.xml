@@ -188,6 +188,17 @@ div.gridScrollHeader {
 	overflow-y: hidden;
 }
 
+div.gridScrollHeader table {
+	width: calc(100% - 16px) !important;	
+}
+
+div.gridScrollHeader table.grid tr:not(:first-child) {
+	visibility: hidden;
+}
+
+div.gridScrollBody table.grid tr:first-child {
+	visibility: hidden;
+}
 	                ]]>
 				</contents>
 	        </resource>
@@ -208,15 +219,15 @@ function getGridDataStoreData(id, details) {
 			dataString = sessionStorage[_appId + id];
 		break;
 		case "P" :
-			data = window[id + "datastore"];			
+			dataString = window[id + "datastore"];			
 		break;
 	}
-	if (dataString && !$.isPlainObject(dataString)) {
+	if (dataString) {
 		data = JSON.parse(dataString);
-	}
-	if (data) {
-		if (!data.fields) data.fields = [];
-		if (!data.rows) data.rows = [];
+		if (data) {
+			if (!data.fields) data.fields = [];
+			if (!data.rows) data.rows = [];
+		}
 	}
 	return data;
 }
@@ -230,7 +241,7 @@ function saveGridDataStoreData(id, details, data) {
 			sessionStorage[_appId + id] = JSON.stringify(data);
 		break;
 		case "P" :
-			window[id + "datastore"] = data;
+			window[id + "datastore"] = JSON.stringify(data);
 		break;
 	}
 }	
@@ -250,13 +261,11 @@ function sortGridByColumn(ev, id, details, column, asc) {
 		var dataColumn = column;
 		
 		// check the column matches the field
-		if (field && data.fields[column] != field) {
+		if (data.fields[column] != field) {
 			// didn't match so find what it should be
 			for (var i in data.fields) {
 				if (data.fields[i] && data.fields[i].toLowerCase() == field.toLowerCase()) {
-					// update column
 					dataColumn = i;
-					// we're done
 					break;
 				}
 			}	
@@ -264,24 +273,11 @@ function sortGridByColumn(ev, id, details, column, asc) {
 	
 		// check there is data for the column
 		if (data && data.rows && data.fields[dataColumn]) {
-					
+		
 			// an array for all values in this column
 			var sortedValues = [];
-			// populate the array for each row with an object with the original index, value, and if selected
-			for (var i in data.rows) sortedValues.push({ index:i, value:data.rows[i][dataColumn] });
-			
-			// get the control
-			var control = $("#" + id);
-			// make sure it's a table
-			if (!control.is("table")) control = control.find("table").last();
-			// loop any selected table rows
-			control.find("tr.rowStyle1.rowSelect,tr.rowStyle2.rowSelect").not("[data-ignore]").each( function(i){
-				// get the row
-				var selectedRow = $(this);
-				// update sortedValues at selectedRow index (less one because of header row)
-				sortedValues[selectedRow.index() - 1].selected = true;
-			});
-			
+			// populate the array for each row with an object with the original index and value
+			for (var i in data.rows) sortedValues.push( {index:i, value:data.rows[i][dataColumn]} );
 			// determin the sort type
 			switch (details.columns[column].sort) {
 				// for n, turn both values into numbers and use that
@@ -406,47 +402,24 @@ function sortGridByColumn(ev, id, details, column, asc) {
 					
 			// create a new rows array
 			var rows = [];
-			// assume no row selections
-			var rowSelections = [];
-			// loop the returned sorted column values 
-			for (var i in sortedValues) {
-				// assume asc
-				var index = i;
-				// if not asc invert
-				if (!asc) index = sortedValues.length - i - 1;
-				// get the sorted value
-				var sortedValue = sortedValues[index];
-				// add into the rows array from their original position
-				rows.push(data.rows[sortedValue.index]);
-				// retain if we need to reapply selection
-				if (sortedValue.selected) rowSelections.push(i);
+			// if asc
+			if (asc) {
+				// loop the returned sorted column values and add into the rows array from their original position
+				for (var i in sortedValues)  rows.push(data.rows[sortedValues[i].index]);
+			} else {
+				// loop the returned sorted column values in reverse  and add into the rows array from their original position
+				for (var i in sortedValues)  rows.push(data.rows[sortedValues[sortedValues.length - i - 1].index]);
 			}
 			// replace the data rows with the placed rows
 			data.rows = rows;
 			// set the sorted data
 			setData_grid(ev, id, null, details, data);
-			
-			// if there are selections
-			if (rowSelections.length > 0) {
-				// get the table rows
-				var tableRows = control.find("tr.rowStyle1,tr.rowStyle2").not("[data-ignore]");
-				// loop row selections
-				for (var i in rowSelections) {
-					// get the selected row
-					var selectedRow = $(tableRows.get(rowSelections[i]));
-					// add back selection
-					selectedRow.addClass("rowSelect");
-					// if we have multiselect add tick
-					if (details.multiSelect) selectedRow.find("td:first-child input").prop("checked",true);
-				}
-			}
-			
 		}
 	}
 } 
 
 // get the index of the selected row, ignoring rows without rowStyle1 and rowStyle2 which can be introduced by custom code
-function getGridSelectedRowNumber(id, ev) {
+function getGridSelectedRowNumber(id, ev, details) {
 	// assume we're not going to find it
 	var index = -1;
 	// get the target of the event
@@ -496,22 +469,6 @@ function getGridSelectedRow(id, ev) {
 		row = grid.find("tr.rowSelect").not("[data-ignore]");			
 	}
 	return row;
-}
-
-// measures height of grid fixed headers
-function checkGridFixedHeaderHeight(id) {
-	// get the header table
-	var headerTable =  $("#" + id).find("table").first();
-	// get the body table
-	var bodyTable = $("#" + id).find("table").last();
-	// make header table the same width as the body table
-	headerTable.css({"width":bodyTable.outerWidth()});
-	// get the header hight
-	var headerHeight = headerTable.find("tr:first-child").height();
-	// set height of the header table wrapper
-	headerTable.parent().css({"height":headerHeight});
-	// shift the second table up behind the fixed header
-	bodyTable.css({"margin-top":-headerHeight});
 }
 
 // gets the selected rows, ignoring rows without rowStyle1 and rowStyle2 which can be introduced by custom code
@@ -687,7 +644,7 @@ if (details) {
 			}	    
 			if (data == null && details.dataStorageType) {
 				var dataStore = getGridDataStoreData(id, details);
-				var rowIndex = getGridSelectedRowNumber(id, ev);
+				var rowIndex = getGridSelectedRowNumber(id, ev, details);
 				rowIndex --;
 				if (rowIndex > -1 && dataStore.rows && dataStore.rows.length > rowIndex) {
 					for (var i in dataStore.fields) {
@@ -864,9 +821,17 @@ if (data !== undefined) {
 			    });
 			    // wrap it
 			    control.wrap(oTblDiv);
-			    			
-			    // clone the original table, keeping any events
-			    var newTbl = control.clone(true);
+
+			    // save original column widths			    			    
+			    control.find('thead tr td').each(function(){
+			        $(this).attr("data-item-original-width",$(this).width());
+			    }); 
+			    control.find('tbody tr:eq(0) td').each(function(){
+			        $(this).attr("data-item-original-width",$(this).width());
+			    });                 
+			
+			    // clone the original table
+			    var newTbl = control.clone();
 			    // update it's id
 			    newTbl.attr("id",id + "header");
 			    				
@@ -880,9 +845,17 @@ if (data !== undefined) {
 			    parent.insertAfter(newTbl);
 			    // wrap the new table
 			    newTbl.wrap("<div class='gridScrollHeader' />")
+			    				    			
+			    // replace original column widths
+			    newTbl.find('thead tr td').each(function(){
+			        $(this).width($(this).attr("data-item-original-width"));
+			    });     
+			    control.width(control.attr('data-item-original-width'));      
+			    control.find('tbody tr:eq(0) td').each(function(){
+			        $(this).width($(this).attr("data-item-original-width"));
+			    });
 			    
-			    // check and set fixed header height
-				checkGridFixedHeaderHeight(id);
+			    // positioning the header has been moved to the init on window resize
 			    
 			} // fixed header applied
 		    
@@ -912,7 +885,21 @@ if (data !== undefined) {
 	
 	// if we have multiSelect
 	if (details.multiSelect) {
-			
+		// fixed header clones the header and the checkbox in it so we need to put the header checbox listener back
+		if (details.scrollV && details.scrollHeight && details.fixedHeader) {
+			$("#" + id).find("input.gridMultiSelectHeader").change(function(ev){
+				// get the header value
+				var select = $(this).prop("checked");
+				// update rowSelect accordingly
+				if (select) {
+					control.find("tr").addClass("rowSelect");
+				} else {
+					control.find("tr").removeClass("rowSelect");
+				}
+				// update row checkboxes
+				control.find("input.gridMultiSelect").prop("checked",select);
+			});
+		}
 		// listen for rows checkbox - needs to be click to beat the listener on the row, and use id in case of fixed header
 		$(control).find("input.gridMultiSelect").click(function(ev){
 			// get the input
@@ -925,14 +912,8 @@ if (data !== undefined) {
 			} else {
 				i.closest("tr").removeClass("rowSelect");
 			}
-			// get data rows
-			var rows = control.find("tr.rowStyle1,tr.rowStyle2").not("[data-ignore]");
 			// check whether any rows without rowSelect, if not uncheck header checkboxs (includes if fixed header)
-			if (rows.length > 0 && rows.not(".rowSelect").length == 0) {
-				$("#" + id).find("input.gridMultiSelectHeader").prop("checked",true);
-			} else {
-				$("#" + id).find("input.gridMultiSelectHeader").prop("checked",false);
-			}
+			if (control.find("tr.rowStyle1,tr.rowStyle2").not("[data-ignore]").not(".rowSelect").length > 0) $("#" + id).find("input.gridMultiSelectHeader").prop("checked",false);
 		});
 	
 	} else {
@@ -961,8 +942,8 @@ if (data !== undefined) {
 	            <filterFunction>
 <![CDATA[
 var target = $(ev.target);
-// don't fire if the target is the top row (except for multi select) or tbody
-if ((target.closest("tr").index() == 0 && !target.is("input.gridMultiSelectHeader")) || target.is("tbody")) return false;
+// don't fire if the target is the top row or tbody
+if (target.closest("tr").index() == 0 || target.is("tbody")) return false;
 ]]>	                
 	            </filterFunction>
 	        </event>
@@ -1044,9 +1025,9 @@ if (!control.is("table")) control = control.find("table").last();
 // check there are details	        
 if (details) {
 	// if there are columns
-	if (details.columns) {		
+	if (details.columns) {				
 		// get the header cells
-		var headers = $("#" + id).find("tr:first-child td");
+		var headers = control.find("tr:first-child td");
 		// loop the columns
 		for (var i in details.columns) {
 			// if it has a sort
@@ -1060,7 +1041,7 @@ if (details) {
 				// change the cursor
 				cell.css("cursor","pointer");
 				// add a listener
-				cell.click( {index:i},function(ev) {
+				cell.click( {index:index},function(ev) {
 					// get the span
 					var span = $(ev.target);
 					// drill down if need be
@@ -1080,21 +1061,27 @@ if (details) {
 	// if this is a fixed header
 	if (details.scrollV && details.fixedHeader) {
 	
-		// if any of our parents is shown re-check our heights as we wouldn't have been able to measure when hidden
-		$(control).parents().on('show', function(){
+		// listen for a window resize - sent after grid population and when some controls are made visible
+		$(window).on('resize', function(){
+
 			// only if control is visible and a scroll body has been set up for it
 			if (control.is(":visible") && control.parent().is("div.gridScrollBody")) {
-				// check fixed header height
-				checkGridFixedHeaderHeight(id);
-				// only do this once
-				return false;
+				// get the header table
+				var headerTable =  $("#" + id).find("table").first();			
+				// get the header hight
+				var headerHeight = headerTable.find("tr:first-child").height();
+				// set height of the header table wrapper
+				headerTable.parent().css({"height":headerHeight});
+				 // shift the second table up behind the fixed header
+				control.css("margin-top",-headerHeight);
 			}
+
 		});
 	
 	}
 	// if this is multiSelect, set up the header listener
 	if (details.multiSelect) {
-		$("#" + id).find("input.gridMultiSelectHeader").click( function(ev){
+		$("#" + id).find("input.gridMultiSelectHeader").change(function(ev){
 			// get the header value
 			var select = $(this).prop("checked");
 			// update rowSelect accordingly
@@ -1113,7 +1100,7 @@ if (details) {
 		if (data) setData_grid($.Event('gridinit'), id, null, details, data);
 		$("#" + id).click( function(ev) {
 			var data = getGridDataStoreData(id, details);
-			data.selectedRowNumber = getGridSelectedRowNumber(id, ev);
+			data.selectedRowNumber = getGridSelectedRowNumber(id, ev, details);
 			saveGridDataStoreData(id, details, data);
 		});
 	} // datastorage type check
@@ -1134,7 +1121,7 @@ if (details.dataStorageType) {
 	var grid = $("#" + id);
 	if (!grid.is("table")) grid = grid.find("table").last();
 	if (grid[0]) {
-		var rowNumber = getGridSelectedRowNumber(id, ev);
+		var rowNumber = getGridSelectedRowNumber(id, ev, details);
 		if (rowNumber != data.selectedRowNumber) {
 			data.selectedRowNumber = rowNumber;
 			saveGridDataStoreData(id, details, data);
@@ -1215,7 +1202,7 @@ if (!gridData) gridData = {};
 var grid = $("#" + id);
 if (!grid.is("table")) grid = grid.find("table").last();
 if (grid[0]) {
-		var rowNumber = getGridSelectedRowNumber(id, ev);
+		var rowNumber = getGridSelectedRowNumber(id, ev, details);
 		if (rowNumber != gridData.selectedRowNumber) {
 			gridData.selectedRowNumber = rowNumber;
 			saveGridDataStoreData(id, details, gridData);
@@ -1371,7 +1358,7 @@ if (details && details.dataStorageType) {
 		return gridData.rowValidation[gridData.selectedRowNumber - 1];
 	} 
 } else {
-	return getGridSelectedRowNumber(id, ev);
+	return getGridSelectedRowNumber(id, ev, details);
 }
 			        ]]>	  	   	            
 	   	        </getPropertyFunction>	   	
@@ -1388,7 +1375,7 @@ if (!grid.is("table")) grid = grid.find("table").last();
 // if it's present
 if (grid[0]) {
 	// get the selected row number
-	selectedRowNumber = getGridSelectedRowNumber(id, ev);
+	selectedRowNumber = getGridSelectedRowNumber(id, ev, details);
 	// check the incoming data for a positive
 	if (data[0][0]) {
 		// remove validation class from row if true
@@ -1435,7 +1422,7 @@ if (details && details.dataStorageType) {
 		return null;
 	}
 } else {
-	return getGridSelectedRowNumber(id, ev);
+	return getGridSelectedRowNumber(id, ev, details);
 }
 			        ]]>	  	   	            
 	   	        </getPropertyFunction>	   	
