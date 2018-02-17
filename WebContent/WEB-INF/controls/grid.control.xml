@@ -433,7 +433,7 @@ function getGridSelectedRowNumber(id, ev, details) {
 		// if this was a row to be ignored, find the previous most non-ignored row
 		if (row.is("[data-ignore]")) row = row.prevAll("tr.rowStyle1,tr.rowStyle2").not("[data-ignore]").first();
 		// get the position of relevant row
-		index = rows.index(row);		
+		index = rows.index(row);
 	} else {
 		// the event occured outside a row so get the table using the id
 		var grid = $("#" + id);
@@ -469,6 +469,30 @@ function getGridSelectedRow(id, ev) {
 		row = grid.find("tr.rowSelect").not("[data-ignore]");			
 	}
 	return row;
+}
+
+
+// get the index of the selected row, ignoring rows without rowStyle1 and rowStyle2 which can be introduced by custom code
+function getGridMultiSelectedRowNumber(id, ev, details) {
+	// assume we're not going to find it
+	var index = null;
+	// get the table using the id
+	var grid = $("#" + id);
+	// make sure it's a table
+	if (!grid.is("table")) grid = grid.find("table").last();
+	// get any rowSelect rows
+	var rows = grid.find("tr.rowSelect").not("[data-ignore]");
+	// if we got some
+	if (rows.length > 0) {
+		// make index an array
+		index = [];
+		// for each row
+		rows.each( function(i){
+			// add to index
+			index.push(grid.find("tr.rowStyle1,tr.rowStyle2").not("[data-ignore]").index(this) + 1);
+		});
+	}
+	return index;
 }
 
 // gets the selected rows, ignoring rows without rowStyle1 and rowStyle2 which can be introduced by custom code
@@ -559,10 +583,13 @@ if (this.styles && this.styles.length > 0) {
 	   
 	    <saveJavaScript>
 	        <![CDATA[
+// get our object
 var table = this.object;
 if (!table.is("table")) table = table.find("table").last();
 // remove all sample rows, leaving the header row
-table.children().last().children(":not(:first)").remove();	        
+table.children().last().children(":not(:first)").remove();
+// if we have datastorage of type P, turn off canBeUsedFromOtherPages
+if (this.dataStorageType == "P") this.canBeUsedFromOtherPages = false;  
 	        ]]>
 	    </saveJavaScript>
 	    
@@ -1099,8 +1126,17 @@ if (details) {
 		var data = getGridDataStoreData(id, details);
 		if (data) setData_grid($.Event('gridinit'), id, null, details, data);
 		$("#" + id).click( function(ev) {
-			var data = getGridDataStoreData(id, details);
-			data.selectedRowNumber = getGridSelectedRowNumber(id, ev, details);
+			// get the data
+			var data = getGridDataStoreData(id, details);			
+			// if multiSelect
+			if (details.multiSelect) {
+				// get multi selected rows
+				data.selectedRowNumber = getGridMultiSelectedRowNumber(id, ev, details);
+			} else {
+				// get a single selected row
+				data.selectedRowNumber = getGridSelectedRowNumber(id, ev, details);
+			}
+			// save
 			saveGridDataStoreData(id, details, data);
 		});
 	} // datastorage type check
@@ -1121,17 +1157,28 @@ if (details.dataStorageType) {
 	var grid = $("#" + id);
 	if (!grid.is("table")) grid = grid.find("table").last();
 	if (grid[0]) {
-		var rowNumber = getGridSelectedRowNumber(id, ev, details);
+		var rowNumber = null;
+		if (details.multiSelect) {
+			rowNumber = getGridMultiSelectedRowNumber(id, ev, details);
+		} else {
+			rowNumber = getGridSelectedRowNumber(id, ev, details);
+		}
 		if (rowNumber != data.selectedRowNumber) {
 			data.selectedRowNumber = rowNumber;
 			saveGridDataStoreData(id, details, data);
 		}
 	}
-	if (data.selectedRowNumber) {
-		data.rows = [data.rows[data.selectedRowNumber - 1]];
-	} else {
-		data.rows = [];
+	rows = [];
+	if (data && data.selectedRowNumber) {
+		if (details.multiSelect && $.isArray(data.selectedRowNumber)) {
+			for (var i in data.selectedRowNumber) {
+				rows.push(data.rows[data.selectedRowNumber[i] - 1]);
+			}
+		} else {
+			if (data.selectedRowNumber > -1) rows.push(data.rows[data.selectedRowNumber - 1]);
+		}
 	}
+	data.rows = rows;
 } else {
 	if (details.multiSelect) {
 		var rows = getGridMutiSelectedRows(id, ev);
