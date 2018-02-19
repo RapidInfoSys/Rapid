@@ -317,19 +317,18 @@ public class DataFactory {
 	}
 	
 	private ResultSet getFirstResultSet(PreparedStatement preparedStatement) throws SQLException {
-			
+		
 		preparedStatement.execute();
 	
 		_resultset = preparedStatement.getResultSet();
 	
-		while (_resultset == null && preparedStatement.getMoreResults()) {
-				_resultset = preparedStatement.getResultSet();
-			}
+		while (_resultset == null && (preparedStatement.getMoreResults() || preparedStatement.getUpdateCount() > -1)) {
+			_resultset = preparedStatement.getResultSet();
+		}
 			
 		return _resultset;
 	
 	}
-
 	public ResultSet getPreparedResultSet(RapidRequest rapidRequest, String sql, ArrayList<Parameter> parameters) throws SQLException, ClassNotFoundException, ConnectionAdapterException {
 
 		return getFirstResultSet(getPreparedStatement(rapidRequest, sql, parameters));
