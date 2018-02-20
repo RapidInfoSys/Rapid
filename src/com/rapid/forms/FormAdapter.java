@@ -58,6 +58,7 @@ import com.rapid.core.Email.Attachment;
 import com.rapid.core.Email.StringDataSource;
 import com.rapid.core.Page;
 import com.rapid.core.Pages;
+import com.rapid.core.Theme;
 import com.rapid.core.Pages.PageHeader;
 import com.rapid.core.Pages.PageHeaders;
 import com.rapid.core.Validation;
@@ -354,16 +355,30 @@ public abstract class FormAdapter {
 
 	// the start of the form summary	page
 	protected String getSummaryStartHtml(RapidRequest rapidRequest, Application application, boolean email) {
+		// assume no theme header
+		String themeHeader = "";
+		// get the theme
+		Theme theme = application.getTheme(rapidRequest.getRapidServlet().getServletContext());
+		// check we got one
+		if (theme != null) themeHeader =  theme.getHeaderHtml();
+		// if this is the email use the title
 		if (email) {
-			return "<h1 class='formSummaryTitle'>" + application.getTitle() + " summary</h1>\n";
+			return themeHeader + "<h1 class='formSummaryTitle'>" + application.getTitle() + " summary</h1>\n";
 		} else {
-			return "<h1 class='formSummaryTitle'>Form summary</h1>\n";
+			return themeHeader + "<h1 class='formSummaryTitle'>Form summary</h1>\n";
 		}
 	}
 
 	// the end of the form summary page
 	protected String getSummaryEndHtml(RapidRequest rapidRequest, Application application, boolean email) {
-		return "";
+		// get the theme
+		Theme theme = application.getTheme(rapidRequest.getRapidServlet().getServletContext());
+		// check we got one
+		if (theme == null) {
+			return "";
+		} else {
+			return theme.getFooterHtml();
+		}
 	}
 
 	// the start of a page block in the form summary
