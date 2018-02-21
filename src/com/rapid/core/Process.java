@@ -209,7 +209,7 @@ public abstract class Process extends Thread {
 
 						// get the last second of today
 						Date endOfToday = getTodayTimeDate(now, "23:59:59");
-						// get millis to end of tay plus one second to get midnight
+						// get millis to end of today plus one second to get past midnight tomorrow
 						Long millisToEndOfToday = endOfToday.getTime() - now.getTime() + 1000;
 
 						_logger.trace("Days specified, but not today, and no duration specified, sleep " + millisToEndOfToday/1000 + " secs until the end of today");
@@ -237,7 +237,7 @@ public abstract class Process extends Thread {
 		_logger.error("Process " + _name + " has stopped");
 	}
 
-	//Returns a date object of today's date with given time
+	// Returns a date object of today's date with given time
 	private Date getTodayTimeDate(Date now, String time) throws ParseException {
 		// Create a start and stop datetime string, to be parsed into date object
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -245,8 +245,12 @@ public abstract class Process extends Thread {
 		String timeString = dateFormat.format(now) + " " + time;
 		// Now convert the time string into date object
 		dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		// get the date
+		Date date = dateFormat.parse(timeString);
+		// log
+		_logger.trace("getTodayTimeDate " + now + " " + time + " = " + date);
 		// return the parsed date
-		return dateFormat.parse(timeString);
+		return date;
 	}
 
 	@Override

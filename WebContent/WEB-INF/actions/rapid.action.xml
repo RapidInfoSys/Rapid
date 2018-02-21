@@ -394,14 +394,14 @@ function Action_rapid(ev, appId, pageId, controlId, actionId, actionType, rapidA
 		case "SAVEACTIONS" :
 			var actionTypes = [];
 			$("#rapid_P0_C288").find("input:checked:not(gridMultiSelectHeader)").each( function(){
-				actionTypes.push($(this).closest("tr").children("td:nth-child(1)").html());
+				actionTypes.push($(this).closest("tr").children("td:nth-child(2)").html());
 			});		
 			data = { actionType: actionType, appId: $("#rapid_P0_C43").val(), version: $("#rapid_P0_C1044_").val(), actionTypes: actionTypes };	
 		break;
 		case "SAVECONTROLS" :	
 			var controlTypes = [];
 			$("#rapid_P0_C289").find("input:checked:not(gridMultiSelectHeader)").each( function(){
-				controlTypes.push($(this).closest("tr").children("td:nth-child(1)").html());
+				controlTypes.push($(this).closest("tr").children("td:nth-child(2)").html());
 			});		
 			data = { actionType: actionType, appId: $("#rapid_P0_C43").val(), version: $("#rapid_P0_C1044_").val(), controlTypes: controlTypes };	
 		break;
