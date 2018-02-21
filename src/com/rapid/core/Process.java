@@ -12,8 +12,6 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.rapid.server.RapidHttpServlet;
-
 public abstract class Process extends Thread {
 
 	// protected instance variables
@@ -34,8 +32,8 @@ public abstract class Process extends Thread {
 		_name = parameters.getString("name");
 		_interval = parameters.getInt("interval");
 
-		// get a logger
-		_logger = LogManager.getLogger(RapidHttpServlet.class);
+		// get a logger for this class
+		_logger = LogManager.getLogger(this.getClass());
 	}
 
 	// abstract methods
