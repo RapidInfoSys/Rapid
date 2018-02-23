@@ -113,15 +113,16 @@ public abstract class Process extends Thread {
 
 						_logger.trace("Durations are specified!");
 
+						// get the duration
 						JSONObject duration = _parameters.getJSONObject("duration");
 
+						// get the duration start and stop
 						String start = duration.getString("start");
 						String stop = duration.getString("stop");
+
 						// Check whether the start/stop time has the 'seconds' portion. Add if not
-						if (start.length() < 6)
-							start += ":00";
-						if (stop.length() < 6)
-							stop += ":00";
+						if (start.length() < 6) start += ":00";
+						if (stop.length() < 6) stop += ":00";
 
 						// get today's start and stop date objects using their time
 						Date startTime = getTodayTimeDate(now, start);
@@ -207,7 +208,7 @@ public abstract class Process extends Thread {
 
 						// get the last second of today
 						Date endOfToday = getTodayTimeDate(now, "23:59:59");
-						// get millis to end of today plus one second to get past midnight tomorrow
+						// get millis to end of today plus one second to get to midnight tomorrow
 						Long millisToEndOfToday = endOfToday.getTime() - now.getTime() + 1000;
 
 						_logger.trace("Days specified, but not today, and no duration specified, sleep " + millisToEndOfToday/1000 + " secs until the end of today");
@@ -231,6 +232,7 @@ public abstract class Process extends Thread {
 
 			}
 		} // end of while
+
 		 // log stopped
 		_logger.error("Process " + _name + " has stopped");
 	}
@@ -241,14 +243,18 @@ public abstract class Process extends Thread {
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		// append the time
 		String timeString = dateFormat.format(now) + " " + time;
-		// Now convert the time string into date object
-		dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		// assume date format pattern without seconds
+		String pattern = "dd/MM/yyyy HH:mm";
+		// if time contains seconds add to pattern
+		if (time.length() > 5) pattern += ":ss";
+		// update the dateFormat to include time
+		dateFormat = new SimpleDateFormat(pattern);
 		// get the date
-		Date date = dateFormat.parse(timeString);
+		Date todayTime = dateFormat.parse(timeString);
 		// log
-		_logger.trace("getTodayTimeDate " + now + " " + time + " = " + date);
+		_logger.trace("getTodayTimeDate " + now + " " + time + " = " + todayTime);
 		// return the parsed date
-		return date;
+		return todayTime;
 	}
 
 	@Override
