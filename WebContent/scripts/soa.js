@@ -141,7 +141,9 @@ function showSOARestrictions(collection, control, details) {
 		// add new restriction
 		_soaRestrictions.push({type:"MinOccursRestriction", value:"1"});
 		// refresh dialogue
-		showSOARestrictions(ev.data.collection, ev.data.control, ev.data.details);				
+		showSOARestrictions(ev.data.collection, ev.data.control, ev.data.details);
+		// stop jumping to the top of the screen
+		ev.preventDefault();
 	});
 	
 	// get a reference to the table
@@ -319,6 +321,8 @@ function loadSOA(details) {
 			requestElement.childElements.push({name:"", dataType: 1});
 			// refresh
 			loadSOA(ev.data);
+			// stop jumping to the top of the screen
+			ev.preventDefault();
 		});
 		
 		// response is ever so slightly different as it has a single/collection radio (for isArray) and field column
