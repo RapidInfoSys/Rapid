@@ -798,14 +798,14 @@ public class Database extends Action {
 							boolean gotResults = true;
 							// get the statement
 							Statement st = rs.getStatement();
+							
+							// get it's meta data for the field names
+							ResultSetMetaData rsmd = rs.getMetaData();
 
 							while (gotResults) {
 
 								// got fields indicator
 								boolean gotFields = false;
-
-								// get it's meta data for the field names
-								ResultSetMetaData rsmd = rs.getMetaData();
 
 								// loop the result set
 								while (rs.next()) {
