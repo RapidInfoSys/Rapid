@@ -91,7 +91,7 @@ public abstract class Process extends Thread {
 					dateFormat = new SimpleDateFormat("EEEE");
 					String today = (dateFormat.format(now)).toLowerCase();
 
-					// Check if Iam on the right day.
+					// Check if I am on the right day.
 					if (days.has(today) && days.getBoolean(today)) {
 
 						_logger.trace("I am currently on the right day!");
@@ -198,7 +198,7 @@ public abstract class Process extends Thread {
 						// tomorrow start is today start + 24 hours milliseconds
 						Long millisToTomorrowStart = millisToStart + (24 * 60 * 60 * 1000);
 
-						_logger.trace("Not running today - sleep " + millisToStart/1000 + " secs until tomorrow's start");
+						_logger.trace("Not running today - sleep " + millisToTomorrowStart/1000 + " secs until tomorrow's start");
 
 						// sleep until tomorrow's specified start
 						Thread.sleep(millisToTomorrowStart);
