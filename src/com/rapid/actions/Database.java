@@ -833,7 +833,7 @@ public class Database extends Action {
 										case (Types.FLOAT) :
 											jsonRow.put(rs.getFloat(i + 1));
 										break;
-										case (Types.DOUBLE) :
+										case (Types.DOUBLE) : case (Types.DECIMAL) :
 											jsonRow.put(rs.getDouble(i + 1));
 										break;
 										case (Types.DATE) :
