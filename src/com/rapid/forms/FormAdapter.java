@@ -58,9 +58,9 @@ import com.rapid.core.Email.Attachment;
 import com.rapid.core.Email.StringDataSource;
 import com.rapid.core.Page;
 import com.rapid.core.Pages;
-import com.rapid.core.Theme;
 import com.rapid.core.Pages.PageHeader;
 import com.rapid.core.Pages.PageHeaders;
+import com.rapid.core.Theme;
 import com.rapid.core.Validation;
 import com.rapid.security.SecurityAdapter;
 import com.rapid.security.SecurityAdapter.SecurityAdapaterException;
@@ -352,34 +352,71 @@ public abstract class FormAdapter {
 		// default notHidden to false so the standard behaviour is to return the value whether hidden or not
 		return getFormControlValue(rapidRequest, formId, controlId, false);
 	}
+	
+	// some controls need some further processing to get a summary value, also used in the pdf
+	protected String getSummaryControlValue(Control control, FormControlValue controlValue, String nullValue) {
+		
+		// get the value
+		String value = controlValue.getValue();
+		
+		// check for nulls
+		if (value == null) {
+			value = nullValue;
+		} else {
+			
+			// check for json
+			if (value.startsWith("{") && value.endsWith("}")) {
+				try {
+					JSONObject jsonValue = new JSONObject(value);
+					value = jsonValue.optString("text");
+				} catch (Exception ex) {}
+			}
+			
+			// get the type
+			String type = control.getType();
+			
+			// check for checkboxes
+			if (type.contains("checkbox")) {
+				// just show the label
+				value = control.getLabel();
+			} else {
+				// show the label and value
+				value = control.getLabel() + " : " + control.getCodeText(_application, value);
+			}
+			
+		}
+		return value;
+		
+	}
 
 	// the start of the form summary	page
-	protected String getSummaryStartHtml(RapidRequest rapidRequest, Application application, boolean email) {
-		// assume no theme header
-		String themeHeader = "";
-		// get the theme
-		Theme theme = application.getTheme(rapidRequest.getRapidServlet().getServletContext());
-		// check we got one
-		if (theme != null) themeHeader =  theme.getHeaderHtml();
-		// if this is the email use the title
-		if (email) {
-			return themeHeader + "<h1 class='formSummaryTitle'>" + application.getTitle() + " summary</h1>\n";
-		} else {
-			return themeHeader + "<h1 class='formSummaryTitle'>Form summary</h1>\n";
+		protected String getSummaryStartHtml(RapidRequest rapidRequest, Application application, boolean email) {
+			// assume no theme header
+			String themeHeader = "";
+			// get the theme
+			Theme theme = application.getTheme(rapidRequest.getRapidServlet().getServletContext());
+			// check we got one
+			if (theme != null) themeHeader =  theme.getHeaderHtml();
+			// if this is the email use the title
+			if (email) {
+				return themeHeader + "<h1 class='formSummaryTitle'>" + application.getTitle() + " summary</h1>\n";
+			} else {
+				return themeHeader + "<h1 class='formSummaryTitle'>Form summary</h1>\n";
+			}
 		}
-	}
 
-	// the end of the form summary page
-	protected String getSummaryEndHtml(RapidRequest rapidRequest, Application application, boolean email) {
-		// get the theme
-		Theme theme = application.getTheme(rapidRequest.getRapidServlet().getServletContext());
-		// check we got one
-		if (theme == null) {
-			return "";
-		} else {
-			return theme.getFooterHtml();
+		// the end of the form summary page
+		protected String getSummaryEndHtml(RapidRequest rapidRequest, Application application, boolean email) {
+			// get the theme
+			Theme theme = application.getTheme(rapidRequest.getRapidServlet().getServletContext());
+			// check we got one
+			if (theme == null) {
+				return "";
+			} else {
+				return theme.getFooterHtml();
+			}
 		}
-	}
+
 
 	// the start of a page block in the form summary
 	protected String getSummaryPageStartHtml(RapidRequest rapidRequest, Application application, Page page, boolean email) {
@@ -410,16 +447,7 @@ public abstract class FormAdapter {
 				if (label == null) {
 					return "";
 				} else {
-					String value = controlValue.getValue();
-					// check for nulls
-					if (value == null) value = "(no value)";
-					// check for json
-					if (value.startsWith("{") && value.endsWith("}")) {
-						try {
-							JSONObject jsonValue = new JSONObject(value);
-							value = jsonValue.optString("text");
-						} catch (Exception ex) {}
-					}
+					String value = getSummaryControlValue(control, controlValue, "(no value)");
 					return "<span class='formSummaryControl'>" + label + " : " + Html.escape(control.getCodeText(application, value)) + "</span>\n";
 				}
 			}
