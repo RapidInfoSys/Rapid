@@ -1163,7 +1163,7 @@ if (details.dataStorageType) {
 		} else {
 			rowNumber = getGridSelectedRowNumber(id, ev, details);
 		}
-		if (rowNumber != data.selectedRowNumber) {
+		if (data && rowNumber != data.selectedRowNumber) {
 			data.selectedRowNumber = rowNumber;
 			saveGridDataStoreData(id, details, data);
 		}
@@ -1177,8 +1177,8 @@ if (details.dataStorageType) {
 		} else {
 			if (data.selectedRowNumber > -1) rows.push(data.rows[data.selectedRowNumber - 1]);
 		}
-	}
-	data.rows = rows;
+		data.rows = rows;
+	}	
 } else {
 	if (details.multiSelect) {
 		var rows = getGridMutiSelectedRows(id, ev);
