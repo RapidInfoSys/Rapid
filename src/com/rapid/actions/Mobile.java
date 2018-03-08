@@ -731,16 +731,14 @@ public class Mobile extends Action {
 
 							// assume target is the page
 							String target = "html";
-							// update to control if we have one
-							if (control != null) target = "#" + control.getId();
 
+							// add the js
 							js += "$('" + target + "').swipe( { " + method + ":function(event, direction, distance, duration, fingerCount, fingerData) {\n";
 
-							// loop them (this should clean out the working and offline entries in the details)
+							// loop actions
 							for (Action action : _onlineActions) {
-
+								// add action js
 								js += "  " + action.getJavaScript(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n  ") + "\n";
-
 							}
 
 							js += "}, fingers:'" + fingers + "'});";

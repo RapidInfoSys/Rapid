@@ -4904,11 +4904,18 @@ var _mobileActionTypes = [["dial","Dial number"],["sms","Send text/sms message"]
 
 // this property changes the visibility of other properties according to the chosen type
 function Property_mobileActionType(cell, mobileAction, property, details) {
+	// assume not the page load
+	var pageLoad = false;
+	// look for first heading
+	var heading = cell.closest("table").find(".propertyHeader").first();
+	// if heading is for page load, set it
+	if (heading.text() == "Load event") pageLoad = true;
 	// the selectHtml
 	var selectHtml = "<select>";
 	// loop the mobile action types
 	for (var i in _mobileActionTypes) {
-		selectHtml += "<option value='" + _mobileActionTypes[i][0] + "'" + (mobileAction.actionType == _mobileActionTypes[i][0]? " selected='selected'" : "") + ">" + _mobileActionTypes[i][1] + "</option>";
+		// leave out swipe if not page load
+		if (!pageLoad || !_mobileActionTypes[i][0] == "swipe") selectHtml += "<option value='" + _mobileActionTypes[i][0] + "'" + (mobileAction.actionType == _mobileActionTypes[i][0]? " selected='selected'" : "") + ">" + _mobileActionTypes[i][1] + "</option>";
 	}
 	selectHtml += "</select>";
 	// add the available types and retrieve dropdown
@@ -4996,7 +5003,8 @@ function Property_mobileActionType(cell, mobileAction, property, details) {
 			setPropertyVisibilty(mobileAction, "message", true);
 		break;
 		case "swipe" :
-			if (detail && detail.type) {
+			// only if for page load
+			if (pageLoad) {
 				setPropertyVisibilty(mobileAction, "swipeDirection", true);
 				setPropertyVisibilty(mobileAction, "swipeFingers", true);
 				setPropertyVisibilty(mobileAction, "onlineActions", true);
