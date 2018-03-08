@@ -4,7 +4,7 @@
 
 /*
 
-Copyright (C) 2014 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -37,44 +37,52 @@ String message = (String) session.getAttribute("message");
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 	<link rel="icon" href="favicon.ico"></link>
 	<link rel="stylesheet" type="text/css" href="styles/index.css"></link>
+	<link rel='stylesheet' type='text/css' href='styles/fonts/fontawesome/css/font-awesome.css'></link>
 </head>
 
 <body onload="document.login.userName.focus();">
 
 <div class="image">
-	<a href="http://www.rapid-is.co.uk"><img title="Rapid Information Systems" src="images/RapidLogo_60x40.png" /></a>	
+	<a href="http://www.rapid-is.co.uk"><img title="Rapid Information Systems" src="images/RapidLogo.svg" /></a>	
 </div>
 
-<div class="midTitle">
-	<span>Rapid - version <%=com.rapid.server.Rapid.VERSION %></span>
+<div class="midTitle" style="">
+	<span style="">Rapid</span>
+</div>
+<div class="subBar">
+	<div class="versionColumn"><%=com.rapid.server.Rapid.VERSION %></div>
 </div>
 
 <div class="body">
 
-	<form name="login" id="RapidLogin" method="post">
-		<table>
-			<tr>
-				<td>User name</td><td><input name="userName" /></td>
-			</tr>
-			<tr>
-				<td>Password</td><td><input name="userPassword" type="password" /></td>
-			</tr>
-			<tr>
-				<td colspan="2" style="text-align:right;"><button type="submit">Log in</button></td>
-			</tr>		
-		</table>
-	</form>
-	
-<% 
-if (message != null) {
-	// print the message into the page
-%>
-			<p><%=message %></p>
-<%
-	// empty the message
-	session.setAttribute("message", null);
-}
-%>	
+		<div class="columnMiddle">
+			<form name="login" id="RapidLogin" method="post" style="">	
+				<div class="row">
+					<div class="columnUserInput">
+						<div class="columnUserIcon" style="">
+							<span class="fa fa-user" style=""></span>
+						</div>
+						<input type="text" placeholder="Username" name="userName" required>
+					</div>
+				</div>
+				
+				<div class="row">
+					<div class="columnUserIcon"><span class="fa fa-lock"></span></div>
+					<div class="columnUserInput"><input type="password" placeholder="Password" name="userPassword"></div>
+				</div>
+				 
+				<button type="submit"><i class="fa fa-sign-in"></i>  Log in</button>
+			</form>
+				
+			<% 
+			if (message != null) {
+			%>
+				<p class="message"><%=message %></p>
+			<%	
+				session.setAttribute("message", null);
+			}
+			%>
+		</div>	
 	
 </div>
 
