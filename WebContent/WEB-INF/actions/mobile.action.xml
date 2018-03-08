@@ -318,7 +318,7 @@ return [["d","driving"],["w","walking"],["b","cycling"],["transit","public trans
 	        
 	        <property>
 	            <key>swipeDirection</key>
-	            <name>Swipe direction</name>
+	            <name>Direction</name>
 	            <visible>false</visible>
 	            <setConstructValueFunction>return "left";</setConstructValueFunction>
 	            <changeValueJavaScript>select</changeValueJavaScript>
@@ -328,7 +328,7 @@ return [["d","driving"],["w","walking"],["b","cycling"],["transit","public trans
 	        
 	        <property>
 	            <key>swipeFingers</key>
-	            <name>Swipe fingers</name>
+	            <name>Number of fingers</name>
 	            <visible>false</visible>
 	            <setConstructValueFunction>return "any";</setConstructValueFunction>
 	            <changeValueJavaScript>select</changeValueJavaScript>

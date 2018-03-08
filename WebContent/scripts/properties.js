@@ -4915,7 +4915,7 @@ function Property_mobileActionType(cell, mobileAction, property, details) {
 	// loop the mobile action types
 	for (var i in _mobileActionTypes) {
 		// leave out swipe if not page load
-		if (!pageLoad || !_mobileActionTypes[i][0] == "swipe") selectHtml += "<option value='" + _mobileActionTypes[i][0] + "'" + (mobileAction.actionType == _mobileActionTypes[i][0]? " selected='selected'" : "") + ">" + _mobileActionTypes[i][1] + "</option>";
+		if (_mobileActionTypes[i][0] != "swipe" || pageLoad) selectHtml += "<option value='" + _mobileActionTypes[i][0] + "'" + (mobileAction.actionType == _mobileActionTypes[i][0]? " selected='selected'" : "") + ">" + _mobileActionTypes[i][1] + "</option>";
 	}
 	selectHtml += "</select>";
 	// add the available types and retrieve dropdown

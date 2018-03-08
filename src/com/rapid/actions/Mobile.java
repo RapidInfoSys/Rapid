@@ -727,7 +727,7 @@ public class Mobile extends Action {
 							// get the finders
 							String fingers = getProperty("swipeFingers");
 							// update any to all
-							if ("any".equals(fingers)) fingers = "all";
+							if ("any".equals(fingers)) fingers = "'all'";
 
 							// assume target is the page
 							String target = "html";
@@ -741,7 +741,7 @@ public class Mobile extends Action {
 								js += "  " + action.getJavaScript(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n  ") + "\n";
 							}
 
-							js += "}, fingers:'" + fingers + "'});";
+							js += "}, fingers:" + fingers + "});";
 
 						} catch (Exception ex) {
 							// print an error instead
