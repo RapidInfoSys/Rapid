@@ -4900,7 +4900,7 @@ function Property_guidelines(cell, propertyObject, property, details) {
 }
 
 // possible mobileActionType values used by the mobileActionType property
-var _mobileActionTypes = [["dial","Dial number"],["sms","Send text/sms message"],["email","Send email"],["url","Open url"],["addImage","Get image"],["uploadImages","Upload images"],["addBarcode","Scan barcode"],["navigate","Navigate to"],["sendGPS","Send GPS position"],["stopGPS","Stop GPS updates"],["message","Status bar message"],["disableBackButton","Disable back button"],["online","Online actions"]];
+var _mobileActionTypes = [["dial","Dial number"],["sms","Send text/sms message"],["email","Send email"],["url","Open url"],["addImage","Get image"],["uploadImages","Upload images"],["addBarcode","Scan barcode"],["navigate","Navigate to"],["sendGPS","Send GPS position"],["stopGPS","Stop GPS updates"],["message","Status bar message"],["disableBackButton","Disable back button"],["swipe","Swipe"],["online","Online actions"]];
 
 // this property changes the visibility of other properties according to the chosen type
 function Property_mobileActionType(cell, mobileAction, property, details) {
@@ -4939,6 +4939,8 @@ function Property_mobileActionType(cell, mobileAction, property, details) {
 	setPropertyVisibilty(mobileAction, "gpsFrequency", false);	
 	setPropertyVisibilty(mobileAction, "gpsCheck", false);
 	setPropertyVisibilty(mobileAction, "message", false);
+	setPropertyVisibilty(mobileAction, "swipeDirection", false);
+	setPropertyVisibilty(mobileAction, "swipeFingers", false);
 	setPropertyVisibilty(mobileAction, "onlineActions", false);
 	setPropertyVisibilty(mobileAction, "onlineWorking", false);
 	setPropertyVisibilty(mobileAction, "onlineFail", false);
@@ -4992,6 +4994,13 @@ function Property_mobileActionType(cell, mobileAction, property, details) {
 		break;
 		case "message" :
 			setPropertyVisibilty(mobileAction, "message", true);
+		break;
+		case "swipe" :
+			if (detail && detail.type) {
+				setPropertyVisibilty(mobileAction, "swipeDirection", true);
+				setPropertyVisibilty(mobileAction, "swipeFingers", true);
+				setPropertyVisibilty(mobileAction, "onlineActions", true);
+			}
 		break;
 		case "online" :
 			setPropertyVisibilty(mobileAction, "onlineActions", true);

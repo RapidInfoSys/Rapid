@@ -711,6 +711,48 @@ public class Mobile extends Action {
 				// close mobile check
 				js += "}\n";
 
+			} else if ("swipe".equals(type)) {
+
+				// check we have online actions
+				if (_onlineActions != null) {
+					// check size
+					if (_onlineActions.size() > 0) {
+
+						try {
+
+							// get the direction
+							String direction = getProperty("swipeDirection");
+							// create the method
+							String method = "swipe" + direction.substring(0,1).toUpperCase() + direction.substring(1);
+							// get the finders
+							String fingers = getProperty("swipeFingers");
+							// update any to all
+							if ("any".equals(fingers)) fingers = "all";
+
+							// assume target is the page
+							String target = "html";
+							// update to control if we have one
+							if (control != null) target = "#" + control.getId();
+
+							js += "$('" + target + "').swipe( { " + method + ":function(event, direction, distance, duration, fingerCount, fingerData) {\n";
+
+							// loop them (this should clean out the working and offline entries in the details)
+							for (Action action : _onlineActions) {
+
+								js += "  " + action.getJavaScript(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n  ") + "\n";
+
+							}
+
+							js += "}, fingers:'" + fingers + "'});";
+
+						} catch (Exception ex) {
+							// print an error instead
+							js = "// failed to create swipe mobile action " + getId() + " JavaScript : " + ex.getMessage() + "\n";
+						}
+
+					} // actions count check
+				} // actions null check
+
 			} else if ("online".equals(type)) {
 
 				// check we have online actions
@@ -761,14 +803,14 @@ public class Mobile extends Action {
 							// close online check
 							js += "}\n";
 
-							} catch (Exception ex) {
-								// print an error instead
-								js = "// failed to print action " + getId() + " JavaScript : " + ex.getMessage() + "\n";
-							}
+						} catch (Exception ex) {
+							// print an error instead
+							js = "// failed to create online mobile action " + getId() + " JavaScript : " + ex.getMessage() + "\n";
+						}
 
-						} // online actions size check
+					} // online actions size check
 
-					} // online actions check non-null check
+				} // online actions check non-null check
 
 			} else if ("addBarcode".equals(type)) {
 

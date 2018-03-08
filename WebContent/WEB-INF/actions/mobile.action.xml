@@ -317,11 +317,31 @@ return [["d","driving"],["w","walking"],["b","cycling"],["transit","public trans
 	        </property>
 	        
 	        <property>
+	            <key>swipeDirection</key>
+	            <name>Swipe direction</name>
+	            <visible>false</visible>
+	            <setConstructValueFunction>return "left";</setConstructValueFunction>
+	            <changeValueJavaScript>select</changeValueJavaScript>
+	            <getValuesFunction>return ["left","right","down","up"];</getValuesFunction>
+	            <helpHtml>The direction of the swipe</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>swipeFingers</key>
+	            <name>Swipe fingers</name>
+	            <visible>false</visible>
+	            <setConstructValueFunction>return "any";</setConstructValueFunction>
+	            <changeValueJavaScript>select</changeValueJavaScript>
+	            <getValuesFunction>return ["any","1","2"];</getValuesFunction>
+	            <helpHtml>The number of fingers used in the swipe</helpHtml>
+	        </property>
+	        
+	        <property>
 	            <key>onlineActions</key>
 	            <name>Actions</name>
 	            <visible>false</visible>
 	            <changeValueJavaScript>childActions</changeValueJavaScript>
-	            <helpHtml>Allows you to define actions to be carried out if the mobile device has an established Internet connection.</helpHtml>
+	            <helpHtml>Allows you to define actions to be carried out applicable to the type. For example if the mobile device was swiped, or has an established Internet connection.</helpHtml>
 	        </property>
 	        
 	        <property>
@@ -351,6 +371,11 @@ return [["d","driving"],["w","walking"],["b","cycling"],["transit","public trans
 	            </contents>
             </resource>
             
+	        <resource>
+	            <type>javascriptLink</type>
+	            <contents>scripts_min/jquery.touchSwipe.min.js</contents>
+	        </resource>
+            
 		</resources>
 	    
 		<actionJavaScript>
@@ -363,6 +388,6 @@ function Action_mobile(actionId, type) {
 
 			]]>
 	    </actionJavaScript>
-	    
+	  
     </action> 
 </actions>
