@@ -39,21 +39,18 @@ hr {
 }
 
 #loading b {
-	font-size: 24px;
+	font-size: 15px;
 }
 
 #loadingPanel {
-	padding: 20px;
-	border: 4px solid black;
-	border-radius: 10px;
 	margin: auto;
-	width: 300px;
-	background: white;
-	box-shadow: 5px 5px 5px #888;
+	width: 350px;
+	background: #202326;
+	box-shadow: 0px 3px 5px 1px dimgrey;
+	color: white;
 }
 
 #page {
-	border: 1px solid black;
 	margin: -1px;
 	position: absolute;
 	overflow: hidden;
@@ -103,13 +100,6 @@ hr {
 	min-width: 195px;
 	border-right: 1px solid #191919;
 	background: #dedede;
-	background: -moz-linear-gradient(top,  #dedede 0%, #eeeeee 10%, #dddddd 100%);		
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#dedede), color-stop(10%,#eeeeee), color-stop(100%,#dddddd));		
-	background: -webkit-linear-gradient(top,  #dedede 0%,#eeeeee 10%,#dddddd 100%);		
-	background: -o-linear-gradient(top,  #dedede 0%,#eeeeee 10%,#dddddd 100%);		
-	background: -ms-linear-gradient(top,  #dedede 0%,#eeeeee 10%,#dddddd 100%);		
-	background: linear-gradient(to bottom,  #dedede 0%,#eeeeee 10%,#dddddd 100%);		
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dedede', endColorstr='#dddddd',GradientType=0 );
 	overflow: hidden;
 	outline: none;
 	padding: 10px;
@@ -157,8 +147,6 @@ hr {
 	display:none;
 	color: white;
     padding: 0 10px;
-    border: 2px solid white;
-    border-radius: 5px;
     margin-top: 10px;
 }
 
@@ -188,6 +176,7 @@ hr {
 .headerHelp {
 	float: right;
 	margin-left: -16px;
+	padding-top: 3px;
 }
 
 .pageNav {
@@ -219,27 +208,21 @@ li.design-control, li.design-action {
 	margin-right: 2px;
 	margin-bottom: 5px;
 	padding: 2px 3px;
-	border: 2px solid #191919;	
+	border: none;	
 	color: #191919;	
 	font-size: 12px;		
 	text-align: center;	
-	border-radius: 3px;
 	min-height: 24px;
-	background: #666;
-	background: -moz-linear-gradient(top,  #666 0%, #494949 100%);
-	background: -webkit-linear-gradient(top,  #666 0%,#494949 100%);
-	background: linear-gradient(to bottom,  #666 0%,#494949 100%);
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#666', endColorstr='#494949',GradientType=0 );
-	box-shadow: 0 -1px 1px rgba(0,0,0,0.2) inset,0 1px 1px rgba(255,255,255,0.8) inset,1px 2px 2px -1px rgba(0,0,0,0.3);
+	background: #494949;
+	transition: transform 0.2s, background 0.3s ease;
 }
 
 li.design-control:hover, li.design-action:hover {
-	background-color: #ddd;
-	background: #500000;
-	background: -moz-linear-gradient(top,  #b80101 0%, #500000 100%);
-	background: -webkit-linear-gradient(top,  #b80101 0%,#500000 100%);
-	background: linear-gradient(to bottom,  #b80101 0%,#500000 100%);
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b80101', endColorstr='#500000',GradientType=0 );
+	background: #ff0004;
+	
+	-ms-transform: scale(1.2); /* IE 9 */
+    -webkit-transform: scale(1.2); /* Safari 3-8 */
+    transform: scale(1.2);
 }
 
 .design-control img, .design-action img {
@@ -273,8 +256,6 @@ li.design-control:hover, li.design-action:hover {
 
 #pageMap {	
 	text-align: left;	
-	border: 1px solid black;
-	border-radius: 3px;
 	background-color: white;
 }
 
@@ -321,17 +302,22 @@ img.conflictimgage {
 .design-map li {
 	display: block;
 	vertical-align: middle;
+	cursor: pointer;
 }
 
 .design-map span {
 	display: block;
 	cursor: pointer;	
 	white-space: nowrap;
-	background-color: none;
+	transition: background 0.3s ease;
 }
 
 .design-map span.selected {
 	background-color: #ccc;
+}
+
+.design-map span:hover {
+	background: #D5D6D2;
 }
 
 .design-map img {
@@ -370,7 +356,10 @@ img.conflictimgage {
 }
 
 .controlPanelVersion img {
-	padding-top: 15px;
+	padding-top: 5px;
+	margin-left: -16px;
+	width: 70px;
+	height: 50px;
 }
 
 div#propertiesPanel {
@@ -379,11 +368,7 @@ div#propertiesPanel {
 	top: 0px;
 	width: 200px;	
 	min-width: 200px;
-	border-left: 1px solid #191919;
-	background-color: #F5F5F5;
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7A7A7A', endColorstr='#3A3A3A',GradientType=0 );
 	overflow: hidden;
-	outline: none;
 	padding: 0px 10px 20px 10px;
 	text-align: center;
 	-webkit-touch-callout: none;
@@ -392,7 +377,6 @@ div#propertiesPanel {
 	-moz-user-select: -moz-none;
 	-ms-user-select: none;
 	user-select: none;
-	display: none;
 }
 
 div#propertiesPanelInner {
@@ -435,6 +419,8 @@ div#propertiesPanel h2 {
 	margin-bottom: 2px;
 	padding-top: 5px;
 	padding-bottom: 2px;
+	padding-right: 3px;
+	padding-left: 3px;
 	font-size: 15px;
 	border-top: 1px solid #777;
 	text-transform: uppercase;
@@ -477,8 +463,6 @@ table.propertiesPanelTable td.conflict, table.propertiesPanelTable td.formConfli
 .actionsPanelDiv h3 {
 	margin-top: 2px;
 	margin-bottom: 2px;
-	font-size: 11px;
-	float: left;
 }
 
 .actionsPanelDiv h4 {
@@ -488,9 +472,10 @@ table.propertiesPanelTable td.conflict, table.propertiesPanelTable td.formConfli
 	float: left;
 }
 
-.actionsPanelDiv img {
-	display: block;
-	float: right;
+.actionsPanelDiv img, .actionsPanelDiv i {
+	display: inline-block;
+	font-size: 15px;
+	padding: 0 1px;
 }
 
 /* properties styles are in their own properties.css file for reuse with Rapid Admin */
@@ -603,78 +588,20 @@ div.button {
 }
 
 .buttons button {
-	color: #FFF;
-	height:22px;	
+	color: white;	
 	margin-top: 5px;
-	margin-left: -3px;
 	margin-right: -4px;
 	vertical-align: middle;
 	padding: 0px 8px 2px 8px;
-	border: 2px solid #333;
-	border-radius: 0px;
+	border: none;
 	font-family: 'Open Sans', Arial;
 	font-size: 12px; 
-	background-color: #666;
-	background: #666;
-	background: -moz-linear-gradient(#666, #494949);
-	background: -webkit-linear-gradient(#666, #494949);
-	background: -o-linear-gradient(#666, #494949);
-	background: -mslinear-gradient(#666, #494949);
-	/* filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#cccccc',GradientType=0 ); */
-	-webkit-box-shadow: 0 -1px 1px rgba(0,0,0,0.2) inset,0 1px 1px rgba(255,255,255,0.8) inset,1px 2px 2px -1px rgba(0,0,0,0.3);
-	-moz-box-shadow: 0 -1px 1px rgba(0,0,0,0.2) inset,0 1px 1px rgba(255,255,255,0.8) inset,1px 2px 2px -1px rgba(0,0,0,0.3);
-	box-shadow: 0 -1px 1px rgba(0,0,0,0.2) inset,0 1px 1px rgba(255,255,255,0.8) inset,1px 2px 2px -1px rgba(0,0,0,0.3);
-	background: transparent linear-gradient(#666, #494949);
-}
-
-.buttons button:hover {
-	background-color: #500000;
-	background: #500000;
-	background: -moz-linear-gradient(#B80101, #500000);
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#dddddd), color-stop(20%,#cccccc), color-stop(100%,#cccccc));
-	background: -webkit-linear-gradient(#B80101, #500000);
-	background: -o-linear-gradient(#B80101, #500000);
-	background: -ms-linear-gradient(#B80101, #500000);
-	/* filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dddddd', endColorstr='#bbbbbb',GradientType=0 ); */
-	background: -webkit-linear-gradient(#B80101, #500000);
-	background: transparent linear-gradient(#B80101, #500000);
-}
-
-.buttons button:disabled {
-	background-color: #bbb;
-	background: #cccccc;
-	background: -moz-linear-gradient(top,  #cccccc 0%, #bbbbbb 20%, #a9a9a9 100%);
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#cccccc), color-stop(20%,#bbbbbb), color-stop(100%,#a9a9a9));
-	background: -webkit-linear-gradient(top,  #cccccc 0%,#bbbbbb 20%,#a9a9a9 100%);
-	background: -o-linear-gradient(top,  #cccccc 0%,#bbbbbb 20%,#a9a9a9 100%);
-	background: -ms-linear-gradient(top,  #cccccc 0%,#bbbbbb 20%,#a9a9a9 100%);	
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cccccc', endColorstr='#a9a9a9',GradientType=0 );
-	background: linear-gradient(to bottom,  #cccccc 0%,#bbbbbb 20%,#a9a9a9 100%);
-	color: #6A6A6A;
-}
-
-.buttons .buttonLeft {
-	-moz-border-radius-bottomleft: 1000px;
-	-moz-border-radius-topleft: 1000px;
-	-webkit-border-bottom-left-radius: 1000px;
-	-webkit-border-top-left-radius: 1000px;
-	border-bottom-left-radius: 1000px;
-	border-top-left-radius: 1000px;	
-}
-
-.buttons .buttonRight {
-	-moz-border-radius-bottomright: 1000px;
-	-moz-border-radius-topright: 1000px;
-	-webkit-border-bottom-right-radius: 1000px;
-	-webkit-border-top-right-radius: 1000px;
-	border-bottom-right-radius: 1000px;
-	border-top-right-radius: 1000px;		
+	background: #494949;
 }
 
 .buttons .buttonImage {
-    padding-left: 5px;
-    margin-left: 2px;
-    border-left:none;
+    padding-left: 7px;
+    margin-left: 0px;
 }
 
 #appAdmin {
@@ -685,7 +612,6 @@ div.button {
 
 #appAdminNewTab {
 	margin-top: 0;
-	margin-left: -2px;
 	height:30px;
 }
 
@@ -803,15 +729,6 @@ Selection Styles
 }
 
 .selectionInsertCover {
-	background:
-		linear-gradient(-45deg, 
-		rgba(106,148,220,0.1) 0px,
-		rgba(106,148,220,0.1) 10px,
-		transparent 0px, 
-		transparent 21px,
-		rgba(106,148,220,0.1) 0px,
-		rgba(106,148,220,0.1) 31.5px,
-		transparent 0px);
 	background-size: 30px 30px;
 	border: 1px solid rgba(106,148,220,0.1);
 	border-radius: 5px;
@@ -993,15 +910,14 @@ Tip styles
 
 select {
   padding: 2px 10px 2px 2px;
-  border-radius: 4px;
-  border: 2px solid #333;
-  background: transparent linear-gradient(#666, #494949);
+  border: none;
+  background: #494949;
   display: inline-block;
   cursor: pointer;
-  outline: none;
-  color: #FFF;
+  color: white;
   font-family: 'Open Sans', Arial , sans-serif;
   max-width: 100%;
+  transition: background 0.3s ease;
 }
 
 select option {
@@ -1021,15 +937,15 @@ select option {
 }
 
 #propertiesPanel #propertiesPanelInner .untilsPanelDiv .buttons button {
-  padding: 1px 8px 2px 8px;
+  padding: 2px 10px;
 }
 
-#propertiesPanel #propertiesPanelInner .untilsPanelDiv .buttons #copy, #propertiesPanel #propertiesPanelInner .untilsPanelDiv .buttons #paste {
-  padding: 0px 8px 2px 8px;
+.untilsPanelDiv {
+	padding: 0px 3px;
 }
 
-.dialogueTable select {
-  padding: 0px 10px 0px 2px;
+.untilsPanelDiv i:not(.headerHelp){
+	font-size:20px;
 }
 
 .dialogueGrid {
@@ -1045,20 +961,18 @@ select option {
 }
 
 button {
-  border: 2px solid #333;
+  border: none;
   color: #FFF;
   background: #494949;
-  background: transparent linear-gradient(#666, #494949);
-  /* filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#666666', endColorstr='#494949',GradientType=0 ); */
   font-family: 'Open Sans', Arial;
   padding: 0px 8px 2px 8px;
   outline: none;
+  transition: background 0.3s ease;
+  cursor:pointer;
 }
 
 button:hover {
-  background: #500000;
-  background: transparent linear-gradient(#B80101, #500000);
-  /* filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#B80101', endColorstr='#500000',GradientType=0 ); */
+	background: #ff0004;
 }
 
 button:disabled {
@@ -1076,20 +990,19 @@ input[type=checkbox] {
 }
 
 input[type=checkbox]:before {
-  width: 10px !important;
-  height: 10px !important;
+  width: 11px !important;
+  height: 11px !important;
   display: block;
   content: '';
   background: #FFF;
-  border-radius: 4px;
   margin: 0px !important;
   cursor: pointer;
-  border: 2px solid #999;
+  border: 1px solid #999;
   background: transparent linear-gradient(#FFF, #E0E0E0);
 }
 
 input:hover[type=checkbox]:before {
-  border: 2px solid #6F6F6F;
+  border: 1px solid #6F6F6F;
   background: transparent linear-gradient(#EBEBEB, #999);
 }
 
@@ -1104,7 +1017,7 @@ input[type=checkbox]:checked:before {
   content: '';
   margin: 0px;
   background-color: #FFF;
-  border: 2px solid #600;
+  border: 1px solid #600;
   background: transparent linear-gradient(#EBEBEB, #BABABA);
 }
 
@@ -1133,19 +1046,15 @@ h2, #controlPanelVersion, #controlsList h3 {
 }
 
 table.propertiesPanelTable, table.stylesPanelTable {
-  text-align: left;
-  border: 1px solid black;
-  border-radius: 3px;
+
 }
 
 .propertyDialogue {
-  border-radius: 3px 0px 3px 3px;
   box-shadow: -1px 0px 5px 1px #9D9D9D;
 }
 
 #controlPanel, #propertiesPanel {
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7A7A7A', endColorstr='#3A3A3A',GradientType=0 );
-  background: linear-gradient(to bottom, rgba(122,122,122,1) 0%,rgba(63,63,63,1) 54%,rgba(51,51,51,1) 58%,rgba(58,58,58,1) 60%,rgba(76,76,76,1) 79%,rgba(56,56,56,1) 92%,rgba(27,27,27,1) 100%);
+  background: #202326;
 }
 
 .buttons button:active {
@@ -1154,44 +1063,20 @@ table.propertiesPanelTable, table.stylesPanelTable {
 
 .buttons button:disabled {
   background: #DDD;
-  background: linear-gradient(to bottom, #cccccc 0%,#bbbbbb 20%,#a9a9a9 100%);
-  filter: none;
 }
 
 .buttons button:disabled:hover {
   cursor: auto;
-  background: #DDD;
-  background: -moz-linear-gradient(top,  #cccccc 0%, #bbbbbb 20%, #a9a9a9 100%);
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#cccccc), color-stop(20%,#bbbbbb), color-stop(100%,#a9a9a9));
-  background: -webkit-linear-gradient(top,  #cccccc 0%,#bbbbbb 20%,#a9a9a9 100%);
-  background: -o-linear-gradient(top,  #cccccc 0%,#bbbbbb 20%,#a9a9a9 100%);
-  background: -ms-linear-gradient(top,  #cccccc 0%,#bbbbbb 20%,#a9a9a9 100%);
-  /* filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cccccc', endColorstr='#a9a9a9',GradientType=0 ); */
   background: linear-gradient(to bottom,  #cccccc 0%,#bbbbbb 20%,#a9a9a9 100%);
 }
 
 button:disabled:hover {
   cursor: auto;
-  background: #DDD;
-  background: -moz-linear-gradient(top,  #cccccc 0%, #bbbbbb 20%, #a9a9a9 100%);
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#cccccc), color-stop(20%,#bbbbbb), color-stop(100%,#a9a9a9));
-  background: -webkit-linear-gradient(top,  #cccccc 0%,#bbbbbb 20%,#a9a9a9 100%);
-  background: -o-linear-gradient(top,  #cccccc 0%,#bbbbbb 20%,#a9a9a9 100%);
-  background: -ms-linear-gradient(top,  #cccccc 0%,#bbbbbb 20%,#a9a9a9 100%);
-  /* filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cccccc', endColorstr='#a9a9a9',GradientType=0 ); */
   background: linear-gradient(to bottom,  #cccccc 0%,#bbbbbb 20%,#a9a9a9 100%);
 }
 
 select:hover {
-	background-color: #500000;
-	background: #B80101;
-	background: -moz-linear-gradient(#B80101, #500000);
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#dddddd), color-stop(20%,#cccccc), color-stop(100%,#cccccc));
-	background: -webkit-linear-gradient(#B80101, #500000);
-	background: -o-linear-gradient(#B80101, #500000);
-	background: -ms-linear-gradient(#B80101, #500000);
-	background: -webkit-linear-gradient(#B80101, #500000);
-	background: transparent linear-gradient(#B80101, #500000);
+	background: #ff0004;
 }
 
 #flowCanvas {

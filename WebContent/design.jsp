@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <%@ page language="java" contentType="text/html;charset=utf-8" pageEncoding="utf-8"%>
 <%@ page import="java.util.Map" %>
-<%@ page import="org.apache.logging.log4j.LogManager" %>
+<%@ page import="org.apache.logging.log4j.LogManager"%>
+<%@ page import="org.apache.logging.log4j.Logger" %>
 <%@ page import="com.rapid.core.*" %>
 <%@ page import="com.rapid.server.Rapid" %>
 <%@ page import="com.rapid.server.RapidRequest" %>
@@ -11,10 +12,10 @@
 
 /*
 
+
 Copyright (C) 2014 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
-
 
 This file is part of the Rapid Application Platform
 
@@ -82,10 +83,9 @@ if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRe
 	var _userName = "<%=rapidRequest.getUserName() %>";
 	
 	</script>	
+	<link rel="stylesheet" type="text/css" href="styles/fonts/fontawesome/css/font-awesome.css"></link>
 	<link rel="stylesheet" type="text/css" href="styles/designer.css"></link>
 	<link rel="stylesheet" type="text/css" href="styles/properties.css"></link>
-	<link rel="stylesheet" type="text/css" href="styles/fonts/fontawesome/css/font-awesome.css"></link>
-	<link rel="stylesheet" type="text/css" href="styles/fonts/rapid/font-rapid.css"></link>
 <%
 	} else {
 %>
@@ -100,10 +100,17 @@ if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRe
 %>	
 	<div id="loading">
 		<div id="loadingPanel">
-			<div><img style="padding: 10px;width: 200px; height:134px; margin-left:-50px;" src="images/RapidLogo_200x134.png" /></div>
-			<div><b>Rapid <%=com.rapid.server.Rapid.VERSION %></b></div>		
-			<div><img style="margin-top: 5px; margin-bottom: 5px;" src="images/wait_220x19.gif"></div>		
-			<div>loading...</div>
+			<div>
+				<div><img style="width: 200px; height:135px; margin-right: 25px;" src="images/RapidLogo.svg" /></div>
+				<div style="position:relative; bottom:30px;"><b>Rapid <%=com.rapid.server.Rapid.VERSION %></b></div>
+			</div>
+			<div>		
+				<div style="position:relative; bottom:15px;">
+					<i style="margin-top: 5px; margin-bottom: 5px; font-size:40px;" class="glyph fa fa-spin"></i>
+					<div>loading...</div>
+				</div>		
+			</div>
+			<div class="subBar" style="background:#ff0004; height:30px;"></div>
 		</div>
 	</div>
 	
@@ -121,64 +128,57 @@ if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRe
 			
 		<div id="controlPanelShow" style="z-index:10010"></div>
 		
-		<div id="controlPanel" style="z-index:10011">
+		<div id="controlPanel" style="z-index:10011; width: 205px; border: none;">
 		
 			<div id="controlPanelSize" ></div>
 															
 			<div id="controlPanelInner">
 			
-				<div id="controlPanelPin"><img src="images/triangleLeftWhite_8x8.png" title="unpin panel" /></div>
+				<div id="controlPanelPin"><i class="fa fa-caret-left" title="unpin panel" style="color:white;"></i></div>
 																
 				<div class="buttons">					
 					<button id="appAdmin" class="buttonLeft" title="Open the Rapid Admin screen">Rapid Admin</button>
-					<button id="appAdminNewTab" class="buttonRight buttonImage" title="Open the Rapid Admin screen in a new tab"><img src="images/triangleRightWhite_8x8.png" /></button>
+					<button id="appAdminNewTab" class="buttonRight buttonImage" title="Open the Rapid Admin screen in a new tab"><i class="fa fa-caret-right"></i></button>
+					
 				</div>
 				
-				<h2 id="applicationsHeader">Application
-					<img class="headerToggle" src="images/triangleUpWhite_8x8.png" />
-					<img id="helpApplication" class="headerHelp" src="images/help_16x16.png" />
-				</h2>
-					
-				<div id="controlApplications">
-					
-					<select id="appSelect">
-						<!-- Applications are added here as options the designer loads -->
-					</select>
-					
-					<h2>Version<img id="helpVersion" class="headerHelp" src="images/help_16x16.png" /></h2>
-					<select id="versionSelect">
-						<!-- Application versions are added here as options the designer loads -->
-					</select>					
-					
-					<h2><img id="pagePrev" class="pageNav pageNavDisabled" src="images/triangleLeftWhite_8x8.png" title="previous page" />Page<img id="pageNext" class="pageNav pageNavDisabled" src="images/triangleRightWhite_8x8.png" title="next page" /><img id="helpPage" class="headerHelp" src="images/help_16x16.png" /></h2>
-					<select id="pageSelect">
-						<!-- Pages are added here as options the designer loads -->
-					</select>
-					
-					<div id="pageLock">
-						<h3>This page is locked for editing</h3>
-					</div>
-					
-					<div class="buttons">				
-						<button id="pageEdit" class="buttonLeft buttonRight" title="View and edit the page properties">properties</button>
-					</div>		
-									
-					<div class="buttons">
-						<button id="pageNew" class="buttonLeft" title="Create a new page for this application">new</button>
-						<button id="pageSave" class="" title="Save this page">save</button>
-						<button id="pageView" class="" title="View this page in the application">view</button><button id="pageViewNewTab" class="buttonRight buttonImage"  title="View this page in a new tab"><img src="images/triangleRightWhite_8x8.png" /></button>
-					</div>	
-							
-					<div class="buttons">
-						<button id="undo" class="buttonLeft" disabled="disabled" title="Undo changes">undo</button>
-						<button id="redo" class="buttonRight" disabled="disabled" title="Redo changes">redo</button>
-					</div>
+				<h2 style="">Application<i id="helpApplication" class="headerHelp glyph fa hintIcon"></i></h2>
+				<select id="appSelect">
+					<!-- Applications are added here as options the designer loads -->
+				</select>
+				
+				<h2 style="border:none;">Version<i id="helpVersion" class="headerHelp glyph fa hintIcon"></i></h2>
+				<select id="versionSelect">
+					<!-- Application versions are added here as options the designer loads -->
+				</select>					
+				
+				<h2 style="border:none;"><img id="pagePrev" class="pageNav pageNavDisabled" src="images/triangleLeftWhite_8x8.png" title="previous page" />Page<img id="pageNext" class="pageNav pageNavDisabled" src="images/triangleRightWhite_8x8.png" title="next page" /><i id="helpPage" class="headerHelp glyph fa hintIcon"></i></h2>
+				<select id="pageSelect">
+					<!-- Pages are added here as options the designer loads -->
+				</select>
+				
+				<div id="pageLock">
+					<h3>This page is locked for editing</h3>
 				</div>
+				
+				<div class="buttons">				
+					<button id="pageEdit" class="buttonLeft buttonRight" title="View and edit the page properties">properties</button>
+				</div>		
+								
+				<div class="buttons">
+					<button id="pageNew" class="buttonLeft" title="Create a new page for this application">new</button>
+					<button id="pageSave" class="" title="Save this page">save</button>
+					<button id="pageView" class="" title="View this page in the application">view</button><button id="pageViewNewTab" class="buttonRight buttonImage"  title="View this page in a new tab"><i class="fa fa-caret-right"></i></button>
+				</div>	
+						
+				<div class="buttons">
+					<button id="undo" class="buttonLeft" disabled="disabled" title="Undo changes">undo</button>
+					<button id="redo" class="buttonRight" disabled="disabled" title="Redo changes">redo</button>
+				</div>	
 								
 				<div id="controlControls" style="margin-top:0;margin-bottom:-3px;">
 					<h2 id="controlsHeader">Controls
-						<img class="headerToggle" src="images/triangleUpWhite_8x8.png" />
-						<img id="helpControls" class="headerHelp" src="images/help_16x16.png" />
+						<i class="headerToggle fa fa-caret-up" title="Hide controls" style="color:white;"></i>
 					</h2>
 					
 					<div id="controlsList">
@@ -186,9 +186,9 @@ if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRe
 					</div>					
 				</div>	
 				
-				<h2 id="controlsMap" style="margin-top:5px;">Page controls
-					<img class="headerToggle" src="images/triangleUpWhite_8x8.png" />
-					<img id="helpMap" class="headerHelp" src="images/help_16x16.png" />
+				<h2 id="controlsMap" style="margin-top:5px; border:none;">Page controls
+					<i class="headerToggle fa fa-caret-up" title="Hide page controls" style="color:white;"></i>
+					<i id="helpMap" class="headerHelp glyph fa hintIcon"></i>
 				</h2>
 				
 				<div id="pageMap" class="design-map" >
@@ -198,7 +198,7 @@ if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRe
 				</div>	
 
 				<div class="controlPanelVersion" >
-					<img src="images/RapidLogo_60x40.png" style="margin-left:-16px;"/>
+					<img src="images/RapidLogo.svg" style="margin-left:-16px;"/>
 					<div id="controlPanelVersion">Rapid<br/><%=com.rapid.server.Rapid.VERSION %></div>
 				</div>					
 			
@@ -212,24 +212,34 @@ if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRe
 																					
 			<div id="propertiesPanelInner">
 			
-				<div id="propertiesPanelPin"><img src="images/triangleRightWhite_8x8.png" title="hide panel" /></div>
+				<div id="propertiesPanelPin"><i class="fa fa-caret-right" title="hide panel" style="color:white;"></i></div>
 										
 				<div class="untilsPanelDiv">
 							
-					<img id="helpPropertiesPanel" class="headerHelp" src="images/help_16x16.png" />
-					<div class="buttons">					
-						<button id="selectPeerLeft" class="buttonLeft"><img src="images/moveLeft_16x16.png" title="Select the control before this one"/></button>
-						<button id="selectParent"><img src="images/moveUp_16x16.png" title="Select the parent of this control"/></button>
-						<button id="selectChild"><img src="images/moveDown_16x16.png" title="Select the first child of this control"/></button>
-						<button id="selectPeerRight" class="buttonRight"><img src="images/moveRight_16x16.png" title="Select the control after this one"/></button>
+					<i id="helpPropertiesPanel" class="headerHelp glyph fa hintIcon" style="color:white; font-size:15px;"></i>
+					<div class="buttons">		
+						<button id="selectPeerLeft" class="buttonLeft"><i class="fa fa-caret-left" title="Select the control before this one"></i></button>
+						<button id="selectParent"><i class="fa fa-caret-up" title="Select the parent of this control"></i></button>
+						<button id="selectChild"><i class="fa fa-caret-down" title="Select the first child of this control"></i></button>
+						<button id="selectPeerRight" class="buttonRight"><i class="fa fa-caret-right" title="Select the control after this one"></i></button>
 					</div>							
 											
 					<div class="buttons">
-						<button id="swapPeerLeft" class="buttonLeft"><img src="images/swapLeft_16x16.png" title="Swap position with control before this one"/></button>
-						<button id="addPeerLeft"><img src="images/addLeft_16x16.png" title="Add a new control before this one"/></button>
-						<button id="deleteControl">&nbsp;<img src="images/bin_16x16.png" title="Delete this control"/>&nbsp;</button>
-						<button id="addPeerRight"><img src="images/addRight_16x16.png" title="Add a new control after this one"/></button>
-						<button id="swapPeerRight" class="buttonRight"><img src="images/swapRight_16x16.png" title="Swap position with control after this one"/></button>
+						<button id="swapPeerLeft" class="buttonLeft" style="line-height:20px;"><i class="fa fa-backward" aria-hidden="true" title="Swap position with control before this one" style="font-size:15px; vertical-align:middle;"></i></button>
+						<button id="addPeerLeft">
+							<div class="fa-stack fa-lg" title="Add a new control before this one" style="height:20px; color:unset;">
+								<i class="fa fa-plus fa-stack-1x" style="font-size:15px; top:4px;"></i>
+								<i class="fa fa-caret-left fa-stack-1x" style="left:9px; top:-2px; font-size:25px;"></i>
+							</div>
+						</button>
+						<button id="deleteControl" style="line-height:20px;">&nbsp;<i class="delete fa fa-trash" title="Delete this control"></i>&nbsp;</button>
+						<button id="addPeerRight">
+						<div class="fa-stack fa-lg" title="Add a new control after this one" style="height:20px; color:unset;">
+								<i class="fa fa-caret-right fa-stack-1x" style="top:-2px; font-size:25px;"></i>
+								<i class="fa fa-plus fa-stack-1x" style="font-size:15px; top:4px; left:9px;"></i>
+							</div>
+						</button>
+						<button id="swapPeerRight" class="buttonRight" style="line-height:20px;"><i class="fa fa-forward" aria-hidden="true" title="Swap position with control after this one" style="font-size:15px; vertical-align:middle;"></i></button>
 					</div>						
 					
 					<div class="buttons">
@@ -238,7 +248,7 @@ if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRe
 					</div>								
 				</div>		
 								
-				<h2 id="propertiesHeader">Properties  <img id='helpProperties' class='headerHelp' src='images/help_16x16.png' /><img class='headerToggle' src='images/triangleUpWhite_8x8.png' /></h2>
+				<h2 id="propertiesHeader">Properties  <i id="helpProperties" class="headerHelp glyph fa hintIcon"></i><i class="headerToggle fa fa-caret-up"></i></h2>
 				<div>
 					<div class="propertiesPanelDiv" data-dialogueId="propertiesPanel"></div>			
 					<div class="validationPanelDiv" data-dialogueId="validationPanel"></div>
@@ -287,18 +297,20 @@ if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRe
 
 <%
 	} else {
-%>
-
-	<div class="image">
-		<a href="http://www.rapid-is.co.uk"><img src="images/RapidLogo_60x40.png" /></a>
-	</div>
-	
-	<div class="title">
-		<span>Rapid - No permission</span>
-		<span class="link"><a href="logout.jsp">log out</a></span>
-	</div>
-
-	<div class="info"><p>You do not have permission to use the Rapid Designer</p></div>
+%>		
+		<div class="image">
+			<a href="http://www.rapid-is.co.uk"><img title="Rapid Information Systems" src="images/RapidLogo.svg" /></a>	
+		</div>
+		
+		<div class="midTitle" style="">
+			<span style="">Rapid</span>
+		</div>
+		<div class="subBar" style=""><div style="float:right; width:95px; text-align:center; padding:1px 0; font-size:12px; font-weight: bold; color: white;"><%=com.rapid.server.Rapid.VERSION %></div></div>
+		<div class="body">
+			<div class="columnMiddle">
+				<h3 style="margin:0; padding:40px;">You do not have permission to use the Rapid Designer</h3>
+			</div>
+		</div>
 		
 <%		
 	}

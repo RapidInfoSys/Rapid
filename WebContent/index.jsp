@@ -47,7 +47,9 @@ RapidRequest rapidRequest = new RapidRequest(request, rapid);
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 	<link rel="icon" href="favicon.ico"></link>
 	<link rel="stylesheet" type="text/css" href="styles/index.css"></link>
+	<link rel='stylesheet' type='text/css' href='styles/fonts/fontawesome/css/font-awesome.css'></link>
 	<script type="text/javascript" src="scripts/jquery-1.10.2.js"></script>
+	
 	<script type="text/javascript">
 	
 function loadApps() {
@@ -68,12 +70,10 @@ function loadApps() {
         		var appHtml = "<ul>";
         		for (var i in data) {
         			var app = data[i];
-        			appHtml += "<li><a href='~?a=" + app.id + "'>" + app.title + "</a></li>";
+        			appHtml += "<a href='~?a=" + app.id + "'style='font-size:18px; font-weight:normal;'><li>" + app.title + "</li></a>";
         		}
         		appHtml += "</ul>";
-        		appsDiv.html(appHtml); 
-        		// scroll to the bottom of the document to show the list of applications
-        		$(window).scrollTop($(document).height());
+        		appsDiv.html(appHtml);
         	} else {
         		appsDiv.html("You do not have permission to use any applications"); 
         	}   		       	
@@ -83,24 +83,37 @@ function loadApps() {
 }	
 
 //JQuery is ready! 
-$(document).ready( function() {
+$(document).ready( function() {	
 	loadApps();
 });
 	
 	</script>
 	
+	<style type="text/css">
+
+	</style>
+	
 </head>
 <body>
-<div class="image">
-	<a href="http://www.rapid-is.co.uk"><img title="Rapid Information Systems" src="images/RapidLogo_60x40.png" /></a>	
+<div class="image">  <!-- RapidLogo_60x40.png -->
+	<a href="http://www.rapid-is.co.uk">
+		<img title="Rapid Information Systems" src="images/RapidLogo.svg" />
+	</a>	
 </div>
 
-<div class="title">
-	<span>Rapid - version <%=com.rapid.server.Rapid.VERSION %></span>
-	<span class="link"><a href="logout.jsp">log out</a></span>
+<div class="midTitle">
+	<span style="">Rapid</span>
+</div>
+<div class="subBar">
+	<span class="link"><a href="logout.jsp">LOG OUT</a></span>
+	<span class="versionColumn"><%=com.rapid.server.Rapid.VERSION %></span>
 </div>
 
-<% 
+
+<div class="body">
+		<div class="columnMiddle" style="">
+
+			<% 
 	// get the rapid application security
 	SecurityAdapter securityAdapter = rapid.getSecurityAdapter();
 	
@@ -110,28 +123,49 @@ $(document).ready( function() {
 		// check for any of the offical roles
 		if (securityAdapter.checkUserRole(rapidRequest, com.rapid.server.Rapid.ADMIN_ROLE) || securityAdapter.checkUserRole(rapidRequest, com.rapid.server.Rapid.DESIGN_ROLE) || securityAdapter.checkUserRole(rapidRequest, com.rapid.server.Rapid.USERS_ROLE) || securityAdapter.checkUserRole(rapidRequest, com.rapid.server.Rapid.SUPER_ROLE)) {
 %>
-<div class="body">
-	<a href="~?a=rapid"><img src="images/administration_183x123.png" /><span id="admin">Admin</span></a>
-</div>
+<section>
+	<a href="~?a=rapid">
+	 	<div class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-cogs fa-stack-1x"></i>
+		</div>
+	 	<div id="admin">Admin</div>
+	 </a>
+</section>
 <% 
 		}
 		
 		// check for the design role
 		if (securityAdapter.checkUserRole(rapidRequest, com.rapid.server.Rapid.DESIGN_ROLE)) {
 %>
-<div class="body">
-	<a href="design.jsp"><img src="images/designer_183x123.png" /><span id="design">Design</span></a>
-</div>
+<section>
+	<a href="design.jsp">
+		<div class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-wrench fa-stack-1x"></i>
+		</div>
+		<div id="design">Design</div>
+	</a>
+</section>
 <% 
 		}
 	}
 %>
 
-<div class="body">
-	<a href="#" onclick="loadApps();"><img src="images/application_183x123.png" /><span>Applications</span></a>
+<section style="padding-bottom:0;">
+	<a href="#" onclick="loadApps();">
+		<div class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-rocket fa-stack-1x"></i>
+		</div>
+		<div>Applications</div>
+	</a>
+	    <div class="apps" id="apps"><b style="padding-left:10px;">loading...</b></div>
+</section>
+
+	</div>
+
+		
 </div>
-
-<div class="apps" id="apps"><b style="padding-left:10px;">loading...</b></div>
-
 </body>
 </html>

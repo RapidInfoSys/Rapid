@@ -601,16 +601,26 @@ function applyStyles() {
 			// make sure reorder and delete are present				
 			if (_styleCell.attr("colspan")) {
 				_styleCell.removeAttr("colspan");
-				_styleCell.after("<td><img class='delete' src='images/bin_16x16.png' style='float:right;' /><img class='reorder' src='images/moveUpDown_16x16.png' style='float:right;' /></td>");
+				_styleCell.after("<td><div class='iconsPanel'>" +
+						"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
+						"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div>" +
+						"</div></td>");
 				// attach a delete listener 
-				addListener( _styleCell.parent().find("img.delete").click( function(ev) {
+				addListener( _styleCell.parent().find("div.delete").click( function(ev) {
 					// add an undo snapshot
 					addUndo();
 					// remove the row
-					$(this).parent().parent().remove();
+					$(this).parent().parent().parent().remove();
 					// rebuild the styles (and assign to control)
 					rebuildStyles();										
-				}));	
+				}));
+				
+				/////////////////////////////////////////////////////////////////////////////
+				
+				// Add reorder listener
+				
+				/////////////////////////////////////////////////////////////////////////////
+
 			}
 			
 			// make sure there's always one empty row at the bottom
@@ -755,8 +765,8 @@ function showStyles(control) {
 		// check there are styles
 		if (controlClass.styles && controlClass.styles.style) {				
 			// add a heading and table
-			_stylesPanelDiv.append("<h2 id='stylesHeader' style='margin-top:5px;'>Styles  <img id='helpStyles' class='headerHelp' src='images/help_16x16.png' /><img class='headerToggle' src='images/triangle" + (_stylesHidden ? "Down" : "Up") + "White_8x8.png' /></h2><div" + (_stylesHidden ? " style='display:none;'" : "") + "></div>");
-			// add the help hint
+			_stylesPanelDiv.append("<h2 id='stylesHeader' style='margin-top:5px;'>Styles  <i id='helpStyles' class='headerHelp glyph fa hintIcon'></i><img class='headerToggle' src='images/triangle" + (_stylesHidden ? "Down" : "Up") + "White_8x8.png' /></h2><div" + (_stylesHidden ? " style='display:none;'" : "") + "></div>");
+			// add the help hint															
 			addHelp("helpStyles",true);
 			// add the header toggle hint
 			_stylesPanelDiv.find("h2").click( toggleHeader );
@@ -796,25 +806,30 @@ function showStyles(control) {
 								// get the parts
 								var parts = rule.split(":");
 								// add this rule
-								stylesTable.append("<tr><td class='styleCell'><span class='styleAttr'>" + parts[0] + "</span><span class='styleColon'>:</span><span class='styleValue'>" + parts[1] + "</span></td><td><img class='delete' src='images/bin_16x16.png' style='float:right;' /><img class='reorder' src='images/moveUpDown_16x16.png' style='float:right;' /></td></tr>");
+								stylesTable.append("<tr><td class='styleCell'><span class='styleAttr'>" + parts[0] + "</span><span class='styleColon'>:</span><span class='styleValue'>" + parts[1] + "</span></td><td>" +
+										"<div class='iconsPanel'>" +
+										"<div class='reorder fa-stack fa-sm' title='Reorder this rule'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
+										"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this rule'></i></div>" +
+										"</td></tr></div>");
+					
 							}		
-							// attach a delete listener to each row
-							stylesTable.find("img.delete").each( function() {
-								addListener( $(this).click( function(ev) {
-									// add an undo snapshot
-									addUndo();
-									// remove the row
-									$(this).parent().parent().remove();
-									// rebuild the styles (and assign to control)
-									rebuildStyles();				
-								}));
-							});	
 							// add reorder listeners
-							addReorder(controlStyle.rules, stylesTable.find("img.reorder"), function() { showStyles(control); });
+							addReorder(controlStyle.rules, stylesTable.find("div.reorder"), function() { showStyles(control); });
 							// we're done with this style
 							break;
 						}
 					}
+					// attach a delete listener to each row
+					stylesTable.find("div.delete").each( function() {
+						addListener( $(this).click( function(ev) {
+							// add an undo snapshot
+							addUndo();
+							// remove the row
+							$(this).closest("tr").remove();
+							// rebuild the styles (and assign to control)
+							rebuildStyles();				
+						}));
+					});
 				}
 				
 				// add an empty row for adding a new style
@@ -826,8 +841,8 @@ function showStyles(control) {
 			}
 			
 			// add a heading and table
-			_stylesPanelDiv.append("<h2  id='styleClasssesHeader' style='margin-top:5px;'>Style classes  <img id='helpStyleClasses' class='headerHelp' src='images/help_16x16.png' /><img class='headerToggle' src='images/triangle" + (_stylesHidden ? "Down" : "Up") + "White_8x8.png' /></h2><div" + (_styleClassesHidden ? " style='display:none;'" : "") + "></div>");
-			// add the help hint
+			_stylesPanelDiv.append("<h2  id='styleClasssesHeader' style='margin-top:5px;'>Style classes  <i id='helpStyleClasses' class='headerHelp glyph fa hintIcon'></i><img class='headerToggle' src='images/triangle" + (_stylesHidden ? "Down" : "Up") + "White_8x8.png' /></h2><div" + (_styleClassesHidden ? " style='display:none;'" : "") + "></div>");
+			// add the help hint																			
 			addHelp("helpStyleClasses",true);
 			// add the header toggle
 			_stylesPanelDiv.find("h2").last().click( toggleHeader );
@@ -841,10 +856,10 @@ function showStyles(control) {
 			if (!control.classes) control.classes = [];
 			// loop array
 			for (var i in control.classes) {
-				classesTable.append("<tr><td>" + control.classes[i] + "<img src='images/bin_16x16.png' style='float:right;' /></td></tr>");
+				classesTable.append("<tr><td>" + control.classes[i] + "<div class='iconsPanel'><div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Remove this class'></i></div></div></td></tr>");
 			}
 			// find the delete
-			var deletes = classesTable.find("img");
+			var deletes = classesTable.find("div.delete");
 			// add a listener
 			addListener( deletes.click( {control: control}, function(ev) {
 				// create an undo snapshot just before we apply the change

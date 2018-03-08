@@ -10,12 +10,7 @@
 table.propertiesPanelTable  {
 	width: 100%;
 	background-color: white;
-	border: 1px solid black;
-	border-radius: 3px;
-	border-spacing: 0px;
-	margin-top: 2px;	
-	font-size: 11px;
-	text-align: left;
+	border-spacing: 0;	
 }
 
 .propertiesPanelTable tr {
@@ -25,48 +20,59 @@ table.propertiesPanelTable  {
 .propertiesPanelTable td {
 	text-align: left;
 	vertical-align: top;
-	border-bottom: 1px solid gray;	
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
 
 .propertiesPanelTable td.propertyHeader {
-	padding-left: 5px;
-	padding-right: 18px;
+	padding: 3px;
+	background: #494949;
+	color: white;
+	text-align: center;
+	text-transform: uppercase;
 }
 
 .propertiesPanelTable td:first-child:not(.propertyHeader) {
 	padding-left: 5px;
-	padding-right: 18px;
+	padding-right: 19px;
 	padding-top: 2px;
     padding-bottom: 0;
+    width:45%;
 }
 
 .propertiesPanelTable td:nth-child(2) {
 	width: 100%;
 	padding-left: 0;
 	max-width: 50px;
+	/*transition: background 0.3s ease;*/
+}
+
+.propertiesPanelTable td:nth-child(2):hover {
+	/*background: #D5D6D2;*/
 }
 
 .propertiesPanelTable h3 {
-	display: inline;
-	margin-right: 18px;
+	display: inline-block;
+	margin: auto;
+	font-size: 12px;
 }
 
 .propertiesPanelTable input {
 	width: 100%;
-	padding: 2px 0;
-	margin-top: -2px;
-	margin-bottom: -2px;
 	font-size: 12px;
 	text-indent: 3px;
-	border-radius: 0 !important;
-	box-shadow: none !important;
-	border: 1px solid #888;
-	background-color: white;
+	border: none;
+	/*transition: background 0.3s ease;*/
 }
 
+.propertiesPanelTable tr:hover td:first-child {
+	font-weight: bold;
+}
+
+.propertiesPanelTable tr:hover td:nth-child(2), .propertiesPanelTable tr:hover td:nth-child(2) input, .propertiesPanelTable tr:hover td:nth-child(2) select {
+	background: #D5D6D2;
+}
 
 .propertiesPanelTable input[type=radio] {
 	width: auto;
@@ -98,18 +104,13 @@ table.propertiesPanelTable  {
 .propertiesPanelTable select {
 	width: 100%;
 	margin-top: -2px;
-	margin-bottom: -2px;
-	margin-right: -1px;
   	margin-left: 1px;
 	font-size: 11px;
-	border-radius: 0;
-	border: 1px solid #888;
-	background: white;
-	color: #000000;
-	padding: 0;
 	height: 19px;
+	background: white;
+	color: black;
 }
-
+	
 .propertiesPanelTable b {
 	padding-left: 5px;
 }
@@ -123,26 +124,94 @@ table.propertiesPanelTable  {
 	margin-right: 0;
 }
 
-img.controlHelp {
+table.stylesPanelTable tr:not(:first-child):hover {
+	background: #D5D6D2;
+}
+
+i.controlHelp, img.controlHelp {
 	float: right;
-	margin-right: -18px;
+	font-size: 15px;
 }
 
 img.validationHelp {
 	float: right;
-	margin-right: -18px;
+	margin-right: -17px;
 }
 
-img.actionHelp {
+i.actionHelp, img.actionHelp {
 	float: right;
 	margin-top: 1px;
-	margin-right: -18px;
+	color: #494949;
+	margin-right: -17px;
 }
 
-img.propertyHelp {
+i.propertyHelp, img.propertyHelp {
 	float: right;
-	margin-right: -18px;
-	margin-bottom: -1px;	
+	margin-right: -17px;
+	color: #494949;
+	font-size: 15px;	
+}
+
+.fa-stack {
+	display:inline-block;
+	width: 18px;
+	height:unset;
+	line-height:unset;
+	color: #494949;
+	vertical-align:top;
+	font-size:15px;
+	right: 5px;
+	transition: transform 0.2s;
+}
+
+.fa-stack:hover {
+	transform: scale(1.2);
+}
+
+i.fa.fa-arrow-up.fa-stack-1x {
+	top:-3px;
+}
+
+i.fa.fa-arrow-down.fa-stack-1x {
+	top:3px;
+}
+
+i.fa.fa-file.fa-stack-1x {
+	font-size: 11px;
+}
+
+.reorder.fa-stack, .copyAction.fa-stack {
+	/*bottom: -1px;*/
+	top: 2px;
+}
+
+
+i.bottomFile.fa.fa-file.fa-stack-1x {
+	top: 5px;
+	left: 5px;	
+}
+
+.propertyHeader .fa-stack {
+	color:white;
+	bottom: 1px;
+}
+
+.delete.fa-stack {
+	bottom: 1px;
+}
+
+i.delete.fa.fa-trash {
+	font-size: 18px;
+	vertical-align:middle;
+}
+
+.iconsPanel {
+	display:inline-block;
+	float: right;
+}
+
+.fa {
+	cursor:pointer;
 }
 
 div.propertyDialogue {
@@ -150,8 +219,7 @@ div.propertyDialogue {
 	right: 10px;
 	display: none;
 	z-index:10012;
-	border:1px solid black;
-	background-color:white;
+	background:#D5D6D2;
 	padding: 10px;
 	-webkit-touch-callout: none;
   	-webkit-user-select: none;
@@ -188,6 +256,25 @@ div.propertyDialogue {
 	text-decoration: underline;
 }
 
+.propertySubHeader {
+	text-transform: uppercase;
+	background: #D5D6D2;
+	text-align: right;
+	
+}
+
+td.propertySubHeader {
+	text-align: right;
+}
+
+.propertySubHeader h3 {
+	float: left;
+}
+
+.propertySubHeader i.actionHelp {
+	font-size: 17px;
+}
+
 .dialogueTable {
 	width:100%;
 	border-collapse: collapse;
@@ -200,22 +287,25 @@ div.propertyDialogue {
 }
 
 .dialogueTable td {
-	max-width: 50px;
-	height:18px;
-	padding-left:5px;
+	height:20px;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	vertical-align:top;
+	box-sizing: border-box;
+	transition: background 0.3s ease;
+	max-width: 50px;
+}
+
+.dialogueTable select:hover, .dialogueTable input:hover{
+	background: #f2f2f2;
 }
 
 .dialogueTable input:not([type]) {
 	width: 100%;
-	font-size: 11px;
-	margin-top: -3px;
-	margin-bottom: -4px;
 	border: none;
-	outline: 0;
+	outline: none;
+	padding: 2px 10px;
 }
 
 .dialogueTable input[type=checkbox] {	
@@ -234,15 +324,12 @@ div.propertyDialogue {
 }
 
 .dialogueTable select {
-  width: 100%;
-  height: 18px; 
+  width: 100%; 
   font-size: 11px;
   border-radius: 0;
-  border: 1px solid #888;
   background: white;
   color: black;
   outline: 0;
-  margin-left: -4px;
 }
 
 .dialogueTable tr:not(:first-child):not(:last-child) td:not(:last-child) select {
@@ -301,7 +388,6 @@ td.paddingLeft5 {
 .normalInputs input:not([type]) {
 	width: 100%;
 	box-sizing: border-box;
-	border: 1px solid silver;
 	padding: 3px;
 }
 
@@ -367,4 +453,9 @@ td.paddingLeft5 {
 span.webserviceTitle {
 	display: block;
 	margin-top: 4px;
+}
+
+textarea {
+	box-sizing: border-box;
+	border:none;
 }

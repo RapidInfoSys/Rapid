@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <%@ page language="java" contentType="text/html;charset=utf-8" pageEncoding="utf-8"%>
 <%@ page import="java.util.Map" %>
-<%@ page import="org.apache.logging.log4j.LogManager" %>
+<%@ page import="org.apache.logging.log4j.LogManager"%>
+<%@ page import="org.apache.logging.log4j.Logger" %>
 <%@ page import="com.rapid.core.*" %>
 <%@ page import="com.rapid.server.Rapid" %>
 <%@ page import="com.rapid.server.RapidRequest" %>
@@ -14,7 +15,6 @@
 Copyright (C) 2014 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
-
 
 This file is part of the Rapid Application Platform
 

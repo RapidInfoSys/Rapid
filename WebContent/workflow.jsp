@@ -49,7 +49,7 @@ boolean permission = false;
 // check the user password
 if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRequest.getUserPassword())) {
 	// check design permission
-	permission = security.checkUserRole(rapidRequest, Rapid.WORKFLOW_ROLE);	
+	permission = security.checkUserRole(rapidRequest, Rapid.WORKFLOW_ROLE);
 }
 
 %>

@@ -4,7 +4,7 @@
 
 /*
 
-Copyright (C) 2014 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -36,20 +36,28 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	<link rel="icon" href="favicon.ico"></link>
 	<link rel="stylesheet" type="text/css" href="styles/index.css"></link>		
 </head>
+
 <body>
-<div class="image">
-	<img src="images/RapidLogo_60x40.png" />
-</div>
+	<div class="image">
+		<a href="http://www.rapid-is.co.uk">
+			<img title="Rapid Information Systems" src="images/RapidLogo.svg" />
+		</a>	
+	</div>
 
-<div class="title">
-	<span>Rapid - version <%=com.rapid.server.Rapid.VERSION %></span>
-</div>
+	<div class="midTitle">
+		<span style="">Rapid</span>
+	</div>
+	<div class="subBar">
+		<span class="versionColumn"><%=com.rapid.server.Rapid.VERSION %></span>
+	</div>
 
-<div class="info">
-
-	<p>Your browser is not supported.</p>
-		
-</div>
+	<div class="body">
+		<div class="columnMiddle">
+			<div class="info">
+				<p>Your browser is not supported.</p>
+			</div>	
+		</div>
+	</div>
 
 </body>
 </html>

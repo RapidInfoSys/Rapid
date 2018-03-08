@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -1006,6 +1006,7 @@ function showDesigner() {
 	windowResize("showDesigner");
 	// show the first tip, if function is present
 	if (window["showTip"]) showTip(0);
+	
 }
 
 //this function load the apps into appsSelect

@@ -48,53 +48,76 @@ if (Email.getEmailSettings() != null) {
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 	<link rel="icon" href="favicon.ico"></link>
+	<link rel='stylesheet' type='text/css' href='styles/fonts/fontawesome/css/font-awesome.css'></link>
 	<link rel="stylesheet" type="text/css" href="styles/index.css"></link>
+	<script type="text/javascript" src="scripts/jquery-1.10.2.js"></script>
+	
+	<script type="text/javascript">
+		function validateEmail() {
+			
+				
+			var emailString = $("input[name='email']").val();
+			var regex = new RegExp("^[_a-zA-Z0-9-]+(\\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*(\\.[a-zA-Z]{2,4})$");
+			var isValid = regex.test(emailString);
+
+			if(!isValid){
+				alert("Email NOT valid. Please enter a valid email.");	
+				return false;
+			}
+			
+		}
+			
+	</script>
+	
 </head>
 
 <body onload="document.reset.email.focus();">
 
-<div class="image">
-	<a href="http://www.rapid-is.co.uk"><img title="Rapid Information Systems" src="images/RapidLogo_60x40.png" /></a>	
-</div>
-
-<div class="midTitle">
-	<span>Rapid - version <%=com.rapid.server.Rapid.VERSION %></span>
-</div>
+	<div class="image">
+		<a href="http://www.rapid-is.co.uk"><img title="Rapid Information Systems" src="images/RapidLogo.svg" /></a>	
+	</div>
+	<div class="midTitle" style="">
+		<span style="">Rapid</span>
+	</div>
+	<div class="subBar">
+		<div class="versionColumn"><%=com.rapid.server.Rapid.VERSION %></div>
+	</div>
 
 <div class="body">
-
-<%
-if (hasPasswordReset) {
-%>
-
-	<form name="reset" id="RapidReset" method="post">
-		<table>
-			<tr>
-				<td>Email address</td><td><input name="email" /></td>
-			</tr>
-			<tr>
-				<td colspan="2" style="text-align:right;"><button type="submit">Reset password</button></td>
-			</tr>		
-		</table>
-	</form>
-	
-<% 
-	// if there is a message
-	if (message != null) {
-			// print the message into the page
-%>
-			<p><%=message %></p>
-<%
-		// empty the message
-		session.setAttribute("message", null);
-	}
-} else {
-%>
-	<p>Password reset is not currently enabled</p>
-<%
-}
-%>
-	
+	<div class="columnMiddle">
+		<%
+		if (hasPasswordReset) {
+		%>
+			<form name="reset" id="RapidReset" method="post" onsubmit="return validateEmail()">
+				<div class="row">
+					<div class="columnUserInput">
+						<div class="columnUserIcon" style="">
+							<span class="fa fa-at" style=""></span>
+						</div>
+						<input type="text" placeholder="Email" name="email" required>
+					</div>
+				</div>
+			
+				<button class="resetButton" type="submit"><i class="fa fa-sign-in"></i>  Reset password</button>
+			</form>
+			
+		<% 
+			// if there is a message
+			if (message != null) {
+					// print the message into the page
+		%>
+					<p class="message"><%=message %></p>
+		<%
+				// empty the message
+				session.setAttribute("message", null);
+			}
+		} else {
+		%>
+			<p>Password reset is not currently enabled</p>
+		<%
+		}
+		%>
+	</div>
 </div>
 
 </body>

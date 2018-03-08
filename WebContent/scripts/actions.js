@@ -259,8 +259,11 @@ function showEvents(control) {
 						actionsPanel.append("<table class='propertiesPanelTable' data-eventType='" + event.type + "'><tbody></tbody></table>");	
 						// get a reference to the table
 						var actionsTable = actionsPanel.children().last().children().last();
-						// add a heading for the event
-						actionsTable.append("<tr><td class='propertyHeader'><h3>" + event.name + " event</h3></td><td><img class='copyEvent' src='images/copy_16x16.png' title='Copy all event actions'/></td></tr>");																	
+						// add a heading for the event																
+						actionsTable.append("<tr><td colspan='2' class='propertyHeader'><h3>" + event.name + " event</h3>" +
+								"<div class='iconsPanel'><div class='copyEvent fa-stack fa-xs' title='Copy all event actions'><i class='fa fa-file fa-stack-1x'></i><i class='bottomFile fa fa-file fa-stack-1x'></i></div>" +
+								"<i id='" + "help' class='eventHelp glyph fa hintIcon'></i></div></td></tr>");
+						
 						// add a small break
 						actionsTable.append("<tr><td colspan='2'></td></tr>");
 						// check if copyAction
@@ -391,11 +394,11 @@ function showActions(control, eventType) {
 					// if there was more than 1 action
 					if (actionsCount > 1) {
 						// add reorder listeners
-						addReorder(actions, actionsTable.find("img.reorder"), function() { showActions(control, eventType); });
+						addReorder(actions, actionsTable.find("div.reorder"), function() { showActions(control, eventType); });
 					}
 					
 					// get a reference to the copy image
-					var copyImage = actionsTable.find("img.copyEvent").last(); 
+					var copyImage = actionsTable.find("div.copyEvent").last(); 
 					// add a click listener to the copy image
 					addListener( copyImage.click( {controlType: control.type, event: control.events[i], actions: actions}, function(ev) {
 						// retain a copy of the event data in copyAction
@@ -407,7 +410,7 @@ function showActions(control, eventType) {
 				} else {
 					
 					// remove the copyEvent image
-					actionsTable.find("img.copyEvent").remove();
+					actionsTable.find("div.copyEvent").remove();
 					
 				} // got actions		
 				
@@ -432,18 +435,21 @@ function showAction(actionsTable, action, collection, refreshFunction) {
 	var insertRow = actionsTable.children("tr:nth-last-child(2)");
 	
 	// add a small break
-	insertRow.before("<tr><td colspan='2'></td></tr>");
-	// write action name into the table						
-	insertRow.before("<tr><td class='propertyHeader'><h3>" + actionClass.name + " action</h3></td><td><img class='delete' src='images/bin_16x16.png' title='Delete this action'/><img class='reorder' src='images/moveUpDown_16x16.png' title='Reorder this action'/><img class='copyAction' src='images/copy_16x16.png' title='Copy this action'/></td></tr>");
+	insertRow.before("<tr><td colspan='2' class='propertySubHeader'><h3>" + actionClass.name + " action</h3>" +
+			"<div class='iconsPanel'><div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
+			"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div>" +
+			"<div class='copyAction fa-stack fa-xs' title='Copy this action'><i class='fa fa-file fa-stack-1x'></i><i class='bottomFile fa fa-file fa-stack-1x'></i>" +
+			"</div></div></td></tr>");
+	
 	// if there is helpHtml
 	if (actionClass.helpHtml) {
 		// add a help icon after the title
-		actionsTable.find("h3").last().after("<img id='" + action.id + "help' class='actionHelp' src='images/help_16x16.png' />");
+		actionsTable.find("h3").last().after("<i id='" + action.id + "help' class='actionHelp glyph fa hintIcon'></i>");
 		// add the help listener
 		addHelp(action.id + "help",true,true,actionClass.helpHtml);
 	}
 	// get a reference to the delete image
-	var deleteImage = actionsTable.find("img.delete").last(); 
+	var deleteImage = actionsTable.find("div.delete").last(); 
 	// add a click listener to the delete image
 	addListener( deleteImage.click( {action: action, collection: collection, refreshFunction: refreshFunction}, function(ev) {
 		// loop the collection
@@ -464,7 +470,7 @@ function showAction(actionsTable, action, collection, refreshFunction) {
 		}		
 	}));
 	// get a reference to the copy image
-	var copyImage = actionsTable.find("img.copyAction").last(); 
+	var copyImage = actionsTable.find("div.copyAction").last(); 
 	// add a click listener to the copy image
 	addListener( copyImage.click( { action: action }, function(ev) {
 		// copy the action
@@ -503,7 +509,7 @@ function showAction(actionsTable, action, collection, refreshFunction) {
 					// make the helpId
 					var helpId = action.id + property.key + "help";
 					// create help html
-					help = "<img id='" + helpId + "' class='propertyHelp' src='images/help_16x16.png' />"						
+					help = "<i id='" + helpId + "' class='actionHelp glyph fa hintIcon'></i>"
 				}
 				// get the property itself from the control
 				propertiesRow.append("<td>" + property.name + help + "</td><td></td>");
