@@ -104,11 +104,12 @@ table.propertiesPanelTable  {
 .propertiesPanelTable select {
 	width: 100%;
 	margin-top: -2px;
-  	margin-left: 1px;
-	font-size: 11px;
+  	margin-left: -2px;
+	padding: 0;
 	height: 19px;
 	background: white;
 	color: black;
+	font-size: 12px;
 }
 	
 .propertiesPanelTable b {
@@ -152,6 +153,15 @@ i.propertyHelp, img.propertyHelp {
 	font-size: 15px;	
 }
 
+.fa {
+	cursor:pointer;
+	transition: transform 0.2s;
+}
+
+.fa:not(.fa-stack):not(.fa-stack-1x):hover{
+	transform: scale(1.2);
+}
+
 .fa-stack {
 	display:inline-block;
 	width: 18px;
@@ -161,7 +171,6 @@ i.propertyHelp, img.propertyHelp {
 	vertical-align:top;
 	font-size:15px;
 	right: 5px;
-	transition: transform 0.2s;
 }
 
 .fa-stack:hover {
@@ -181,7 +190,6 @@ i.fa.fa-file.fa-stack-1x {
 }
 
 .reorder.fa-stack, .copyAction.fa-stack {
-	/*bottom: -1px;*/
 	top: 2px;
 }
 
@@ -208,10 +216,6 @@ i.delete.fa.fa-trash {
 .iconsPanel {
 	display:inline-block;
 	float: right;
-}
-
-.fa {
-	cursor:pointer;
 }
 
 div.propertyDialogue {

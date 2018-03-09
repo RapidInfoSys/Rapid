@@ -198,7 +198,7 @@ if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRe
 				</div>	
 
 				<div class="controlPanelVersion" >
-					<img src="images/RapidLogo.svg" style="margin-left:-16px;"/>
+					<img src="images/RapidLogo.svg"/>
 					<div id="controlPanelVersion">Rapid<br/><%=com.rapid.server.Rapid.VERSION %></div>
 				</div>					
 			
