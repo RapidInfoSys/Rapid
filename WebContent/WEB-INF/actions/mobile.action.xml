@@ -323,7 +323,7 @@ return [["d","driving"],["w","walking"],["b","cycling"],["transit","public trans
 	            <setConstructValueFunction>return "left";</setConstructValueFunction>
 	            <changeValueJavaScript>select</changeValueJavaScript>
 	            <getValuesFunction>return ["left","right","down","up"];</getValuesFunction>
-	            <helpHtml>The direction of the swipe</helpHtml>
+	            <helpHtml>The direction the fingers are swiped in</helpHtml>
 	        </property>
 	        
 	        <property>
@@ -337,11 +337,25 @@ return [["d","driving"],["w","walking"],["b","cycling"],["transit","public trans
 	        </property>
 	        
 	        <property>
+	            <key>swipeControl</key>
+	            <name>Control</name>
+	            <visible>false</visible>
+	            <setConstructValueFunction>return "html";</setConstructValueFunction>
+	            <changeValueJavaScript>select</changeValueJavaScript>
+	            <getValuesFunction>
+	                <![CDATA[
+return "<option value=''>Please select...</option><option value ='html'" + (this.swipeControl == "html" ? "selected='selected'" : "") + ">page</option>" + getControlOptions(this.swipeControl);
+	                ]]>
+	            </getValuesFunction>
+	            <helpHtml>The control the swipe is performed on</helpHtml>
+	        </property>
+	        
+	        <property>
 	            <key>onlineActions</key>
 	            <name>Actions</name>
 	            <visible>false</visible>
 	            <changeValueJavaScript>childActions</changeValueJavaScript>
-	            <helpHtml>Allows you to define actions to be carried out applicable to the type. For example if the mobile device was swiped, or has an established Internet connection.</helpHtml>
+	            <helpHtml>Allows you to define actions to be carried out applicable to the type. For example if the mobile device was swiped, or has an established internet connection.</helpHtml>
 	        </property>
 	        
 	        <property>
@@ -384,7 +398,23 @@ return [["d","driving"],["w","walking"],["b","cycling"],["transit","public trans
 function Action_mobile(actionId, type) {
 	// action callback
 	alert("Callback for " + actionId + "." + type);
-}	        
+}
+
+// a map of swipe handlers as the plugin only allows one handler to be registerd at a time
+_swipeHandlers = {};
+
+// a function to check the map of handlers and call any number of functions
+function handleSwipe(event, direction, distance, duration, fingers, fingerData, target, ev) {
+	// get the handlers for a target
+	var handlers = _swipeHandlers[target];
+	// loop them
+	for (var i in handlers) {
+		// get the hanlder
+		var handler = handlers[i];
+		// if the directions match and either the fingers match too, or are all/any, run the function!
+		if (handler.direction == direction && (handler.fingers == fingers || handler.fingers == 0)) handler.function(ev);
+	}
+}
 
 			]]>
 	    </actionJavaScript>

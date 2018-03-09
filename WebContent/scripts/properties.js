@@ -4984,7 +4984,7 @@ function Property_mobileActionType(cell, mobileAction, property, details) {
 	// assume not the page load
 	var pageLoad = false;
 	// look for first heading
-	var heading = cell.closest("table").find(".propertyHeader").first();
+	var heading = cell.closest("table").find("h3").first();
 	// if heading is for page load, set it
 	if (heading.text() == "Load event") pageLoad = true;
 	// the selectHtml
@@ -5025,6 +5025,7 @@ function Property_mobileActionType(cell, mobileAction, property, details) {
 	setPropertyVisibilty(mobileAction, "message", false);
 	setPropertyVisibilty(mobileAction, "swipeDirection", false);
 	setPropertyVisibilty(mobileAction, "swipeFingers", false);
+	setPropertyVisibilty(mobileAction, "swipeControl", false);
 	setPropertyVisibilty(mobileAction, "onlineActions", false);
 	setPropertyVisibilty(mobileAction, "onlineWorking", false);
 	setPropertyVisibilty(mobileAction, "onlineFail", false);
@@ -5084,6 +5085,7 @@ function Property_mobileActionType(cell, mobileAction, property, details) {
 			if (pageLoad) {
 				setPropertyVisibilty(mobileAction, "swipeDirection", true);
 				setPropertyVisibilty(mobileAction, "swipeFingers", true);
+				setPropertyVisibilty(mobileAction, "swipeControl", true);
 				setPropertyVisibilty(mobileAction, "onlineActions", true);
 			}
 		break;

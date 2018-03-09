@@ -722,18 +722,26 @@ public class Mobile extends Action {
 
 							// get the direction
 							String direction = getProperty("swipeDirection");
-							// create the method
-							String method = "swipe" + direction.substring(0,1).toUpperCase() + direction.substring(1);
 							// get the finders
 							String fingers = getProperty("swipeFingers");
-							// update any to all
-							if ("any".equals(fingers)) fingers = "'all'";
+							// update if "any"
+							if ("any".equals(fingers)) fingers = "0";
+							// get the target
+							String target = getProperty("swipeControl");
+							// add # if not html
+							if (!"html".equals(target)) target = "#" + target;
 
-							// assume target is the page
-							String target = "html";
+							// see if there is a swipe handler present for the target
+							js += "if (!_swipeHandlers['" + target + "']) {\n";
+							// register the handler for any fingers on the target
+							js += "  $('" + target + "').swipe( { swipe:function(event, direction, distance, duration, fingers, fingerData) { handleSwipe(event, direction, distance, duration, fingers, fingerData, '" + target + "', ev); },fingers:'all'});\n";
+							// make the array
+							js += "  _swipeHandlers['" + target + "'] = [];\n";
+							// close the check
+							js += "}\n";
 
-							// add the js
-							js += "$('" + target + "').swipe( { " + method + ":function(event, direction, distance, duration, fingerCount, fingerData) {\n";
+							// start the function
+							js += "var f = function(ev) {\n";
 
 							// loop actions
 							for (Action action : _onlineActions) {
@@ -741,7 +749,12 @@ public class Mobile extends Action {
 								js += "  " + action.getJavaScript(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n  ") + "\n";
 							}
 
-							js += "}, fingers:" + fingers + "});";
+							// close the functions
+							js += "};\n";
+
+							// add this handler
+							js += "_swipeHandlers['" + target + "'].push({direction:'" + direction + "',fingers:" + fingers + ",function:f});";
+
 
 						} catch (Exception ex) {
 							// print an error instead
