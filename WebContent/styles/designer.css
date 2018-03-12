@@ -218,8 +218,7 @@ li.design-control, li.design-action {
 }
 
 li.design-control:hover, li.design-action:hover {
-	background: #ff0004;
-	
+	background: #f4091b;
 	-ms-transform: scale(1.2); /* IE 9 */
     -webkit-transform: scale(1.2); /* Safari 3-8 */
     transform: scale(1.2);
@@ -975,7 +974,7 @@ button {
 }
 
 button:hover {
-	background: #ff0004;
+	background: #f4091b;
 }
 
 button:disabled {
@@ -1079,7 +1078,7 @@ button:disabled:hover {
 }
 
 select:hover {
-	background: #ff0004;
+	background: #f4091b;
 }
 
 #flowCanvas {
@@ -1103,11 +1102,6 @@ select:hover {
     -moz-border-radius: 0.5em;
     border-radius: 0.5em;
     opacity: 0.8;
-    /*
-    width: 80px;
-    height: 80px;
-    line-height: 80px;
-    */
     cursor: pointer;
     text-align: center;
     z-index: 20;

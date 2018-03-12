@@ -13,7 +13,7 @@
 /*
 
 
-Copyright (C) 2014 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -105,7 +105,7 @@ if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRe
 				<div style="position:relative; bottom:30px;"><b>Rapid <%=com.rapid.server.Rapid.VERSION %></b></div>
 			</div>
 			<div>		
-				<div style="position:relative; bottom:15px;">
+				<div style="height:77px; position:relative; bottom:15px;">
 					<i style="margin-top: 5px; margin-bottom: 5px; font-size:40px;" class="glyph fa fa-spin"></i>
 					<div>loading...</div>
 				</div>		

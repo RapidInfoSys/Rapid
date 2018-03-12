@@ -39,11 +39,11 @@
 		position: absolute;
 		top: 0;
 		right: 0;
-		border-bottom: 2px solid #ff0004;
+		border-bottom: 2px solid #f4091b;
 	}
 	
 	.subBar {
-		background: #ff0004; 
+		background: #f4091b; 
 		height:30px; 
 		margin:0;
 	}
@@ -125,7 +125,7 @@
 	}
 
 	button {
-		background: #ff0004;
+		background: #f4091b;
 		color: white;
 		padding: 14px 20px;
 		border: none;
@@ -268,7 +268,7 @@
 	}
 	
 	div.fa-stack i.fa-stack-2x {
-		color:#ff0004;
+		color:#f4091b;
 	}
 	
 	div.fa-stack i.fa-stack-1x {

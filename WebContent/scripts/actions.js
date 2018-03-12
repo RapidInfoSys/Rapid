@@ -258,26 +258,27 @@ function showEvents(control) {
 						// append a table
 						actionsPanel.append("<table class='propertiesPanelTable' data-eventType='" + event.type + "'><tbody></tbody></table>");	
 						// get a reference to the table
-						var actionsTable = actionsPanel.children().last().children().last();
+						var actionsTable = actionsPanel.find("table[data-eventType=" + event.type + "]");
 						// add a heading for the event																
 						actionsTable.append("<tr><td colspan='2' class='propertyHeader'><h3>" + event.name + " event</h3>" +
 								"<div class='iconsPanel'><div class='copyEvent fa-stack fa-xs' title='Copy all event actions'><i class='fa fa-file fa-stack-1x'></i><i class='bottomFile fa fa-file fa-stack-1x'></i></div>" +
 								"<i id='" + "help' class='eventHelp glyph fa hintIcon'></i></div></td></tr>");
 						
-						// add a small break
-						actionsTable.append("<tr><td colspan='2'></td></tr>");
+						// add a small gap 
+						actionsTable.append("<tr><td cols[an='2'></td></tr>");
+
 						// check if copyAction
 						if (_copyAction) {
 							// start the action name
 							var actionName = getCopyActionName();									 
 							// add an add facility
-							actionsTable.append("<tr><td>Add action : </td><td><select data-event='" + event.type + "'><option value='_'>Please select...</option><optgroup label='New action'>" + _actionOptions + "</optgroup><optgroup label='Paste action'><option value='pasteActions'>" + actionName + "</option></optgroup></select></td></tr>");
+							actionsTable.append("<tr><td class='propertySubHeader'>Add action : </td><td class='propertySubHeader'><select data-event='" + event.type + "'><option value='_'>Please select...</option><optgroup label='New action'>" + _actionOptions + "</optgroup><optgroup label='Paste action'><option value='pasteActions'>" + actionName + "</option></optgroup></select></td></tr>");
 						} else {
 							// add an add facility
-							actionsTable.append("<tr><td>Add action : </td><td><select data-event='" + event.type + "'><option value='_'>Please select...</option>" + _actionOptions + "</select></td></tr>");
-						}				
+							actionsTable.append("<tr><td class='propertySubHeader'>Add action : </td><td class='propertySubHeader'><select data-event='" + event.type + "'><option value='_'>Please select...</option>" + _actionOptions + "</select></td></tr>");
+						}
 						// get a reference to the select
-						var addAction = actionsTable.children().last().children().last().children().last();
+						var addAction = actionsTable.find("select[data-event=" + event.type + "]");
 						// add a change listener
 						addListener( addAction.change( { control: control, event: event }, function(ev) {
 							// get a reference to the control
