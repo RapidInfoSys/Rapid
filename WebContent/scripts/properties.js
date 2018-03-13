@@ -1167,7 +1167,7 @@ function Property_gap(cell, propertyObject, property, details) {
 		// get label from invoking the function
 		var name = f.apply(this, []); 
 		// display the name
-		cell.parent().after("<tr><td colspan='2'><h3>" + name + "</h3></td></tr>");
+		cell.parent().after("<tr><td colspan='2' class='propertySubHeader'><h3>" + name + "</h3></td></tr>");
 	}
 }
 

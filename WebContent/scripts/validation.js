@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2014 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -122,11 +122,9 @@ function showValidation(control) {
 			// get a reference to the table
 			var validationTable = validationPanel.children().last().children().last();
 			// add a heading for the event
-			validationTable.append("<tr><td colspan='2'><h3>Validation</h3><img id='" + control.id + "helpVal' class='validationHelp' src='images/help_16x16.png' /></td></tr>");
+			validationTable.append("<tr><td colspan='2' class='propertySubHeader'><h3>Validation</h3><i id='" + control.id + "helpVal' class='actionHelp glyph fa hintIcon'></i></td></tr>");
 			// add the help listener
 			addHelp(control.id + "helpVal",true,true,_validationHelpHtml);
-			// add a small break
-			validationTable.append("<tr><td colspan='2'></td></tr>");
 			// add a type drop down
 			validationTable.append("<tr><td>Type</td><td><select>" + getValidationOptions(type) + "</select></td></tr>");
 			// get a reference to the type drop down

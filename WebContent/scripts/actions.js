@@ -264,8 +264,8 @@ function showEvents(control) {
 								"<div class='iconsPanel'><div class='copyEvent fa-stack fa-xs' title='Copy all event actions'><i class='fa fa-file fa-stack-1x'></i><i class='bottomFile fa fa-file fa-stack-1x'></i></div>" +
 								"<i id='" + "help' class='eventHelp glyph fa hintIcon'></i></div></td></tr>");
 						
-						// add a small gap 
-						actionsTable.append("<tr><td cols[an='2'></td></tr>");
+						// add a small gap - this is used to add the actions
+						actionsTable.append("<tr style='display:none'><td colspan='2'></td></tr>");
 
 						// check if copyAction
 						if (_copyAction) {
