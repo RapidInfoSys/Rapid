@@ -1032,7 +1032,7 @@ function loadApps(selectedAppId, forceLoad) {
         	// check if there was permission to use rapid
         	if (server && server.status == 403) {
         		// reload the whole page (sends user to login)
-        		loaction.reload();
+        		location.reload();
         	} else {
         		// show the error
         		alert("Error loading applications : " + error);
@@ -1170,7 +1170,7 @@ function loadVersions(selectedVersion, forceLoad) {
         	// check if there was permission to use rapid
         	if (server && server.status == 403) {
         		// reload the whole page (sends user to login)
-        		loaction.reload();
+        		location.reload();
         	} else {
         		// show the error
         		alert("Error loading versions : " + error);
