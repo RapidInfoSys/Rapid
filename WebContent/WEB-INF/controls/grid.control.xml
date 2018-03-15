@@ -1127,17 +1127,20 @@ if (details) {
 		if (data) setData_grid($.Event('gridinit'), id, null, details, data);
 		$("#" + id).click( function(ev) {
 			// get the data
-			var data = getGridDataStoreData(id, details);			
-			// if multiSelect
-			if (details.multiSelect) {
-				// get multi selected rows
-				data.selectedRowNumber = getGridMultiSelectedRowNumber(id, ev, details);
-			} else {
-				// get a single selected row
-				data.selectedRowNumber = getGridSelectedRowNumber(id, ev, details);
+			var data = getGridDataStoreData(id, details);
+			// if there was some
+			if (data) {
+				// if multiSelect
+				if (details.multiSelect) {
+					// get multi selected rows
+					data.selectedRowNumber = getGridMultiSelectedRowNumber(id, ev, details);
+				} else {
+					// get a single selected row
+					data.selectedRowNumber = getGridSelectedRowNumber(id, ev, details);
+				}
+				// save
+				saveGridDataStoreData(id, details, data);
 			}
-			// save
-			saveGridDataStoreData(id, details, data);
 		});
 	} // datastorage type check
 } 
@@ -1401,12 +1404,13 @@ if (gridData.selectedRowNumber && gridData.selectedRowNumber > 0) {
 			        <![CDATA[
 if (details && details.dataStorageType) {
 	var gridData = getGridDataStoreData(id, details);
-	if (gridData.rowValidation && gridData.selectedRowNumber) {
-		return gridData.rowValidation[gridData.selectedRowNumber - 1];
+	if (gridData && gridData.rowValidation && gridData.selectedRowNumber) {
+			return gridData.rowValidation[gridData.selectedRowNumber - 1];
 	} 
 } else {
 	return getGridSelectedRowNumber(id, ev, details);
 }
+return null;
 			        ]]>	  	   	            
 	   	        </getPropertyFunction>	   	
 	   	        <setPropertyJavaScript>
