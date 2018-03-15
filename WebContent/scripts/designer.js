@@ -1031,8 +1031,8 @@ function loadApps(selectedAppId, forceLoad) {
         error: function(server, status, error) {
         	// check if there was permission to use rapid
         	if (server && server.status == 403) {
-        		// reload the whole page (sends user to login)
-        		location.reload();
+        		// send user to index
+        		window.location.replace("/");
         	} else {
         		// show the error
         		alert("Error loading applications : " + error);
@@ -1169,8 +1169,8 @@ function loadVersions(selectedVersion, forceLoad) {
         error: function(server, status, error) {
         	// check if there was permission to use rapid
         	if (server && server.status == 403) {
-        		// reload the whole page (sends user to login)
-        		location.reload();
+        		// send user to index
+        		window.location.replace("/");
         	} else {
         		// show the error
         		alert("Error loading versions : " + error);
