@@ -352,18 +352,18 @@ public abstract class FormAdapter {
 		// default notHidden to false so the standard behaviour is to return the value whether hidden or not
 		return getFormControlValue(rapidRequest, formId, controlId, false);
 	}
-	
+
 	// some controls need some further processing to get a summary value, also used in the pdf
 	protected String getSummaryControlValue(Control control, FormControlValue controlValue, String nullValue) {
-		
+
 		// get the value
 		String value = controlValue.getValue();
-		
+
 		// check for nulls
 		if (value == null) {
 			value = nullValue;
 		} else {
-			
+
 			// check for json
 			if (value.startsWith("{") && value.endsWith("}")) {
 				try {
@@ -371,10 +371,10 @@ public abstract class FormAdapter {
 					value = jsonValue.optString("text");
 				} catch (Exception ex) {}
 			}
-			
+
 			// get the type
 			String type = control.getType();
-			
+
 			// check for checkboxes
 			if (type.contains("checkbox")) {
 				// just show the label
@@ -383,10 +383,10 @@ public abstract class FormAdapter {
 				// show the label and value
 				value = control.getLabel() + " : " + control.getCodeText(_application, value);
 			}
-			
+
 		}
 		return value;
-		
+
 	}
 
 	// the start of the form summary	page
@@ -1223,8 +1223,8 @@ public abstract class FormAdapter {
 
 		// get the form details
 		UserFormDetails formDetails = getUserFormDetails(rapidRequest);
-		
-		// get the application 
+
+		// get the application
 		Application application = rapidRequest.getApplication();
 
 		try {
@@ -1233,10 +1233,10 @@ public abstract class FormAdapter {
 			String formId = formDetails.getId();
 
 			// if submitted already throw exception
-			if (formDetails.getSubmitted()) throw new Exception("This form has already been submitted");			
+			if (formDetails.getSubmitted()) throw new Exception("This form has already been submitted");
 
 			// perform any 3rd party submission first so if they fail the whole thing fails
-			
+
 			// file
 			if (application.getFormFile()) saveFormFile(rapidRequest, formId);
 
@@ -1460,39 +1460,42 @@ public abstract class FormAdapter {
 										Validation validation = control.getValidation();
 										// if there was some
 										if (validation != null) {
-											// get the RegEx
-											String regEx = validation.getRegEx();
-											// set to empty string if null (most seem to be empty)
-											if (regEx == null) regEx = "";
-											// not if none, and not if javascript
-											if (regEx.length() > 0 && !"".equals(validation.getType()) && !"none".equals(validation.getType()) && !"javascript".equals(validation.getType())) {
-												// check for null
-												if (value != null) {
-													// place holder for the patter
-													Pattern pattern = null;
-													// this exception is uncaught but we want to know about it
-													try {
-														// we recognise a small subset of switches
-														if (regEx.endsWith("/i")) {
-															// trim out the switch
-															regEx = regEx.substring(0, regEx.length() - 2);
-															// build the pattern with case insensitivity
-															pattern = Pattern.compile(regEx, Pattern.CASE_INSENSITIVE);
-														} else {
-															// build the patter as-is
-															pattern = Pattern.compile(regEx);
+											// proceed to check regex if there is a value or we are not allowing nulls
+											if (value.length() > 0 || !validation.getAllowNulls()) {
+												// get the RegEx
+												String regEx = validation.getRegEx();
+												// set to empty string if null (most seem to be empty)
+												if (regEx == null) regEx = "";
+												// not if none, and not if javascript
+												if (regEx.length() > 0 && !"".equals(validation.getType()) && !"none".equals(validation.getType()) && !"javascript".equals(validation.getType())) {
+													// check for null
+													if (value != null) {
+														// place holder for the patter
+														Pattern pattern = null;
+														// this exception is uncaught but we want to know about it
+														try {
+															// we recognise a small subset of switches
+															if (regEx.endsWith("/i")) {
+																// trim out the switch
+																regEx = regEx.substring(0, regEx.length() - 2);
+																// build the pattern with case insensitivity
+																pattern = Pattern.compile(regEx, Pattern.CASE_INSENSITIVE);
+															} else {
+																// build the patter as-is
+																pattern = Pattern.compile(regEx);
+															}
+														} catch (PatternSyntaxException ex) {
+															// rethrow
+															throw new ServerSideValidationException("Server side validation error - regex for control " + id + " in form " + formId + " failed regex syntax for " + regEx + " - regex PatternSyntaxException", ex);
+														} catch (IllegalArgumentException  ex) {
+															// rethrow
+															throw new ServerSideValidationException("Server side validation error - value '" + value + "' for control " + id + " in form " + formId + " failed regex " + regEx + " - regex ServerSideValidationException", ex);
 														}
-													} catch (PatternSyntaxException ex) {
-														// rethrow
-														throw new ServerSideValidationException("Server side validation error - regex for control " + id + " in form " + formId + " failed regex syntax for " + regEx + " - regex PatternSyntaxException", ex);
-													} catch (IllegalArgumentException  ex) {
-														// rethrow
-														throw new ServerSideValidationException("Server side validation error - value '" + value + "' for control " + id + " in form " + formId + " failed regex " + regEx + " - regex ServerSideValidationException", ex);
-													}
-													// compile and check it
-													if (!pattern.matcher(value).find()) throw new ServerSideValidationException("Server side validation error - value " + id + " for form " + formId+ " failed regex");
-												} // javascript type check
-											} // regex check
+														// compile and check it
+														if (!pattern.matcher(value).find()) throw new ServerSideValidationException("Server side validation error - value " + id + " for form " + formId+ " failed regex");
+													} // javascript type check
+												} // regex check
+											} // length and allow nulls check
 										} // validation check
 
 										// look for a maxLength property
