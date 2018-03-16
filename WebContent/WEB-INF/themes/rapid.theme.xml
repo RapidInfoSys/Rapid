@@ -93,8 +93,6 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
   background: transparent linear-gradient(#F00, #C10202) !important;
 }
 
-
-
 .tabsGroup {
 	background: #494949;
 }
@@ -121,7 +119,6 @@ ul.tabsHeaderH li {
   z-index: 1;
   padding: 10px;
   font-size: 18px;
-  /*font-weight: bold;*/
 }
 
 ul.tabsHeaderH li.selected{
@@ -141,7 +138,9 @@ div.tabsPanel {
 div.tabsPanel.selected {
   background: #d5d6d2;
   margin-bottom: 0;
-  padding-top: 20px 0px;
+  padding-top: 20px;
+  padding-left: 0;
+  padding-right: 0;
   border:none;
 }
 
