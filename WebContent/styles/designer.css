@@ -316,7 +316,7 @@ img.conflictimgage {
 }
 
 .design-map span:hover {
-	background: #D5D6D2;
+	background: #b2b2b2;
 }
 
 .design-map img {
@@ -974,11 +974,12 @@ button {
 }
 
 button:hover {
-	background: #f4091b;
+	text: #000;
+	background: #b2b2b2;
 }
 
 button:disabled {
-  color: #6A6A6A;
+  color: #6a6a6a;
 }
 
 .normalInputs input:not([type]) {
@@ -1078,7 +1079,8 @@ button:disabled:hover {
 }
 
 select:hover {
-	background: #f4091b;
+	color: #000;
+	background: #b2b2b2;
 }
 
 #flowCanvas {
