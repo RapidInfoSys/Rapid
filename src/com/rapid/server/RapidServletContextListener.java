@@ -1291,9 +1291,9 @@ public class RapidServletContextListener extends Log4jServletContextListener imp
 			// load the actions
 			loadActions(servletContext);
 
-			_logger.info("Loading templates");
+			_logger.info("Loading themes");
 
-			// load templates
+			// load themes
 			loadThemes(servletContext);
 
 			_logger.info("Loading controls");
