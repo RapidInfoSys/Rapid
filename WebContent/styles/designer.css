@@ -1183,3 +1183,24 @@ path, .jtk-endpoint {
 .jtk-overlay {
     background-color:transparent;
 }
+
+#save {
+	position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 10px;
+    background: #ddd;
+    text-align: center;
+    font-size: 16px;
+    margin-top: -45px;
+}
+
+#save span {
+	vertical-align: middle;
+	padding: 0 2px;
+}
+
+#save .fa {
+	font-size: 24px;
+}

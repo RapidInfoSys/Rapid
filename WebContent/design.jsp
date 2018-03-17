@@ -294,6 +294,11 @@ if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRe
 	<iframe id="uploadIFrame" name="uploadIFrame" width="0" height="0" style="width:0;height:0;border:0px hidden #fff;" onload="fileuploaded(this);"></iframe>
 	
 	<div id="dialogues"></div>
+	
+	<div id="save">
+		<span id="saveAnimation" class="fa fa-cog fa-spin"></span>
+		<span id="saveMessage">saving...</span>
+	</div>
 
 <%
 	} else {

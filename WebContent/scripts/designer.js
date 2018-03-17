@@ -1709,7 +1709,7 @@ function getSavePageData() {
 	var pageRoles = false;
 	
 	// show message
-	$("#rapid_P11_C7_").html("Checking controls");
+	$("#saveMessage").html("Checking controls");
 		
 	// loop them looking for roles and getDetails functions to run 
 	for (var i in controls) {
@@ -1733,7 +1733,7 @@ function getSavePageData() {
 	var pageObject = getDataObject(_page);
 					
     // show message
-	$("#rapid_P11_C7_").html("Generating html");
+	$("#saveMessage").html("Generating html");
 	
 	// remove nonVisibleControl controls
 	_page.object.find(".nonVisibleControl").remove();
@@ -1790,7 +1790,7 @@ function getSavePageData() {
 	}
 	
 	// show message
-	$("#rapid_P11_C7_").html("Sending html...");
+	$("#saveMessage").html("Sending html...");
 		
 	// return it
 	return pageData;	
@@ -2680,47 +2680,47 @@ $(document).ready( function() {
 			// hide all property dialogues
 			hideDialogues();
 			
-			// show the saving page dialogue with 
-			showDialogue('~?action=page&a=rapid&p=P11', function() {
-				
-				// show message
-				$("#rapid_P11_C7_").html("Saving page...");
-				
-				// send the data to the backend
-				$.ajax({
-			    	url: "designer?action=savePage&a=" + _version.id + "&v=" + _version.version,
-			    	type: "POST",
-			    	contentType: "application/json",
-			        dataType: "json",            
-			        data: getSavePageData(),            
-			        error: function(server, status, error) { 
-			        	// show error
-			        	$("#rapid_P11_C7_").html(error);
-			        	// enable close button
-			        	$("#rapid_P11_C10_").enable().focus();
-			        },
-			        success: function(controls) {
-			        	// show message
-			        	$("#rapid_P11_C7_").html("Page saved!");			        	
-			        	// set dirty to false
-			        	_dirty = false;
-			        	// reload the pages as the order may have changed, but keep the current one selected, also specify that we are going to want controls from dialogues in the collection
-			        	loadPages(_page.id, false, true);
-			        	// reposition the selection in case controls moved during the reload
-			        	positionAndSizeBorder(_selectedControl);
-			        	// rebuild the page map to clear up any conflict messages
-			        	buildPageMap(true);
-			        	// enable close button
-			        	$("#rapid_P11_C10_").enable().focus();
-			        	// auto close after 1 second
-			        	window.setTimeout(function() {
-			        		hideDialogue();
-			        	}, 1000);
-			        }
-				});
-				
-			});
+			// show message
+        	$("#saveMessage").html("Saving page...");
+        	// show cog
+        	$("#saveAnimation").removeClass("fa-check").addClass("fa-cog fa-spin");
 			
+			// slide down save panel
+			$("#save").animate({
+				"margin-top": 0
+			}, 500);
+			
+			// send the data to the backend
+			$.ajax({
+		    	url: "designer?action=savePage&a=" + _version.id + "&v=" + _version.version,
+		    	type: "POST",
+		    	contentType: "application/json",
+		        dataType: "json",            
+		        data: getSavePageData(),            
+		        error: function(server, status, error) { 
+		        	// show error
+		        	alert(error);
+		        },
+		        success: function(controls) {
+		        	// hide cog
+		        	$("#saveAnimation").removeClass("fa-cog fa-spin").addClass("fa-check");
+		        	// show message
+		        	$("#saveMessage").html("Page saved!");
+		        	// auto close after 1 second
+		        	$("#save").delay(1000).animate({
+						"margin-top": -45
+					}, 500);
+		        	// set dirty to false
+		        	_dirty = false;
+		        	// reload the pages as the order may have changed, but keep the current one selected, also specify that we are going to want controls from dialogues in the collection
+		        	loadPages(_page.id, false, true);
+		        	// reposition the selection in case controls moved during the reload
+		        	positionAndSizeBorder(_selectedControl);
+		        	// rebuild the page map to clear up any conflict messages
+		        	buildPageMap(true);
+		        }
+			});
+				
 		}
 		
 	});
