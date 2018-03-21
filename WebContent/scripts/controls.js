@@ -769,7 +769,7 @@ function getControlConflict(c, type) {
 		}
 		
 		// if not found in this page and we are a form, check other pages
-		if (!conflict && _version.isForm) {
+		if (!conflict && _version.isForm && control) {
 			// loop all pages looking for controls with the same name
 			for (var i in _pages) {
 				var page = _pages[i];
