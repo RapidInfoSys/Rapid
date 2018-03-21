@@ -5104,7 +5104,7 @@ function Property_mobileActionType(cell, mobileAction, property, details) {
 	}));
 }
 
-//reuse the generic childActionsForType but set the details with type = database
+// reuse the generic childActionsForType but set the details with type = database
 function Property_galleryControls(cell, propertyObject, property, details) {
 	// get any old school single property value
 	var galleryControlId = propertyObject.galleryControlId;
@@ -5650,7 +5650,7 @@ function Property_formObjectText(cell, propertyObject, property, details) {
 	}
 }
 
-//this is for advanced form integration
+// this is for advanced form integration
 function Property_webserviceAuthType(cell, propertyObject, property, details) {
 	// only if there is a formObject set and it is a note object
 	if (propertyObject.auth && (propertyObject.auth == true || propertyObject.auth == "true")) {
@@ -5662,7 +5662,7 @@ function Property_webserviceAuthType(cell, propertyObject, property, details) {
 	}
 }
 
-//this is for web service authorisation
+// this is for web service authorisation
 function Property_webserviceAuthProperty(cell, propertyObject, property, details) {
 	// only if there is a formObject set and it is a note object
 	if (propertyObject.auth && (propertyObject.auth == true || propertyObject.auth == "true")) {
@@ -5672,4 +5672,10 @@ function Property_webserviceAuthProperty(cell, propertyObject, property, details
 		// remove this row
 		cell.closest("tr").remove();
 	}
+}
+
+// this is for the email attachments
+function Property_uploadControls(cell, propertyObject, property, details) {
+	// run the controls for type
+	Property_controlsForType(cell, propertyObject, property, {type:["upload"]});
 }
