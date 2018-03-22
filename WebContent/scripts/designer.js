@@ -1873,11 +1873,14 @@ function doPaste(control, _parent) {
 	// reset the paste controls
 	_pasteControls = [];
 	
+	// assume no new control
+	var newControl = null;
+	
 	// it's a little different for the page (we can idenitfy it as it doesn't have a parent)
 	if (_parent) {
 		
 		// create the new control
-		var newControl = loadControl(control, _parent, true, true);
+		newControl = loadControl(control, _parent, true, true);
 		
 		// retain the next id at this point
 		var nextId = _nextId;
@@ -1933,8 +1936,6 @@ function doPaste(control, _parent) {
 		// fire window resize in case scroll bars need adjusting, etc. (this will re-select)
 		windowResize("paste");
 								
-		// return the updated control
-		return newControl;
 				
 	} else {
 			
@@ -1986,9 +1987,26 @@ function doPaste(control, _parent) {
 		windowResize("paste");
 		
 		// return the page
-		return _page;		
+		newControl = _page;		
 		
 	}
+	
+	// get all controls in page
+	var controls = getControls();
+	// if we got some
+	if (controls && controls.length > 0) {
+		// compare each id to every other id
+		for (var i in controls) {
+			for (var j in controls) {
+				if (i != j && controls[i].id == controls[j].id) {
+					alert("Sorry, there are two controls with id " + controls[i] + ". This is not supposed to happen, but please let us know how it can be repeated.");
+				}
+			}
+		}
+	}
+	
+	// return the updated control
+	return newControl;
 			
 }
 
