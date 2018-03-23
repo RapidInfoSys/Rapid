@@ -1790,7 +1790,7 @@ function getSavePageData() {
 	}
 	
 	// show message
-	$("#saveMessage").html("Sending html...");
+	$("#saveMessage").html("Saving page html...");
 		
 	// return it
 	return pageData;	
