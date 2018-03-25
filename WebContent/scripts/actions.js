@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -22,6 +22,29 @@ You should have received a copy of the GNU General Public License
 in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 
 */
+
+// a map of help html for recognised events
+_eventHelpHtml = {
+	"blur" : "Occurs when a form control has lost its focus",
+	"change" : "Occurs when a form control's value has changed, after its blur, if applicable",
+	"click" : "Occurs when the control is clicked with the mouse",
+	"dblclick" : "Occurs when a control is double-clicked with the mouse",
+	"focus" : "Occurs when a control receives focus, generally when clicked on or tabbed to",
+	"focusin" : "Occurs when a control, or child control, receives focus, generally when clicked on or tabbed to",
+	"focusout" : "Occurs when a control, or child control, loses focus, generally when clicked or tabbed away from",
+	"hover" : "Occurs when the mouse is placed over a control",
+	"keydown" : "Occurs when a control is selected and a key is pushed down",
+	"keypress" : "Occurs when a control is selected and a key represnting a printable character is released after being pushed down",
+	"keyup" : "Occurs when a control is selected and a key is pushed down",
+	"mousedown" : "Occurs when the mouse cursor is over the control and a mouse button is pushed down",
+	"mouseenter" : "Occurs when the mouse enters the whole space under a control",
+	"mouseleave" : "Occurs when the mouse leaves the whole space under a control",
+	"mousemove" : "Occurs when the mouse moves over the space under a control",
+	"mouseout" : "Occurs when the mouse is moved off of this control, or any child control",
+	"mouseover" : "Occurs when the mouse moves over this control, or any child control",
+	"mouseup" : "Occurs when the mouse cursor is over the control and a mouse button is released",
+	"scroll" : "Occurs when a control is scrolled"
+}
 
 // this object function serves as a closure for holding the static values required to construct each type of action - they're created and assigned globally when the designer loads and originate from the .action.xml files
 function ActionClass(actionClass) {
@@ -262,7 +285,16 @@ function showEvents(control) {
 						// add a heading for the event																
 						actionsTable.append("<tr><td colspan='2' class='propertyHeader'><h3>" + event.name + " event</h3>" +
 								"<div class='iconsPanel'><div class='copyEvent fa-stack fa-xs' title='Copy all event actions'><i class='fa fa-file fa-stack-1x'></i><i class='bottomFile fa fa-file fa-stack-1x'></i></div>" +
-								"<i id='" + "help' class='eventHelp glyph fa hintIcon'></i></div></td></tr>");
+								"<i id='" + event.type + "help' class='eventHelp glyph fa hintIcon'></i></div></td></tr>");
+						
+						// look for any event help html
+						var eventHelpHtml = _eventHelpHtml[event.type];
+						
+						// if this event has helpHtml
+						if (eventHelpHtml) {
+							// add the help listener
+							addHelp(event.type + "help",true,true,eventHelpHtml);
+						}
 						
 						// add a small gap - this is used to add the actions
 						actionsTable.append("<tr style='display:none'><td colspan='2'></td></tr>");
