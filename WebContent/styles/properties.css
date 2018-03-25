@@ -201,7 +201,6 @@ i.bottomFile.fa.fa-file.fa-stack-1x {
 
 .propertyHeader .fa-stack {
 	color:white;
-	bottom: 1px;
 }
 
 .delete.fa-stack {
@@ -211,6 +210,7 @@ i.bottomFile.fa.fa-file.fa-stack-1x {
 i.delete.fa.fa-trash {
 	font-size: 18px;
 	vertical-align:middle;
+	margin-top: -3px;
 }
 
 .iconsPanel {

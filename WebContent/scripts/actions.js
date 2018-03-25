@@ -348,6 +348,9 @@ function showEvents(control) {
 		
 	} // page simple check
 	
+	// check size and if need be resize property panel
+	windowResize("Show events");
+	
 }
 
 // this renders the actions for a control's event into a properties panel

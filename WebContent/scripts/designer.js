@@ -2446,8 +2446,8 @@ $(document).ready( function() {
 			        	// refresh the page map to take the lock into account
 			        	buildPageMap();
 			        	
-			        	// resize to set correct scroll bars
-			        	windowResize("page loaded");
+			        	// resize to set correct scroll bars - after a short delay
+			        	window.setTimeout(windowResize("page loaded"), 500);
 			        	
 			        	// update the url
 			        	if (window.history && window.history.replaceState) window.history.replaceState("page", _page.title, "design.jsp?a=" + _version.id + "&v=" + _version.version + "&p=" + _page.id );
@@ -3780,6 +3780,9 @@ function windowResize(ev) {
 	// set it's height to auto
 	propertiesPanel.css("height","auto");
 	
+	// set the iframe height to auto
+	_pageIframe.css("height","auto");
+	
 	// use the function to get our working height
 	var height = getHeight();
 				
@@ -3929,11 +3932,11 @@ function windowResize(ev) {
 		
 	} else {
 		
-		// adjust iframe position, width and height
+		// adjust iframe position, width and height (less border)
 		_pageIframe.css({
 			left: _panelPinnedOffset,
 			width: width - _panelPinnedOffset - 1,
-			height: height
+			height: height - 2
 		});
 		// adjust the cover to be full-screen
 		_designCover.css({
