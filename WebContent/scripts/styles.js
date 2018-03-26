@@ -867,7 +867,7 @@ function showStyles(control) {
 				// get the del image
 				var delImage = $(this);
 				// get the index
-				var index = delImage.parent().parent().index();
+				var index = delImage.closest("tr").index();
 				// remove from collection
 				ev.data.control.classes.splice(index,1);	
 				// rebuild the styles

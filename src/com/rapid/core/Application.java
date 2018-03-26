@@ -1082,13 +1082,11 @@ public class Application {
 				// only if we are in front of a completed style and there is a . starting before the style
 				if (styleStartPos < styleEndPos && startPos < styleStartPos) {
 
-					// find the end of the class by the first space
-					int endPos = css.indexOf(" ", startPos);
-					// adjust back to the start of the class if we went past some how
-					if (styleStartPos < endPos) endPos = styleStartPos;
+					// find the end of the class style target by the first brace
+					int endPos = styleStartPos - 1;
 					// if it works out
 					if (endPos > startPos) {
-						// fetch the class
+						// fetch the class without the . and any trailing space
 						String styleClass = css.substring(startPos + 1, endPos).trim();
 						// remove any closing brackets
 						if (styleClass.indexOf(")") > 0) styleClass = styleClass.substring(0, styleClass.indexOf(")"));
