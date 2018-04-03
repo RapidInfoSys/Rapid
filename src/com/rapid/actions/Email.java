@@ -28,6 +28,7 @@ package com.rapid.actions;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.activation.FileDataSource;
 import javax.servlet.ServletContext;
 
 import org.json.JSONArray;
@@ -84,8 +85,27 @@ public class Email extends Action {
 	}
 
 	// produces any attachments
-	protected Attachment[] getAttachments(RapidRequest rapidRequest, JSONObject jsonData) throws Exception {
-		return null;
+	protected Attachment[] getAttachments(RapidRequest rapidRequest, String attachmentFiles) throws Exception {
+		
+		if(attachmentFiles == null) return null;
+
+		String[] attachedFiles = attachmentFiles.split(",");
+		// Decide on the base path
+		String basePath = "uploads/" +  rapidRequest.getAppId();
+		// servers with public access must use the secure upload location
+		if (rapidRequest.getRapidServlet().isPublic()) basePath = "WEB-INF/" + basePath;
+		
+		int size = attachedFiles.length;
+		Attachment[] attachments = new Attachment[size];
+		//loop through the attachedFile strings and accumulate the attachment objects in an array
+		for(int i = 0; i < size; i++){
+			String file = attachedFiles[i];
+			String filePath = rapidRequest.getRapidServlet().getServletContext().getRealPath(basePath) + "/" + file;
+
+			attachments[i] = new Attachment(file, new FileDataSource(filePath));
+		}
+		
+		return attachments;
 	}
 
 	// overrides
@@ -128,7 +148,10 @@ public class Email extends Action {
         String toControlId = getProperty("to");
         // get the to field
         String toField = getProperty("toField");
-
+        
+        //Get the attachment controls
+        String attachmentsString = getProperty("attachments");
+     
         // assume empty data
         js += "var data = {};\n";
 
@@ -175,7 +198,25 @@ public class Email extends Action {
 
 	        // add any js for additional data
 	        js += getAdditionalDataJS(rapidRequest, application, page, control, jsonDetails);
-
+	        
+	        //Lastly, check for attachment controls
+	        //Check if an attachment control is specified
+	        if(attachmentsString != null){
+	        	//Convert the string to json
+	        	JSONArray jsonAttachments = new JSONArray(attachmentsString);
+	        	
+	        	//loop through the uploadcontrol ids
+	        	for(int i = 0; i < jsonAttachments.length(); i++){
+	        		String uploadId = jsonAttachments.getString(i);
+	        		String getAttachmentsJs = Control.getDataJavaScript(servletContext, application, page, uploadId, null);
+	        	
+	        		if(getAttachmentsJs != null && getAttachmentsJs.length() > 0){
+	        			js += "data.attachments = " + getAttachmentsJs + ";\n";
+	        		}
+	        	}
+	        }
+	        
+	     
 			// open the ajax call
 	        js += "$.ajax({ url : '~?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + page.getId() + controlParam + "&act=" + getId() + "', type: 'POST', contentType: 'application/json', dataType: 'json',\n";
 	        js += "  data: JSON.stringify(data),\n";
@@ -218,6 +259,9 @@ public class Email extends Action {
         String stringContent = getProperty("content");
 		// get the type
 		String type = getProperty("emailType");
+		// get the attachments
+		String attachments = jsonData.optString("attachments", null);
+	
         // if we got one
         if (from == null) {
         	throw new Exception("Email from address must be provided");
@@ -336,14 +380,14 @@ public class Email extends Action {
 
         			} // got inputs
         		} // inputs not null
-
+        		
         		// if the type is html
         		if ("html".equals(type)) {
         			// send email as html
-        			com.rapid.core.Email.send(from, to, subject, "Please view this email with an application that supports HTML", body, getAttachments(rapidRequest, jsonData));
+        			com.rapid.core.Email.send(from, to, subject, "Please view this email with an application that supports HTML", body, getAttachments(rapidRequest, attachments));
         		} else {
         			// send email as text
-        			com.rapid.core.Email.send(from, to, subject, body, null, getAttachments(rapidRequest, jsonData));
+        			com.rapid.core.Email.send(from, to, subject, body, null, getAttachments(rapidRequest, attachments));
         		}
         	}
         }
