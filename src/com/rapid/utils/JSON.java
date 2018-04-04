@@ -41,7 +41,7 @@ public class JSON {
 			// null check
 			if (jsonArray == null) {
 				// look for a single object
-				JSONObject jsonMemberObject = jsonObject.optJSONObject(memberName);
+				Object jsonMemberObject = jsonObject.opt(memberName);
 				// if we got one
 				if (jsonMemberObject != null) {
 					// create an empty array
