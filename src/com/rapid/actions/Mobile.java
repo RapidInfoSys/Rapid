@@ -512,14 +512,14 @@ public class Mobile extends Action {
 			} else if ("uploadImages".equals(type)) {
 
 				// make a list of control ids
-				List<String> galleryControlIds = new ArrayList<String>();
+				List<String> controlIds = new ArrayList<String>();
 
 				// get the old style gallery id
 				String galleryControlIdProperty = getProperty("galleryControlId");
 				// if we got one
 				if (galleryControlIdProperty != null) {
 					//  add to list if it contains something
-					if (galleryControlIdProperty.trim().length() > 0) galleryControlIds.add(galleryControlIdProperty);
+					if (galleryControlIdProperty.trim().length() > 0) controlIds.add(galleryControlIdProperty);
 				}
 
 				// get the new style gallery ids
@@ -533,15 +533,16 @@ public class Mobile extends Action {
 						// split and loop
 						for (String id : galleryControlIdsProperty.split(",")) {
 							// add to collection
-							galleryControlIds.add(id);
+							controlIds.add(id);
 						}
 					}
 				}
 
 				// check if we got one
-				if (galleryControlIds.size() == 0) {
-					js += "  // no galleryControls specified\n";
+				if (controlIds.size() == 0) {
+					js += "  // no controls specified\n";
 				} else {
+					
 					// assume no success call back
 					String successCallback = "null";
 					// update to name of callback if we have any success actions
@@ -550,11 +551,22 @@ public class Mobile extends Action {
 					String errorCallback = "null";
 					// update to name of callback  if we have any error actions
 					if (_errorActions != null) errorCallback = "'" + getId() + "error'";
+					
 					// start building the js
 					js += "var urls = '';\n";
 					// get any urls from the gallery controls
-					for (String id : galleryControlIds) {
-						js += "$('#" + id + "').find('img').each( function() { urls += $(this).attr('src') + ',' });\n";
+					for (String id : controlIds) {
+						
+						//create a control object from its id
+						Control imageControl = page.getControl(id);
+						//Check whether this control is a signature
+						if ("signature".equals(imageControl.getType())) {
+							js += "urls += getData_signature(ev, '" + id + "');\n";
+							//System.out.println("Its a signature");
+						} else {
+							js += "$('#" + id + "').find('img').each( function() { urls += $(this).attr('src') + ',' });\n";
+						}
+						
 					}
 					// if we got any urls
 					js += "if (urls) { \n";
@@ -568,6 +580,7 @@ public class Mobile extends Action {
 					js += "}";
 					// if there is a successCallback call it now
 					if (!"null".equals(successCallback) && successCallback.length() > 0) js += " else {\n  " + successCallback.replace("'", "") + "(ev);\n}\n";
+					
 				}
 
 			} else if ("navigate".equals(type)) {
