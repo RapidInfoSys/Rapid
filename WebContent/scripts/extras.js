@@ -703,21 +703,25 @@ function mergeDataObjects(data1, data2, mergeType, field, maxRows) {
 					}
 					data = {};
 					data.fields = fields;
-					if (mergeType == "append") {
-						data.rows = data1.rows;
-						for (var i = 0; i < data2.rows.length; i++) {
-							var row = [];
-							for (var j in fields) {
-								var value = null;
-								for (var k in data2.fields) {
-									if (fields[j] && data2.fields[k] && fields[j].toLowerCase() == data2.fields[k].toLowerCase()) {
-										value = data2.rows[i][k];
-										break;
+					if (mergeType == "append") {						
+						if (data1.rows.length == 1 && data1.fields.length == 1 && data2.rows.length == 1 && data2.fields.length == 1 ) {
+							data = data1.rows[0][0] + data2.rows[0][0]; 
+						} else {
+							data.rows = data1.rows;
+							for (var i = 0; i < data2.rows.length; i++) {
+								var row = [];
+								for (var j in fields) {
+									var value = null;
+									for (var k in data2.fields) {
+										if (fields[j] && data2.fields[k] && fields[j].toLowerCase() == data2.fields[k].toLowerCase()) {
+											value = data2.rows[i][k];
+											break;
+										}
 									}
+									row.push(value);
 								}
-								row.push(value);
+								data.rows.push(row);
 							}
-							data.rows.push(row);
 						}
 					} else {
 						data.rows = [];
