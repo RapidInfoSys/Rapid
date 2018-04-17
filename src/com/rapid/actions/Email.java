@@ -216,6 +216,8 @@ public class Email extends Action {
 	        	}
 	        }
 
+	        // instantiate the jsonDetails if required
+	     	if (jsonDetails == null) jsonDetails = new JSONObject();
 
 			// open the ajax call
 	        js += "$.ajax({ url : '~?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + page.getId() + controlParam + "&act=" + getId() + "', type: 'POST', contentType: 'application/json', dataType: 'json',\n";
