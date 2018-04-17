@@ -86,7 +86,7 @@ public class Email extends Action {
 
 	// produces any attachments
 	protected Attachment[] getAttachments(RapidRequest rapidRequest, String attachmentFiles) throws Exception {
-		
+
 		if(attachmentFiles == null) return null;
 
 		String[] attachedFiles = attachmentFiles.split(",");
@@ -94,7 +94,7 @@ public class Email extends Action {
 		String basePath = "uploads/" +  rapidRequest.getAppId();
 		// servers with public access must use the secure upload location
 		if (rapidRequest.getRapidServlet().isPublic()) basePath = "WEB-INF/" + basePath;
-		
+
 		int size = attachedFiles.length;
 		Attachment[] attachments = new Attachment[size];
 		//loop through the attachedFile strings and accumulate the attachment objects in an array
@@ -104,7 +104,7 @@ public class Email extends Action {
 
 			attachments[i] = new Attachment(file, new FileDataSource(filePath));
 		}
-		
+
 		return attachments;
 	}
 
@@ -148,10 +148,10 @@ public class Email extends Action {
         String toControlId = getProperty("to");
         // get the to field
         String toField = getProperty("toField");
-        
+
         //Get the attachment controls
         String attachmentsString = getProperty("attachments");
-     
+
         // assume empty data
         js += "var data = {};\n";
 
@@ -198,39 +198,66 @@ public class Email extends Action {
 
 	        // add any js for additional data
 	        js += getAdditionalDataJS(rapidRequest, application, page, control, jsonDetails);
-	        
+
 	        //Lastly, check for attachment controls
 	        //Check if an attachment control is specified
 	        if(attachmentsString != null){
 	        	//Convert the string to json
 	        	JSONArray jsonAttachments = new JSONArray(attachmentsString);
-	        	
+
 	        	//loop through the uploadcontrol ids
 	        	for(int i = 0; i < jsonAttachments.length(); i++){
 	        		String uploadId = jsonAttachments.getString(i);
 	        		String getAttachmentsJs = Control.getDataJavaScript(servletContext, application, page, uploadId, null);
-	        	
+
 	        		if(getAttachmentsJs != null && getAttachmentsJs.length() > 0){
 	        			js += "data.attachments = " + getAttachmentsJs + ";\n";
 	        		}
 	        	}
 	        }
-	        
-	     
+
+
 			// open the ajax call
 	        js += "$.ajax({ url : '~?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + page.getId() + controlParam + "&act=" + getId() + "', type: 'POST', contentType: 'application/json', dataType: 'json',\n";
 	        js += "  data: JSON.stringify(data),\n";
-	        js += "  error: function(data) {\n";
+	        js += "  error: function(server, status, message) {\n";
 
-			// add any error actions
-			if (_errorActions != null) {
-				// loop the actions
-				for (Action action : _errorActions) {
-					js += "    " + action.getJavaScript(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n  ") + "\n";
-				}
-			}
+	        // this avoids doing the errors if the page is unloading or the back button was pressed
+ 			js += "    if (server.readyState > 0) {\n";
 
-	        js += "  },\n";
+ 			// retain if error actions
+ 			boolean errorActions = false;
+
+ 			// prepare a default error hander we'll show if no error actions, or pass to child actions for them to use
+ 			String defaultErrorHandler = "alert('Error with email action : ' + server.responseText||message);";
+
+ 			// add any error actions
+ 			if (_errorActions != null) {
+ 				// count the actions
+ 				int i = 0;
+ 				// loop the actions
+ 				for (Action action : _errorActions) {
+ 					// retain that we have custom error actions
+ 					errorActions = true;
+ 					// if this is the last error action add in the default error handler
+ 					if (i == _errorActions.size() - 1) jsonDetails.put("defaultErrorHandler", defaultErrorHandler);
+ 					// add the js
+ 					js += "       " + action.getJavaScript(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n       ") + "\n";
+ 					// if this is the last error action and the default error handler is still present, remove it so it isn't sent down the success path
+ 					if (i == _errorActions.size() - 1 && jsonDetails.optString("defaultErrorHandler", null) != null) jsonDetails.remove("defaultErrorHandler");
+ 					// increase the count
+ 					i++;
+ 				}
+ 			}
+ 			// add default error handler if none in collection
+ 			if (!errorActions) js += "        " + defaultErrorHandler + "\n";
+
+ 			// close unloading check
+ 			js += "    }\n";
+
+ 			// close error actions
+ 			js += "  },\n";
+
 	        js += "  success: function(data) {\n";
 
 
@@ -261,7 +288,7 @@ public class Email extends Action {
 		String type = getProperty("emailType");
 		// get the attachments
 		String attachments = jsonData.optString("attachments", null);
-	
+
         // if we got one
         if (from == null) {
         	throw new Exception("Email from address must be provided");
@@ -380,7 +407,7 @@ public class Email extends Action {
 
         			} // got inputs
         		} // inputs not null
-        		
+
         		// if the type is html
         		if ("html".equals(type)) {
         			// send email as html
