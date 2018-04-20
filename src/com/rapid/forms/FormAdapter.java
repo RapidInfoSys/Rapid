@@ -1071,8 +1071,11 @@ public abstract class FormAdapter {
 		// open the body
 		writer.write("  <body>\n");
 
-		// write the summary start
-		writer.write(getSummaryStartHtml(rapidRequest, _application, email));
+		// get any summary start html
+		String summryStartHtml = getSummaryStartHtml(rapidRequest, _application, email);
+		
+		// write the summary start, if we got some
+		if (summryStartHtml != null) writer.write(summryStartHtml);
 
 		// get the sorted pages
 		PageHeaders pageHeaders = _application.getPages().getSortedPages();
@@ -1170,8 +1173,11 @@ public abstract class FormAdapter {
 			}
 		}
 
-		// write the summary end
-		writer.write(getSummaryEndHtml(rapidRequest, _application, email));
+		// get any summary end
+		String summaryEndHtml = getSummaryEndHtml(rapidRequest, _application, email);
+
+		// write the summary end if we got some
+		if (summaryEndHtml != null) writer.write(summaryEndHtml);
 
 		// close the remaining elements
 		writer.write("  </body>\n</html>");
