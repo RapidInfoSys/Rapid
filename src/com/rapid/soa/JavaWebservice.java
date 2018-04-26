@@ -8,9 +8,9 @@ gareth.edwards@rapid-is.co.uk
 This file is part of the Rapid Application Platform
 
 Rapid is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as 
-published by the Free Software Foundation, either version 3 of the 
-License, or (at your option) any later version. The terms require you 
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version. The terms require you
 to include the original copyright, and the license notice in all redistributions.
 
 This program is distributed in the hope that it will be useful,
@@ -49,102 +49,104 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.rapid.server.RapidRequest;
+import com.rapid.soa.SOAElementRestriction.EnumerationRestriction;
+import com.rapid.soa.SOAElementRestriction.MaxOccursRestriction;
+import com.rapid.soa.SOAElementRestriction.MinOccursRestriction;
 import com.rapid.soa.SOASchema.SOASchemaElement;
-import com.rapid.soa.SOAElementRestriction.*;
 import com.rapid.utils.Classes;
 
 public class JavaWebservice extends Webservice {
-	
-	// all classes used by JavaWebservices are expected to implement this interface 
+
+	// all classes used by JavaWebservices are expected to implement this interface
 	public interface Request {
-		
+
 		public Object getResponse(RapidRequest rapidRequest) throws WebserviceException;
 
 	}
-	
+
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ElementType.METHOD, ElementType.FIELD, ElementType.TYPE})
 	public @interface XSDchoice {}
-			
+
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ElementType.METHOD, ElementType.FIELD})
 	public @interface XSDname { public String name(); }
-	
+
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ElementType.METHOD, ElementType.FIELD})
 	public @interface XSDtype { public String name(); }
-	
+
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ElementType.METHOD, ElementType.FIELD})
 	public @interface XSDorder { public int value(); }
-	
+
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ElementType.METHOD, ElementType.FIELD})
 	public @interface XSDminOccurs { public int value(); }
-	
+
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ElementType.METHOD, ElementType.FIELD})
-	public @interface XSDmaxOccurs { public int value(); }	
-	
+	public @interface XSDmaxOccurs { public int value(); }
+
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ElementType.METHOD, ElementType.FIELD})
-	public @interface XSDnillable { public boolean value(); }	
-		
+	public @interface XSDnillable { public boolean value(); }
+
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ElementType.METHOD, ElementType.FIELD})
-	public @interface XSDminLength { public int value(); }	
-	
+	public @interface XSDminLength { public int value(); }
+
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ElementType.METHOD, ElementType.FIELD})
-	public @interface XSDmaxLength { public int value(); }	
-	
+	public @interface XSDmaxLength { public int value(); }
+
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ElementType.METHOD, ElementType.FIELD})
 	public @interface XSDpattern { public String value(); }
-	
+
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ElementType.METHOD, ElementType.FIELD})
 	public @interface XSDenumeration { public String value(); }
-	
+
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ElementType.METHOD, ElementType.FIELD})
-	public @interface XSDminInclusive{ public String value(); }	
-	
+	public @interface XSDminInclusive{ public String value(); }
+
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ElementType.METHOD, ElementType.FIELD})
 	public @interface XSDmaxInclusive { public String value(); }
-	
+
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ElementType.METHOD, ElementType.FIELD})
-	public @interface XSDminExclusive{ public String value(); }	
-	
+	public @interface XSDminExclusive{ public String value(); }
+
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ElementType.METHOD, ElementType.FIELD})
 	public @interface XSDmaxExclusive { public String value(); }
-	
+
 	// schema element properties can come from fields or methods so we collect them before sorting
 	public static class ElementProperty {
-		
+
 		// private final statics
 		private static final int TYPE_SIMPLE = 0;
 		private static final int TYPE_ARRAY = 1;
 		private static final int TYPE_COMPLEX = 2;
 		private static final int TYPE_METHOD = 3;
 		private static final int TYPE_FIELD = 4;
-		
+
 		// private instance variables
 		private String _name, _elementName;
-		private Class _class; 
+		private Class _class;
 		private Annotation[] _annotations;
 		private int _type;
-		
+
 		// properties
 		public String getName() { return _name; }
 		public Class getElementClass() { return _class; }
 		public String getElementName() { return _elementName; }
 		public Annotation[] getAnnotations() { return _annotations; }
 		public int getType() { return _type; }
-						
+
 		// constructor
 		public ElementProperty(String name, Class propertyClass, Annotation[] annotations, int type) {
 			_name = name;
@@ -153,7 +155,7 @@ public class JavaWebservice extends Webservice {
 			_annotations = annotations;
 			_type = type;
 		}
-		
+
 		// methods
 		public int getOrder() {
 			if (_annotations != null) {
@@ -166,9 +168,9 @@ public class JavaWebservice extends Webservice {
 			}
 			return -1;
 		}
-		
+
 	}
-			
+
 	// private variables
 	private boolean _requestCached, _responseCached;
 	private String _className;
@@ -176,15 +178,15 @@ public class JavaWebservice extends Webservice {
 	private Map<String, ElementProperty> _elementProperties;
 	private Map<String,List<ElementProperty>> _childElementProperties;
 	private SimpleDateFormat _dateFormat, _dateTimeFormat;
-	
+
 	// properties
-	
+
 	// this is the request object, it must implement the JavaWebserviceRequest interface
 	public String getClassName() { return _className; }
 	public void setClassName(String className) { _className = className; }
-	
+
 	// constructors
-	
+
 	// used by Jaxb
 	public JavaWebservice() {
 		_logger = LogManager.getLogger(this.getClass());
@@ -193,31 +195,31 @@ public class JavaWebservice extends Webservice {
 		_dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		_dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 	}
-	
+
 	// used by Designer
 	public JavaWebservice(String name) {
 		this();
 		setName(name);
 	}
-	
+
 	// private methods
-	
+
 	// is this an arry type
-	private static boolean isArray(Class c) {				
-		return c.isArray() || 
-				Classes.implementsClass(c, java.util.List.class)  
-				? true : false;		
+	private static boolean isArray(Class c) {
+		return c.isArray() ||
+				Classes.implementsClass(c, java.util.List.class)
+				? true : false;
 	}
-			
+
 	// is this a java class or any of the primitives
-	private static boolean isSimpleType(Class c) {				
-		return c.getName().indexOf("java") == 0 || 
-				c.getName().equals("int") || 
-				c.getName().equals("boolean") || 
-				c.getName().equals("float") 
-				? true : false;		
+	private static boolean isSimpleType(Class c) {
+		return c.getName().indexOf("java") == 0 ||
+				c.getName().equals("int") ||
+				c.getName().equals("boolean") ||
+				c.getName().equals("float")
+				? true : false;
 	}
-	
+
 	// what is the simple type
 	private static int getSimpleType(Class c) {
 		String simpleName = c.getSimpleName();
@@ -226,32 +228,32 @@ public class JavaWebservice extends Webservice {
 		else if (simpleName.equalsIgnoreCase("date")) { type = SOASchema.DATE; }
 		else if (simpleName.equalsIgnoreCase("timestamp")) { type = SOASchema.DATETIME; }
 		else if (simpleName.equalsIgnoreCase("float")) { type = SOASchema.DECIMAL; }
-		else if (simpleName.equalsIgnoreCase("int") || simpleName.equalsIgnoreCase("Integer")) { type = SOASchema.INTEGER; }		 						
-		return type;		
+		else if (simpleName.equalsIgnoreCase("int") || simpleName.equalsIgnoreCase("Integer")) { type = SOASchema.INTEGER; }
+		return type;
 	}
-	
-	private boolean isXSDAnnotation(Annotation a) {		
-		if (a instanceof XSDchoice || 
-				a instanceof XSDname || 
-				a instanceof XSDtype || 
-				a instanceof XSDorder || 
-				a instanceof XSDminOccurs || 
-				a instanceof XSDmaxOccurs || 
-				a instanceof XSDnillable || 
-				a instanceof XSDminLength || 
-				a instanceof XSDmaxLength|| 
-				a instanceof XSDpattern || 
-				a instanceof XSDenumeration || 
-				a instanceof XSDminInclusive || 
-				a instanceof XSDmaxInclusive || 
-				a instanceof XSDminExclusive || 
-				a instanceof XSDmaxExclusive ) {			
-			return true;			
-		} else {			
-			return false;			
-		}				
+
+	private boolean isXSDAnnotation(Annotation a) {
+		if (a instanceof XSDchoice ||
+				a instanceof XSDname ||
+				a instanceof XSDtype ||
+				a instanceof XSDorder ||
+				a instanceof XSDminOccurs ||
+				a instanceof XSDmaxOccurs ||
+				a instanceof XSDnillable ||
+				a instanceof XSDminLength ||
+				a instanceof XSDmaxLength||
+				a instanceof XSDpattern ||
+				a instanceof XSDenumeration ||
+				a instanceof XSDminInclusive ||
+				a instanceof XSDmaxInclusive ||
+				a instanceof XSDminExclusive ||
+				a instanceof XSDmaxExclusive ) {
+			return true;
+		} else {
+			return false;
+		}
 	}
-	
+
 	// whether there is a set method for a corresponding get
 	private boolean containsSetMethod(Method[] methods, Method method) {
 		for (Method m : methods) {
@@ -259,27 +261,27 @@ public class JavaWebservice extends Webservice {
 		}
 		return false;
 	}
-	
+
 	// get a list of element properties for a class
 	private List<ElementProperty> getChildElements(Class c) {
-		
-		// a list of properties in the class		
+
+		// a list of properties in the class
 		List<ElementProperty> elementProperties = new ArrayList<ElementProperty>();
-		
+
 		// return them
 		return elementProperties;
-		
+
 	}
-	
-	
+
+
 	// get the child schema elements
 	private List<SOASchemaElement> getChildClassSchemaElements(Class c, String parentId) {
-		
-		// a list of properties in the class		
+
+		// a list of properties in the class
 		List<ElementProperty> elementProperties = new ArrayList<ElementProperty>();
-		
+
 		// get all class methods
-		Method[] methods = c.getMethods();	
+		Method[] methods = c.getMethods();
 		// if we got some
 		if (methods != null) {
 			// loop all retained method names looking for get/set pairs
@@ -293,10 +295,10 @@ public class JavaWebservice extends Webservice {
 						// check if array
 						elementProperties.add(new ElementProperty(m.getName().substring(3), rc, m.getAnnotations(), ElementProperty.TYPE_METHOD));
 					}
-				}						
+				}
 			}
 		}
-		
+
 		// get all fields
 		Field[] fields = c.getFields();
 		// if we got some
@@ -315,26 +317,26 @@ public class JavaWebservice extends Webservice {
 							elementProperties.add(new ElementProperty(f.getName(), f.getType(), f.getAnnotations(), ElementProperty.TYPE_FIELD));
 							// we're done with the annotations
 							break;
-						}						
-					}														
-				}								
-			}									
+						}
+					}
+				}
+			}
 		}
-		
+
 		// sort the properties
 		Collections.sort(elementProperties, new Comparator<ElementProperty>() {
 			@Override
 			public int compare(ElementProperty p1, ElementProperty p2) {
 				return p1.getOrder() - p2.getOrder();
-			}			
+			}
 		});
-		
+
 		// get the class name for looking up this class
 		String className = c.getCanonicalName();
-		
+
 		// cache element properties for when we produce the output
 		_childElementProperties.put(className, elementProperties);
-						
+
 		// the list we're making
 		List<SOASchemaElement> elements = new ArrayList<SOASchemaElement>();
 		// first id
@@ -345,12 +347,12 @@ public class JavaWebservice extends Webservice {
 			elements.add(getClassSchemaElement(p.getName(), p.getElementClass(), p.getAnnotations(), parentId + "." + id));
 			// increment the id
 			id++;
-		}		
-		// return 
+		}
+		// return
 		return elements;
 	}
-	
-	private SOASchemaElement getClassSchemaElement(String name, Class c, Annotation[] annotations, String id) {			
+
+	private SOASchemaElement getClassSchemaElement(String name, Class c, Annotation[] annotations, String id) {
 		// the schema element we're making
 		SOASchemaElement e = new SOASchemaElement();
 		// set it's name
@@ -360,7 +362,7 @@ public class JavaWebservice extends Webservice {
 		// simple type check
 		if (isSimpleType(c)) {
 			// set it's type
-			e.setDataType(getSimpleType(c));			
+			e.setDataType(getSimpleType(c));
 			// cache element properties them for when we produce the output
 			_elementProperties.put(c.getCanonicalName(), new ElementProperty(c.getName(), c, c.getAnnotations(), ElementProperty.TYPE_SIMPLE));
 		} else {
@@ -388,13 +390,13 @@ public class JavaWebservice extends Webservice {
 					// get the array type
 					c = c.getComponentType();
 				}
-			}			
+			}
 			// cache element properties them for when we produce the output
 			_elementProperties.put(c.getCanonicalName(), new ElementProperty(c.getName(), c, c.getAnnotations(), ElementProperty.TYPE_COMPLEX));
 			// add child elements
 			e.setChildElements(getChildClassSchemaElements(c, id));
-		}						
-		
+		}
+
 		// if there are some annotations
 		if (annotations != null) {
 			// loop them
@@ -413,38 +415,38 @@ public class JavaWebservice extends Webservice {
 						e.addRestriction(new MaxOccursRestriction(x.value()));
 					} else if (a instanceof XSDnillable) {
 						XSDnillable x = (XSDnillable) a;
-						
+
 					} else if (a instanceof XSDminLength) {
 						XSDminLength x = (XSDminLength) a;
-						
+
 					} else if (a instanceof XSDmaxLength) {
 						XSDmaxLength x = (XSDmaxLength) a;
-						
+
 					} else if (a instanceof XSDpattern) {
 						XSDpattern x = (XSDpattern) a;
-						
+
 					} else if (a instanceof XSDenumeration) {
 						XSDenumeration x = (XSDenumeration) a;
 						e.addRestriction(new EnumerationRestriction(x.value()));
 					} else if (a instanceof XSDminInclusive) {
 						XSDminInclusive x = (XSDminInclusive) a;
-						
+
 					} else if (a instanceof XSDmaxInclusive) {
 						XSDmaxInclusive x = (XSDmaxInclusive) a;
-						
+
 					} else if (a instanceof XSDminExclusive) {
 						XSDminExclusive x = (XSDminExclusive) a;
-						
+
 					} else if (a instanceof XSDmaxExclusive ) {
 						XSDmaxExclusive x = (XSDmaxExclusive) a;
-					} 					
+					}
 				}
 			}
 		}
 		// return it
 		return e;
 	}
-			
+
 	private SOASchema getClassSchema(Class c) {
 		// the schema we're making
 		SOASchema classSchema = new SOASchema();
@@ -455,7 +457,7 @@ public class JavaWebservice extends Webservice {
 		// return it
 		return classSchema;
 	}
-	
+
 	// get the class of our named request object
 	private Class getRequestClass() throws Exception {
 		// the class we are hoping for
@@ -463,74 +465,74 @@ public class JavaWebservice extends Webservice {
 		// if we have a class name
 		if (_className != null) {
 			// get the class
-			c = Class.forName(_className);		
+			c = Class.forName(_className);
 			// make sure it implements JavaWebservice.Response
 			if (!Classes.implementsClass(c, com.rapid.soa.JavaWebservice.Request.class)) throw new WebserviceException("Webservice action class " + c.getCanonicalName() + " must implement com.rapid.soa.JavaWebservice.Response.");
 		}
 		// return
-		return c;		
+		return c;
 	}
-	
+
 	private Request getRequestObject(SOAData soaData, Class c) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchFieldException, ParseException {
-		
+
 		// make sure the request schema and all element properties have been cached
 		getRequestSchema();
-		
+
 		// placeholder for the object we are making
 		Request o = null;
-						
+
 		// get the root element
 		SOAElement root = soaData.getRootElement();
-		
+
 		// if we got one
 		if (root != null) {
-			
+
 			// get the parameterless constructor
 			Constructor constructor = c.getConstructor();
-			
+
 			// create an object
 			o = (Request) c.newInstance();
-			
+
 			// get the child nodes
 			List<SOAElement> childElements =  root.getChildElements();
-			
+
 			// if we got some
 			if (childElements != null) {
 				if (childElements.size() > 0) {
-					
+
 					// get the class name for looking up this class
 					String className = c.getCanonicalName();
-					
+
 					// get the element properties
 					List<ElementProperty> properties = _childElementProperties.get(className);
-					
+
 					// check we got some
 					if (properties != null) {
-												
+
 						// loop them
 						for (ElementProperty childElementProperty : properties) {
-							
+
 							// loop the childElements
 							for (SOAElement childElement : childElements) {
-								
+
 								// match?
 								if (childElementProperty.getName().equalsIgnoreCase(childElement.getName())) {
-									
+
 									// get the string value
 									String stringValue =  childElement.getValue();
-									
+
 									// place holder for the final value
 									Object value = null;
-									
+
 									// get the child object class type
 									int simpleType = getSimpleType(childElementProperty.getElementClass());
-									
+
 									// get the string value based on type
 									switch (simpleType) {
 									case SOASchema.STRING :
 										value = stringValue;
 										break;
-									case SOASchema.BOOLEAN :					
+									case SOASchema.BOOLEAN :
 										value = Boolean.parseBoolean(stringValue);
 										break;
 									case SOASchema.DATE :
@@ -548,53 +550,53 @@ public class JavaWebservice extends Webservice {
 										value = Integer.parseInt(stringValue);
 										break;
 									}
-									
+
 									if (childElementProperty.getType() == ElementProperty.TYPE_METHOD) {
-										
+
 										// get the method value
 										Method method = c.getDeclaredMethod("set" + childElementProperty.getName(), childElementProperty.getElementClass());
-										
+
 										// set the object in the method
 										method.invoke(o, value);
-										
+
 									} else if (childElementProperty.getType() == ElementProperty.TYPE_FIELD) {
-										
-										// get the field 
+
+										// get the field
 										Field field = c.getDeclaredField(childElement.getName());
-										
+
 										// get the object in the field
 										field.set(o, value);
-																				
-									} 
-									
+
+									}
+
 									// we're done with the childElement
 									break;
-									
+
 								} // name match
-								
+
 							} // childElements loop
-							
+
 						} // ElementProperty loop
-						
+
 					} // properties check
-					
+
 				} // childElements size check
-				
+
 			} // childElements check
-			
+
 		} // root check
-		
+
 		// return
 		return o;
-		
+
 	}
-	
+
 	// get an SOA element from an object (used to generate the response)
 	private SOAElement getResponseSOAElement(Object object, SOAElement parentElement) throws NoSuchMethodException, SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-		
+
 		// make sure the schema and all element properties has been cached
 		getResponseSchema();
-		
+
 		// get the class
 		Class c = object.getClass();
 		// get the class name for looking up this class
@@ -603,96 +605,96 @@ public class JavaWebservice extends Webservice {
 		ElementProperty properties  = _elementProperties.get(className);
 		// place holder for the element
 		SOAElement element = null;
-				
+
 		if (properties == null) {
-			
+
 			element = new SOAElement(c.getSimpleName(), "Properties for " + c.getCanonicalName() + " not found!");
-			
+
 		} else {
-			
+
 			if (properties.getType() == ElementProperty.TYPE_ARRAY) {
-				
+
 				// create the array SOA element
 				element = new SOAElement(properties.getElementName(), true);
-				
+
 				// get the children
 				List<Object> childObjects = (List<Object>) object;
-				
+
 				// loop them
 				for (Object childObject  : childObjects) {
-					
+
 					// get the child element into the array
 					getResponseSOAElement(childObject, element);
-					
+
 					// close the array so the next addition goes onto a new child
 					element.closeArray();
-					
+
 				}
-													
-			} else { 
-				
+
+			} else {
+
 				// check if we are adding to a parent element
 				if (parentElement == null) {
 					// create the SOA element
 					element = new SOAElement(properties.getElementName());
 				} else {
-					// use the given parent element 
+					// use the given parent element
 					element = parentElement;
 				}
-												
+
 				// get the child element properties
 				List<ElementProperty> childElementProperties = _childElementProperties.get(c.getCanonicalName());
-				
+
 				// if we got some
 				if (childElementProperties != null) {
-					
+
 					// loop them
 					for (ElementProperty childElementProperty : childElementProperties) {
-						
+
 						// place holder for the child object we're about to retrieve
 						Object childObject = null;
-												
+
 						// check the type
 						if (childElementProperty.getType() == ElementProperty.TYPE_METHOD) {
-							
+
 							// get the method value
 							Method method = c.getDeclaredMethod("get" + childElementProperty.getName());
-							
+
 							// get the object in the method
 							childObject = method.invoke(object);
-							
+
 						} else if (childElementProperty.getType() == ElementProperty.TYPE_FIELD) {
-							
-							// get the field 
+
+							// get the field
 							Field field = c.getDeclaredField(childElementProperty.getName());
-							
+
 							// get the object in the field
 							childObject = field.get(object);
-							
+
 						} else {
-							
+
 							childObject = "Unknown type";
-							
+
 						}
-						
+
 						// if we got a child object
 						if (childObject != null) {
-							
+
 							// check it's type
 							if (isSimpleType(childObject.getClass())) {
-								
+
 								// placeholder for the value
 								String value = null;
-								
+
 								// get the child object object type
 								int simpleType = getSimpleType(childObject.getClass());
-								
+
 								// get the string value based on type
 								switch (simpleType) {
 								case SOASchema.STRING :
 									value = (String) childObject;
 									break;
-								case SOASchema.BOOLEAN :					
+								case SOASchema.BOOLEAN :
 									if ((Boolean) childObject) {
 										value  = "true";
 									} else {
@@ -712,31 +714,31 @@ public class JavaWebservice extends Webservice {
 									value = Integer.toString((Integer) childObject);
 									break;
 								}
-												
+
 								// add the child with its value
 								element.addChildElement(new SOAElement(childElementProperty.getName(), value));
-								
+
 							} else {
-								
+
 								// add the child the more complex way
 								element.addChildElement(getResponseSOAElement(childObject, null));
-								
+
 							} // simple type check
-							
+
 						} // childObject check
-																				
+
 					} // child element loop
-					
+
 				} // child element check
-				
+
 			} // property type check
-			
+
 		} // got properties check
-		
+
 		// return it
 		return element ;
 	}
-		
+
 	@Override
 	public SOASchema getRequestSchema() {
 		// useful for debugging
@@ -753,13 +755,13 @@ public class JavaWebservice extends Webservice {
 				_logger.error("Error creating request schema for Java webservice", ex);
 			}
 		}
-		return _requestSchema; 
+		return _requestSchema;
 	}
-	
+
 	@Override
 	public SOASchema getResponseSchema() {
 		// useful for debugging
-		//_responseSchema = null;
+		_responseSchema = null;
 		if (_responseSchema == null || !_responseCached) {
 			try {
 				// get the request class
@@ -784,42 +786,42 @@ public class JavaWebservice extends Webservice {
 
 	@Override
 	public SOAData getResponseData(RapidRequest rapidRequest, SOAData requestData)	throws WebserviceException {
-		
+
 		// instantiate an instance of _className
 		// use requestData to inflate it's properties (or public instance variables)
 		// invoke it's JavaWebservice.Response.getResponse() method
 		// marshal the response object to an SOAData object
 		// return the SOAData object (and the printer will take care of the rest)
-		
+
 		try {
-			
+
 			// get the request class
 			Class requestClass = getRequestClass();
-									
+
 			// get an instance of the request object
 			JavaWebservice.Request requestObject = getRequestObject(requestData, requestClass);
-			
+
 			// get the response method
 			Method responseMethod = requestClass.getMethod("getResponse", RapidRequest.class);
-			
+
 			// invoke the response method
 			Object responseObject = responseMethod.invoke(requestObject, rapidRequest);
-			
+
 			// get an SOA element from the object
 			SOAElement responseElement = getResponseSOAElement(responseObject, null);
-						
+
 			// get the response data
 			SOAData responseData = new SOAData(responseElement);
-			
+
 			// return the response data
 			return responseData;
-			
+
 		} catch (Exception ex) {
 
 			throw new WebserviceException(ex);
-			
-		} 
-				
+
+		}
+
 	}
 
 }
