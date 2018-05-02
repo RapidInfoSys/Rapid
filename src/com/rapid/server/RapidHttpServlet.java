@@ -76,7 +76,7 @@ public class RapidHttpServlet extends HttpServlet {
 
 	// private instance variables
 	private List<String> _uploadMimeTypes;
-	private Map<String,byte[]> _uploadMimeTypeBytes;
+	private Map<String, List<byte[]>> _uploadMimeTypeBytes;
 
 	// properties
 
@@ -272,21 +272,30 @@ public class RapidHttpServlet extends HttpServlet {
 	}
 
 	// allowed upload mimetypes - set in web.xml with uploadMimeTypeBytes, must correspond with uploadMimeTypes
-	public Map<String, byte[]> getUploadMimeTypeBytes() {
+	public Map<String, List<byte[]>> getUploadMimeTypeBytes() {
 		// if we don't have one yet
 		if (_uploadMimeTypeBytes == null) {
 			// make new one
-			_uploadMimeTypeBytes = new HashMap<String, byte[]>();
+			_uploadMimeTypeBytes = new HashMap<String, List<byte[]>>();
 			// get the allowed upload mimetype bytes from the web.xml file
 			String uploadMimeTypeBytes = getServletContext().getInitParameter("uploadMimeTypeBytes");
 			// default if null
 			if (uploadMimeTypeBytes == null) uploadMimeTypeBytes = "424D,47494638,FFD8FF,89504E47,25504446";
-			// get bytes
-			String[] bytes = uploadMimeTypeBytes.split(",");
+			// get string bytes
+			String[] signatureBytes = uploadMimeTypeBytes.split(",");
+			
 			// get list and loop
-			for (int i = 0; i < bytes.length; i++ ) {
-				// get bytes from the string and add to list
-				_uploadMimeTypeBytes.put(_uploadMimeTypes.get(i), Bytes.fromHexString(bytes[i]));
+			for (int i = 0; i < signatureBytes.length; i++ ) {
+				// get the ith mimetype from the list
+				String mimeType = _uploadMimeTypes.get(i);
+				// get the mimetypebytes array the list - returns null if its byte array doesnt exist
+				List<byte[]> bytesList = _uploadMimeTypeBytes.get(mimeType);
+				// initialise an array list if it doesnt exist
+				if (bytesList == null) bytesList = new ArrayList<byte[]>();
+				// add bytes to list
+				bytesList.add(Bytes.fromHexString(signatureBytes[i]));
+				// add list to map
+				_uploadMimeTypeBytes.put(mimeType, bytesList);
 			}
 		}
 		// return
