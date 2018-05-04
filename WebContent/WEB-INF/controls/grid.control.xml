@@ -1522,7 +1522,7 @@ if (details && details.dataStorageType) {
 	// make sure it's a table
 	if (!grid.is("table")) grid = grid.find("table").last();
 	// return number of rows
-	return grid.find("tr").size() - 1;
+	return grid.find("tr").length - 1;
 }
 			        ]]>	  	   	            
 	   	        </getPropertyFunction>	   	        

@@ -291,7 +291,7 @@ $("#" + id).children("img").click( function(ev) {
 	   	        <name>Image count</name>
 	   	        <getPropertyFunction>
 			        <![CDATA[
-return ($("#" + id).children("img").size());     
+return $("#" + id).children("img").length;     
 			        ]]>	  	   	            
 	   	        </getPropertyFunction>
 	   	    </runtimeProperty>
