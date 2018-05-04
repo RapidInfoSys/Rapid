@@ -112,7 +112,7 @@ public class RapidFilter implements Filter {
 		String ua = req.getHeader("User-Agent");
 
 		// if IE send X-UA-Compatible to prevent compatibility view
-		if (ua.indexOf("MSIE") != -1) res.addHeader("X-UA-Compatible", "IE=edge,chrome=1");
+		if (ua != null && ua.indexOf("MSIE") != -1) res.addHeader("X-UA-Compatible", "IE=edge,chrome=1");
 
 		// set all responses as UTF-8
 		response.setCharacterEncoding("utf-8");
