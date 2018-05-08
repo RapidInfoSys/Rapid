@@ -783,6 +783,9 @@ public class Database extends Action {
 
 						// if select set readonly to true (makes for faster querying)
 						if (sql.toLowerCase().startsWith("select")) df.setReadOnly(true);
+						
+						// got fields indicator
+						boolean gotFields = false;
 
 						// loop the parameterList getting a result set for each parameters (input row)
 						for (Parameters parameters : parametersList) {
@@ -803,9 +806,6 @@ public class Database extends Action {
 								Statement st = rs.getStatement();
 	
 								while (gotResults) {
-	
-									// got fields indicator
-									boolean gotFields = false;
 	
 									// get this resultset's meta data for the field names
 									ResultSetMetaData rsmd = rs.getMetaData();
