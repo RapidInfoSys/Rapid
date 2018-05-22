@@ -2263,7 +2263,7 @@ $(document).ready( function() {
     }); // load actions ajax
 	
 	// when we load an app the iframe is refreshed with the resources for that app and page
-	_pageIframe.load( function () {	
+	_pageIframe.on("load", function () {	
 								
 		// scroll to the top left
 		$("#scrollV").scrollTop(0);
@@ -3303,7 +3303,7 @@ function sizeControlsList(width) {
 	var controlCount = 0;
 	// loop the ul's to get the greatest number of controls
 	controlsList.find("ul").each( function() {
-		var controls = $(this).children().size();
+		var controls = $(this).children().length;
 		if (controls > controlCount) controlCount = controls;
 	});
 	// if the controls are wrapping

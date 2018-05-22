@@ -63,8 +63,8 @@ if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRe
 <%
 	if (designerPermission) {
 %>		
-	<script type="text/javascript" src="scripts/jquery-1.10.2.js"></script>
-	<script type="text/javascript" src="scripts/jquery-ui-1.10.3.js"></script>
+	<script type='text/javascript' src='scripts/<%=com.rapid.server.Rapid.JQUERY%>'></script>
+	<script type='text/javascript' src='scripts/<%=com.rapid.server.Rapid.JQUERYUI%>'></script>
 	<script type="text/javascript" src="scripts/extras.js"></script>
 	<script type="text/javascript" src="scripts/designer.js"></script>
 	<script type="text/javascript" src="scripts/reorder.js"></script>
