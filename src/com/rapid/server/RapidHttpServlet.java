@@ -215,24 +215,28 @@ public class RapidHttpServlet extends HttpServlet {
 		return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 	}
 
-		// this is used to format between Java Date and Local date format - not threadsafe so new instance each time
-		public String getLocalDateFormat() {
-			return (String) getServletContext().getAttribute("localDateFormat");
-		}
+	// this is used to format between Java Date and Local date format - not threadsafe so new instance each time
+	public String getLocalDateFormat() {
+		String localDateFormat = (String) getServletContext().getAttribute("localDateFormat");
+		if (localDateFormat == null) localDateFormat = "dd/MM/yyyy";
+		return localDateFormat;
+	}
 
-		// this is used to format between Java Date and local dateTime format (used by backups, page lock, and database action) - not threadsafe so new instance each time
-		public String getLocalDateTimeFormat() {
-			return (String) getServletContext().getAttribute("localDateTimeFormat");
-		}
+	// this is used to format between Java Date and local dateTime format (used by backups, page lock, and database action) - not threadsafe so new instance each time
+	public String getLocalDateTimeFormat() {
+		String localDateTimeFormat = (String) getServletContext().getAttribute("localDateTimeFormat");
+		if (localDateTimeFormat == null) localDateTimeFormat = "dd/MM/yyyy HH:mm a";
+		return localDateTimeFormat;
+	}
 
 	// this is used to format between Java Date and Local date format - not threadsafe so new instance each time
 	public SimpleDateFormat getLocalDateFormatter() {
-		return new SimpleDateFormat((String) getServletContext().getAttribute("localDateFormat"));
+		return new SimpleDateFormat(getLocalDateFormat());
 	}
 
 	// this is used to format between Java Date and local dateTime format (used by backups, page lock, and database action) - not threadsafe so new instance each time
 	public SimpleDateFormat getLocalDateTimeFormatter() {
-		return new SimpleDateFormat((String) getServletContext().getAttribute("localDateTimeFormat"));
+		return new SimpleDateFormat(getLocalDateTimeFormat());
 	}
 
 	// any control and action suffix
@@ -283,7 +287,7 @@ public class RapidHttpServlet extends HttpServlet {
 			if (uploadMimeTypeBytes == null) uploadMimeTypeBytes = "424D,47494638,FFD8FF,89504E47,25504446";
 			// get string bytes
 			String[] signatureBytes = uploadMimeTypeBytes.split(",");
-			
+
 			// get list and loop
 			for (int i = 0; i < signatureBytes.length; i++ ) {
 				// get the ith mimetype from the list

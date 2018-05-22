@@ -1009,11 +1009,11 @@ public class Designer extends RapidHttpServlet {
 									// if detail
 									if ("detail".equals(actionName)) {
 										// print the page properties
-										out.print("Name\t" + page.getName() + "\n");
-										out.print("Title\t" + page.getTitle() + "\n");
-										out.print("Description\t" + page.getDescription() + "\n");
-										out.print("Simple\t" + page.getSimple() + "\n");
-										out.print("HideHeaderFooter\t" + page.getHideHeaderFooter() + "\n");
+										out.print("Name\t" + page.getName() + "\r\n");
+										out.print("Title\t" + page.getTitle() + "\r\n");
+										out.print("Description\t" + page.getDescription() + "\r\n");
+										out.print("Simple\t" + page.getSimple() + "\r\n");
+										out.print("HideHeaderFooter\t" + page.getHideHeaderFooter() + "\r\n");
 									}
 
 									// if questions
@@ -1038,7 +1038,6 @@ public class Designer extends RapidHttpServlet {
 												// exclude panels, hidden values, and datastores for summary
 												if ("detail".equals(actionName) || (!"panel".equals(type) && !("hiddenvalue").equals(type) && !("dataStore").equals(type))) {
 
-													// if questions it's likely to be a form
 													if ("questions".equals(actionName))  {
 
 														// if there is a label but not a button, but radios are allowed
@@ -1061,28 +1060,31 @@ public class Designer extends RapidHttpServlet {
 																String formObjectAddressNumber = control.getProperty("formObjectAddressNumber");
 																String formObjectText = control.getProperty("formObjectText");
 
-																if (formObject!=null && !formObject.equals("")) {
+																if (formObject != null && !formObject.equals("")) {
 																	out.print(" (");
-																	if(formObject!=null) { out.print(formObject); }
-																	if(!"other".equalsIgnoreCase(formObject))
-																		if(formObjectRole!=null) { out.print(" - "); out.print(formObjectRole);  }
-																	if(formObjectPartyNumber!=null) { out.print(" - party: "); out.print(formObjectPartyNumber);  }
-																	if("address".equals(formObject))
-																		if(formObjectAddressNumber!=null) { out.print(" - address: "); out.print(formObjectAddressNumber);  }
-																	if(formObjectAttribute!=null) { out.print(" - ");  out.print(formObjectAttribute); }
-																	if(formObjectType!=null) { out.print(" - "); out.print(formObjectType);  }
-																	if("question".equals(formObject))
-																		if(formObjectQuestionNumber!=null) { out.print(" - question: "); out.print(formObjectQuestionNumber);  }
-																	if(formObjectText!=null) { out.print(" - ");out.print("'"+formObjectText+"'"); }
+																	if (formObject != null) out.print(formObject);
+																	if (!"other".equalsIgnoreCase(formObject))
+																		if (formObjectRole != null) out.print(" - " + formObjectRole);
+																	if (formObjectPartyNumber != null) out.print(" - party: " + formObjectPartyNumber);
+																	if ("party".equals(formObject)) out.print(" " + formObjectAttribute);
+																	if ("contact".equals(formObject)) out.print(" " + formObjectType);
+																	if ("address".equals(formObject)) {
+																		if (formObjectAddressNumber != null) out.print(" - address: " + formObjectAddressNumber);
+																		if (formObjectType != null) out.print(" - " + formObjectType);
+																		if (formObjectAttribute != null) out.print(" - " + formObjectAttribute);
+																	}
+																	if ("question".equals(formObject) || "other".equals(formObject))
+																		if (formObjectQuestionNumber != null) out.print(" - question: " + formObjectQuestionNumber);
+																	if (formObjectText != null && formObjectText.length() > 0) out.print(" - '" + formObjectText + "'");
 																	out.print(")");
 																}
 															}
-															out.print(" \n");
+															out.print("\r\n");
 														}
 
 													} else {
 														// print the control details
-														out.print(control.getId() +"\t" + type + "\t" + name + "\t" + label + "\n");
+														out.print(control.getId() +"\t" + type + "\t" + name + "\t" + label + "\r\n");
 													}
 
 													// if details
