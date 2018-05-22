@@ -1,6 +1,5 @@
 *
 /*
 !.gitignore
-!jquery*.js
-!jquery.touchSwipe.min.js
+!jquery*js
 !README
