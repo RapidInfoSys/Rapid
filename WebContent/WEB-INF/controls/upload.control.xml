@@ -222,10 +222,12 @@ if (dzs) {
 				var file = JSON.parse(sessionStorage.getItem(fileName));
 				if (file) {
 					file.name = fileName;
-					dz.emit("addedfile", file);
-					if (file.url) dz.emit("thumbnail", file, file.url);
-					dz.emit("complete", file);
+				} else {
+					file = {name:fileName};
 				}
+				dz.emit("addedfile", file);
+				if (file.url) dz.emit("thumbnail", file, file.url);
+				dz.emit("complete", file);
 			}
 			if (dz.options.maxFiles) dz.options.maxFiles = dz.options.maxFiles - files.length;
 		} else {

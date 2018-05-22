@@ -3,7 +3,7 @@
 
 <!-- 
 
-Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -52,10 +52,10 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <name>Source</name>
 	            <changeValueJavaScript>formDataSource</changeValueJavaScript>
 	            <getValuesFunction>
-	                 <![CDATA[
-	                // return the list of all controls on the page with the one for this action selected
-	                return "<option value=''>Please select...</option>" + getFormValueOptions(this.dataSource);
-	               	]]>
+<![CDATA[
+// return the list of all controls on the page with the one for this action selected
+return "<option value=''>Please select...</option>" + getFormValueOptions(this.dataSource);
+]]>
 	            </getValuesFunction>
 	            <helpHtml>Sets the source control for where the form value is being copied from.</helpHtml>
 	        </property>
@@ -65,12 +65,65 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <name>Destination</name>
 	            <changeValueJavaScript>formDataDestination</changeValueJavaScript>
 	            <getValuesFunction>
-	                 <![CDATA[
-	                // return the list of all controls on the page with the one for this action selected
-	                return "<option value=''>Please select...</option>" + getOutputOptions(this.dataDestination);
-	               	]]>
+<![CDATA[
+// return the list of all controls on the page with the one for this action selected
+return "<option value=''>Please select...</option>" + getOutputOptions(this.dataDestination);
+]]>
 	            </getValuesFunction>
 	            <helpHtml>Sets the destination for where the form value is being copied to.</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>formId</key>
+	            <name>Form id</name>
+	            <changeValueJavaScript>formDataSource</changeValueJavaScript>
+	            <getValuesFunction>
+<![CDATA[
+// return the list of all controls on the page with the one for this action selected
+return "<option value=''>Please select...</option>" + getInputOptions(this.formId);
+]]>
+	            </getValuesFunction>
+	            <helpHtml>Sets the input for where the form id will come from.</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>email</key>
+	            <name>Email</name>
+	            <changeValueJavaScript>formDataSource</changeValueJavaScript>
+	            <getValuesFunction>
+<![CDATA[
+// return the list of all controls on the page with the one for this action selected
+return "<option value=''>Please select...</option>" + getInputOptions(this.email);
+]]>
+	            </getValuesFunction>
+	            <helpHtml>Sets the input for where the optional email address will come from.</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>password</key>
+	            <name>Password</name>
+	            <changeValueJavaScript>formDataSource</changeValueJavaScript>
+	            <getValuesFunction>
+<![CDATA[
+// return the list of all controls on the page with the one for this action selected
+return "<option value=''>Please select...</option>" + getInputOptions(this.password);
+]]>
+	            </getValuesFunction>
+	            <helpHtml>Sets the input for where the optional password will come from.</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>successActions</key>
+	            <name>Success actions</name>
+	            <changeValueJavaScript>formChildActions</changeValueJavaScript>
+	            <helpHtml>Sets what events occur upon a successful form action</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>errorActions</key>
+	            <name>Error actions</name>
+	            <changeValueJavaScript>formChildActions</changeValueJavaScript>
+	            <helpHtml>Sets what events occur upon an unsuccessful form action</helpHtml>
 	        </property>
 	        
 		</properties>

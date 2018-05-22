@@ -105,7 +105,7 @@ function checkPagePanelFooter() {
 			body.children("div.r-panel:visible").each(function(){
  				bh += $(this).height();
 			});
-			bh = Math.max(bh,body.height());			
+			bh = Math.max(bh, body.height());			
 			if (bh + body.offset().top + _stickyFooterHeight < $(window).height()) {
 				// Add sticky footer
 				footer.addClass("pagePanelStickyFooter");

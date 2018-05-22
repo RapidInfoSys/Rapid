@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -63,6 +63,7 @@ import com.rapid.core.Theme;
 import com.rapid.core.Workflows;
 import com.rapid.server.filter.RapidAuthenticationAdapter;
 import com.rapid.utils.Bytes;
+import com.rapid.utils.Exceptions;
 import com.rapid.utils.JAXB.EncryptedXmlAdapter;
 
 @SuppressWarnings({"serial", "unchecked", "rawtypes"})
@@ -333,15 +334,7 @@ public class RapidHttpServlet extends HttpServlet {
 
 		if (showStackTrace) {
 
-			String stackTrace = "\n\n";
-
-			if (rapidRequest != null) stackTrace += rapidRequest.getDetails() + "\n\n";
-
-			stackTrace += ex.getClass().getName() + "\n\n";
-
-			if (ex.getStackTrace() != null) for (StackTraceElement element : ex.getStackTrace()) stackTrace += element + "\n";
-
-			out.print(stackTrace);
+			out.print(Exceptions.getStringStackTrace(ex));
 
 		}
 

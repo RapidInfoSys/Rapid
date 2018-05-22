@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -146,7 +146,7 @@ public class SOAElement {
 
 	@Override
 	public String toString() {
-		String element = _name + (_value == null ? "" : ":" + _value) + (_isArray ? " []" : "");
+		String element = _name + (_value == null ? "" : ":" + _value) + (_isArray ? "[]" : "");
 		if (_childElements != null) {
 			for (SOAElement childElement : _childElements) {
 				_indentCount ++;

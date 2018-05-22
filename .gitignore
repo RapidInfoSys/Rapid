@@ -1,5 +1,10 @@
 build
-.classpath
-.settings
+/build/
 /bin/
+.classpath
+.externalToolBuilders
+.project
+.settings
 .DS_Store
+**/.DS_Store
+

@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -85,14 +85,15 @@ import com.rapid.utils.XML;
 @XmlType(namespace="http://rapid-is.co.uk/core")
 public class Page {
 
-	// the version of this class's xml structure when marshelled (if we have any significant changes down the line we can upgrade the xml files before unmarshalling)
+	// the version of this class's xml structure when marshalled (if we have any significant changes down the line we can upgrade the xml files before unmarshalling)
 	public static final int XML_VERSION = 1;
 
 	// form page types
 	public static final int FORM_PAGE_TYPE_NORMAL = 0;
 	public static final int FORM_PAGE_TYPE_SUBMITTED = 1;
 	public static final int FORM_PAGE_TYPE_ERROR = 2;
-	public static final int FORM_PAGE_TYPE_SAVED = 3;
+	public static final int FORM_PAGE_TYPE_SAVE = 3;
+	public static final int FORM_PAGE_TYPE_RESUME = 4;
 
 	// a class for retaining page html for a set of user roles - this structure is now depreciated as of Rapid 2.3.5.2 in favour of a more efficient tree structure
 	public static class RoleHtml {
@@ -498,6 +499,25 @@ public class Page {
 	public void getChildActions(List<Action> actions, Control control) {
 		getChildActions(actions, control, null);
 	}
+	
+	// add actions and child actions
+	public void addAction(List<Action> actions, Action action) {
+		// if we have an action
+		if (action != null) {
+			// add it
+			actions.add(action);
+			// get any child actions
+			List<Action> childActions = action.getChildActions();
+			// if there where some
+			if (childActions != null) {
+				// loop the children
+				for (Action childAction : childActions) {
+					// add this action recursively
+					addAction(actions, childAction);
+				}
+			}
+		}
+	}
 
 	// get all actions in the page of a specified type
 	public List<Action> getAllActions(String type) {
@@ -512,15 +532,18 @@ public class Page {
 				if (eventActions != null) {
 					// if type is null
 					if (type == null) {
-						// add all
-						actions.addAll(eventActions);
+						// loop actions
+						for (Action eventAction : eventActions) {
+							// add this action, including it's children
+							addAction(actions, eventAction);
+						}
 					} else {
 						// loop them
 						for (Action eventAction : eventActions) {
 							// if right type
 							if (type.equals(eventAction.getType())) {
-								// add
-								actions.add(eventAction);
+								// add this action, including it's children
+								addAction(actions, eventAction);
 							}
 						}
 					}
@@ -1881,14 +1904,22 @@ public class Page {
 							}
 							// close the function
 							formValues.append("};\n\n");
+							
+							// write the form values
+				    		writer.write(formValues.toString());
 
+						} else {
+							
+							// set whether submitted
+							writer.write("var _formSubmitted = false;\n\n");
+							
+							// a dummy setFormValues method
+							writer.write("function Event_setFormValues(ev) {}\n\n");
+							
 						}
 
 						// write the form id into the page - not necessary for dialogues
 			    		if (designerLink) writer.write("var _formId = '" + formId + "';\n\n");
-
-			    		// write the form values
-			    		writer.write(formValues.toString());
 
 			    		// now the page has been printed invalidate the form if this was a submission page
 						if (_formPageType ==FORM_PAGE_TYPE_SUBMITTED) formAdapter.setUserFormDetails(rapidRequest, null);
@@ -2224,7 +2255,7 @@ public class Page {
 		if (formAdapter == null) {
 
 			// no form adapter always visible
-			logger.debug("Page " + _id + " no form adapter, always visibe ");
+			logger.debug("Page " + _id + " no form adapter, always visible ");
 
 			return true;
 
@@ -2239,29 +2270,36 @@ public class Page {
 
 			 } else if  (_simple) {
 
-				// simple page always invisble on forms
+				// simple page always invisible on forms
 				logger.debug("Page " + _id + " is a simple page, always hidden on forms");
+
+				return false;
+
+			 } else if (_formPageType == FORM_PAGE_TYPE_SAVE) {
+
+				// save page always invisible on forms
+				logger.debug("Page " + _id + " is a save page, always hidden on forms");
+
+				return false;
+
+			} else if (_formPageType == FORM_PAGE_TYPE_RESUME) {
+
+				// resume page always invisible on forms
+				logger.debug("Page " + _id + " is a resume page, always hidden on forms");
 
 				return false;
 
 			} else if (_formPageType == FORM_PAGE_TYPE_SUBMITTED && !userFormDetails.getShowSubmitPage()) {
 
-				// requests for sumbitted page are denied if show submission is not true
+				// requests for submitted page are denied if show submission is not true
 				logger.debug("Page " + _id + " is a submitted page but the form has not been submitted yet");
 
 				return false;
 
 			} else if (_formPageType == FORM_PAGE_TYPE_ERROR && !userFormDetails.getError()) {
 
-				// requests for sumbiited page are denied if not submitted
+				// requests for error page are denied if no error
 				logger.debug("Page " + _id + " is an error page but the form has not had an error yet");
-
-				return false;
-
-			} else if (_formPageType == FORM_PAGE_TYPE_SAVED && !userFormDetails.getSaved()) {
-
-				// requests for submitted page are denied if not submitted
-				logger.debug("Page " + _id + " is a saved page but the form has not been saved yet");
 
 				return false;
 

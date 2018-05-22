@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -64,7 +64,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.rapid.actions.Logic;
 import com.rapid.actions.Logic.Condition;
+import com.rapid.actions.Logic.Value;
 import com.rapid.core.Action;
 import com.rapid.core.Application;
 import com.rapid.core.Application.ValueList;
@@ -969,7 +971,7 @@ public class Designer extends RapidHttpServlet {
 							Application application = rapidRequest.getApplication();
 
 							// print the app name and version
-							out.print(application.getName() + "\t" + application.getVersion() + "\n");
+							out.print(application.getName() + "\t" + application.getVersion() + "\r\n");
 
 							// get the page headers
 							PageHeaders pageHeaders = application.getPages().getSortedPages();
@@ -991,6 +993,43 @@ public class Designer extends RapidHttpServlet {
 
 								if ("questions".equals(actionName))  {
 									out.print(page.getName() + label);
+									// get any visibility conditions
+									List<Logic.Condition> visibilityConditions = page.getVisibilityConditions();
+									// if we got some
+									if (visibilityConditions != null && visibilityConditions.size() > 0) {
+										out.print(" (");
+										// loop them
+										for (int i = 0; i < visibilityConditions.size(); i++) {
+											// get the condition
+											Logic.Condition condition = visibilityConditions.get(i);
+											// get value 1
+											Control control1 = application.getControl(getServletContext(), condition.getValue1().getId());
+											// if we got one print it's name
+											if (control1 == null) {
+												out.print(condition.getValue1().toString().replace("System.field/", ""));
+											} else {
+												out.print(control1.getName());
+											}
+											// print operation
+											out.print(" " + condition.getOperation() + " ");
+											// get control 2
+											Control control2 = application.getControl(getServletContext(), condition.getValue2().getId());
+											// if we got one print it's name
+											if (control2 == null) {
+												out.print(condition.getValue2().toString().replace("System.field/", ""));
+											} else {
+												if (control2.getLabel() == null || control2.getLabel().isEmpty()) {
+													out.print(control2.getName());
+												} else {
+													out.print(control2.getLabel());
+												}
+											}
+											// if there are more
+											if (i < visibilityConditions.size() - 1) out.print(" " + page.getConditionsType() + " ");
+										}
+										out.print(")");
+									}
+									
 								} else {
 									// print the page name
 									out.print(page.getId() + " " + page.getName() + label);
@@ -1016,7 +1055,7 @@ public class Designer extends RapidHttpServlet {
 										out.print("HideHeaderFooter\t" + page.getHideHeaderFooter() + "\r\n");
 									}
 
-									// if questions
+									// not if questions
 									if (!"questions".equals(actionName)) printEventsDetails(page.getEvents(), out);
 
 									// get the controls
@@ -1038,6 +1077,7 @@ public class Designer extends RapidHttpServlet {
 												// exclude panels, hidden values, and datastores for summary
 												if ("detail".equals(actionName) || (!"panel".equals(type) && !("hiddenvalue").equals(type) && !("dataStore").equals(type))) {
 
+													// if questions it's likely to be a form
 													if ("questions".equals(actionName))  {
 
 														// if there is a label but not a button, but radios are allowed
@@ -1104,7 +1144,7 @@ public class Designer extends RapidHttpServlet {
 														// loop them
 														for (String key : sortedKeys) {
 															// print the properties
-															out.print(key + "\t" + properties.get(key) + "\n");
+															out.print(key + "\t" + properties.get(key) + "\r\n");
 														}
 														// print the event details
 														printEventsDetails(control.getEvents(), out);
@@ -1116,7 +1156,7 @@ public class Designer extends RapidHttpServlet {
 									}
 								} else {
 
-									out.print("\n");
+									out.print("\r\n");
 
 								}
 							}

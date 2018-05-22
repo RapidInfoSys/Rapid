@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -140,8 +140,10 @@ public class RapidFormAdapter extends FormAdapter {
 		String formId = Integer.toString(Integer.parseInt( nextFormIdString ) + 1);
 		// retain it in the context
 		servletContext.setAttribute(NEXT_FORM_ID, formId);
+		// get the application from the request
+		Application application = rapidRequest.getApplication();
 		// return it
-		return new UserFormDetails(formId, null);
+		return new UserFormDetails(application.getId(), application.getVersion(), formId, null);
 	}
 
 	@Override
@@ -162,8 +164,10 @@ public class RapidFormAdapter extends FormAdapter {
 				// form not found so fail
 				return null;
 			} else {
+				// get the application from the request
+				Application application = rapidRequest.getApplication();
 				// form found we're good
-				return new UserFormDetails(formId, null, null, false, null);
+				return new UserFormDetails(application.getId(), application.getVersion(), formId, null, null, false, null);
 			}
 		}
 	}

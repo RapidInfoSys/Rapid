@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
@@ -72,6 +73,8 @@ public class Rapid extends RapidHttpServlet {
 
 	public static final String VERSION = "2.4.3"; // the master version of this Rapid server instance
 	public static final String MOBILE_VERSION = "1"; // the mobile version. update it if you want all mobile devices to run app updates on their next version check
+	public static final String JQUERY = "jquery-3.3.1.js";
+	public static final String JQUERYUI = "jquery-ui-1.10.3.js";
 	public static final String ADMIN_ROLE = "RapidAdmin";
 	public static final String DESIGN_ROLE = "RapidDesign";
 	public static final String WORKFLOW_ROLE = "RapidWorkflow";
@@ -169,10 +172,19 @@ public class Rapid extends RapidHttpServlet {
 								// write the form pdf
 								formAdapter.doWriteFormPDF(rapidRequest, response, request.getParameter("f"), false);
 							} else {
-								// summary is never cached
-								RapidFilter.noCache(response);
-								// write the form summary page
-								formAdapter.writeFormSummary(rapidRequest, response);
+								// get the form details
+								UserFormDetails formDetails = formAdapter.getUserFormDetails(rapidRequest);
+								// if  we had some and this is the correct version
+								if (app.getId().equals(formDetails.getAppId()) && app.getVersion().equals(formDetails.getVersion())) {
+									// summary is never cached
+									RapidFilter.noCache(response);
+									// write the form summary page
+									formAdapter.writeFormSummary(rapidRequest, response);
+								} else {
+									// request the correct version for the summary (this also avoids ERR_CACH_MISS issues on the back button )
+									response.sendRedirect("~?a=" + app.getId() + "&v=" + app.getVersion() + "&action=summary");
+								}
+
 							}
 
 						}
@@ -220,6 +232,10 @@ public class Rapid extends RapidHttpServlet {
 						boolean pageCheck = true;
 						// assume we won't be redirecting to the summary
 						boolean showSummary = false;
+						// assume we won't be showing the save
+						boolean showSave = false;
+						// assume we won't be showing the resume
+						boolean showResume = false;
 
 						// get the requested page object
 						Page page = rapidRequest.getPage();
@@ -227,7 +243,7 @@ public class Rapid extends RapidHttpServlet {
 						// get the form adapter (if there is one)
 						FormAdapter formAdapter = app.getFormAdapter();
 
-						// assume the form details are null
+						// place holder for the form details
 						UserFormDetails formDetails = null;
 
 						try {
@@ -235,28 +251,152 @@ public class Rapid extends RapidHttpServlet {
 							// if there is a formAdapter, make sure there's a form id, unless it's for a simple page
 							if (formAdapter != null) {
 
-								// if there is a start parameter, nuke the session and then move on one page without the start parameter so users can go back to the beginning without loosing values
-								if (request.getParameter("start") != null) {
-									// invalidate the session
-									request.getSession().invalidate();
-									// start the url
-									String url = "~?";
-									// start the position
-									int pos = 0;
+								// get the form details
+								formDetails = formAdapter.getUserFormDetails(rapidRequest);
+
+								// if there are no form details, or this is the correct version
+								if (formDetails == null || app.getId().equals(formDetails.getAppId()) && app.getVersion().equals(formDetails.getVersion())) {
+
+									// if there is a start parameter, nuke the session and then move on one page without the start parameter so users can go back to the beginning without loosing values
+									if (request.getParameter("start") != null) {
+										// invalidate the session
+										request.getSession().invalidate();
+										// start the url
+										String url = "~?";
+										// start the position
+										int pos = 0;
+										// get the parameter map
+										Enumeration<String> parameterNames = request.getParameterNames();
+										// loop the current parameters
+										while (parameterNames.hasMoreElements()) {
+											// get the name
+											String parameterName = parameterNames.nextElement();
+											// ignore start
+											if (!"start".equals(parameterName)) {
+												// if 1 or more add &
+												if (pos > 0) url += "&";
+												// add to url
+												url += parameterName + "=" + request.getParameter(parameterName);
+												// inc pos
+												pos ++;
+											}
+										}
+										// redirect !
+										response.sendRedirect(url);
+									}
+
+									// check special form actions
+									if ("save".equals(action)) {
+
+										// get the save page
+										page = app.getPages().getPageByFormType(Page.FORM_PAGE_TYPE_SAVE);
+										// if we got one set showSave
+										if (page != null) showSave = true;
+
+									} else if ("resume".equals(action)) {
+
+										// look for the form id and password from the url
+										String resumeFormId = request.getParameter("f");
+										String resumePassword = request.getParameter("pwd");
+										// if we didn't get the back-office resume parameters we need
+										if (resumeFormId == null || resumePassword == null) {
+											// get the resume page
+											page = app.getPages().getPageByFormType(Page.FORM_PAGE_TYPE_RESUME);
+											// if we got one set showResume
+											if (page != null) showResume = true;
+										} else {
+											// try and get the resume form details
+											formDetails = formAdapter.doResumeForm(rapidRequest, resumeFormId, resumePassword);
+											// check whether we can resume this form
+											if (formDetails != null)  {
+												// go for the summary if no page specified
+												if (request.getParameter("p") == null) showSummary  = true;
+											}
+										}
+
+									}
+
+									// if there isn't a form id, or we want to show the summary don't check the pages
+									if (showSave || showResume) {
+
+										// skip the max page block below
+										pageCheck = true;
+
+									} else if (formDetails == null || showSummary) {
+
+										// skip the page check / write
+										pageCheck = false;
+
+									} else if (page != null) {
+
+										// check that we have progressed far enough in the form to view this page, or we are a designer
+										if (formAdapter.checkMaxPage(rapidRequest, formDetails, page.getId()) || security.checkUserRole(rapidRequest, DESIGN_ROLE)) {
+
+											// only if this is not a dialogue
+											if (!"dialogue".equals(action)) {
+
+												// get all of the pages
+												PageHeaders pageHeaders = app.getPages().getSortedPages();
+												// get this page position
+												int pageIndex = pageHeaders.indexOf(page.getId());
+												// check the page visibility -
+												while (!page.isVisible(rapidRequest, app, formDetails)) {
+													// if we're here the visibility check on the current page failed so increment the index
+													pageIndex ++;
+													// if there are no more pages go to the summary
+													if (pageIndex > pageHeaders.size() - 1) {
+														// fail the check to print a page
+														pageCheck = false;
+														// but set the the show summary to true
+														showSummary = true;
+														// we're done
+														break;
+													} else {
+														// select the next page to check the visibility of
+														page = app.getPages().getPage(getServletContext(), pageHeaders.get(pageIndex).getId());
+														// if not submitted set that we're allowed to this page
+														if (!formDetails.getSubmitted()) formAdapter.setMaxPage(rapidRequest, formDetails, page.getId());
+													} // pages remaining check
+												} // page visible loop
+
+												// if this page has session values
+												if (page.getSessionVariables() != null) {
+													// loop them
+													for (String variable : page.getSessionVariables()) {
+														// look for session values
+														String value = (String) rapidRequest.getSessionAttribute(variable);
+														// if we got one update it's value
+														if (value != null) formAdapter.setFormPageVariableValue(rapidRequest, formDetails.getId(), variable, value);
+													}
+												}
+
+											} // dialogue check
+
+										} else {
+
+											// go back to the start
+											pageCheck = false;
+											//log
+											logger.debug("Not allowed on page " + page.getId() + " yet!");
+
+										} // page max check
+
+									} // form id check
+
+								} else {
+
+									// redirect to the correct version with the same parameters
+									String url = "~?a=" + formDetails.getAppId() + "&v=" + formDetails.getVersion();
 									// get the parameter map
 									Enumeration<String> parameterNames = request.getParameterNames();
 									// loop the current parameters
 									while (parameterNames.hasMoreElements()) {
 										// get the name
 										String parameterName = parameterNames.nextElement();
-										// ignore start
-										if (!"start".equals(parameterName)) {
-											// if 1 or more add &
-											if (pos > 0) url += "&";
+										// ignore a and v
+										if (!"a".equals(parameterName) && !"v".equals(parameterName)) {
 											// add to url
-											url += parameterName + "=" + request.getParameter(parameterName);
-											// inc pos
-											pos ++;
+											url += "&" + parameterName + "=" + request.getParameter(parameterName);
 										}
 									}
 									// redirect !
@@ -350,7 +490,7 @@ public class Rapid extends RapidHttpServlet {
 							page = null;
 
 							// log
-							logger.debug("Error with page visibility rules : " + ex.getMessage(), ex);
+							logger.debug("Error with form page : " + ex.getMessage(), ex);
 
 						}
 
@@ -372,7 +512,7 @@ public class Rapid extends RapidHttpServlet {
 								String pageId = page.getId();
 
 								// if the page we're about to write is the page we asked for (visibility rules might move us on a bit)
-								if (pageId.equals(rapidRequest.getPage().getId())) {
+								if (pageId.equals(rapidRequest.getPage().getId()) || showSave || showResume) {
 
 									// get any if-none-match - no caching must be set to true in web.xml for this to be sent
 									String ifNoneMatch = request.getHeader("If-None-Match");
@@ -413,10 +553,8 @@ public class Rapid extends RapidHttpServlet {
 
 									// if we have a form adapter and form details
 									if (formAdapter != null && formDetails != null) {
-										// if this is an error page we have just shown the error, remove it
+										// if this is an error page we have just shown the error, remove the error
 										if (page.getFormPageType() == Page.FORM_PAGE_TYPE_ERROR) formDetails.setErrorMessage(null);
-										// if this is a save page we have just shown it, set to not saved
-										if (page.getFormPageType() == Page.FORM_PAGE_TYPE_SAVED) formDetails.setSaved(false);
 									}
 
 								} else {
@@ -437,7 +575,7 @@ public class Rapid extends RapidHttpServlet {
 
 							} else {
 
-								logger.debug("Returning to start - failed page check and no showSummary");
+								logger.debug("Returning to start - failed page check and no showSummary, showSave, or showResume");
 
 								// go to the start page (invalidate unless user has design role)
 								gotoStartPage(request, response, app, !security.checkUserRole(rapidRequest, DESIGN_ROLE));
@@ -651,8 +789,19 @@ public class Rapid extends RapidHttpServlet {
 						// if an application action was found in the request
 						if (rapidRequest.getAction() != null) {
 
-							// assume we weren't passed any json
-							JSONObject jsonData = getJSONObject(bodyBytes);
+							// assume no json data
+							JSONObject jsonData = null;
+
+							try {
+
+								// read the body bytes with a silent fail - this is so not to throw application errors
+								jsonData = getJSONObject(bodyBytes);
+
+							} catch (Exception ex) {
+
+								logger.error("Error reading JSON request body for " + request.getQueryString(), ex);
+
+							}
 
 							// if we got some data
 							if (jsonData != null) {
@@ -676,234 +825,6 @@ public class Rapid extends RapidHttpServlet {
 								logger.debug("Rapid POST response : " + jsonResult);
 
 							} // jsonData
-
-						}  else if("application/x-www-form-urlencoded".equals(request.getContentType())) {
-
-							// log
-							logger.debug("Form data received");
-
-							// get the form adapter
-							FormAdapter formAdapter = app.getFormAdapter();
-
-							// form adapter check
-							if (formAdapter == null) {
-
-								// send message
-								sendMessage(response, 500, "Not a form", "This Rapid app is not a form");
-
-								// log
-								logger.debug("Rapid GET response (500) : Not a form");
-
-							} else {
-
-								// get the form details to test all is ok
-								UserFormDetails formDetails = formAdapter.getUserFormDetails(rapidRequest);
-
-								// check we got one
-								if (formDetails == null) {
-
-									logger.debug("Returning to start - could not retrieve form details");
-
-									// we've lost the form id so start the form again
-									gotoStartPage(request, response, app, !security.checkUserRole(rapidRequest, DESIGN_ROLE));
-
-								} else {
-
-									// this is a form page's data being submitted
-									String formData = new String(bodyBytes, "UTF-8");
-
-									// log it!
-									logger.trace("Form data : " + formData);
-
-									// if there's a submit action
-									if ("submit".equals(request.getParameter("action"))) {
-
-										// if submitted already go to start (should never happen)
-										if (formDetails.getSubmitted()) {
-
-											logger.debug("Returning to start - submit action but form not submitted");
-
-											// go to the start page
-											gotoStartPage(request, response, app, !security.checkUserRole(rapidRequest, DESIGN_ROLE));
-
-										} else {
-
-											try {
-
-												// do the submit (this will call the non-abstract submit, manage the form state, and retain the submit message)
-												formAdapter.doSubmitForm(rapidRequest);
-
-												// place holder for first submitted page
-												String submittedPageId = getFirstPageForFormType( app, Page.FORM_PAGE_TYPE_SUBMITTED);
-
-												// check we got a submitted page
-												if (submittedPageId == null) {
-
-													// invalidate the form
-													formAdapter.setUserFormDetails(rapidRequest, null);
-
-													logger.debug("Returning to start - form has been submitted, no submission page");
-
-													// go to the start page unless user has the design role
-													gotoStartPage(request, response, app, !security.checkUserRole(rapidRequest, DESIGN_ROLE));
-
-												} else {
-
-													// request the first submitted page
-													response.sendRedirect("~?a=" + app.getId() + "&v=" + app.getVersion() + "&p=" + submittedPageId);
-
-												}
-
-											} catch (Exception ex) {
-
-												// place holder for first submitted page
-												String errrorPageId = getFirstPageForFormType( app, Page.FORM_PAGE_TYPE_ERROR);
-
-												// check we got one
-												if (errrorPageId == null) {
-
-													// just re throw the error
-													throw ex;
-
-												} else {
-
-													// request the first error page
-													response.sendRedirect("~?a=" + app.getId() + "&v=" + app.getVersion() + "&p=" + errrorPageId);
-
-												}
-
-											}
-
-										} // submit check
-
-									} else {
-
-										// try
-										try {
-
-											// get the page
-											Page page = rapidRequest.getPage();
-
-											// if we got one
-											if (page == null) {
-
-												// send error
-												sendMessage(response, 403, "Page does not exist", "The page you requested does not exist");
-
-											} else {
-
-												// get the page id
-												String requestPageId = rapidRequest.getPage().getId();
-
-												// if form not submitted
-												if (!formDetails.getSubmitted()) {
-
-													// get the page control values
-													FormPageControlValues pageControlValues = FormAdapter.getPostPageControlValues(rapidRequest, formData, formDetails.getId());
-
-													// check we got some
-													if (pageControlValues != null) {
-
-														// loop and print them if trace on
-														if (logger.isTraceEnabled()) {
-															for (FormControlValue controlValue : pageControlValues) {
-																logger.debug(controlValue.getId() + " = " + controlValue.getValue());
-															}
-														}
-
-														// store the form page control values
-														formAdapter.setFormPageControlValues(rapidRequest, formDetails.getId(), requestPageId, pageControlValues);
-
-													}
-
-												}
-
-												// assume we're not going to go to the summary
-												boolean requestSummary = false;
-
-												// get all of the app pages
-												PageHeaders pageHeaders = app.getPages().getSortedPages();
-
-												// get the position of the next page in sequence
-												int requestPageIndex = pageHeaders.indexOf(requestPageId) + 1;
-
-												// if there are any pages next to check
-												if (requestPageIndex < pageHeaders.size()) {
-
-													// get the next page
-													page = app.getPages().getPage(getServletContext(), pageHeaders.get(requestPageIndex).getId());
-
-													// check the page visibility
-													while (!page.isVisible(rapidRequest, app, formDetails)) {
-														// if we're here the visibility check on the current page failed so increment the index
-														requestPageIndex ++;
-														// if there are no more pages go to the summary
-														if (requestPageIndex > pageHeaders.size() - 1) {
-															// but set the the show summary to true
-															requestSummary = true;
-															// we're done
-															break;
-														} else {
-															// select the next page to check the visibility of
-															page = app.getPages().getPage(getServletContext(), pageHeaders.get(requestPageIndex).getId());
-														} // pages remaining check
-													} // page visible loop
-
-												} else {
-													// go straight for the summary
-													requestSummary = true;
-												}
-
-												// if this form has not been submitted update the max page id if what we're about to request is less
-												if (!formDetails.getSubmitted()) {
-													// get current max page id
-													String maxPageId = formDetails.getMaxPageId();
-													// assume not max page yet
-													int maxPageIndex = -1;
-													// if there was a max page update to it's index
-													if (maxPageId != null) maxPageIndex = pageHeaders.indexOf(maxPageId);
-													// if update value is greater than current value
-													if (requestPageIndex > maxPageIndex) formAdapter.setMaxPage(rapidRequest, formDetails, page.getId());
-												}
-
-												// if this is the last page
-												if (requestSummary) {
-
-													// mark that this form is complete (if not submitted)
-													if (!formDetails.getSubmitted()) {
-														// update form details
-														formDetails.setComplete(true);
-														// update form adapter (for storage)
-														formAdapter.setFormComplete(rapidRequest, formDetails);
-													}
-
-													// send a redirect for the summary (this also avoids ERR_CACH_MISS issues on the back button )
-													response.sendRedirect("~?a=" + app.getId() + "&v=" + app.getVersion() + "&action=summary");
-
-												} else {
-
-													// send a redirect for the page (this avoids ERR_CACH_MISS issues on the back button )
-													response.sendRedirect("~?a=" + app.getId() + "&v=" + app.getVersion() + "&p=" + page.getId());
-
-												} // last page check
-
-											} // page check
-
-										} catch (ServerSideValidationException ex) {
-
-											// log it!
-											logger.error("Form data failed server side validation : " + ex.getMessage(), ex);
-
-											// send a redirect back to the beginning - there's no reason except for tampering  that this would happen
-											gotoStartPage(request, response, app, !security.checkUserRole(rapidRequest, DESIGN_ROLE));
-
-										}
-
-									} // form id check
-
-								} // submit action check
-
-							} // form adapter check
 
 						} else if ("checkVersion".equals(rapidRequest.getActionName())) {
 
@@ -1036,21 +957,21 @@ public class Rapid extends RapidHttpServlet {
 
 									// check the content type is allowed
 									if (getUploadMimeTypes().contains(contentType)) {
-										
-										
+
 										// get the bytes
 										List<byte[]> bytes = getUploadMimeTypeBytes().get(contentType);
 
 										// if we got some
 										if (bytes != null) {
-											//for each byte[] in the bytes list
-											for(int i = 0; i < bytes.size(); i++){
-												
+
+											// for each byte[] in the bytes list
+											for (int i = 0; i < bytes.size(); i++) {
+
 												// check the jpg, gif, png, bmp, or pdf file signature (from http://en.wikipedia.org/wiki/List_of_file_signatures)
 												if (Bytes.findPattern(bodyBytes, bytes.get(i), bytesOffset, bytes.get(i).length) > -1) {
-	
+
 													try {
-	
+
 														// create the path
 														String imagePath = "uploads/" +  app.getId() + "/" + imageName;
 														// servers with public access must use the secure upload location
@@ -1065,31 +986,31 @@ public class Rapid extends RapidHttpServlet {
 														fos.write(bodyBytes, bytesOffset, bodyBytes.length - bytesOffset - boundary.length());
 														// close the stream
 														fos.close();
-	
+
 														// log the file creation
 														logger.debug("Saved image file " + imagePath);
-	
+
 														// print just the file name
 														out.print(imageFile.getName());
-	
+
 														// close the writer
 														out.close();
-	
+
 														// we passed the checks
 														passed = true;
-	
+
 													} catch (Exception ex) {
-	
+
 														// log
 														logger.error("Error saving uploaded file : " + ex.getMessage(), ex);
-	
+
 														// rethrow
 														throw new Exception("Error uploading file");
-	
+
 													}
-	
+
 												} // signature check
-											
+
 											} //end of bytes for
 
 										} // bytes check
@@ -1111,6 +1032,311 @@ public class Rapid extends RapidHttpServlet {
 								out.print("Unrecognised file type");
 
 							}
+
+						}  else if ("application/x-www-form-urlencoded".equals(request.getContentType())) {
+
+							// log
+							logger.debug("Form data received");
+
+							// get the form adapter
+							FormAdapter formAdapter = app.getFormAdapter();
+
+							// form adapter check
+							if (formAdapter == null) {
+
+								// send message
+								sendMessage(response, 500, "Not a form", "This Rapid app is not a form");
+
+								// log
+								logger.debug("Rapid GET response (500) : Not a form");
+
+							} else {
+
+								// get the form details to test all is ok
+								UserFormDetails formDetails = formAdapter.getUserFormDetails(rapidRequest);
+
+								// check we got one
+								if (formDetails == null) {
+
+									logger.debug("Returning to start - could not retrieve form details");
+
+									// we've lost the form id so start the form again
+									gotoStartPage(request, response, app, !security.checkUserRole(rapidRequest, DESIGN_ROLE));
+
+								} else {
+
+									// this is a form page's data being submitted
+									String formData = new String(bodyBytes, "UTF-8");
+
+									// log it!
+									logger.trace("Form data : " + formData);
+
+									// if there's a submit action
+									if ("submit".equals(request.getParameter("action"))) {
+
+										// if submitted already go to start (should never happen)
+										if (formDetails.getSubmitted()) {
+
+											logger.debug("Returning to start - submit action but form not submitted");
+
+											// go to the start page
+											gotoStartPage(request, response, app, !security.checkUserRole(rapidRequest, DESIGN_ROLE));
+
+										} else {
+
+											try {
+
+												// assume no csrftoken
+												boolean csrfPass = false;
+												// split into name value pairs
+												String[] params = formData.split("&");
+												// loop params
+												for (String param : params) {
+													// split on =
+													String[] parts = param.split("=");
+													// if enough parts
+													if (parts.length > 1) {
+														// if csrfToken
+														if ("csrfToken".equals(parts[0])) {
+															// assume no value
+															String value = null;
+															// decode value with silent fail
+															try { value = URLDecoder.decode(parts[1],"UTF-8");	} catch (UnsupportedEncodingException e) {}
+															// check if we passed
+															if (rapidRequest.getCSRFToken().equals(value)) {
+																// set true
+																csrfPass = true;
+																// we're done
+																break;
+															}
+														}
+													}
+												}
+
+												// do the submit (this will call the non-abstract submit, manage the form state, and retain the submit message)
+												if (csrfPass) formAdapter.doSubmitForm(rapidRequest);
+
+												// place holder for first submitted page
+												String submittedPageId = getFirstPageForFormType(app, Page.FORM_PAGE_TYPE_SUBMITTED);
+
+												if (submittedPageId == null || !csrfPass) {
+
+													// invalidate the form
+													formAdapter.setUserFormDetails(rapidRequest, null);
+
+													if (submittedPageId == null) {
+
+														logger.debug("Returning to start - form has been submitted, no submission page, or ");
+
+													} else {
+
+														logger.debug("Returning to start - csrf failed");
+
+													}
+
+													// go to the start page unless user has the design role
+													gotoStartPage(request, response, app, !security.checkUserRole(rapidRequest, DESIGN_ROLE));
+
+												} else {
+
+													// request the first submitted page
+													response.sendRedirect("~?a=" + app.getId() + "&v=" + app.getVersion() + "&p=" + submittedPageId);
+
+												}
+
+											} catch (Exception ex) {
+
+												// place holder for first submitted page
+												String errrorPageId = getFirstPageForFormType( app, Page.FORM_PAGE_TYPE_ERROR);
+
+												// check we got one
+												if (errrorPageId == null) {
+
+													// just re throw the error
+													throw ex;
+
+												} else {
+
+													// request the first error page
+													response.sendRedirect("~?a=" + app.getId() + "&v=" + app.getVersion() + "&p=" + errrorPageId);
+
+												}
+
+											}
+
+										} // submit check
+
+									} else {
+
+										// try
+										try {
+
+											// get the page
+											Page page = rapidRequest.getPage();
+
+											// if we got one
+											if (page == null) {
+
+												// send error
+												sendMessage(response, 403, "Page does not exist", "The page you requested does not exist");
+
+											} else {
+
+												// get the page id
+												String requestPageId = rapidRequest.getPage().getId();
+
+												// assume we are not requesting a save
+												boolean requestSave = false;
+
+												// if form not submitted
+												if (!formDetails.getSubmitted()) {
+
+													// if we end save=save this is save request
+													requestSave = formData.endsWith("save=save");
+
+													// get the page control values
+													FormPageControlValues pageControlValues = FormAdapter.getPostPageControlValues(rapidRequest, formData, formDetails.getId());
+
+													// check we got some
+													if (pageControlValues != null) {
+
+														// loop and print them if trace on
+														if (logger.isTraceEnabled()) {
+															for (FormControlValue controlValue : pageControlValues) {
+																logger.debug(controlValue.getId() + " = " + controlValue.getValue());
+															}
+														}
+
+														// store the form page control values
+														formAdapter.setFormPageControlValues(rapidRequest, formDetails.getId(), requestPageId, pageControlValues);
+
+													}
+
+												}
+
+												// assume we're not going to go to the summary
+												boolean requestSummary = false;
+
+												// get all of the app pages
+												PageHeaders pageHeaders = app.getPages().getSortedPages();
+
+												// if this is a request for the save page
+												if (requestSave) {
+
+													// loop the pages
+													for (PageHeader pageHeader : pageHeaders) {
+														// get this page
+														Page savePage = app.getPages().getPage(pageHeader.getId());
+														// if it the save page
+														if (savePage.getFormPageType() == Page.FORM_PAGE_TYPE_SAVE) {
+															// this is the page we want to go to
+															page = savePage;
+															// we're done
+															break;
+														}
+													}
+
+												} else {
+
+													// get the position of the next page in sequence
+													int requestPageIndex = pageHeaders.indexOf(requestPageId) + 1;
+
+													// if there are any pages next to check
+													if (requestPageIndex < pageHeaders.size()) {
+
+														// get the next page
+														page = app.getPages().getPage(getServletContext(), pageHeaders.get(requestPageIndex).getId());
+
+														// check the page visibility
+														while (!page.isVisible(rapidRequest, app, formDetails)) {
+															// if we're here the visibility check on the current page failed so increment the index
+															requestPageIndex ++;
+															// if there are no more pages go to the summary
+															if (requestPageIndex > pageHeaders.size() - 1) {
+																// but set the the show summary to true
+																requestSummary = true;
+																// we're done
+																break;
+															} else {
+																// select the next page to check the visibility of
+																page = app.getPages().getPage(getServletContext(), pageHeaders.get(requestPageIndex).getId());
+															} // pages remaining check
+														} // page visible loop
+
+													} else {
+														// go straight for the summary
+														requestSummary = true;
+													}
+
+													// if this form has not been submitted update the max page id if what we're about to request is less
+													if (!formDetails.getSubmitted()) {
+														// get current max page id
+														String maxPageId = formDetails.getMaxPageId();
+														// assume not max page yet
+														int maxPageIndex = -1;
+														// if there was a max page update to it's index
+														if (maxPageId != null) maxPageIndex = pageHeaders.indexOf(maxPageId);
+														// if update value is greater than current value
+														if (requestPageIndex > maxPageIndex) formAdapter.setMaxPage(rapidRequest, formDetails, page.getId());
+													}
+
+												} // request save check
+
+												// if this is a request for the summary page
+												if (requestSummary) {
+
+													// mark that this form is complete (if not submitted)
+													if (!formDetails.getSubmitted()) {
+														// update form details
+														formDetails.setComplete(true);
+														// update form adapter (for storage)
+														formAdapter.setFormComplete(rapidRequest, formDetails);
+													}
+
+													// send a redirect for the summary (this also avoids ERR_CACH_MISS issues on the back button )
+													response.sendRedirect("~?a=" + app.getId() + "&v=" + app.getVersion() + "&action=summary");
+
+												} else if (requestSave) {
+
+													// send a redirect for the save  (this avoids ERR_CACH_MISS issues on the back button )
+													response.sendRedirect("~?a=" + app.getId() + "&v=" + app.getVersion() + "&action=save");
+
+												} else {
+
+													// send a redirect for the page (this avoids ERR_CACH_MISS issues on the back button )
+													response.sendRedirect("~?a=" + app.getId() + "&v=" + app.getVersion() + "&p=" + page.getId());
+
+												} // last page check
+
+											} // page check
+
+										} catch (ServerSideValidationException ex) {
+
+											// log it!
+											logger.error("Form data failed server side validation : " + ex.getMessage(), ex);
+
+											// send a redirect back to the beginning - there's no reason except for tampering  that this would happen
+											gotoStartPage(request, response, app, !security.checkUserRole(rapidRequest, DESIGN_ROLE));
+
+										}
+
+									} // form id check
+
+								} // submit action check
+
+							} // form adapter check
+
+						} else {
+
+							// we should never get here under normal operation so we can assume something silly is happening: we'll invalidate the sesssion if there is one
+							HttpSession session = request.getSession(false);
+							// if we got one invalidate it
+							if (session != null) session.invalidate();
+							// say not allowed
+							response.setStatus(403);
+
+							// log it!
+							logger.error("Form submitted without crsf protection");
 
 						} // action type check
 

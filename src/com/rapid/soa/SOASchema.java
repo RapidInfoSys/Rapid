@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2015 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.rapid.soa.SOAElementRestriction.MinOccursRestriction;
 import com.rapid.soa.SOAElementRestriction.*;
 
 public class SOASchema {
@@ -88,7 +89,7 @@ public class SOASchema {
 		
 		private String _id, _name, _field;
 		private int _dataType;
-		private boolean _isArray;		
+		private boolean _isArray, _isChoice, _isOptional;
 		private List<SOAElementRestriction> _restrictions;
 		private List<SOASchemaElement> _childSchemaElements;
 		
@@ -109,11 +110,16 @@ public class SOASchema {
 		public boolean getIsArray() { return _isArray; }
 		public void setIsArray(boolean isArray) { _isArray = isArray; }
 		
+		public boolean getIsChoice() { return _isChoice; }
+		public void setIsChoice(boolean isChoice) { _isChoice = isChoice; }
+		
 		public List<SOASchemaElement> getChildElements() { return _childSchemaElements; }
 		public void setChildElements(List<SOASchemaElement> childSchemaElements ) { _childSchemaElements = childSchemaElements; }
 		
 		public List<SOAElementRestriction> getRestrictions() { return _restrictions; }
 		public void setRestrictions(List<SOAElementRestriction> restrictions) { _restrictions = restrictions; }
+		
+		public boolean getIsOptional() { return _isOptional; }
 		
 		// constructors
 		
@@ -146,6 +152,10 @@ public class SOASchema {
 		public SOASchemaElement addRestriction(SOAElementRestriction restriction) {
 			if (_restrictions == null) _restrictions = new ArrayList<SOAElementRestriction>();
 			_restrictions.add(restriction);
+			if (restriction instanceof SOAElementRestriction.MinOccursRestriction) {
+				SOAElementRestriction.MinOccursRestriction minOccurs = (MinOccursRestriction) restriction;
+				if (minOccurs.getValue() < 1) _isOptional = true;
+			}
 			return this;
 		}		
 		
@@ -350,6 +360,7 @@ public class SOASchema {
 		case DECIMAL : return "decimal";		
 		case DATE : return "date";
 		case DATETIME : return "dateTime";
+		case BOOLEAN : return "boolean";
 		default : return "unknown";
 		}
 	}

@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -116,7 +116,7 @@ public abstract class SOADataWriter {
 		@Override
 		public String write() {
 			_stringBuilder = new StringBuilder();
-			if (_soaData != null) 	appendElement(_soaData.getRootElement());
+			if (_soaData != null) appendElement(_soaData.getRootElement());
 			return _stringBuilder.toString();
 		}
 

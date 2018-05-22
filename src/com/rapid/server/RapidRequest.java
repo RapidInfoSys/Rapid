@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -35,9 +35,12 @@ This class wraps an HttpRequest and provides a number of useful methods for retr
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -50,6 +53,7 @@ import com.rapid.core.Application.RapidLoadingException;
 import com.rapid.core.Control;
 import com.rapid.core.Page;
 import com.rapid.server.filter.RapidFilter;
+import com.rapid.utils.Encryption;
 
 // this class provides some utility functions for easily accessing common Rapid objects from a request
 public class RapidRequest {
@@ -146,8 +150,12 @@ public class RapidRequest {
 
 				// get the logger
 				Logger logger = rapidServlet.getLogger();
-				// log the exception
-				logger.error("Failed to read body bytes when creating Rapid request", ex);
+				// a string to tell us about _bodyBytes
+				String bodyByteInfo = "Body bytes is null";
+				// if we had _bodyBytes
+				if (_bodyBytes != null) bodyByteInfo = "Body bytes length is " + _bodyBytes.length;
+				// log the exception with the info
+				logger.error("Error reading body bytes when creating Rapid request. " + bodyByteInfo, ex);
 			}
 
 		}
@@ -330,6 +338,31 @@ public class RapidRequest {
 
 		return details;
 
+	}
+	
+	public String getCSRFToken() throws UnsupportedEncodingException {
+		if (_session == null) {
+			return null;
+		} else {
+			// look for token
+			String token = (String) _session.getAttribute("csrf");
+			// if we didn't get one
+			if (token == null) {
+				// new random number generator
+				Random r = new Random();
+				// array of 56 bytes
+		        byte[] bytes = new byte[100];
+		        // populate the array with random bytes
+		        r.nextBytes(bytes);
+		        // base 64 as token
+		        token = Encryption.base64Encode(bytes);
+		        // make url safe
+		        token = URLEncoder.encode(token,"UTF-8");
+		        // store it
+		        _session.setAttribute("csrf", token);
+			}
+			return token;
+		}
 	}
 
 }

@@ -98,5 +98,18 @@ public class Exceptions {
 		}
 		
 	}
+	
+	// print an exception stack trace
+	public static String getStringStackTrace(Exception ex) {
+		
+		String stackTrace = "\n\n";
+
+		stackTrace += ex.getClass().getName() + "\n\n";
+
+		if (ex.getStackTrace() != null) for (StackTraceElement element : ex.getStackTrace()) stackTrace += element + "\n";
+
+		return stackTrace;
+		
+	}
 
 }

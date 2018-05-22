@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -82,13 +82,17 @@ public abstract class FormAdapter {
 		private static final long serialVersionUID = 101L;
 
 		// instance variables
-		private final String _id, _password;
+		private final String _appId, _version, _id, _password;
 		private String _maxPageId, _submittedDateTime, _submitMessage, _errorMessage;
 		boolean _saved, _complete, _showSubmitPage;
 
 		// properties
 
+		// app id
+		public String getAppId() { return _appId; }
 		// id
+		public String getVersion() { return _version; }
+		// form id
 		public String getId() { return _id; }
 		// password
 		public String getPassword() { return _password; }
@@ -128,13 +132,17 @@ public abstract class FormAdapter {
 		// constructors
 
 		// brand new forms
-		public UserFormDetails(String id, String password) {
+		public UserFormDetails(String appId, String version, String id, String password) {
+			_appId = appId;
+			_version = version;
 			_id = id;
 			_password = password;
 		}
 
 		// resumed forms
-		public UserFormDetails(String id, String password, String maxPageId, boolean complete, String submittedDateTime) {
+		public UserFormDetails(String appId, String version, String id, String password, String maxPageId, boolean complete, String submittedDateTime) {
+			_appId = appId;
+			_version = version;
 			_id = id;
 			_password = password;
 			_maxPageId = maxPageId;
@@ -354,7 +362,7 @@ public abstract class FormAdapter {
 	}
 
 	// some controls need some further processing to get a summary value, also used in the pdf
-	protected String getSummaryControlValue(Control control, FormControlValue controlValue, String nullValue) {
+	protected String getSummaryControlValue(Application application, Control control, FormControlValue controlValue, String nullValue) {
 
 		// get the value
 		String value = controlValue.getValue();
@@ -375,7 +383,7 @@ public abstract class FormAdapter {
 			// get the type
 			String type = control.getType();
 
-			// check for checkboxes
+			// check for special controls
 			if (type.contains("checkbox")) {
 				// just show the label
 				value = control.getLabel();
@@ -385,30 +393,36 @@ public abstract class FormAdapter {
 			}
 
 		}
-		return value;
+		return control.getCodeText(application, value);
 
 	}
 
 	// the start of the form summary	page
-		protected String getSummaryStartHtml(RapidRequest rapidRequest, Application application, boolean email) {
+	protected String getSummaryStartHtml(RapidRequest rapidRequest, Application application, boolean email) {
+		// if this is the email use the title
+		if (email) {
+			return "<h1 class='formSummaryTitle'>" + application.getTitle() + " summary</h1>\n";
+		} else {
 			// assume no theme header
 			String themeHeader = "";
 			// get the theme
-			Theme theme = application.getTheme(rapidRequest.getRapidServlet().getServletContext());
+			Theme theme = application.getTheme(getServletContext());
 			// check we got one
 			if (theme != null) themeHeader =  theme.getHeaderHtml();
-			// if this is the email use the title
-			if (email) {
-				return themeHeader + "<h1 class='formSummaryTitle'>" + application.getTitle() + " summary</h1>\n";
-			} else {
-				return themeHeader + "<h1 class='formSummaryTitle'>Form summary</h1>\n";
-			}
+			// return theme header and summary
+			return themeHeader + "<h1 class='formSummaryTitle'>Form summary</h1>\n";
 		}
+	}
 
-		// the end of the form summary page
-		protected String getSummaryEndHtml(RapidRequest rapidRequest, Application application, boolean email) {
+	// the end of the form summary page
+	protected String getSummaryEndHtml(RapidRequest rapidRequest, Application application, boolean email) {
+		// check if email
+		if (email) {
+			// no theme footer on email
+			return "";
+		} else {
 			// get the theme
-			Theme theme = application.getTheme(rapidRequest.getRapidServlet().getServletContext());
+			Theme theme = application.getTheme(getServletContext());
 			// check we got one
 			if (theme == null) {
 				return "";
@@ -416,6 +430,7 @@ public abstract class FormAdapter {
 				return theme.getFooterHtml();
 			}
 		}
+	}
 
 
 	// the start of a page block in the form summary
@@ -447,8 +462,8 @@ public abstract class FormAdapter {
 				if (label == null) {
 					return "";
 				} else {
-					String value = getSummaryControlValue(control, controlValue, "(no value)");
-					return "<span class='formSummaryControl'>" + label + " : " + Html.escape(control.getCodeText(application, value)) + "</span>\n";
+					String value = getSummaryControlValue(application, control, controlValue, "(no value)");
+					return "<span class='formSummaryControl'>" + Html.escape(value) + "</span><br/>\n";
 				}
 			}
 		}
@@ -481,7 +496,7 @@ public abstract class FormAdapter {
 				for (FormControlValue pageControlValue : pageControlValues) {
 
 					// get the control
-					Control control = _application.getControl(rapidRequest.getRapidServlet().getServletContext(), pageControlValue.getId());
+					Control control = _application.getControl(getServletContext(), pageControlValue.getId());
 					// if we got one
 					if (control != null) {
 
@@ -536,7 +551,7 @@ public abstract class FormAdapter {
 				for (FormControlValue pageControlValue : pageControlValues) {
 
 					// get the control
-					Control control = _application.getControl(rapidRequest.getRapidServlet().getServletContext(), pageControlValue.getId());
+					Control control = _application.getControl(getServletContext(), pageControlValue.getId());
 					// if we got one
 					if (control != null) {
 
@@ -573,63 +588,63 @@ public abstract class FormAdapter {
 	}
 
 	// return a forms CSV as a string (for attaching or saving to file)
-		protected String getFormJSON(RapidRequest rapidRequest, String formId) throws Exception {
+	protected String getFormJSON(RapidRequest rapidRequest, String formId) throws Exception {
 
-			// create the object
-			JSONObject jsonForm = new JSONObject();
+		// create the object
+		JSONObject jsonForm = new JSONObject();
 
-			// add the id
-			jsonForm.put("id", formId);
+		// add the id
+		jsonForm.put("id", formId);
 
-			// create the controls array
-			JSONArray jsonControls = new JSONArray();
+		// create the controls array
+		JSONArray jsonControls = new JSONArray();
 
-			// loop the page ids
-			for (String pageId : _application.getPages().getPageIds()) {
+		// loop the page ids
+		for (String pageId : _application.getPages().getPageIds()) {
 
-				// get the page values
-				FormPageControlValues pageControlValues = getFormPageControlValues(rapidRequest, formId, pageId);
+			// get the page values
+			FormPageControlValues pageControlValues = getFormPageControlValues(rapidRequest, formId, pageId);
 
-				// if we got some
-				if (pageControlValues != null) {
+			// if we got some
+			if (pageControlValues != null) {
 
-					// loop them
-					for (FormControlValue pageControlValue : pageControlValues) {
+				// loop them
+				for (FormControlValue pageControlValue : pageControlValues) {
 
-						// get the control
-						Control control = _application.getControl(rapidRequest.getRapidServlet().getServletContext(), pageControlValue.getId());
-						// if we got one
-						if (control != null) {
+					// get the control
+					Control control = _application.getControl(getServletContext(), pageControlValue.getId());
+					// if we got one
+					if (control != null) {
 
-							// create a json object for the controls
-							JSONObject jsonControl = new JSONObject();
+						// create a json object for the controls
+						JSONObject jsonControl = new JSONObject();
 
-							// add the control details
-							jsonControl.put("pageId", pageId);
-							jsonControl.put("id", control.getId());
-							jsonControl.put("name", control.getName());
-							jsonControl.put("label", control.getLabel());
-							jsonControl.put("value", pageControlValue.getValue());
-							jsonControl.put("hidden", pageControlValue.getHidden());
+						// add the control details
+						jsonControl.put("pageId", pageId);
+						jsonControl.put("id", control.getId());
+						jsonControl.put("name", control.getName());
+						jsonControl.put("label", control.getLabel());
+						jsonControl.put("value", pageControlValue.getValue());
+						jsonControl.put("hidden", pageControlValue.getHidden());
 
-							// add to controls
-							jsonControls.put(jsonControl);
+						// add to controls
+						jsonControls.put(jsonControl);
 
-						} // control null check
+					} // control null check
 
-					} // page control values loop
+				} // page control values loop
 
-				} //page control values null check
+			} //page control values null check
 
-			} //  page id loop
+		} //  page id loop
 
-			// add the controls
-			jsonForm.put("controls", jsonControls);
+		// add the controls
+		jsonForm.put("controls", jsonControls);
 
-			// return
-			return jsonForm.toString();
+		// return
+		return jsonForm.toString();
 
-		}
+	}
 
 	// this returns the .pdf file name
 	protected String getFormFileName(RapidRequest rapidRequest, String formId, String extenstion, boolean email) {
@@ -853,7 +868,7 @@ public abstract class FormAdapter {
 				// if there are pages
 				if (application.getPages() != null) {
 					// get the id of the first one
-					if (application.getPages().size() > 0) startPageId = application.getStartPage(rapidRequest.getRapidServlet().getServletContext()).getId();
+					if (application.getPages().size() > 0) startPageId = application.getStartPage(getServletContext()).getId();
 				}
 				// get the requested Page
 				Page requestPage = rapidRequest.getPage();
@@ -1039,7 +1054,7 @@ public abstract class FormAdapter {
 				"    <link rel=\"icon\" href=\"favicon.ico\"></link>\n");
 
 		// get the servletContext
-		ServletContext servletContext = rapidRequest.getRapidServlet().getServletContext();
+		ServletContext servletContext = this.getServletContext();
 
 		// get app start page
 		Page startPage = _application.getStartPage(servletContext);
@@ -1063,6 +1078,18 @@ public abstract class FormAdapter {
 			// write the start page head (and it's resources)
 			writer.write(startPage.getResourcesHtml(_application, true));
 
+			// add code to only submit once, updates all forms on the page to return false after first submit
+			writer.write("    <script type='text/javascript'>\n" +
+				"$(document).ready(function() {\n" +
+				"  $('form').submit(function() {\n" +
+				"    $('form').submit(function() {\n" +
+				"      return false;\n" +
+				"    });\n" +
+				"    return true;\n" +
+				"  });\n" +
+				"});\n" +
+				"    </script>");
+
 		}
 
 		// close the head
@@ -1071,11 +1098,8 @@ public abstract class FormAdapter {
 		// open the body
 		writer.write("  <body>\n");
 
-		// get any summary start html
-		String summryStartHtml = getSummaryStartHtml(rapidRequest, _application, email);
-		
-		// write the summary start, if we got some
-		if (summryStartHtml != null) writer.write(summryStartHtml);
+		// write the summary start
+		writer.write(getSummaryStartHtml(rapidRequest, _application, email));
 
 		// get the sorted pages
 		PageHeaders pageHeaders = _application.getPages().getSortedPages();
@@ -1169,15 +1193,12 @@ public abstract class FormAdapter {
 				if (submittedDateTime != null) writer.write("<span class='formSubmittedDateTime'>" + submittedDateTime + "</span>");
 			} else {
 				// add the submit button
-				writer.write("<form action='~?a=" + _application.getId() + "&v=" + _application.getVersion()  + "&action=submit' method='POST'><button type='submit' class='formSummarySubmit'>Submit</button></form>");
+				writer.write("<form action='~?a=" + _application.getId() + "&v=" + _application.getVersion()  + "&action=submit' method='POST'>\n<input type='hidden' name='csrfToken' value='" + rapidRequest.getCSRFToken() + "' />\n<button type='submit' class='formSummarySubmit'>Submit</button>\n</form>\n");
 			}
 		}
 
-		// get any summary end
-		String summaryEndHtml = getSummaryEndHtml(rapidRequest, _application, email);
-
-		// write the summary end if we got some
-		if (summaryEndHtml != null) writer.write(summaryEndHtml);
+		// write the summary end
+		writer.write(getSummaryEndHtml(rapidRequest, _application, email));
 
 		// close the remaining elements
 		writer.write("  </body>\n</html>");
@@ -1280,14 +1301,20 @@ public abstract class FormAdapter {
 			addSubmittedForm(rapidRequest, formDetails.getId());
 
 		} catch (Exception ex) {
-			// log the error
-			_logger.error("Error submitting form " + formDetails.getId() + " for "  + application.getId(), ex);
 			// get the error message
 			String message = ex.getMessage();
 			// set if null
 			if (message == null) message = "Check the log for details";
-			// retain the error message in the details
-			formDetails.setErrorMessage(message);
+			// if we had form details
+			if (formDetails == null) {
+				// log the error
+				_logger.error("Error submitting form for "  + application.getId(), " - No formDetails! ", ex);
+			} else {
+				// log the error
+				_logger.error("Error submitting form " + formDetails.getId() + " for "  + application.getId(), ex);
+				// retain the error message in the details
+				formDetails.setErrorMessage(message);
+			}
 			// rethrow
 			throw ex;
 		}
@@ -1340,6 +1367,22 @@ public abstract class FormAdapter {
 
 	}
 
+	// used when saving forms
+	public synchronized boolean saveForm(RapidRequest rapidRequest, String email, String password) throws Exception {
+
+		// assume we have not saved the form
+		return false;
+
+	}
+
+	// used when resuming forms
+	public synchronized boolean resumeForm(RapidRequest rapidRequest, String formId, String password) throws Exception {
+
+		// assume we have not saved the form
+		return false;
+
+	}
+
 	// used when resuming forms
 	public synchronized UserFormDetails doResumeForm(RapidRequest rapidRequest, String formId, String password) throws Exception {
 		// get the application
@@ -1353,7 +1396,7 @@ public abstract class FormAdapter {
 				// loop them
 				for (String pageId : pages.getPageIds()) {
 					// get the page
-					Page page = pages.getPage(rapidRequest.getRapidServlet().getServletContext(), pageId);
+					Page page = pages.getPage(getServletContext(), pageId);
 					// if it has variables
 					List<String> variables = page.getSessionVariables();
 					// if it has some
@@ -1396,7 +1439,7 @@ public abstract class FormAdapter {
 
 	// static methods
 
-	public static FormPageControlValues getPostPageControlValues(RapidRequest rapidRequest, String postBody, String formId) throws ServerSideValidationException  {
+	public static FormPageControlValues getPostPageControlValues(RapidRequest rapidRequest, String postBody, String formId) throws ServerSideValidationException, UnsupportedEncodingException  {
 		// check for a post body
 		if (postBody == null) {
 			// send null if nothing
@@ -1412,6 +1455,8 @@ public abstract class FormAdapter {
 			String recaptcha = null;
 			// get the page
 			Page page = rapidRequest.getPage();
+			// assume not passed CSRF
+			boolean csrfPass = false;
 			// check there was one
 			if (page != null) {
 				// loop the pairs
@@ -1461,6 +1506,17 @@ public abstract class FormAdapter {
 									if (control == null) {
 										// if this is the recapcha store it
 										if ("g-recaptcha-response".equals(id)) recaptcha = value;
+										// if this is the csrfToken check it
+										if ("csrfToken".equals(id)) {
+											// check the value
+											if (value.equals(rapidRequest.getCSRFToken())) {
+												// remember we passed
+												csrfPass = true;
+											} else {
+												// we're done
+												break;
+											}
+										}
 									} else {
 										// get any control validation
 										Validation validation = control.getValidation();
@@ -1587,6 +1643,10 @@ public abstract class FormAdapter {
 					if (!passRecapture) throw new ServerSideValidationException("Server side validation error - recapture failed on page " + page.getId() + " for form " + formId);
 				}
 			}
+			// check csrfpass
+			if (!csrfPass) throw new ServerSideValidationException("Failed CSRF");
+
+			// return values
 			return pageControlValues;
 		} // postBody check
 	}

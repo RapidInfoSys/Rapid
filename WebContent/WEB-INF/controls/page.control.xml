@@ -59,7 +59,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <changeValueJavaScript>formPageType</changeValueJavaScript>
 	            <getValuesFunction>
 	                <![CDATA[
-return [[0,"Normal"],[1,"Submission confirmation"],[2,"Submission error"],[3,"Saved confirmation"]];
+return [[0,"Normal"],[1,"Submission confirmation"],[2,"Submission error"],[3,"Save page"],[4,"Resume page"]];
 					]]>
 	            </getValuesFunction>
 	            <refreshProperties>true</refreshProperties>
@@ -177,7 +177,7 @@ return [[0,"Normal"],[1,"Submission confirmation"],[2,"Submission error"],[3,"Sa
 	    <resources>
 	        <resource>
 	            <type>javascriptFile</type>
-	            <contents>scripts/jquery-1.10.2.js</contents>
+	            <contents>scripts/jquery-3.3.1.js</contents>
 	        </resource>
 	        <resource>
 	            <type>javascriptFile</type>
