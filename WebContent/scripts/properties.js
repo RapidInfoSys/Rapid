@@ -2326,7 +2326,7 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 	}));
 	
 	// if multi row and at least one input
-	if (query.multiRow && query.inputs.length > 0) {
+	if (query.multiRow && query.inputs && query.inputs.length > 0) {
 		// add the add input linke
 		inputsTable.append("<tr><td style='padding:0px;' colspan='2'><span class='propertyAction' style='padding-left:5px;'>add input</span></td><td>&nbsp;</td></tr>");
 		// find the input add
