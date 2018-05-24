@@ -3760,13 +3760,13 @@ function hidePropertiesPanel() {
 
 // called whenever the page is resized
 function windowResize(ev) {
-			
+	
 	// get the caller of this function
 	var caller = ev.data || ev;
 	
 	// get the window width
 	var width = _window.width();
-		
+	
 	// get the current scroll position
 	var scrollTop = _window.scrollTop();
 	
@@ -3780,8 +3780,11 @@ function windowResize(ev) {
 	// set it's height to auto
 	propertiesPanel.css("height","auto");
 	
-	// set the iframe height to auto
-	_pageIframe.css("height","auto");
+	// only reset the height of the Iframe when mouse is not down. This was causing the controls to be move out of position when selected
+	if (!_mouseDown) {
+		// set the iframe height to auto
+		_pageIframe.css("height","auto");
+	}
 	
 	// use the function to get our working height
 	var height = getHeight();
