@@ -66,7 +66,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 				
 				<xs:element name="duration"  minOccurs="0">
 					<xs:annotation>
-						<xs:documentation>A start and stop time in 24 hour format, with optional seconds of when the process should run. If the stop time is less than the start time plus the interval the process will only run once
+						<xs:documentation>A start and stop time in 24 hour format, with optional seconds of when the process should run. If the stop time is less than the start time plus the interval the process will only run once. If this element is omitted the process will run all day at the specified interval.
 						</xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
@@ -99,7 +99,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 				
 				<xs:element name="days" minOccurs="0">
 					<xs:annotation>
-						<xs:documentation>Days of the week on which the process runs
+						<xs:documentation>Days of the week on which the process runs. If this element is omitted the process will run on all days of the week.
 						</xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
