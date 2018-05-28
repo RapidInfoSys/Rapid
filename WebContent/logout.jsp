@@ -57,7 +57,7 @@ session.invalidate();
 	<div class="columnMiddle">
 		<div class="info" style="">
 			<p style="">You have been logged out</p>
-			<a href="." style="font-size:unset;"><button>Log in again</button></a>
+			<a href="login.jsp" style="font-size:unset;"><button>Log in again</button></a>
 		</div>
 	</div>
 </div>
