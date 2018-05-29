@@ -126,7 +126,7 @@ $.fn.extend({
 	  if (this[0]) $("div.loadingCover[data-id=" + this.attr("id") + "]").hide();	
 	  return this;
   },
-  hideDialogue: function(id) {
+  hideDialogue: function(reload, id) {
 	  // get a reference to closest dialogue
 	  var dialogue = $(this).closest("div.dialogue");
 	  // if we didn't find one but we have an id, use that

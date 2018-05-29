@@ -122,14 +122,16 @@ public class Control extends Action {
 					js = "$('body').scrollTop(" + js + "length ? " + js + "offset().top : 0);";
 				}
 			} else if ("hideDialogue".equals(actionType)) {
-				js += "hideDialogue('" + controlId + "');";
+				js += "hideDialogue(false,'" + controlId + "');";
 			} else {
 				// just call the action type (hide/show/toggle)
 				js += actionType + "();";
 			}
+			// add a line break;
+			js += "\n";
 			// if the stopPropagation is checked
 			if (Boolean.parseBoolean(getProperty("stopPropagation"))) {
-				js += "\nev.stopImmediatePropagation();";
+				js += "ev.stopImmediatePropagation();";
 			}
 		} else {
 			js = "/* no control specified for control action " + getId() + " */";
