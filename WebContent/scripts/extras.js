@@ -130,7 +130,7 @@ $.fn.extend({
 	  // get a reference to closest dialogue
 	  var dialogue = $(this).closest("div.dialogue");
 	  // if we didn't find one but we have an id, use that
-	  if (dialogue.length == 0 && id) dialogue = $(id + "dialogue")	  
+	  if (dialogue.length == 0 && id) dialogue = $("#" + id + "dialogue")	  
 	  // remove the cover
 	  dialogue.prev("div.dialogueCover").remove();
 	  // remove the dialogue
