@@ -56,8 +56,8 @@ function showDialogue(url, onShow) {
         error: function(server, status, error) { 
        		// if access denied
        		if (error && error.status == 403) {
-       			// go to root to authenticate		       		
-       			window.location.replace(".");
+       			// go to login to authenticate		       		
+       			window.location = "login.jsp?requestPath=" + window.location;
        		} else { 
        			alert("Error loading dialogue : " + error.responseText||message);
        		} 

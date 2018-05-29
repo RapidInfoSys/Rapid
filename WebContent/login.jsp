@@ -56,7 +56,7 @@ String message = (String) session.getAttribute("message");
 <div class="body">
 
 		<div class="columnMiddle">
-			<form name="login" id="RapidLogin" method="post" style="">	
+			<form name="login" id="RapidLogin" method="post">	
 				<div class="row">
 					<div class="columnUserInput">
 						<div class="columnUserIcon" style="">
