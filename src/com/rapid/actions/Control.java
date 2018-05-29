@@ -121,8 +121,10 @@ public class Control extends Action {
 					// scroll to control y position
 					js = "$('body').scrollTop(" + js + "length ? " + js + "offset().top : 0);";
 				}
+			} else if ("hideDialogue".equals(actionType)) {
+				js += "hideDialogue('" + controlId + "');";
 			} else {
-				// just call the action type (hide/show/toggle/hideDialogue)
+				// just call the action type (hide/show/toggle)
 				js += actionType + "();";
 			}
 			// if the stopPropagation is checked

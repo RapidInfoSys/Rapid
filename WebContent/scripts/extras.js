@@ -126,11 +126,11 @@ $.fn.extend({
 	  if (this[0]) $("div.loadingCover[data-id=" + this.attr("id") + "]").hide();	
 	  return this;
   },
-  hideDialogue: function(reload) {
+  hideDialogue: function(id) {
 	  // get a reference to closest dialogue
 	  var dialogue = $(this).closest("div.dialogue");
-	  // if we didn't find one but we have a selector, try with dialogue suffix as this was probably the page id
-	  if (dialogue.length == 0 && this.selector) dialogue = $(this.selector + "dialogue")	  
+	  // if we didn't find one but we have an id, use that
+	  if (dialogue.length == 0 && id) dialogue = $(id + "dialogue")	  
 	  // remove the cover
 	  dialogue.prev("div.dialogueCover").remove();
 	  // remove the dialogue
