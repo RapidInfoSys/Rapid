@@ -150,7 +150,7 @@ function sizeFlowLayout(layout) {
 	    <getHtmlFunction>
 	        <![CDATA[      
 // return html for adding to our parent object      
-return "<div id='" + this.id + "' class='flowLayout'></div>";
+return "<div id='" + this.id + "' class='flowLayout" + getStyleClasses(this) + "'></div>";
 	        ]]>
 	    </getHtmlFunction>
 	    
@@ -273,7 +273,7 @@ pageWindow.setTimeout( function() {
 	}    			
  }, 200);	        
 // return our html 
-return "<div id='" + this.id + "' class='flowLayoutCell'" + (this.text ? "" : " style='min-height:20px;'") + ">" + this.text + "</div>";
+return "<div id='" + this.id + "' class='flowLayoutCell" + getStyleClasses(this) + "'" + (this.text ? "" : " style='min-height:20px;'") + ">" + this.text + "</div>";
 	        ]]>
 	    </getHtmlFunction> 
  	    
