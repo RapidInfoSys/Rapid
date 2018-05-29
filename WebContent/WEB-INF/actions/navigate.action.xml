@@ -137,8 +137,14 @@ function Action_navigate(url, dialogue, id) {
 		   	type: "GET",          
 		       data: null,        
 		       async: false,
-		       error: function(error, status, message) { 
-		       		alert("Error loading dialogue : " + error.responseText||message); 
+		       error: function(error, status, message) {
+		       		// if access denied
+		       		if (error && error.status == 403) {
+		       			// go to root to authenticate		       		
+		       			window.location.replace(".");
+		       		} else { 
+		       			alert("Error loading dialogue : " + error.responseText||message);
+		       		} 
 		       },
 		       success: function(page) {
 		       	

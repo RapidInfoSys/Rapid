@@ -426,8 +426,8 @@ function getGridSelectedRowNumber(id, ev, details) {
 	var target = $(ev.target);
 	// look for whether the target was in a grid row
 	var row = target.closest("tr.rowStyle1,tr.rowStyle2");
-	// check if in a row
-	if (row[0]) {
+	// check if in a row of the correct grid
+	if (row[0] && row.closest("#" + id)[0]) {
 		// the event occured from within a row so find the table, and the index of the row from the official rows
 		var rows = row.closest("table").find("tr.rowStyle1,tr.rowStyle2").not("[data-ignore]");
 		// if this was a row to be ignored, find the previous most non-ignored row
@@ -454,8 +454,8 @@ function getGridSelectedRow(id, ev) {
 	var target = $(ev.target);
 	// look for whether the target was in a grid row
 	var row = target.closest("tr.rowStyle1,tr.rowStyle2");
-	// check if in a row
-	if (row[0]) {
+	// check if in a row of the correct grid
+	if (row[0] && row.closest("#" + id)[0]) {
 		// the event occured from within a row so find the table, and the index of the row from the official rows
 		var rows = row.closest("table").find("tr.rowStyle1,tr.rowStyle2").not("[data-ignore]");
 		// if this was a row to be ignored, find the previous most non-ignored row

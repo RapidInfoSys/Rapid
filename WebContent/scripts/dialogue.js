@@ -54,7 +54,13 @@ function showDialogue(url, onShow) {
         data: null,           
         async: false,
         error: function(server, status, error) { 
-        	alert("Error loading dialogue : " + error); 
+       		// if access denied
+       		if (error && error.status == 403) {
+       			// go to root to authenticate		       		
+       			window.location.replace(".");
+       		} else { 
+       			alert("Error loading dialogue : " + error.responseText||message);
+       		} 
         },
         success: function(page) {
         	
