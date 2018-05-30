@@ -200,8 +200,8 @@ if (data != null && data !== undefined) {
 	var control = $("#" + id);
 	data = makeDataObject(data, field);
 	if (data.rows) {	
-		// remove the no pictures message
-		control.find("span").remove();
+		// assume image not set
+		var imageSet = false;
 		// look for url or urls in the fields or use the first column if not found	
 		var urlIndex = 0;
 		if (data.fields) {
@@ -214,24 +214,33 @@ if (data != null && data !== undefined) {
 		}			
 		// loop the rows
 		for (var i in data.rows) {
-			// allow comma seperated list of urls in single field too
-			var urls = data.rows[i][urlIndex].split(",");
-			// loop the urls
-			for (var j in urls) {
-				// get the url
-				var url = urls[j];
-				// if it doesn't start with http add the sudo start for Rapid Mobile
-				if (url.indexOf("http") != 0) url = "http://images/" + url;
-				control.append("<img src='" + url  + "'></img>");
-				control.find("img").last().click( function(ev) {
-					Gallery_removeImage(ev, id);				
-				});
-				// look for our custom imageAddedEvent handler for this control
-				var imageAdded = window["Event_imageAdded_" + id];
-				// fire it if we found it
-				if (imageAdded) window["Event_imageAdded_" + id]();
-			}			
+			// make sure there is something to set
+			if (data.rows[i][urlIndex]) {
+				// allow comma seperated list of urls in single field too
+				var urls = data.rows[i][urlIndex].split(",");
+				// loop the urls
+				for (var j in urls) {
+					// get the url
+					var url = urls[j];
+					// if it doesn't start with http add the sudo start for Rapid Mobile
+					if (url.indexOf("http") != 0) url = "http://images/" + url;
+					// add an image element with the url
+					control.append("<img src='" + url  + "'></img>");
+					// remember we set an image in the gallery
+					imageSet = true;
+					// find the image element and add a click handler
+					control.find("img").last().click( function(ev) {
+						Gallery_removeImage(ev, id);				
+					});
+					// look for our custom imageAddedEvent handler for this control
+					var imageAdded = window["Event_imageAdded_" + id];
+					// fire it if we found it
+					if (imageAdded) window["Event_imageAdded_" + id]();
+				}
+			}
 		}
+		// remove the no pictures message if set
+		if (imageSet) control.find("span").remove();
 	} 
 }
 	        ]]>
