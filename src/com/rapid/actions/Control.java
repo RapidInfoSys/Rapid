@@ -116,10 +116,10 @@ public class Control extends Action {
 				// check if page
 				if (page.getId().equals(controlId)) {
 					// scroll to top of page
-					js = "$('body').scrollTop(0);";
+					js = "$('html, body').scrollTop(0);";
 				} else {
-					// scroll to control y position
-					js = "$('body').scrollTop(" + js + "length ? " + js + "offset().top : 0);";
+					// scroll to control y position, if present
+					js = "if (js.length) $('html, body').scrollTop(" + js + "offset().top);";
 				}
 			} else if ("hideDialogue".equals(actionType)) {
 				js += "hideDialogue(false,'" + controlId + "');";
