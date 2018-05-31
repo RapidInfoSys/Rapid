@@ -594,7 +594,7 @@ function showProperties(control) {
 					properties.push({"key":"formObjectType","name":"Type", "helpHtml":"A type for the object, or role. For example a contact email, mobile or telephone, notepad general or medical type, or an address physical or postal address."});					
 					properties.push({"key":"formObjectAttribute","name":"Attribute", "helpHtml":"A further attribute of the object, for example a parties title, or address start date."});					
 					properties.push({"key":"formObjectQuestionNumber","name":"Question number", "helpHtml":"The question number in the application with which this form is integrating"});
-					properties.push({"key":"formObjectText","name":"Prologue", "helpHtml":"Text that will appear in the note before the contents of the control."});
+					properties.push({"key":"formObjectText","name":"Text", "helpHtml":"Text that will appear in the note before the contents of the control."});
 				}
 				// add a row
 				propertiesTable.append("<tr></tr>");
@@ -5229,7 +5229,7 @@ function Property_formActionType(cell, propertyObject, property, details) {
 	// only if this is a form with a form adapter
 	if (_version.isForm) {
 		// start the main get value function with all basic types
-		var getValuesFunction = "return [[\"\",\"Please select...\"],[\"next\",\"next page\"],[\"prev\",\"previous page\"],[\"id\",\"copy form id\"],[\"val\",\"copy form value\"]";
+		var getValuesFunction = "return [[\"\",\"Please select...\"],[\"next\",\"go to next page\"],[\"prev\",\"go to previous page\"],[\"maxpage\",\"go to last page\"],[\"summary\",\"go to summary\"],[\"savepage\",\"go to save page\"],[\"id\",\"copy form id\"],[\"val\",\"copy form value\"]";
 		// check the page type
 		switch (_page.formPageType * 1) {
 		case 1:
@@ -5243,8 +5243,12 @@ function Property_formActionType(cell, propertyObject, property, details) {
 			getValuesFunction += ",[\"err\",\"copy form error message\"]";
 			break;
 		case 3:
-			// save resumption url, if allowed by form adapter
-			if (_version.canSaveForms) getValuesFunction += ",[\"res\",\"copy form resume url\"]";
+			// save action, if allowed by form adapter
+			if (_version.canSaveForms) getValuesFunction += ",[\"save\",\"save form\"]";
+			break;
+		case 4:
+			// resume action, if allowed by form adapter
+			if (_version.canSaveForms) getValuesFunction += ",[\"resume\",\"resume form\"]";
 			break;
 		}
 		// close the array and add the final semi colon
@@ -5274,14 +5278,18 @@ function Property_formText(cell, propertyObject, property, details) {
 // this is for the form action dataDestination
 function Property_formDataSource(cell, propertyObject, property, details) {
 	// only if the type is to copy values
-	if (propertyObject.actionType == "val") {
+	if (
+		(propertyObject.actionType == "val" && property.key != "formId" && property.key != "email" && property.key != "password") ||
+		(propertyObject.actionType == "save" && property.key != "dataSource" && property.key != "formId") ||
+		(propertyObject.actionType == "resume" && property.key != "dataSource" && property.key != "email")
+	) {
 		// add the Select
 		Property_select(cell, propertyObject, property, details);
 	} else {
 		// remove this row
 		cell.closest("tr").remove();
 	}
-} 
+}
 
 // this is for the form action dataDestination
 function Property_formDataDestination(cell, propertyObject, property, details) {
@@ -5289,6 +5297,18 @@ function Property_formDataDestination(cell, propertyObject, property, details) {
 	if (propertyObject.actionType == "id" || propertyObject.actionType == "val" || propertyObject.actionType == "sub" || propertyObject.actionType == "err" || propertyObject.actionType == "res" || propertyObject.actionType == "pdf" ) {
 		// add the select
 		Property_select(cell, propertyObject, property, details);
+	} else {
+		// remove this row
+		cell.closest("tr").remove();
+	}
+}
+
+// this is for the form save and resume types action success and fail
+function Property_formChildActions(cell, propertyObject, property, details) {
+	// only if the type is one that requires a destination
+	if (propertyObject.actionType == "save" || propertyObject.actionType == "resume") {
+		// add the select
+		Property_childActions(cell, propertyObject, property, details);
 	} else {
 		// remove this row
 		cell.closest("tr").remove();
@@ -5468,13 +5488,13 @@ var _formObjectRoles = {
 
 // a global for form objects
 var _formObjects = {
-		"address": {"name" : "Address", "roles" : _formObjectRoles["PL"], "types": [["PHYSICAL","Physical address"],["POSTAL","Postal address"]], "attributes" : [["address","Full address"],["startDate","Start date"],["endDate","End date"],["addressType","Type"]]},
-		"contact": {"name" : "Contact", "roles" : _formObjectRoles["PL"], "types" : [["","Please select..."],["email","Email address"],["mobile","Mobile number"],["phone","Phone number"],["home","Home number"],["work","Work number"],["other","Other contact"]], "attributes" : [["value","Value"],["startDate","Start date"],["endDate","End date"]]},
+		"address": {"name" : "Address", "roles" : _formObjectRoles["PL"], "types": [["PHYSICAL","Physical address"],["POSTAL","Postal address"]], "attributes" : [["address","Full address"],["startDate","Start date"],["endDate","End date"],["addressType","Type"],["other","Other"]]},
+		"contact": {"name" : "Contact", "roles" : _formObjectRoles["PL"], "types" : [["","Please select..."],["email","Email address"],["mobile","Mobile number"],["phone","Phone number"],["home","Home number"],["work","Work number"],["other","Other contact"]], "attributes" : [["value","Value"],["startDate","Start date"],["endDate","End date"],["other","Other"]]},
 		"document": {"name" : "Document", "roles" : _formObjectRoles["CPL"], "types" : [["OTHER","Other"],["MEDICAL","Medical"],["TENANCY","Tenancy"]]},
 		"note": {"name" : "Note", "roles" : _formObjectRoles["CPL"], "types" : [["OTHER","Other"],["MEDICAL","Medical"],["TENANCY","Tenancy"]]},
-		"party": {"name" : "Party", "roles" : _formObjectRoles["PL"], "types": [["OTHER","Other"],["DOCTOR","Doctor"],["LANDLORD","Landlord"],["LETAGENT","Lettings agent"],["SOLICITOR","Solicitor"],["SUPTWORKER","Support worker"]], "attributes" : [["","Please select..."],["title","Title"],["forename","Forename"],["surname","Surname"],["dob","Date of birth"],["gender","Gender"],["ethnicity","Ethnicity"],["name","Organisation name"],["relationship","Relationship"],["isJoint","Is joint case party"],["isWith","Is with main case party"],["startDate","Start date"],["endDate","End date"]]},
+		"party": {"name" : "Party", "roles" : _formObjectRoles["PL"], "types": [["OTHER","Other"],["DOCTOR","Doctor"],["LANDLORD","Landlord"],["LETAGENT","Lettings agent"],["SOLICITOR","Solicitor"],["SUPTWORKER","Support worker"]], "attributes" : [["","Please select..."],["title","Title"],["forename","Forename"],["surname","Surname"],["dob","Date of birth"],["gender","Gender"],["ethnicity","Ethnicity"],["relationship","Relationship"],["isJoint","Is joint case party"],["isWith","Is with main case party"],["name","Organisation name"],["startDate","Start date"],["endDate","End date"],["reference","Reference"],["other","Other"]]},
 		"question": {"name" : "Question", "roles" : _formObjectRoles["CPL"]},
-		"other" : {"name" : "Other"}
+		"other" : {"name" : "Other", "roles" : _formObjectRoles["CPL"]}
 }
 
 // this is for advanced form integration
@@ -5568,8 +5588,8 @@ function getPreviousObjectPropertyValue(propertyObject, key, defaultValue) {
 
 // this is for advanced form integration
 function Property_formObjectPartyNumber(cell, propertyObject, property, details) {
-	//  if there is a formObject set and it is not a case document, note, or  question
-	if (propertyObject.formObject && !((propertyObject.formObject == "document" || propertyObject.formObject == "note" || propertyObject.formObject == "question") && propertyObject.formObjectRole == "case")) {
+	//  if there is a formObject set and the role is for a party
+	if (propertyObject.formObject && (propertyObject.formObjectRole == "caseParty" || propertyObject.formObjectRole == "linkedParty")) {
 		// if it's not been set, use value of previous
 		if (!propertyObject[property.key]) propertyObject[property.key] = getPreviousObjectPropertyValue(propertyObject, property.key);		
 		// add a number property
@@ -5629,7 +5649,7 @@ function Property_formObjectAttribute(cell, propertyObject, property, details) {
 // this is for advanced form integration
 function Property_formObjectQuestionNumber(cell, propertyObject, property, details) {
 	//  if there is a formObject set and it's a question
-	if (propertyObject.formObject && propertyObject.formObject == "question") {
+	if (propertyObject.formObject && (propertyObject.formObject == "question" || propertyObject.formObject == "other")) {
 		// add a number property
 		Property_integer(cell, propertyObject, property, details);
 	} else {
