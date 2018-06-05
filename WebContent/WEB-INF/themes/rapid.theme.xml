@@ -264,9 +264,17 @@ input.validation {
   border-color: red !important;
 }
 
+#rapid_P0_C44 li {
+		padding: 10px;
+	}
+
 @media only screen and (max-width: 1300px) {
 	ul.tabsHeaderH li {
 		font-size: 17px;
+	}
+	
+	#rapid_P0_C44 li {
+		padding: 10px 0;
 	}
 }
 	    			
