@@ -268,7 +268,7 @@ input.validation {
 		padding: 10px;
 	}
 
-@media only screen and (max-width: 1300px) {
+@media only screen and (max-width: 1500px) {
 	ul.tabsHeaderH li {
 		font-size: 17px;
 	}
