@@ -263,6 +263,12 @@ label.validation {
 input.validation {
   border-color: red !important;
 }
+
+@media only screen and (max-width: 1300px) {
+	ul.tabsHeaderH li {
+		font-size: 17px;
+	}
+}
 	    			
 	    			]]>
 	    		</contents>
