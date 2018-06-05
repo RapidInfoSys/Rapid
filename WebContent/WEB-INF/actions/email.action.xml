@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <actions xmlVersion="1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:noNamespaceSchemaLocation="../schemas/action.xsd">
 
-	<!-- Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems gareth.edwards@rapid-is.co.uk 
+	<!-- Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems gareth.edwards@rapid-is.co.uk 
 		This file is part of the Rapid Application Platform Rapid is free software: 
 		you can redistribute it and/or modify it under the terms of the GNU General 
 		Public License as published by the Free Software Foundation, either version 
