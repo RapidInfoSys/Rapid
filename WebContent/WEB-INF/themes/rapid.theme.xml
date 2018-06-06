@@ -37,7 +37,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    			
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,600,700);
 
-@font-face {
+@font-face {	
 	font-family: 'Open Sans';
 	font-style: normal;
 	font-weight: 400;
@@ -118,7 +118,9 @@ ul.tabsHeaderH li {
   position: relative;
   z-index: 1;
   padding: 10px;
-  font-size: 18px;
+  font-size: 15px;
+  min-height: 45px;
+  width: 7.5em;
 }
 
 ul.tabsHeaderH li.selected{
@@ -270,7 +272,7 @@ input.validation {
 
 @media only screen and (max-width: 1500px) {
 	ul.tabsHeaderH li {
-		font-size: 17px;
+		font-size: 16px;
 	}
 	
 	#rapid_P0_C44 li {
@@ -322,6 +324,7 @@ body {
 	height: 100%; 
 	background:#d5d6d2; 
 	font-family: 'Open Sans', Arial, sans-serif;
+	font-size: 14px;
 	margin:0;	
 }
 
@@ -637,8 +640,6 @@ button:disabled {
 .loader {
 
 }
-
-
 
 
 /******************************************************************/
