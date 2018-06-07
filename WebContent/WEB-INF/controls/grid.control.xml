@@ -910,16 +910,65 @@ if (data !== undefined) {
 				
 	} // vertical scrolling
 	
+	// if have not applied sorts yet
+	if (details && !control.parent().is(".gridSortsApplied")) {
+	
+		// assume no headers
+		var headers = null;
+		// if there is vertical scrolling
+		if (details.scrollV && details.scrollHeight && details.fixedHeader) {
+			// get the visible header cells
+			headers = $("#" + id).find("table").first().find("tr:first-child td");
+		} else {
+			headers = control.find("tr:first-child td");
+		}
+	
+		// loop the columns
+		for (var i in details.columns) {
+			// if it has a sort (but not a fuxed)
+			if (details.columns[i].sort) {
+				// assume the index is i
+				var index = i;
+				// if we have multiselect move the index on one
+				if (details.multiSelect) index ++;
+				// get the header cell - move one on if we have multiselect
+				var cell = $(headers.get(index));
+				// change the cursor
+				cell.css("cursor","pointer");
+				// add a listener
+				cell.click( {index:index},function(ev) {
+					// get the span
+					var span = $(ev.target);
+					// drill down if need be
+					if (!span.is("span")) span = span.find("span");
+					// if ascending or not set (note the unicode escape)
+					if (span.html() == "\uf0de") {
+						sortGridByColumn(ev, id, details, ev.data.index, false);
+						span.html("&#xf0dd;");
+					} else {
+						sortGridByColumn(ev, id, details, ev.data.index, true);
+						span.html("&#xf0de;");
+					}
+				});
+			}
+		}
+		
+		// mark grid as having sorts applied
+		control.parent().addClass("gridSortsApplied");
+	
+	}
+	
 	// if we have multiSelect
 	if (details.multiSelect) {
-		// fixed header clones the header and the checkbox in it so we need to put the header checbox listener back
+		// fixed header clones the header and the checkbox in it so we need to put the header checkbox listener back
 		if (details.scrollV && details.scrollHeight && details.fixedHeader) {
-			$("#" + id).find("input.gridMultiSelectHeader").change(function(ev){
+			$("#" + id).find("input.gridMultiSelectHeader").click(function(ev){
 				// get the header value
 				var select = $(this).prop("checked");
 				// update rowSelect accordingly
 				if (select) {
-					control.find("tr").addClass("rowSelect");
+					// put rowSelect class on all rows expect for the top one, as it's the header
+					control.find("tr:not(:first-child)").addClass("rowSelect");
 				} else {
 					control.find("tr").removeClass("rowSelect");
 				}
@@ -969,8 +1018,8 @@ if (data !== undefined) {
 	            <filterFunction>
 <![CDATA[
 var target = $(ev.target);
-// don't fire if the target is the top row or tbody
-if (target.closest("tr").index() == 0 || target.is("tbody")) return true;
+// don't fire if the target is the top row or tbody, but allow the multi select
+if ((target.closest("tr").index() == 0 || target.is("tbody")) && !target.is("input.gridMultiSelectHeader")) return true;
 ]]>	                
 	            </filterFunction>
 	        </event>
@@ -1051,40 +1100,7 @@ var control = $("#" + id);
 if (!control.is("table")) control = control.find("table").last();     
 // check there are details	        
 if (details) {
-	// if there are columns
-	if (details.columns) {				
-		// get the header cells
-		var headers = control.find("tr:first-child td");
-		// loop the columns
-		for (var i in details.columns) {
-			// if it has a sort
-			if (details.columns[i].sort) {
-				// assume the index is i
-				var index = i;
-				// if we have multiselect move the index on one
-				if (details.multiSelect) index ++;
-				// get the header cell - move one on if we have multiselect
-				var cell = $(headers.get(index));
-				// change the cursor
-				cell.css("cursor","pointer");
-				// add a listener
-				cell.click( {index:index},function(ev) {
-					// get the span
-					var span = $(ev.target);
-					// drill down if need be
-					if (!span.is("span")) span = span.find("span");
-					// if ascending or not set (note the unicode escape)
-					if (span.html() == "\uf0de") {
-						sortGridByColumn(ev, id, details, ev.data.index, false);
-						span.html("&#xf0dd;");
-					} else {
-						sortGridByColumn(ev, id, details, ev.data.index, true);
-						span.html("&#xf0de;");
-					}
-				});
-			}
-		}
-	}
+
 	// if this is a fixed header
 	if (details.scrollV && details.fixedHeader) {
 	
@@ -1106,9 +1122,9 @@ if (details) {
 		});
 	
 	}
-	// if this is multiSelect, set up the header listener
+	// if this is multiSelect, set up the header checkbox listener
 	if (details.multiSelect) {
-		$("#" + id).find("input.gridMultiSelectHeader").change(function(ev){
+		$("#" + id).find("input.gridMultiSelectHeader").change(function(ev) {
 			// get the header value
 			var select = $(this).prop("checked");
 			// update rowSelect accordingly
