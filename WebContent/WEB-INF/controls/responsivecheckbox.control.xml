@@ -205,7 +205,7 @@ var value = null;
 if (ev.validation) {
 	var container = control.closest(".validated");
 	if (!container[0]) container = control.parent();
-	container.find("input:not([type=hidden])").each( function() {
+	container.find("input[type=checkbox]:visible:not([type=hidden])").each( function() {
 		if ($(this).prop("checked")) {
 			value = "true";
 		}
