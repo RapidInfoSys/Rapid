@@ -443,6 +443,11 @@ public abstract class FormAdapter {
 		}
 		return "<div class='formSummaryPage'><h2>" + label + "</h2>\n";
 	}
+	
+	// the edit or view link for the summary page
+	protected String getSummaryPageLinkHtml(Page page, String pageReturn) {
+		return "<a href='~?a=" + _application.getId() + "&v=" + _application.getVersion() + "&p=" + page.getId() + "'>" + pageReturn + "</a>\n";
+	}
 
 	// the end of a page block in the form summary
 	protected String getSummaryPageEndHtml(RapidRequest rapidRequest, Application application, Page page, boolean email) {
@@ -1164,7 +1169,7 @@ public abstract class FormAdapter {
 						writer.write(valuesStringBuilder.toString());
 
 						// if not email write the edit link
-						if (!email) writer.write("<a href='~?a=" + _application.getId() + "&v=" + _application.getVersion() + "&p=" + page.getId() + "'>" + pageReturn + "</a>\n");
+						if (!email) writer.write(getSummaryPageLinkHtml(page, pageReturn));
 
 						// write the page end html
 						writer.write(getSummaryPageEndHtml(rapidRequest, _application, page, email));
@@ -1644,7 +1649,7 @@ public abstract class FormAdapter {
 				}
 			}
 			// check csrfpass
-			if (!csrfPass) throw new ServerSideValidationException("Failed CSRF");
+			//if (!csrfPass) throw new ServerSideValidationException("Failed CSRF");
 
 			// return values
 			return pageControlValues;
