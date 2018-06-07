@@ -40,6 +40,7 @@ function addReorder(collection, items, rerender) {
 		addListener( img.mousedown( {collection: collection, index: index}, function(ev){
 			// get a reference to the image
 			var img = $(ev.target);
+			
 			// retain a reference to the image we have selected
 			_reorderDetails = { object: img, collection: ev.data.collection, index: ev.data.index };
 		}));

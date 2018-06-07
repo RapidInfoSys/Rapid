@@ -258,8 +258,8 @@ function loadSOA(details) {
 					}
 				}
 				// populate child element
-				requestTable.append("<tr><td class='elementName'><input value='" + element.name + "' /></td><td>" + getSOADataTypeSelect(element.dataType) + "</td><td class='restriction'>" + text + "</td><td><img class='delete' src='images/bin_16x16.png' /><img class='reorder' src='images/moveUpDown_16x16.png' /></td></tr>");				
-			}
+				requestTable.append("<tr><td class='elementName'><input value='" + element.name + "' /></td><td>" + getSOADataTypeSelect(element.dataType) + "</td><td class='restriction'>" + text + "</td><td><i class='delete fa fa-trash' style='margin-left:1px;'></i><div class='reorder fa-stack fa-sm' title='Reorder this action' style='top:0; right:0;'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div></td></tr>");				
+			}  
 			
 			// name
 			requestTable.find("input").keyup( details, function(ev) {
@@ -284,12 +284,12 @@ function loadSOA(details) {
 			});
 			
 			// reorder
-			addReorder(requestElement.childElements, requestTable.find("img.reorder"), function(ev) {
+			addReorder(requestElement.childElements, requestTable.find("div.reorder"), function(ev) {
 				loadSOA(details);
 			});
 			
 			// delete
-			requestTable.find("img.delete").click( details, function(ev) {
+			requestTable.find("i.delete").click( details, function(ev) {
 				// remove from array
 				ev.data.requestSchema.rootElement.childElements.splice($(ev.target).parent().parent().index()-1,1);
 				// refresh
@@ -362,7 +362,7 @@ function loadSOA(details) {
 					}
 				}
 				// populate child element
-				responseTable.append("<tr><td class='elementName'><input class='elementName' value='" + element.name + "' /></td><td class='elementField'><input class='elementField' value='" + element.field + "' /></td><td>" + getSOADataTypeSelect(element.dataType) + "</td><td class='restriction'>" + text + "</td><td><img class='delete' src='images/bin_16x16.png' /><img class='reorder' src='images/moveUpDown_16x16.png' /></td></tr>");				
+				responseTable.append("<tr><td class='elementName'><input class='elementName' value='" + element.name + "' /></td><td class='elementField'><input class='elementField' value='" + element.field + "' /></td><td>" + getSOADataTypeSelect(element.dataType) + "</td><td class='restriction'>" + text + "</td><td><i class='delete fa fa-trash' style='margin-left:1px;'></i><div class='reorder fa-stack fa-sm' title='Reorder this action' style='top:0; right:0;'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div></td></tr>");				
 			}
 			
 			// name
@@ -396,12 +396,12 @@ function loadSOA(details) {
 			});
 			
 			// reorder
-			addReorder(responseElement.childElements, responseTable.find("img.reorder"), function(ev) {
+			addReorder(responseElement.childElements, responseTable.find("div.reorder"), function(ev) {
 				loadSOA(details);
 			});
 			
 			// delete
-			responseTable.find("img.delete").click( details, function(ev) {
+			responseTable.find("i.delete").click( details, function(ev) {
 				// remove from array
 				ev.data.responseSchema.rootElement.childElements.splice($(ev.target).parent().parent().index()-1,1);
 				// refresh

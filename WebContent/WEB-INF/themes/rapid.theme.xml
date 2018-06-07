@@ -507,6 +507,8 @@ table.tableValidation tr td:first-child {
 	vertical-align: top; 
 }
 
+table.dialogueTable { user-select: none; }
+
 table.dialogueTable.webserviceTable select {
 	margin: 0;
 	height: 28px;
