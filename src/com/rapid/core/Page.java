@@ -499,7 +499,7 @@ public class Page {
 	public void getChildActions(List<Action> actions, Control control) {
 		getChildActions(actions, control, null);
 	}
-	
+
 	// add actions and child actions
 	public void addAction(List<Action> actions, Action action) {
 		// if we have an action
@@ -1319,8 +1319,8 @@ public class Page {
 			stringBuilder.append("var _appVersion = '" + application.getVersion() + "';\n");
 		}
 		stringBuilder.append("var _pageId = '" + _id + "';\n");
-		stringBuilder.append("var _pageName = '" + _name + "';\n");
-		stringBuilder.append("var _pageTitle = '" + _title + "';\n");
+		stringBuilder.append("var _pageName = '" + _name.replace("'", "\\'") + "';\n");
+		stringBuilder.append("var _pageTitle = '" + _title.replace("'", "\\'") + "';\n");
 		// this flag indicates if the Rapid Mobile client is regaining the foreground
 		stringBuilder.append("var _mobileResume = false;\n");
 		// this flag indicates if any controls are loading asynchronously and the page load method can't be called
@@ -1904,18 +1904,18 @@ public class Page {
 							}
 							// close the function
 							formValues.append("};\n\n");
-							
+
 							// write the form values
 				    		writer.write(formValues.toString());
 
 						} else {
-							
+
 							// set whether submitted
 							writer.write("var _formSubmitted = false;\n\n");
-							
+
 							// a dummy setFormValues method
 							writer.write("function Event_setFormValues(ev) {}\n\n");
-							
+
 						}
 
 						// write the form id into the page - not necessary for dialogues
