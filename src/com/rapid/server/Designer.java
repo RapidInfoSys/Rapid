@@ -66,7 +66,6 @@ import org.w3c.dom.NodeList;
 
 import com.rapid.actions.Logic;
 import com.rapid.actions.Logic.Condition;
-import com.rapid.actions.Logic.Value;
 import com.rapid.core.Action;
 import com.rapid.core.Application;
 import com.rapid.core.Application.ValueList;
@@ -1029,7 +1028,7 @@ public class Designer extends RapidHttpServlet {
 										}
 										out.print(")");
 									}
-									
+
 								} else {
 									// print the page name
 									out.print(page.getId() + " " + page.getName() + label);
@@ -1080,14 +1079,14 @@ public class Designer extends RapidHttpServlet {
 													// if questions it's likely to be a form
 													if ("questions".equals(actionName))  {
 
+														// look for a form object
+														String formObject = control.getProperty("formObject");
+
 														// if there is a label but not a button, but radios are allowed
-														if (label != null && (!control.getType().contains("button") || control.getType().contains("radio"))) {
+														if ((label != null && (!control.getType().contains("button") || control.getType().contains("radio"))) || formObject != null) {
 
 															// print the label
 															out.print("\t" + label);
-
-															// look for a form object
-															String formObject = control.getProperty("formObject");
 
 															// if we got one
 															if (formObject != null) {
