@@ -1085,6 +1085,9 @@ public class Designer extends RapidHttpServlet {
 														// if there is a label but not a button, but radios are allowed
 														if ((label != null && (!control.getType().contains("button") || control.getType().contains("radio"))) || formObject != null) {
 
+															// use name if label null
+															if (label == null) label = name;
+
 															// print the label
 															out.print("\t" + label);
 
