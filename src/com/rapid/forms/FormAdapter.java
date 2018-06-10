@@ -443,10 +443,15 @@ public abstract class FormAdapter {
 		}
 		return "<div class='formSummaryPage'><h2>" + label + "</h2>\n";
 	}
-	
+
 	// the edit or view link for the summary page
 	protected String getSummaryPageLinkHtml(Page page, String pageReturn) {
 		return "<a href='~?a=" + _application.getId() + "&v=" + _application.getVersion() + "&p=" + page.getId() + "'>" + pageReturn + "</a>\n";
+	}
+
+	// get the default form submit button
+	protected String getFormSubmitButtonHtml(RapidRequest rapidRequest) throws UnsupportedEncodingException{
+		return "<form action='~?a=" + _application.getId() + "&v=" + _application.getVersion()  + "&action=submit' method='POST'>\n<input type='hidden' name='csrfToken' value='" + rapidRequest.getCSRFToken() + "' />\n<button type='submit' class='formSummarySubmit'>Submit</button>\n</form>\n";
 	}
 
 	// the end of a page block in the form summary
@@ -1198,7 +1203,7 @@ public abstract class FormAdapter {
 				if (submittedDateTime != null) writer.write("<span class='formSubmittedDateTime'>" + submittedDateTime + "</span>");
 			} else {
 				// add the submit button
-				writer.write("<form action='~?a=" + _application.getId() + "&v=" + _application.getVersion()  + "&action=submit' method='POST'>\n<input type='hidden' name='csrfToken' value='" + rapidRequest.getCSRFToken() + "' />\n<button type='submit' class='formSummarySubmit'>Submit</button>\n</form>\n");
+				writer.write(getFormSubmitButtonHtml(rapidRequest));
 			}
 		}
 
