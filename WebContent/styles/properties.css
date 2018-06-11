@@ -306,7 +306,6 @@ td.propertySubHeader {
 	vertical-align:top;
 	box-sizing: border-box;
 	transition: background 0.3s ease;
-	max-width: 50px;
 }
 
 .dialogueTable select:hover, .dialogueTable input:hover{
