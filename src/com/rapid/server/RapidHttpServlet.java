@@ -324,53 +324,59 @@ public class RapidHttpServlet extends HttpServlet {
 
 	public void sendException(RapidRequest rapidRequest, HttpServletResponse response, Exception ex) throws IOException {
 
+		// set the status
 		response.setStatus(500);
 
+		// get a writer to put the content in
 		PrintWriter out = response.getWriter();
 
+		// print the message
 		out.print( ex.getLocalizedMessage());
 
+		// if showStackTrace is set in web.xml
 		boolean showStackTrace = Boolean.parseBoolean(getServletContext().getInitParameter("showStackTrace"));
 
-		if (showStackTrace) {
+		// print the stack trace if requested
+		if (showStackTrace) out.print(Exceptions.getStringStackTrace(ex));
 
-			out.print(Exceptions.getStringStackTrace(ex));
-
-		}
-
+		// check for rapid request
 		if (rapidRequest == null) {
 
+			// simple log if none
 			_logger.error(ex);
 
 		} else {
 
+			// include rapid request details if we have one
 			_logger.error(ex.getLocalizedMessage() + "\n" + rapidRequest.getDetails(), ex);
 
 		}
 
+		// close the writer
 		out.close();
 
 	}
 
 	public void sendMessage(HttpServletResponse response, int status, String title, String message ) throws IOException {
 
+		// set the status
 		response.setStatus(status);
 
+		// set the content type
 		response.setContentType("text/html");
 
+		// get a writer to put the content in
 		PrintWriter out = response.getWriter();
 
 		// write a header
 		out.write("<html>\n  <head>\n    <title>Rapid - " + title + "</title>\n    <meta charset=\"utf-8\"/>\n    <link rel='stylesheet' type='text/css' href='styles/index.css'></link>\n  </head>\n");
 
-		// write no permission
-		out.write("  <body>\n    <div class=\"image\"><a href=\"http://www.rapid-is.co.uk\"><img src=\"images/RapidLogo_60x40.png\" /></a></div>\n    <div class=\"title\"><span>Rapid - " + title + "</span><span class=\"link\"><a href=\"logout.jsp\">log out</a></span></div>\n    <div class=\"info\"><p>" + message + "</p></div>\n  </body>\n</html>");
+		// write body
+		out.write("  <body>\n    <div class=\"image\"><a href=\"http://www.rapid-is.co.uk\"><img title=\"Rapid Information Systems\" src=\"images/RapidLogo.svg\" /></a></div>\n    <div class=\"midTitle\"><span>Rapid</span></div>\n    <div class=\"subBar\"><span class=\"link\"><a href=\"logout.jsp\">LOG OUT</a></span><span class=\"versionColumn\">" + Rapid.VERSION + "</span></div>\n    <div class=\"body\">\n      <div class=\"columnMiddle\">\n          <div class=\"info\">\n            <h1>" + title + "</h1>\n            <p>" + message + "</p>\n          </div>\n        </div>\n      </div>\n    </div>\n  </body>\n</html>");
 
-		out.println();
-
+		// close the writer
 		out.close();
 
 	}
-
 
 }
