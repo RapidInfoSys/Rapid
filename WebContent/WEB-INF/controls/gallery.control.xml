@@ -230,7 +230,18 @@ if (data != null && data !== undefined) {
 					imageSet = true;
 					// find the image element and add a click handler
 					control.find("img").last().click( function(ev) {
-						Gallery_removeImage(ev, id);				
+						if (details) {
+							if (details.onImageClick == "large") {
+								Gallery_showImage(ev,id);
+							} else if (details.onImageClick == "caption") {
+								var index = $(ev.target).index();
+								if (details.captions && details.captions[index]) alert(details.captions[index]);
+							} else if (details.onImageClick != "nothing") {
+								Gallery_removeImage(ev, id);			
+							}
+						} else {
+							Gallery_removeImage(ev, id);
+						}				
 					});
 					// look for our custom imageAddedEvent handler for this control
 					var imageAdded = window["Event_imageAdded_" + id];
@@ -281,6 +292,7 @@ return "#" + this.id + " img";
 $("#" + id).children("img").click( function(ev) {
 	var details = window[id + "details"];
 	if (details) {
+		// changes here need to be replicated in setData
 		if (details.onImageClick == "large") {
 			Gallery_showImage(ev,id);
 		} else if (details.onImageClick == "caption") {
