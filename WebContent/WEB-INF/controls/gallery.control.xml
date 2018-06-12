@@ -76,7 +76,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 						return [["nothing","Do nothing"],["","Prompt to remove image"],["caption","Show image caption"]];
 					]]>
 	            </getValuesFunction>
-	            <helpHtml>Sets a small click event for when an image in the gallery is clicked on.</helpHtml>
+	            <helpHtml>What to do when an image in the gallery is clicked on..</helpHtml>
 	        </property>
 	        
 	         <property>
@@ -96,8 +96,8 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	                <![CDATA[
 div.gallery img {
 	cursor:pointer;
-}	          
- 
+}
+
 	                ]]>
 	            </contents>
 	        </resource>
@@ -136,13 +136,13 @@ function Gallery_showImage(ev, id) {
 	// get the index
 	var index = img.index();
 	// get the details
-	var details = window[id + "details"];	
+	var details = window[id + "details"];
 	// if we've got the details
 	if (details) {					
-	// show the caption
-	gallery.append(details.captions[index]);
+		// show the caption
+		gallery.append(details.captions[index]);
 	}
-}      
+}
 
 	                ]]>
 	            </contents>
@@ -286,7 +286,7 @@ $("#" + id).children("img").click( function(ev) {
 		} else if (details.onImageClick == "caption") {
 			var index = $(ev.target).index();
 			if (details.captions && details.captions[index]) alert(details.captions[index]);
-		} else {
+		} else if (details.onImageClick != "nothing") {
 			Gallery_removeImage(ev, id);			
 		}
 	}		
