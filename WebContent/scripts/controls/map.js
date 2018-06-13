@@ -225,6 +225,7 @@ function loadedMapJavaScript() {
 		// call it if there was one
 		if (pageload) pageload($.Event('pageload'));	
 	}
+
 }
 
 function rebuildLoadedMap(id) {
@@ -302,6 +303,17 @@ function rebuildLoadedMap(id) {
 	    		f_dragEnd($.Event("drag"));
 			});
 		}
+		
+		// a listener to stop the zoom on bounds being too small
+		var zoomChangeBoundsListener = google.maps.event.addListenerOnce(map, 'bounds_changed', function(event) {		    	
+			// wait a second for map to draw as it's async
+			setTimeout(function(){ 
+				// if zoom is greater than 18 (higher values are closer and more is too close)
+				if (map.getZoom() > 18 ){
+					map.setZoom(18);  // set zoom to max
+				}
+			},1000);		        
+		});
 		
 	} else {
 
@@ -428,6 +440,7 @@ function setMapCentre(map, pos) {
 
 // add a map marker, used by both the addMapMarkers function (from the properties), and the getPosition callback
 function addMapMarker(map, pos, details, data, rowIndex, zoomMarkers) {
+	// skip if no lat and lng - but we might be coming back if we then searched
 	if (map && pos && pos.lat && pos.lng) {		
 		var markerOptions = {
 			map: map,
@@ -453,8 +466,8 @@ function addMapMarker(map, pos, details, data, rowIndex, zoomMarkers) {
 			    window[details.markerClickFunction]($.Event('markerclick'));
 			});
 		}
-		// if we have all the markers now, zoom and centre them
-		if (map.markers.length > 0 && zoomMarkers == rowIndex*1) {
+		// if we have all the markers now, zoom and centre them - this seems to only do up to 10, it might have something to do with search limits
+		if (map.markers.length > 0 && zoomMarkers > 0) {
 			if (zoomMarkers == 0) {
 				// single marker, check getPosition is present
 				if (map.markers[0].getPosition) {
