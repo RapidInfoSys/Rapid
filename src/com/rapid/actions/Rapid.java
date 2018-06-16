@@ -1576,6 +1576,7 @@ public class Rapid extends Action {
 
 						// add the name and value
 						jsonParameter.put("name", parameter.getName());
+						jsonParameter.put("description", parameter.getDescription());
 						jsonParameter.put("value", parameter.getValue());
 
 					}
@@ -2769,6 +2770,7 @@ public class Rapid extends Action {
 
 				int index = jsonAction.getInt("index");
 				String name = jsonAction.getString("name");
+				String description = jsonAction.getString("description");
 				String value = jsonAction.getString("value");
 
 				// fetch the parameter
@@ -2776,6 +2778,7 @@ public class Rapid extends Action {
 
 				// update it
 				parameter.setName(name);
+				parameter.setDescription(description);
 				parameter.setValue(value);
 
 				// save the app

@@ -597,6 +597,22 @@ function hideControlValidation(controlId) {
 	control.next("div.validation.validationMessage").remove();
 }
 
+function getDataObjectFieldIndex(data, field, caseSensitive) {
+	if (data && data.fields && data.fields.length > 0 && field) {
+		for (var i in data.fields) {
+			if (data.fields[i]) {
+				if (caseSensitive) {
+					if (data.fields[i] == field) return i;
+				} else {
+					if (data.fields[i].toLowerCase() == field.toLowerCase()) return i;
+				}
+			}
+		}
+		return -1;
+	}
+	return null;
+}
+
 function makeDataObject(data, field) {
 	// check we were passed something to work with
 	if (data != null && data !== undefined) {

@@ -705,7 +705,7 @@ function Action_rapid(ev, appId, pageId, controlId, actionId, actionType, rapidA
 			data = { actionType: actionType, appId: $("#rapid_P0_C43").val(), version: $("#rapid_P0_C1044_").val(), index: $(ev.target).closest("tr").index()-1 };
 		break;
 		case "SAVEPARAM" :
-			data = { actionType: actionType, appId: $("#rapid_P0_C43").val(), version: $("#rapid_P0_C1044_").val(), index: $("#rapid_P0_C1108_").find("tr.rowSelect").index()-1, name: $("#rapid_P0_C1134_").val(), value: $("#rapid_P0_C1123_").val()};
+			data = { actionType: actionType, appId: $("#rapid_P0_C43").val(), version: $("#rapid_P0_C1044_").val(), index: $("#rapid_P0_C1108_").find("tr.rowSelect").index()-1, name: $("#rapid_P0_C1134_").val(), description: $("#rapid_P0_C2802_").val(), value: $("#rapid_P0_C1123_").val()};
 		break;
 		case "NEWRESOURCE" :
 			data = { actionType: actionType, appId: $("#rapid_P0_C43").val(), version: $("#rapid_P0_C1044_").val() };
