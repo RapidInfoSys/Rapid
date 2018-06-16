@@ -1190,7 +1190,8 @@ path, .jtk-endpoint {
     left: 0;
     right: 0;
     padding: 10px;
-    background: #ddd;
+    color: white;
+    background: #f4091b;
     text-align: center;
     font-size: 16px;
     margin-top: -45px;
