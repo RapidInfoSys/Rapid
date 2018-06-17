@@ -119,7 +119,6 @@ ul.tabsHeaderH li {
   z-index: 1;
   padding: 10px;
   font-size: 15px;
-  min-height: 45px;
   width: 7.5em;
 }
 
@@ -267,18 +266,9 @@ input.validation {
 }
 
 #rapid_P0_C44 li {
-		padding: 10px;
-	}
-
-@media only screen and (max-width: 1500px) {
-	ul.tabsHeaderH li {
-		font-size: 16px;
-	}
-	
-	#rapid_P0_C44 li {
-		padding: 10px 0;
-	}
+	padding: 10px;
 }
+
 	    			
 	    			]]>
 	    		</contents>
