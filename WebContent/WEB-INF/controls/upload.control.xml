@@ -92,6 +92,13 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	        </property>
 	        
 	        <property>
+	            <key>maxSize</key>
+	            <name>Max file size</name>
+	            <changeValueJavaScript>integer</changeValueJavaScript>
+	            <helpHtml>Maximum allowed file size in megabytes.</helpHtml>
+	        </property>
+	        
+	        <property>
 	            <key>resizeWidth</key>
 	            <name>Resize width</name>
 	            <changeValueJavaScript>integer</changeValueJavaScript>
@@ -177,6 +184,7 @@ return {
   dictRemoveFile: this.dictRemoveFile,
   acceptedFiles: this.acceptedFiles,
   maxFiles: this.maxFiles,
+  maxSize: this.maxSize,
   resizeWidth: this.resizeWidth,
   resizeHeight: this.resizeHeight,  
   resizeQuality: this.resizeQuality / 100,
@@ -298,6 +306,7 @@ if (details.dictCancelUpload) options.dictCancelUpload = details.dictCancelUploa
 if (details.dictRemoveFile) options.dictRemoveFile = details.dictRemoveFile;
 if (details.acceptedFiles) options.acceptedFiles = details.acceptedFiles;
 if (details.maxFiles) options.maxFiles = details.maxFiles;
+if (details.maxSize) options.maxFilesize = details.maxSize*1;
 if (details.resizeWidth) options.resizeWidth = details.resizeWidth;
 if (details.resizeHeight) options.resizeHeight = details.resizeHeight;
 if (details.resizeQuality) options.resizeQuality = details.resizeQuality;
