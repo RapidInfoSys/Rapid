@@ -331,7 +331,7 @@ function Action_rapid(ev, appId, pageId, controlId, actionId, actionType, rapidA
 				appId: $("#rapid_P0_C43").val(), 
 				version: $("#rapid_P0_C1044_").val(),
 				themeType: $("#rapid_P0_C1570_").val(), 
-				styles: $("#rapid_P0_C116").val(),
+				styles: _codeEditors["rapid_P0_C2809_"].getValue(),
 				statusBarColour: $("#rapid_P0_C1414_").val(), 
 				statusBarHighlightColour: $("#rapid_P0_C1418_").val(), 
 				statusBarTextColour: $("#rapid_P0_C1415_").val(), 
