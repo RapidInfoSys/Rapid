@@ -28,8 +28,10 @@ package com.rapid.soa;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -113,15 +115,16 @@ public interface SOADataReader {
 		private static class SOAXMLContentHandler implements ContentHandler {
 
 			private SOASchema _soaSchema;
-			private int _currentColumn,  _currentRow, _previousColumn;
+			private int _currentColumn, _currentRow, _previousColumn;
 			private SOAElement _currentElement;
-			private String _root, _currentElementId, _authentication;
+			private String _root, _authentication, _currentElementId;
 			private boolean _rootFound, _ignoreHeader;
 
 			private List<String> _columnElementIds = new ArrayList<String>();
 			private List<Integer> _columnRows = new ArrayList<Integer>();
 			private List<SOAElement> _columnParents = new ArrayList<SOAElement>();
-			
+			private Map<Integer,String> _columnArrays = new HashMap<Integer,String>();
+
 			private Logger _logger = LogManager.getLogger(this.getClass());
 
 			public SOAXMLContentHandler(SOASchema soaSchema, String root) {
@@ -169,14 +172,15 @@ public interface SOADataReader {
 			@Override
 			public void startDocument() throws SAXException {
 				// reset all our counters when we first start the document
-				_currentColumn = 0;
-				_currentRow = 0;
+				_currentColumn = -1;
+				_currentRow = -1;
 				_currentElement = null;
-				_currentElementId = "";
-				_previousColumn = -1;
+				_currentElementId = null;
+				_previousColumn = 0;
 				_columnElementIds.clear();
 				_columnRows.clear();
 				_columnParents.clear();
+				_columnArrays.clear();
 				_ignoreHeader = false;
 				_authentication = null;
 				// check whether we got a root for us to start at
@@ -217,6 +221,9 @@ public interface SOADataReader {
 			@Override
 			public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
 
+				// start
+				_logger.debug("startElement called for " + localName + "/" + qName);
+
 				// ignore all elements pertaining to the envelope
 				if ("http://schemas.xmlsoap.org/soap/envelope/".equals(uri)) {
 
@@ -230,39 +237,72 @@ public interface SOADataReader {
 						// check both local and qualified names for if this is the root we want
 						if (localName.equals(_root) || qName.equals(_root)) {
 							_rootFound = true;
-							// reset the current column to 0 in case the root we want is not the first child
-							_currentColumn = 0;
+							// reset the current column to -1 in case the root we want is not the first child
+							_currentColumn = -1;
 						}
 					}
 
 					// if we've found our root!
 					if (_rootFound) {
 
-						// make a new branch for this element
-						_currentElement = new SOAElement(localName);
+						/*
 
-						// reset or resume the row counter if the column is different
-						if (_previousColumn == _currentColumn) {
-							_currentRow ++;
+						 important globals!
+
+						_currentColumn // our x position, as new child elements are started, this means new columns
+						_currentRow = // our y position, when child elements are closed, peers create new rows and we return to the row we left
+						_currentElement = // the element currently being processed
+						_currentElementId = // the id of the element currently being processed
+						_previousColumn = // the previous columns id
+						_columnElementIds // a list of id's of the last element in each column to be procsses
+						_columnRows // a list of the last row number processed for each column
+						_columnParents // a list of the last parent processed for each column
+
+
+						We need to merge elementArray and element (the member) into elementArray[] (like the schema)
+
+						*/
+
+						// anything that ends in "Array" is an array
+						if (localName.endsWith("Array") || qName.endsWith("Array")) {
+
+							// remember that we are currently processing an array
+							_columnArrays.put(_currentColumn + 1, localName);
+
 						} else {
 
-							// add a branch id for this column if required
-							if (_currentColumn > _columnElementIds.size() - 1) {
-								// check root or further down
-								if (_currentColumn == 0) {
-									// root is simple
-									_columnElementIds.add("0");
-								} else {
-									// other columns are the most recent parent with an extra 0
-									_columnElementIds.add(_columnElementIds.get(_currentColumn - 1) + ".0");
-								}
+							// inc the column (note we skip this for arrays)
+							_currentColumn ++;
+
+							// log
+							//_logger.debug("Starting element " + localName + " at column " + _currentColumn);
+
+							// make a new branch for this element
+							_currentElement = new SOAElement(localName);
+
+							// if not root add this element as a child to the parent is the prior column
+							if (_currentColumn == 0) {
+
+								// root is simple, set _currentElementId
+								_currentElementId = "0";
+								// retain as column id
+								_columnElementIds.add("0");
+								// retain parent of this column
+								_columnParents.add(_currentElement);
+
+							} else {
+
+								// get the parent of this column
+								SOAElement parentElement = _columnParents.get(_currentColumn - 1);
+								// set parent of this branch
+								_currentElement.setParentElement(parentElement);
+								// add this child node to its parent for cross reference - this also adds it to _columnParents
+								parentElement.addChildElement(_currentElement);
+
 							}
 
-							// if we've not seen this column before
-							if (_currentColumn > _columnParents.size() - 1) {
-								// add a parent node
-								_columnParents.add(_currentElement);
-							}
+							// if the column is the same (but not an array we're working on) this is a new row (root defaults here) increment the row
+							if (_previousColumn == _currentColumn) _currentRow ++;
 
 							// add row counter for this column if required
 							if (_currentColumn > _columnRows.size() - 1) {
@@ -275,139 +315,116 @@ public interface SOADataReader {
 								_currentRow = _columnRows.get(_currentColumn) + 1;
 							}
 
-							// remember this column
-							_previousColumn = _currentColumn;
-							
-						}
-						
-						// anything that ends in "Array" is an array
-						if (localName.endsWith("Array") || qName.endsWith("Array")) _currentElement.setIsArray(true);
+							// set new id to the column parent id (this covers root and arrays)
+							String newId = _currentElementId;
 
-						// if not root add this element as a child to the parent is the prior column
-						if (_currentColumn == 0) {
-
-							_currentElementId = "0";
-
-						} else {
-
-							// get the parent of this column
-							SOAElement parentElement = _columnParents.get(_currentColumn - 1);
-							// set parent of this branch
-							_currentElement.setParentElement(parentElement);
-							// add this child node to its parent for cross reference
-							parentElement.addChildElement(_currentElement);
-
-							// set the current branch id from the parent
-							_currentElementId = _columnElementIds.get(_currentColumn - 1);
-							
-							// check if an array
-							if (parentElement.getIsArray()){
-								
-								// an array so assume new id has the current row added to it
-								String newId = _currentElementId;
-								
-								// get the schema element for this id
-								SOASchemaElement schemaElement = _soaSchema.getElementById(newId);
-								
-								// if we got one
-								if (schemaElement != null) {
-									
-									// get and the column row
-									int columnRow = _columnRows.get(_currentColumn - 1); 
-									
-									// keep incrementing row and checking non-array names are different and isoptional, until we get nothing or match name
-									while (schemaElement != null && !localName.replace("Array", "").equals(schemaElement.getName()) && schemaElement.getIsOptional()) {
-										
-										_logger.debug("NOT THE ARRAY WE WERE LOOKING FOR");
-										
-										// inc the column row
-										columnRow ++;
-																				
-										// get the newId
-										newId = _columnElementIds.get(_currentColumn - 2) + "." + columnRow;
-
-										// get this element
-										schemaElement = _soaSchema.getElementById(newId);
-
+							// check not root
+							if (_currentColumn > 0) {
+								// if there is an array at this column
+								if ((localName + "Array").equals(_columnArrays.get(_currentColumn))) {
+									// remember this element is part of an array
+									_currentElement.setIsArray(true);
+									// if we just closed an arry
+									if (_previousColumn > _currentColumn) {
+										// this is an array member use the last id for this column
+										newId = _columnElementIds.get(_currentColumn);
+										// reset current row for the start of the next member
+										_columnRows.set(_currentColumn + 1, -1);
+										// reset this
+										_currentRow --;
+									} else {
+										// use previous column id plus current row
+										newId = _columnElementIds.get(_currentColumn - 1) + "." + _currentRow;
 									}
-
+								} else {
+									// not array nor root use previous column id plus current row
+									newId = _columnElementIds.get(_currentColumn - 1) + "." + _currentRow;
 								}
-								
-								// set current id to new id
-								_currentElementId = newId;
-								
-								
-							} else {
-								
-								// not an array assume new id has the current row added to it
-								String newId = _currentElementId + "." + _currentRow;
-								
-								// get the schema element for this id
-								SOASchemaElement schemaElement = _soaSchema.getElementById(newId);
-								
-								// if we got one
-								if (schemaElement != null) {
-									
-									// keep incrementing row and checking if names are different and isoptional, until we get nothing or match name
-									while (schemaElement != null && !localName.equals(schemaElement.getNameArrayCheck()) && schemaElement.getIsOptional()) {
-										
-										_logger.debug("NOT THE ELEMENT WE WERE LOOKING FOR");
-										
-										// add an empty element for the missing one
-										parentElement.addChildElement(_currentRow, new SOAElement(schemaElement.getName()));
-										
-										// increase the current row
-										_currentRow ++;
-										
-										// get the newId
-										newId = _currentElementId + "." + _currentRow;
-
-										// get this element
-										schemaElement = _soaSchema.getElementById(newId);
-									}
-										
-
-								}
-								
-								// set current id to new id
-								_currentElementId = newId;
-								
 							}
-							
-							// retain the current branch id
-							_columnElementIds.set(_currentColumn, _currentElementId);
+
+							// get the schema element for this id
+							SOASchemaElement schemaElement = _soaSchema.getElementById(newId);
+
+							// log
+							_logger.debug("Checking element " + localName + " " + newId);
+
+							// if we got one
+							if (schemaElement != null) {
+
+								// choice is a bit tricky
+								boolean isParentChoice = false;
+
+								// check not root
+								if (_currentColumn > 0) {
+									// get previous id
+									String previousId = _columnElementIds.get(_currentColumn - 1);
+									// get previous schema element
+									SOASchemaElement previousSchemaElement = _soaSchema.getElementById(previousId);
+									// if we got one set parent choice
+									if (previousSchemaElement != null) isParentChoice = previousSchemaElement.getIsChoice();
+								}
+
+								//if ("structuredAddress".equals(localName) || "freeFormAddress".equals(localName)) isParentChoice = true;
+
+								// keep incrementing row and checking if names are different and isoptional, until we get nothing or match name
+								while (
+										schemaElement != null &&
+										!schemaElement.getNameArrayCheck().equals(localName) &&
+										!schemaElement.getNameArrayCheck().equals(localName + "Array") &&
+										(
+											schemaElement.getIsOptional() ||
+											schemaElement.getIsArray() ||
+											isParentChoice
+										)
+									){
+
+									_logger.debug("Didn't find " + localName + " at " + newId);
+
+									// add an empty element for the missing one
+									//_currentElement.getParentElement().addChildElement(_currentRow, new SOAElement(schemaElement.getName()));
+
+									// increase the current row
+									_currentRow ++;
+
+									// get the newId
+									newId = _columnElementIds.get(_currentColumn - 1) + "." + _currentRow;
+
+									// get this element
+									schemaElement = _soaSchema.getElementById(newId);
+								}
+
+							}
+
+							// log
+							_logger.debug("Found element " + localName + " " + newId);
+
+							// set current id to new id
+							_currentElementId = newId;
+
 							// retain the current row
 							_columnRows.set(_currentColumn, _currentRow);
-							// retain the parent of this column
-							_columnParents.set(_currentColumn, _currentElement);
 
-						}
-
-						// get the parent element
-						SOAElement parentElement = _currentElement.getParentElement();
-
-						// if we have a parent for this column already (a proxy for whether it's the second or more peer)
-						if (parentElement != null) {
-							// if parent is not an array already
-							if (!parentElement.getIsArray()) {
-								// if we are on the second child and beyond the root
-								if (parentElement.getChildElements().size() > 1 && _currentColumn > 0 && _currentRow > 0) {
-									// if the element at this column has the same name as what we had previously for the column
-									if (localName.equals(_columnParents.get(_currentColumn).getName())) {
-										// if the name is the same as the first element
-										if (localName.equals(parentElement.getChildElements().get(0).getName())) {
-											// set array flag to true
-											parentElement.setIsArray(true);
-										}
-									}
-								}
+							// add a new column to _columnElementIds if we need one
+							if (_currentColumn > _columnElementIds.size() - 1) {
+								// add the column element id to the correct position
+								_columnElementIds.add(_currentElementId);
+							} else {
+								// retain the current branch id
+								_columnElementIds.set(_currentColumn, _currentElementId);
 							}
-						}
-						
-						_logger.debug("Started element " + localName + " " + _currentElementId);
+							// add a new column to _columnElementIds if we need one
+							if (_currentColumn > _columnParents.size() - 1) {
+								// add the column parent to the correct position
+								_columnParents.add(_currentElement);
+							} else {
+								// retain the parent of this column
+								_columnParents.set(_currentColumn, _currentElement);
+							}
 
-						// inc the column
-						_currentColumn ++;
+							// remember this column
+							_previousColumn = _currentColumn;
+
+						} // array check
 
 					} // root found
 
@@ -415,11 +432,12 @@ public interface SOADataReader {
 
 			}
 
-			
-
 			@Override
 			public void endElement(String uri, String localName, String qName) throws SAXException {
-				
+
+				// log
+				_logger.debug("endElement called for " + localName + "/" + qName);
+
 				// ignore all elements pertaining to the envelope
 
 				if ("http://schemas.xmlsoap.org/soap/envelope/".equals(uri)) {
@@ -429,57 +447,57 @@ public interface SOADataReader {
 
 				} else if (!_ignoreHeader && _soaSchema != null && _currentColumn >= 0) {
 					// validate this element if this column is the root or above and there is a schema
-					
-					// if this is an array
-					if (localName.endsWith("Array") || qName.endsWith("Array")) {
-						
-						_logger.debug("ENDING AN ARRAY");
-						
-						/////////////////////////////////////////////////////
-						
-						// _currentElementId needs winding back for Array answerArray 0.2.2.13.3 to answerArray 0.2.2.13, party to 0.2.2
-						
-						/////////////////////////////////////////////////////
-						
-						_currentElementId = _columnElementIds.get(_currentColumn - 2);
-						
-						
-					} else {
-						
-						// go back one column
-						_currentColumn --;
-						
-						// reset this column row count (it will be found and incremented back to 0)
-						_columnRows.set(_currentColumn, -1);
-						
-					}
-						
+
 					// retrieve the last branch id for this column
 					String currentElementId = _columnElementIds.get(_currentColumn);
 
+					// get it's schema element
 					SOASchemaElement schemaElement = _soaSchema.getElementById(currentElementId);
-					
-					_logger.debug("Ended element " + localName + " " + currentElementId);
 
-					// check we found one
-					if (schemaElement != null) {
+					// log
+					_logger.debug("Ending element " + localName + " " + currentElementId);
 
-						// retrieve the element
-						SOAElement element = _columnParents.get(_currentColumn);
+					// if this is an array
+					if (localName.endsWith("Array") || qName.endsWith("Array")) {
 
-						// validate against last branch in this column
-						try {
-							// try and validate it
-							schemaElement.validate(element);	
-						} catch (SOASchemaException e) {
-							throw new SAXException(e);
-						}
+						// retain that we are no longer processing an array for this column
+						_columnArrays.remove(_currentColumn + 1);
 
-						// close the array if required
-						if (schemaElement.getIsArray()) element.closeArray();
+						// if there are grandchildren, set their row id to -1
+						if (_columnRows.size() > _currentColumn + 2) _columnRows.set(_currentColumn + 2, -1);
 
 					} else {
-						throw new SAXException("Element \"" + localName + "\" not recognised at column " + (_currentColumn + 1) + ", row " + (_currentRow + 1));
+
+						// check we found one
+						if (schemaElement != null) {
+
+							// retrieve the element
+							SOAElement element = _columnParents.get(_currentColumn);
+
+							// validate against last branch in this column
+							try {
+								// try and validate it
+								schemaElement.validate(element);
+							} catch (SOASchemaException e) {
+								throw new SAXException(e);
+							}
+
+							// close the array if required
+							if (schemaElement.getIsArray()) element.closeArray();
+
+							// if there are grandchildren, set their row id to -1
+							if (_columnRows.size() > _currentColumn + 2) _columnRows.set(_currentColumn + 2, -1);
+
+							// go back one column
+							_currentColumn --;
+
+						} else {
+
+							// throw exception
+							throw new SAXException("Element \"" + localName + "\" not recognised at column " + (_currentColumn + 1) + ", row " + (_currentRow + 1));
+
+						}
+
 					}
 
 				}
