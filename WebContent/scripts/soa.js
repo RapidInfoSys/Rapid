@@ -121,7 +121,7 @@ function showSOARestrictions(collection, control, details) {
 		// now get the reference
 		dialogue = $("#restrictionsDialogue");
 		// add close link
-		var close = dialogue.append("<b style='float:left;margin-top:-5px;'>Restrictions</b><a href='#' style='float:right;margin-top:-5px;'>close</a></div>").children().last();
+		var close = dialogue.append("<b style='float:left;margin-top:-5px;'>Restrictions</b><button style='float:right;margin-top:-5px;'>close</button></div>").children().last();
 		// add close listener
 		_listeners.push( close.click( {details: details}, function(ev) {
 			// hide the dialogue
@@ -133,11 +133,11 @@ function showSOARestrictions(collection, control, details) {
 		dialogue.append("<table class='dialogueTable'></table>");		
 	}
 
-	// remove the add link
-	dialogue.find("a.add").last().remove();
+	// remove the add button
+	dialogue.find("button.add").last().remove();
 	
 	// replace the add link
-	dialogue.append("<a href='#' class='add'>add...</a>").find("a").last().click( {collection: collection, control : control, details:details}, function(ev) {
+	dialogue.append("<button class='add'>add...</button>").find("button").last().click( {collection: collection, control : control, details:details}, function(ev) {
 		// add new restriction
 		_soaRestrictions.push({type:"MinOccursRestriction", value:"1"});
 		// refresh dialogue
@@ -197,13 +197,11 @@ function showSOARestrictions(collection, control, details) {
 // this function is called from the GETSOA Rapid action
 function loadSOA(details) {
 		
-	// hide the sql webservice panel
-	$("#rapid_P0_C489_").hide();
-	// hide the java class webservice panel
-	$("#rapid_P0_C991_").hide();
-	
 	switch (details.type) {
-	case "SQLWebservice" :			
+	case "SQLWebservice" :
+		
+		// hide the java class webservice panel
+		$("#rapid_P0_C991_").hide();
 		
 		// retain the details in the global
 		_soaDetails = details;
@@ -301,9 +299,9 @@ function loadSOA(details) {
 		}
 		
 		// add link
-		requestTable.append("<tr><td colspan='4'><a href='#'>add...</a></td></tr>");
+		requestTable.append("<tr><td colspan='4'><button class='add'>add...</button></td></tr>");
 		// add click
-		requestTable.find("a").last().click(details, function(ev) {
+		requestTable.find("button").last().click(details, function(ev) {
 			// initialise request object if need be
 			if (!ev.data.requestSchema) ev.data.requestSchema = {}; 
 			// get response object
@@ -415,9 +413,9 @@ function loadSOA(details) {
 		}
 		
 		// add child element
-		responseTable.append("<tr><td colspan='4'><a href='#'>add...</a></td></tr>");
+		responseTable.append("<tr><td colspan='4'><button class='add'>add...</button></td></tr>");
 		// add click
-		responseTable.find("a").last().click(details, function(ev) {
+		responseTable.find("button").last().click(details, function(ev) {
 			// initialise response object if need be
 			if (!ev.data.responseSchema) ev.data.responseSchema = {}; 
 			// get response object
@@ -440,6 +438,9 @@ function loadSOA(details) {
 	break;
 	
 	case "JavaWebservice" :
+		
+		// hide the sql webservice panel
+		$("#rapid_P0_C489_").hide();
 		
 		// set the name
 		$("#rapid_P0_C944_").val(details.name);
