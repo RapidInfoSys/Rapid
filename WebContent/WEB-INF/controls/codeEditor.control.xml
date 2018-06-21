@@ -242,7 +242,7 @@ return [[true],[false]];
 	    	</resource> 
 	    	<resource>
 	    		<type>javascriptFile</type>
-	    		<contents>scripts/codeMirror/mode/sql/sql.js</contents>
+	    		<contents>scripts/controls/codeMirror/mode/sql/sql.js</contents>
 	    	</resource> 
 	    	
 	    	<resource>
