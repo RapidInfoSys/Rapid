@@ -1,0 +1,494 @@
+<controls xmlVersion="1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../schemas/control.xsd">
+
+<!-- 
+
+Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
+
+gareth.edwards@rapid-is.co.uk
+
+
+This file is part of the Rapid Application Platform
+
+Rapid is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version. The terms require you to include
+the original copyright, and the license notice in all redistributions.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
+
+ -->
+	
+	<control>
+	    
+	    <type>codeEditor</type>	    
+	    <name>Code editor</name>	    
+	    <image>images/tabs_24x24.png</image>
+	    <helpHtml>The code editor control provides a professional text editing environments specifically tailored for programming languages.</helpHtml>
+	    
+	    <addToNewDesktopApplications>true</addToNewDesktopApplications>
+	    <addToNewResponsiveApplications>false</addToNewResponsiveApplications>
+	    		    	    	    	    
+	    <canUserAdd>true</canUserAdd>
+	    <canUserMove>true</canUserMove>
+	    <canBeUsedForFormPageVisibilty>true</canBeUsedForFormPageVisibilty>
+	    <canValidate>true</canValidate>
+	  
+	    <properties>
+	        <property>
+	            <key>name</key>
+	            <name>Name</name>
+	            <changeValueJavaScript>text</changeValueJavaScript>
+	            <helpHtml>Name that can be given to the control. Names are used to help identify controls uniquely.</helpHtml>
+	        </property>	
+	        
+	 		 <property>
+	            <key>maxLength</key>
+	            <name>Character limit</name>
+	            <changeValueJavaScript>text</changeValueJavaScript>
+	            <refreshHtml>true</refreshHtml>
+	            <helpHtml>Sets the character limit of the input box. Does not apply to the number input type.</helpHtml>
+	        </property>
+	        
+	         <property>
+	            <key>value</key>
+	            <name>Initial value</name>
+	            <setConstructValueFunction>return "";</setConstructValueFunction>
+	            <changeValueJavaScript>text</changeValueJavaScript>
+	            <refreshHtml>true</refreshHtml>
+	            <helpHtml>Sets the initial content value of the editor</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>placeholder</key>
+	            <name>Placeholder</name>
+	            <setConstructValueFunction>return "";</setConstructValueFunction>
+	            <changeValueJavaScript>text</changeValueJavaScript>
+	            <refreshHtml>true</refreshHtml>
+	            <helpHtml>Option that can be used to make faded string appear in the editor when it is empty and not focused.</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>mode</key>
+	            <name>Syntax mode</name>
+	            <setConstructValueFunction>return "javascript";</setConstructValueFunction>
+	            <changeValueJavaScript>select</changeValueJavaScript>
+	            <getValuesFunction>
+	                <![CDATA[
+return [["javascript"],["css"],["sql"],["html"],["xml"]];
+					]]>
+	            </getValuesFunction>
+	            <refreshHtml>true</refreshHtml>
+	            <refreshProperties>true</refreshProperties>
+	            <helpHtml>Modes are JavaScript programs that help color (and optionally indent) text written in a given language</helpHtml>
+	        </property>
+			
+			<property>
+	            <key>theme</key>
+	            <name>Theme</name>
+	            <setConstructValueFunction>return "default";</setConstructValueFunction>
+	            <changeValueJavaScript>select</changeValueJavaScript>
+	            <getValuesFunction>
+	                <![CDATA[
+return [["default"],["cobalt"],["dracula"]];
+					]]>
+	            </getValuesFunction>
+	            <refreshHtml>true</refreshHtml>
+	            <refreshProperties>true</refreshProperties>
+	            <helpHtml>Sets the background and text styling of the editor</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>lineWrapping</key>
+	            <name>Line wrapping</name>
+	            <setConstructValueFunction>return true;</setConstructValueFunction>
+	            <changeValueJavaScript>select</changeValueJavaScript>
+	            <getValuesFunction>
+	                <![CDATA[
+return [[true],[false]];
+					]]>
+	            </getValuesFunction>
+	            <refreshHtml>true</refreshHtml>
+	            <refreshProperties>true</refreshProperties>
+	            <helpHtml>Whether the editor should scroll or wrap for long lines</helpHtml>
+	        </property>
+	        
+	          <property>
+	            <key>lineNumbers</key>
+	            <name>Line numbers</name>
+	            <setConstructValueFunction>return true;</setConstructValueFunction>
+	            <changeValueJavaScript>select</changeValueJavaScript>
+	            <getValuesFunction>
+	                <![CDATA[
+return [[true],[false]];
+					]]>
+	            </getValuesFunction>
+	            <refreshHtml>true</refreshHtml>
+	            <refreshProperties>true</refreshProperties>
+	            <helpHtml>Whether to show line numbers in the editor.</helpHtml>
+	        </property>
+	        
+	          <property>
+	            <key>matchBrackets</key>
+	            <name>Match brackets</name>
+	            <setConstructValueFunction>return true;</setConstructValueFunction>
+	            <changeValueJavaScript>select</changeValueJavaScript>
+	            <getValuesFunction>
+	                <![CDATA[
+return [[true],[false]];
+					]]>
+	            </getValuesFunction>
+	            <refreshHtml>true</refreshHtml>
+	            <refreshProperties>true</refreshProperties>
+	            <helpHtml>When set to true, causes matching brackets to be highlighted whenever the cursor is next to them</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>autoCloseBrackets</key>
+	            <name>Auto close brackets</name>
+	            <setConstructValueFunction>return true;</setConstructValueFunction>
+	            <changeValueJavaScript>select</changeValueJavaScript>
+	            <getValuesFunction>
+	                <![CDATA[
+return [[true],[false]];
+					]]>
+	            </getValuesFunction>
+	            <refreshHtml>true</refreshHtml>
+	            <refreshProperties>true</refreshProperties>
+	            <helpHtml>When set to true, will auto-close brackets and quotes when typed</helpHtml>           
+	        </property>
+	        
+	        <property>
+	            <key>styleActiveLine</key>
+	            <name>Active line</name>
+	            <setConstructValueFunction>return true;</setConstructValueFunction>
+	            <changeValueJavaScript>select</changeValueJavaScript>
+	            <getValuesFunction>
+	                <![CDATA[
+return [[true],[false]];
+					]]>
+	            </getValuesFunction>
+	            <refreshHtml>true</refreshHtml>
+	            <refreshProperties>true</refreshProperties>
+	            <helpHtml>When enabled, gives the wrapper of the line that contains the cursor a highlighted background</helpHtml>           
+	        </property>
+	        
+	        <property>
+	            <key>readOnly</key>
+	            <name>Readonly</name>
+	            <setConstructValueFunction>return false;</setConstructValueFunction>
+	            <changeValueJavaScript>select</changeValueJavaScript>
+	            <getValuesFunction>
+	                <![CDATA[
+return [[true],[false]];
+					]]>
+	            </getValuesFunction>
+	            <refreshHtml>true</refreshHtml>
+	            <refreshProperties>true</refreshProperties>
+	            <helpHtml>This disables editing of the editor content by the user</helpHtml>           
+	        </property>
+	        
+	    </properties>
+	    
+	    <resources>
+	        <resource>
+	            <type>css</type>
+	            <contents>
+	                <![CDATA[	                
+				    .codeEditorPanel {
+						width: 500px;
+						border: 1px solid #ccc;
+					}
+	                ]]>
+				</contents>
+	        </resource>
+	        
+	        <resource>
+	        	<type>javascript</type>
+	        	<contents>
+	        	
+				// global for all code editors
+				_codeEditors = {};
+					       	
+	        	</contents>
+	        </resource>
+	        
+	        <resource>
+	    		<type>cssFile</type>
+	    		<contents>scripts/controls/codeMirror/lib/codemirror.css</contents>
+	    	</resource>    		    	
+	    	<resource>
+	    		<type>javascriptFile</type>
+	    		<contents>scripts/controls/codeMirror/lib/codemirror.js</contents>
+	    	</resource> 
+	    	<resource>
+	    		<type>javascriptFile</type>
+	    		<contents>scripts/controls/codeMirror/addon/display/placeholder.js</contents>
+	    	</resource> 
+	    	
+	    	<resource>
+	    		<type>javascriptFile</type>
+	    		<contents>scripts/controls/codeMirror/mode/javascript/javascript.js</contents>
+	    	</resource> 
+	    	<resource>
+	    		<type>javascriptFile</type>
+	    		<contents>scripts/controls/codeMirror/mode/css/css.js</contents>
+	    	</resource> 
+	    	<resource>
+	    		<type>javascriptFile</type>
+	    		<contents>scripts/codeMirror/mode/sql/sql.js</contents>
+	    	</resource> 
+	    	
+	    	<resource>
+	    		<type>cssFile</type>
+	    		<contents>scripts/controls/codeMirror/theme/cobalt.css</contents>
+	    	</resource>
+	    	<resource>
+	    		<type>cssFile</type>
+	    		<contents>scripts/controls/codeMirror/theme/dracula.css</contents>
+	    	</resource>
+	    	
+	    	<resource>
+	    		<type>javascriptFile</type>
+	    		<contents>scripts/controls/codeMirror/addon/edit/matchbrackets.js</contents>
+	    	</resource>
+	    	<resource>
+	    		<type>javascriptFile</type>
+	    		<contents>scripts/controls/codeMirror/addon/edit/closebrackets.js</contents>
+	    	</resource>
+	    	<resource>
+	    		<type>javascriptFile</type>
+	    		<contents>scripts/controls/codeMirror/addon/edit/closetag.js</contents>
+	    	</resource>
+	    	<resource>
+	    		<type>javascriptFile</type>
+	    		<contents>scripts/controls/codeMirror/addon/selection/active-line.js</contents>
+	    	</resource>
+	    	<resource>
+	    		<type>javascriptFile</type>
+	    		<contents>scripts/controls/codeMirror/addon/display/autorefresh.js</contents>
+	    	</resource>
+	    	
+	    	
+	    	<resource>
+	    		<type>javascriptFile</type>
+	    		<contents>scripts/controls/codeMirror/addon/hint/show-hint.js</contents>
+	    	</resource>
+	    	 <resource>
+	    		<type>cssFile</type>
+	    		<contents>scripts/controls/codeMirror/addon/hint/show-hint.css</contents>
+	    	</resource>
+	    	<resource>
+	    		<type>javascriptFile</type>
+	    		<contents>scripts/controls/codeMirror/addon/hint/javascript-hint.js</contents>
+	    	</resource>
+	    	<resource>
+	    		<type>javascriptFile</type>
+	    		<contents>scripts/controls/codeMirror/addon/hint/css-hint.js</contents>
+	    	</resource>
+	    	<resource>
+	    		<type>javascriptFile</type>
+	    		<contents>scripts/controls/codeMirror/addon/hint/sql-hint.js</contents>
+	    	</resource>
+	    	<resource>
+	    		<type>javascriptFile</type>
+	    		<contents>scripts/controls/codeMirror/addon/hint/xml-hint.js</contents>
+	    	</resource>
+	    	
+	    </resources>
+	    
+	    <getHtmlFunction>
+	    <![CDATA[
+	    
+		return "<div id='" + this.id + "' class='codeEditorPanel'></div>";
+		
+	    ]]>
+	    </getHtmlFunction>	 
+	    
+	    <rebuildJavaScript>
+	    <![CDATA[
+	    
+	    // get a reference to the iFrame window
+		var w = _pageIframe[0].contentWindow;
+		
+		var myCodeMirror = w._codeEditors[this.id];
+		
+		//check if this codeEditor is loaded in the iframe
+		if(myCodeMirror){
+		//convert string booleans to real booleans
+			myCodeMirror.setOption("value", this.details.value);
+			myCodeMirror.setOption("placeholder", this.details.placeholder);
+			myCodeMirror.setOption("mode", this.details.mode);
+			myCodeMirror.setOption("theme", this.details.theme);
+			myCodeMirror.setOption("lineWrapping", this.details.lineWrapping);
+			myCodeMirror.setOption("lineNumbers", this.details.lineNumbers);
+			myCodeMirror.setOption("matchBrackets", this.details.matchBrackets);
+			myCodeMirror.setOption("autoCloseBrackets", this.details.autoCloseBrackets);
+			myCodeMirror.setOption("readOnly", this.details.readOnly);	
+		}
+
+	    ]]>
+	    </rebuildJavaScript>
+	    
+	    <!--  More efficient to call var myCodeMirror = w.CodeMirror once here and update properties in rebuildJavaScript  -->
+	    <initDesignJavaScript>
+	    <![CDATA[
+    
+		// get a reference to the iFrame window
+		var w = _pageIframe[0].contentWindow;
+		
+	    // get a reference to where the editor is going
+	    var myDiv = w.document.getElementById(this.id);
+	    
+		//creates an editor instance, and appends it to the given DOM element
+		//will start empty or with the value and will use the mode that we loaded
+		//mode generates the styling (text-color and indent) for a given language - in this case javascript
+		var myCodeMirror = w.CodeMirror(myDiv, {
+			  value: this.details.value,
+			  placeholder: this.details.placeholder,
+			  mode:  this.details.mode,
+			  theme: this.details.theme,
+			  lineWrapping: this.details.lineWrapping,
+			  lineNumbers: this.details.lineNumbers,
+			  matchBrackets: this.details.matchBrackets,
+			  autoCloseBrackets: this.details.autoCloseBrackets,
+			  extraKeys: {"Ctrl-Space": "autocomplete"},
+			  readOnly: this.details.readOnly
+			}); 
+			
+		// store a reference to this code editor
+		w._codeEditors[this.id] = myCodeMirror;
+		
+	    ]]>
+	    </initDesignJavaScript>
+	   
+	    
+	    <saveJavaScript>
+	    <![CDATA[
+		// remove any objects
+		this.object.children().remove();
+	    ]]>
+	    </saveJavaScript>
+	    
+	    <getDetailsFunction>
+	    <![CDATA[
+	    
+		return {
+			value: this.value,
+			placeholder: this.placeholder,
+			mode: this.mode,
+			theme: this.theme,
+			lineWrapping: (this.lineWrapping == "true" || this.lineWrapping == true) ? true : false,
+			lineNumbers: (this.lineNumbers == "true" || this.lineNumbers == true) ? true : false,
+			matchBrackets: (this.matchBrackets == "true" || this.matchBrackets == true) ? true : false,
+			autoCloseBrackets: (this.autoCloseBrackets == "true" || this.autoCloseBrackets == true) ? true : false,
+			styleActiveLine: (this.styleActiveLine == "true" || this.styleActiveLine == true) ? true : false,
+			readOnly: (this.readOnly == "true" || this.readOnly == true) ? true : false
+		};
+
+	    ]]>
+	    </getDetailsFunction>
+	    
+	   	<getDataFunction>
+	    <![CDATA[
+	  
+	    return _codeEditors[id].getValue();	
+	    	
+	    ]]>
+	    </getDataFunction>
+	    
+	    <setDataJavaScript>
+	    <![CDATA[
+	    _codeEditors[id].setValue(data);
+	    _codeEditors[id].refresh();
+	    	
+	    ]]>
+	    </setDataJavaScript>
+	    
+	    <events>
+	         <event>
+	            <type>click</type>
+	            <name>Click</name>
+	        </event>
+	        <event>
+	            <type>keydown</type>
+	            <name>Key down</name>
+	        </event>
+	        <event>
+	            <type>keyup</type>
+	            <name>Key up</name>
+	        </event>
+	        <event>
+	            <type>change</type>
+	            <name>Change</name>
+	        </event>	  	
+	        <event>
+	            <type>blur</type>
+	            <name>Blur</name>
+	        </event>	              	        
+	    </events> 
+	    
+	    <styles>
+	        <style>
+	            <name>Editor panel</name>  
+	            <getAppliesToFunction>
+					<![CDATA[	      
+return "#" + this.id;
+	       			 ]]>	                
+	            </getAppliesToFunction>
+	        </style>
+	        <style>
+	            <name>:hover</name>  
+	            <getAppliesToFunction>
+					<![CDATA[	      
+return "#" + this.id + ":hover";
+	       			 ]]>	                
+	            </getAppliesToFunction>
+	        </style>
+	        <style>
+	            <name>:focus</name>  
+	            <getAppliesToFunction>
+					<![CDATA[	      
+return "#" + this.id + ":focus";
+	       			 ]]>	                
+	            </getAppliesToFunction>
+	        </style>
+	    </styles>
+	      
+	    <initJavaScript>
+	    <![CDATA[
+	        
+	    var myDiv = document.getElementById(id);
+		//creates an editor instance, and appends it to the given DOM element
+		//will start empty or with the value and will use the mode that we loaded
+		//mode generates the styling (text-color and indent) for a given language - in this case javascript
+		var myCodeMirror = CodeMirror(myDiv, {
+			  value: details.value,
+			  placeholder: details.placeholder,
+			  autoRefresh: true,
+			  mode:  details.mode,
+			  theme: details.theme,
+			  lineWrapping: details.lineWrapping,
+			  lineNumbers: details.lineNumbers,
+			  matchBrackets: details.matchBrackets,
+			  autoCloseBrackets: details.autoCloseBrackets,
+			  extraKeys: {"Ctrl-Space": "autocomplete"},
+			  styleActiveLine: details.styleActiveLine,
+			  readOnly: details.readOnly
+			});
+			
+		// store a reference to this code editor
+		_codeEditors[id] = myCodeMirror;
+			
+	    ]]>	        	       	        
+	    </initJavaScript>
+	    
+	        	    	    	    	            	    	    	        	    	    
+	</control>
+</controls>	
