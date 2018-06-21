@@ -714,7 +714,17 @@ function Action_rapid(ev, appId, pageId, controlId, actionId, actionType, rapidA
 			data = { actionType: actionType, appId: $("#rapid_P0_C43").val(), version: $("#rapid_P0_C1044_").val(), index: $(ev.target).closest("tr").index()-1 };
 		break;
 		case "SAVERESOURCE" :
-			data = { actionType: actionType, appId: $("#rapid_P0_C43").val(), version: $("#rapid_P0_C1044_").val(), index: $("#rapid_P0_C1344_").find("tr.rowSelect").index()-1, name: $("#rapid_P0_C1362_").val(), type: $("#rapid_P0_C1398_").val(), value: $("#rapid_P0_C1390_").val()};
+			var value = "";
+			//check the type - 
+			if($("#rapid_P0_C1398_").val() == "1" || $("#rapid_P0_C1398_").val() == "2"){
+				//get the value from the codeEditor
+				value = _codeEditors['rapid_P0_C2861_'].getValue();
+			}else {
+				//get the value from the input box
+				value = $("#rapid_P0_C1390_").val();
+			}
+			
+			data = { actionType: actionType, appId: $("#rapid_P0_C43").val(), version: $("#rapid_P0_C1044_").val(), index: $("#rapid_P0_C1344_").find("tr.rowSelect").index()-1, name: $("#rapid_P0_C1362_").val(), type: $("#rapid_P0_C1398_").val(), value: value};
 		break;
 		case "NEWDEVICE" :
 			data = { actionType: actionType, appId: "rapid", version: _appVersion };
