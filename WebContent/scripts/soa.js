@@ -220,9 +220,8 @@ function loadSOA(details) {
 		
 		// update the sql to an empty string if not provided
 		if (!details.SQL) details.SQL = "";
-		// put the sql in the input box
-		$('#rapid_P0_C559_').val(details.SQL);
-		
+		// put the sql in the codeEditor
+		_codeEditors['rapid_P0_C2826_'].setValue(details.SQL);
 		
 		// get the cell we write the request properties into
 		var requestCell = $('#rapid_P0_C589_');		
