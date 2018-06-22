@@ -222,7 +222,7 @@ public interface SOADataReader {
 			public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
 
 				// start
-				_logger.debug("startElement called for " + localName + "/" + qName);
+				//_logger.debug("startElement called for " + localName + "/" + qName);
 
 				// ignore all elements pertaining to the envelope
 				if ("http://schemas.xmlsoap.org/soap/envelope/".equals(uri)) {
@@ -346,7 +346,7 @@ public interface SOADataReader {
 							SOASchemaElement schemaElement = _soaSchema.getElementById(newId);
 
 							// log
-							_logger.debug("Checking element " + localName + " " + newId);
+							//_logger.debug("Checking element " + localName + " " + newId);
 
 							// if we got one
 							if (schemaElement != null) {
@@ -378,10 +378,7 @@ public interface SOADataReader {
 										)
 									){
 
-									_logger.debug("Didn't find " + localName + " at " + newId);
-
-									// add an empty element for the missing one
-									//_currentElement.getParentElement().addChildElement(_currentRow, new SOAElement(schemaElement.getName()));
+									//_logger.debug("Didn't find " + localName + " at " + newId);
 
 									// increase the current row
 									_currentRow ++;
@@ -396,7 +393,7 @@ public interface SOADataReader {
 							}
 
 							// log
-							_logger.debug("Found element " + localName + " " + newId);
+							//_logger.debug("Found element " + localName + " " + newId);
 
 							// set current id to new id
 							_currentElementId = newId;
@@ -436,7 +433,7 @@ public interface SOADataReader {
 			public void endElement(String uri, String localName, String qName) throws SAXException {
 
 				// log
-				_logger.debug("endElement called for " + localName + "/" + qName);
+				//_logger.debug("endElement called for " + localName + "/" + qName);
 
 				// ignore all elements pertaining to the envelope
 
@@ -455,7 +452,7 @@ public interface SOADataReader {
 					SOASchemaElement schemaElement = _soaSchema.getElementById(currentElementId);
 
 					// log
-					_logger.debug("Ending element " + localName + " " + currentElementId);
+					//_logger.debug("Ending element " + localName + " " + currentElementId);
 
 					// if this is an array
 					if (localName.endsWith("Array") || qName.endsWith("Array")) {
