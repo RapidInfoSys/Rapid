@@ -233,7 +233,7 @@ div.propertyDialogue {
   	user-select: none;
 }
 
-.propertyDialogue div.resizeX {
+div.resizeX {
 	position:absolute;
 	top:0;
 	left:0;
@@ -242,6 +242,7 @@ div.propertyDialogue {
 	background-color: red;
 	opacity: 0;
 	cursor:ew-resize;
+	z-index: 100;
 }
 
 .propertyDialogue span {

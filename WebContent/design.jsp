@@ -86,6 +86,30 @@ if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRe
 	<link rel="stylesheet" type="text/css" href="styles/fonts/fontawesome/css/font-awesome.css"></link>
 	<link rel="stylesheet" type="text/css" href="styles/designer.css"></link>
 	<link rel="stylesheet" type="text/css" href="styles/properties.css"></link>
+	
+	<!-- CodeMirror files -->
+	<link rel="stylesheet" href="scripts/controls/codeMirror/lib/codemirror.css">
+	<script src="scripts/controls/codeMirror/lib/codemirror.js"></script>
+	<!-- CodeMirror addons -->
+	<script src="scripts/controls/codeMirror/addon/display/placeholder.js"></script>
+	<script src="scripts/controls/codeMirror/mode/javascript/javascript.js"></script>
+	<script src="scripts/controls/codeMirror/mode/css/css.js"></script>
+	<script src="scripts/controls/codeMirror/mode/sql/sql.js"></script>
+	<script src="scripts/controls/codeMirror/mode/xml/xml.js"></script>
+	<link rel="stylesheet" href="scripts/controls/codeMirror/theme/cobalt.css">
+	<link rel="stylesheet" href="scripts/controls/codeMirror/theme/dracula.css">
+	<script src="scripts/controls/codeMirror/addon/edit/matchbrackets.js"></script>
+	<script src="scripts/controls/codeMirror/addon/edit/closebrackets.js"></script>
+	<script src="scripts/controls/codeMirror/addon/edit/closetag.js"></script>
+	<script src="scripts/controls/codeMirror/addon/selection/active-line.js"></script>
+	<script src="scripts/controls/codeMirror/addon/display/autorefresh.js"></script>
+	<script src="scripts/controls/codeMirror/addon/hint/show-hint.js"></script>
+	<link rel="stylesheet" href="scripts/controls/codeMirror/addon/hint/show-hint.css">
+	<script src="scripts/controls/codeMirror/addon/hint/javascript-hint.js"></script>
+	<script src="scripts/controls/codeMirror/addon/hint/css-hint.js"></script>
+	<script src="scripts/controls/codeMirror/addon/hint/sql-hint.js"></script>
+	<script src="scripts/controls/codeMirror/addon/hint/xml-hint.js"></script>
+	
 <%
 	} else {
 %>

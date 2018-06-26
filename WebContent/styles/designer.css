@@ -1205,3 +1205,8 @@ path, .jtk-endpoint {
 #save .fa {
 	font-size: 24px;
 }
+
+.CodeMirror {
+	margin: 5px 0;
+  	box-shadow: -1px 0px 5px 1px #9D9D9D;
+}
