@@ -747,6 +747,41 @@ function setPropertyVisibilty(propertyObject, propertyKey, visibile) {
 	}
 }
 
+function addDialogueResizeX(dialogue, codeMirror) {
+	// add the mouse over div
+	var resizeX = dialogue.append("<div class='resizeX'></div>").find("div.resizeX");
+	// add the listener
+	addListener(resizeX.mousedown( {id: dialogue.attr("id"), dialogue: dialogue}, function(ev) {
+		// retain that we'r resizing a dialogue
+		_dialogueSize = true;
+		// retain it's id
+		_dialogueSizeId = ev.data.id;
+		// retain the type of resize
+		_dialogueSizeType = "X";
+		// calculate the offset
+		_mouseDownXOffset = ev.pageX - $("#" + _dialogueSizeId).offset().left + (ev.data.dialogue.is(".CodeMirror") ? 20 : 0);
+		
+	}));
+	
+	resizeX.mouseup(function(event){
+		//keep focus even when mouse is up
+		if(codeMirror){
+			codeMirror.focus();
+			//Set the cursor at the end of existing content
+			codeMirror.setCursor(codeMirror.lineCount(), 0);
+		}
+	});
+	
+	resizeX.mouseleave(function(){
+		//keep focus even when mouse has left the resize dialogue
+		if(codeMirror){
+			codeMirror.focus();
+			//Set the cursor at the end of existing content
+			codeMirror.setCursor(codeMirror.lineCount(), 0);
+		}
+	});
+}
+
 // this is a reusable function for creating dialogue boxes
 function getDialogue(cell, propertyObject, property, details, width, title, options) {	
 		
@@ -769,21 +804,7 @@ function getDialogue(cell, propertyObject, property, details, width, title, opti
 		// check the options
 		if (options) {
 			// if resizeX
-			if (options.sizeX) {
-				// add the mouse over div
-				var resizeX = dialogue.append("<div class='resizeX'></div>").find("div.resizeX");
-				// add the listener
-				addListener(resizeX.mousedown( {id: dialogueId}, function(ev) {
-					// retain that we'r resizing a dialogue
-					_dialogueSize = true;
-					// retain it's id
-					_dialogueSizeId = ev.data.id;
-					// retain the type of resize
-					_dialogueSizeType = "X";
-					// calculate the offset
-					_mouseDownXOffset = ev.pageX - $("#" + _dialogueSizeId).offset().left;
-				}));				
-			}
+			if (options.sizeX) addDialogueResizeX(dialogue)
 			// set min-width to explicit or standard width
 			if (options.minWidth) {
 				dialogue.css("min-width", options.minWidth);
@@ -1021,44 +1042,107 @@ function Property_number(cell, propertyObject, property, details) {
 	}));
 }
 
+
 function Property_bigtext(cell, propertyObject, property, details) {
 	var value = "";
 	// set the value if it exists
 	if (propertyObject[property.key]) value = propertyObject[property.key];
 	// add the visible bit
 	cell.text(value);
-	// append and get a reference to the adjustable form control
-	var textarea = $("#propertiesDialogues").append("<textarea style='position:absolute;display:none;height:300px;width:600px;z-index:10012' wrap='off'></textarea>").children().last();
-	// add the text
-	textarea.text(value);
+	
+	//track whether the property is created
+	var dialogueId;
+	var propertiesDialogue;
+	var myCodeMirror;
+	var myCodeMirrorDialogue;
+	
 	// add a listener to update the property
-	addListener( cell.click( {textarea: textarea}, function(ev) {
+	addListener( cell.click(function(ev) {
+		
+		//we only need to create it once, when this cell is clicked for the first time
+		if(!myCodeMirror){
+			//create the codeEditor and its event handlers
+			// derive the id for this dialogue
+			dialogueId = propertyObject.id + property.key;
+			// get a reference of the propertiesDialogues
+			propertiesDialogue = $("#propertiesDialogues").append("<div id='" + dialogueId + "'></div>").find("div").last();
+			//create an editor instance, and append it to the propertiesDialogue
+			myCodeMirror = CodeMirror(propertiesDialogue[0], {
+				  mode:  "text/plain",
+				  theme: "default",
+				  lineWrapping: true,
+				  lineNumbers: true,
+				  matchBrackets: true,
+				  autoCloseBrackets: true,
+				  extraKeys: {"Ctrl-Space": "autocomplete"},
+				  styleActiveLine: true,
+				  readOnly: false,
+				  autoRefresh: true
+			});
+			
+			// get codeMirror dialogue element 
+			myCodeMirrorDialogue = $(myCodeMirror.getWrapperElement());
+			// give it an id
+			myCodeMirrorDialogue.attr("id",dialogueId + "_codeMirror");
+			
+			// give it x resizing
+			addDialogueResizeX(myCodeMirrorDialogue, myCodeMirror);
+				
+			//check if this property is a javascript or command
+			if(["javascript", "command"].includes(property.key)) {
+				myCodeMirror.setOption("mode", "javascript");
+			}
+			
+		}//end of if
+		//otherwise, the codeEditor must have already been created
+		//add the text into the codeEditor
+		myCodeMirror.setValue(value);
+		//style and position the codeEditor, hide it at start
 		// assume right is 10
 		var right = 10;
-		// if we're in a dialogue increase to 20
-		if ($(ev.target).closest(".propertyDialogue")) right = 21;
-		// set the css
-		ev.data.textarea.css({
-			"right": right,
-			"top": cell.offset().top,
-			"z-index" : _dialogueZindex ++
+		// if we're in a dialogue
+		if ($(ev.target).closest(".propertyDialogue")) right = 11;
+		myCodeMirrorDialogue.css({
+			"position":"absolute", "height":"300px", "width":"600px", "right": right, "top": cell.offset().top, "z-index":_dialogueZindex ++
 		});
-		textarea.slideDown(500);
+		
+		//get the main wrapper object, and hide it
+		myCodeMirrorDialogue.slideDown(500);
 		// focus it so a click anywhere else fires the unfocus and hides the textbox
-		textarea.focus();
+		myCodeMirror.focus();
+		// set the cursor at the end of existing content
+		myCodeMirror.setCursor(myCodeMirror.lineCount(), 0);
+		
+		//now create its event handlers
+		var keyUpCallback = function(){
+			updateProperty(cell, propertyObject, property, details, myCodeMirror.getValue());
+		};
+		var blurCallback = function() {
+			
+			// if mouse is not on the resize dialogue
+			if (!_dialogueSize) {
+			
+				//put the content of the codeeditor in the cell
+				cell.text(myCodeMirror.getValue());
+				//hide the codemirror
+				myCodeMirrorDialogue.hide();
+				windowResize("Property_bigtext hide");
+				
+				//remove the event handlers on the editor instance, on unfocus
+				myCodeMirror.off("blur", blurCallback);
+				myCodeMirror.off("keyup", keyUpCallback);
+				
+			}
+			
+		};
+		
+		// create listener - hide the textarea and update the cell on unfocus
+		myCodeMirror.on("blur", blurCallback);
+		
+		// modify if the text is updated - addListener is only for jQuery events
+		myCodeMirror.on("keyup", keyUpCallback);
+		
 	}));	
-	// hide the textarea and update the cell on unfocus
-	addListener( textarea.blur( function(ev) {
-		cell.text(textarea.val());
-		textarea.hide(); 
-		windowResize("Property_bigtext hide");
-	}));
-	// listen for key's we don't want to affect behaviour
-	addListener( textarea.keydown( textareaOverride ));
-	// modify if the text is updated
-	addListener( textarea.keyup( function(ev) { 
-		updateProperty(cell, propertyObject, property, details, textarea.val());  
-	}));
 	
 }
 
@@ -2275,7 +2359,33 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 	cell.text(text);
 	
 	// add inputs table, sql, and outputs table
-	table.append("<tr><td colspan='2' style='padding:0px;vertical-align: top;'><table class='dialogueTable inputs'><tr><td><b>Input</b></td><td colspan='2'><b>Field</b></td></tr></table></td><td colspan='3' style='width:50%;padding:2px 10px 0 10px;'><b>SQL</b><br/><textarea style='width:100%;min-width:100%;max-width:100%;min-height:200px;box-sizing:border-box;'></textarea></td><td colspan='2' rowspan='3' style='padding:0px;vertical-align: top;'><table  class='dialogueTable outputs'><tr><td><b>Field</b></td><td colspan='2'><b>Output</b></td></tr></table></td></tr>");
+	table.append("<tr>" +
+				 "<td colspan='2' style='padding:0px;vertical-align: top;'>" +
+				 "<table class='dialogueTable inputs'><tr><td><b>Input</b></td><td colspan='2'><b>Field</b></td></tr></table>" +
+				 "</td>" +
+				 "<td id='" + dialogue.attr("id") + "_dbTextAreaCell' colspan='3' style='width:50%;padding:2px 10px 0 10px;'>" +
+				 "<b>SQL</b><br/>" +
+				 "<!--<textarea id='dbTextArea' style='width:100%;min-width:100%;max-width:100%;min-height:200px;box-sizing:border-box;'></textarea>-->" +
+				 "</td>" +
+				 "<td colspan='2' rowspan='3' style='padding:0px;vertical-align: top;'>" +
+				 "<table  class='dialogueTable outputs'><tr><td><b>Field</b></td><td colspan='2'><b>Output</b></td></tr></table>" +
+				 "</td></tr>");
+	
+	//Get the textAreaCell and append it
+	var queryCell = document.getElementById(dialogue.attr("id") + "_dbTextAreaCell");
+	var sqlEditor = CodeMirror(queryCell, {
+		  mode:"sql",
+		  theme: "default",
+		  lineWrapping: true,
+		  lineNumbers: true,
+		  matchBrackets: true,
+		  autoCloseBrackets: true,
+		  extraKeys: {"Ctrl-Space": "autocomplete"},
+		  styleActiveLine: true,
+		  readOnly: false,
+		  autoRefresh: true
+		});
+	
 	
 	// find the inputs table
 	var inputsTable = table.find("table.inputs");
@@ -2358,13 +2468,11 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 		}));
 	}
 			
-	// find the sql textarea
-	var sqlControl = table.find("textarea").first();
-	sqlControl.text(query.SQL);
-	// listener for the sql
-	addListener( sqlControl.keyup( {query: query}, function(ev) {
-		query.SQL = $(ev.target).val();
-	}));
+	//set the value of the sqlEditor or empty if null
+	sqlEditor.setValue((query.SQL || ""));
+	sqlEditor.on("keyup", function (){
+		query.SQL = sqlEditor.getValue();
+	});
 	
 	// find the outputs table
 	var outputsTable = table.find("table.outputs");
@@ -2485,7 +2593,7 @@ function Property_webserviceRequest(cell, propertyObject, property, details) {
 	var table = dialogue.children().last().children().last();
 	// make sure its empty
 	table.children().remove();
-		
+	
 	// initialise the request object if need be
 	if (!propertyObject.request) propertyObject.request = {inputs:[], type:"SOAP", url: '', action: 'demo/Sample SQL webservice', body: '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soa="http://soa.rapid-is.co.uk">\n  <soapenv:Body>\n    <soa:personSearchRequest>\n      <soa:surname>A</soa:surname>\n    </soa:personSearchRequest>\n  </soapenv:Body>\n</soapenv:Envelope>', outputs:[]};
 	// get the request
@@ -2497,8 +2605,47 @@ function Property_webserviceRequest(cell, propertyObject, property, details) {
 	// put the elipses in the cell
 	cell.text(text);
 	
+	// derive the id for this dialogue
+	var dialogueId = propertyObject.id + property.key;
 	// add inputs table, body, and outputs table
-	table.append("<tr><td colspan='2' rowspan='3' style='padding:0px;vertical-align: top;'><table class='dialogueTable'><tr><td><b>Input</b></td><td colspan='2'><b>Field</b></td></tr></table></td><td class='normalInputs' colspan='2' style='width:500px;padding:0 6px;'><b style='display:block;'>Request type</b><input type='radio' name='WSType" + propertyObject.id + "' value='SOAP'/>SOAP<input type='radio' name='WSType" + propertyObject.id + "' value='JSON'/>JSON<input type='radio' name='WSType" + propertyObject.id + "' value='XML'/>XML<b style='display:block;margin-top:5px;margin-bottom:5px;'>URL</b><input class='WSUrl' /></br><b style='display:block;margin-top:5px;margin-bottom:5px;'>Action</b><input class='WSAction' /><b style='display:block;margin-top:5px;margin-bottom:2px;'>Body</b><textarea style='width:100%;min-height:200px;' class='WSBody'></textarea><b style='display:block;'>Response transform</b><textarea style='width:100%;' class='WSTransform'></textarea><b style='display:block;;margin-bottom:5px;'>Response root element</b><input class='WSRoot' style='margin-bottom:5px;' /></td><td colspan='2' rowspan='3' style='padding:0px;vertical-align: top;'><table class='dialogueTable'><tr><td><b>Field</b></td><td colspan='2'><b>Output</b></td></tr></table></td></tr>");
+	table.append("<tr>" +
+			     "<td colspan='2' rowspan='3' style='padding:0px;vertical-align: top;'><table class='dialogueTable'>" +
+			     "<tr><td><b>Input</b></td><td colspan='2'><b>Field</b></td></tr></table></td>" +
+			     "<td class='normalInputs' colspan='2' style='width:500px;padding:0 6px;'><b style='display:block;'>Request type</b><input type='radio' name='WSType" + propertyObject.id + "' value='SOAP'/>SOAP<input type='radio' name='WSType" + propertyObject.id + "' value='JSON'/>JSON<input type='radio' name='WSType" + propertyObject.id + "' value='XML'/>XML<b style='display:block;margin-top:5px;margin-bottom:5px;'>URL</b><input class='WSUrl' /></br><b style='display:block;margin-top:5px;margin-bottom:5px;'>Action</b><input class='WSAction' />" +
+			     "<b style='display:block;margin-top:5px;margin-bottom:2px;'>Body</b>" +
+			     "<div id='bodySOA_" + dialogueId + "' style='width:100%;min-height:200px;' class='WSBody'></div><b style='display:block;'>Response transform</b><textarea style='width:100%;' class='WSTransform'></textarea><b style='display:block;;margin-bottom:5px;'>Response root element</b><input class='WSRoot' style='margin-bottom:5px;' /></td><td colspan='2' rowspan='3' style='padding:0px;vertical-align: top;'><table class='dialogueTable'><tr><td><b>Field</b></td><td colspan='2'><b>Output</b></td></tr></table></td></tr>");
+	
+	//append the 
+	var bodySOA = document.getElementById('bodySOA_' + dialogueId);
+	
+	//create an editor instance, and append it to the bodySOA
+	var myCodeEditor = CodeMirror(bodySOA, {
+		  mode:  "xml",
+		  theme: "default",
+		  lineWrapping: true,
+		  lineNumbers: true,
+		  matchBrackets: true,
+		  autoCloseBrackets: true,
+		  extraKeys: {"Ctrl-Space": "autocomplete",
+	  		  "'<'": completeAfter,
+      		  "'/'": completeIfAfterLt,
+              "' '": completeIfInTag,
+              "'='": completeIfInTag
+		  },
+		  hintOptions: {schemaInfo: tags},
+		  styleActiveLine: true,
+		  readOnly: false,
+		  autoRefresh: true
+		});
+	
+	/*
+	// get codeMirror dialogue element 
+	var myCodeEditorDialogue = $(myCodeEditor.getWrapperElement());
+	// give it an id
+	myCodeEditorDialogue.attr("id", dialogueId + "_codeMirror");
+	// give it x resizing
+	addDialogueResizeX(myCodeEditorDialogue);
+	*/
 	
 	// find the inputs table
 	var inputsTable = table.children().last().children().first().children().last();
@@ -2587,13 +2734,12 @@ function Property_webserviceRequest(cell, propertyObject, property, details) {
 		ev.data.request.action = $(ev.target).val();
 	}));
 	
-	// find the request body textarea
-	var bodyControl = table.find("textarea.WSBody");
-	bodyControl.text(request.body);
+	// find the request body textarea - i.e. codeEditor
+	myCodeEditor.setValue(request.body);
 	// listener for the body
-	addListener( bodyControl.keyup( {request: request}, function(ev) {
-		ev.data.request.body = $(ev.target).val();
-	}));
+	myCodeEditor.on("keyup",function(ev) {
+		request.body = myCodeEditor.getValue();
+	});
 	
 	// find the transform textarea
 	var transformControl = table.find("textarea.WSTransform");
@@ -2673,6 +2819,8 @@ function Property_webserviceRequest(cell, propertyObject, property, details) {
 	}));
 		
 }
+
+
 
 // this is a special drop down that can make the property below visible
 function Property_navigationPage(cell, navigationAction, property, details) {
