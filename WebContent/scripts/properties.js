@@ -2363,7 +2363,7 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 	// add inputs table, sql, and outputs table
 	table.append("<tr>" +
 				 "<td colspan='2' style='padding:0px;vertical-align: top;'>" +
-				 "<table class='dialogueTable inputs'><tr><td><b>Input</b></td><td colspan='2'><b>Field</b></td></tr></table>" +
+				 "<table class='dialogueTable inputs'><tr><td></td><td><b>Input</b></td><td colspan='2'><b>Field</b></td></tr></table>" +
 				 "</td>" +
 				 "<td id='" + dialogue.attr("id") + "_dbTextAreaCell' colspan='3' style='width:50%;padding:2px 10px 0 10px;'>" +
 				 "<b>SQL</b><br/>" +
@@ -2372,6 +2372,7 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 				 "<td colspan='2' rowspan='3' style='padding:0px;vertical-align: top;'>" +
 				 "<table  class='dialogueTable outputs'><tr><td><b>Field</b></td><td colspan='2'><b>Output</b></td></tr></table>" +
 				 "</td></tr>");
+	
 	
 	//Get the textAreaCell and append it
 	var queryCell = document.getElementById(dialogue.attr("id") + "_dbTextAreaCell");
@@ -2404,11 +2405,11 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 		// make it an empty space if null
 		if (!field) field = "";
 		// add the row
-		inputsTable.append("<tr><td>" + (query.multiRow && i > 0 ? "&nbsp;" : itemName) + "</td><td><input value='" + escapeApos(field) + "' /></td><td style='width:45px;'>" +
-				"<div class='iconsPanel'>" +
-				"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
-				"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div>" +
-				"</div></td></tr>");
+		inputsTable.append("<tr><td style='text-align:center;'>" + (+i + 1) + ".</td><td>" + (query.multiRow && i > 0 ? "&nbsp;" : itemName) + "</td><td><input value='" + escapeApos(field) + "' /></td><td style='width:45px;'>" +
+				   "<div class='iconsPanel'>" +
+				   "<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
+				   "<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div>" +
+				   "</div></td></tr>");
 		
 		// get the field input
 		var fieldInput = inputsTable.find("tr").last().children(":nth(1)").last().children().last();
@@ -2426,7 +2427,7 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 	});
 	// get the delete
 	var fieldDelete = inputsTable.find("div.delete");
-	//debugger;
+
 	// add a listener
 	addListener( fieldDelete.click( {parameters: query.inputs}, function(ev) {
 		// get the input
@@ -2435,6 +2436,12 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 		ev.data.parameters.splice(input.closest("tr").index()-1,1);
 		// remove row
 		input.closest("tr").remove();
+		
+		//loop through all the rows, and update the input count column
+		inputsTable.find("tr:not(:first-child):not(:last-child) td:first-child").each(function(index, value){
+			$(this).text(++index);
+		});
+
 	}));
 	
 	// if multi row and at least one input
