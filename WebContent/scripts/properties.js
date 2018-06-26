@@ -1127,7 +1127,7 @@ function Property_bigtext(cell, propertyObject, property, details) {
 				//put the content of the new value in this cell
 				cell.text(myCodeMirror.getValue());
 				//hide the codemirror
-				myCodeMirrorDialogue.hide();
+				myCodeMirrorDialogue.slideUp(200);
 				
 				windowResize("Property_bigtext hide");
 				//remove the event handlers on the editor instance, on unfocus
