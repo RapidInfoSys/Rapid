@@ -1119,15 +1119,17 @@ function Property_bigtext(cell, propertyObject, property, details) {
 		};
 		var blurCallback = function() {
 			
-			// if mouse is not on the resize dialogue
+			// Blur only if mouse is not on the resize dialogue
 			if (!_dialogueSize) {
-			
-				//put the content of the codeeditor in the cell
+				
+				//update the value - so that it can be reused in the next click
+				value = myCodeMirror.getValue();
+				//put the content of the new value in this cell
 				cell.text(myCodeMirror.getValue());
 				//hide the codemirror
 				myCodeMirrorDialogue.hide();
-				windowResize("Property_bigtext hide");
 				
+				windowResize("Property_bigtext hide");
 				//remove the event handlers on the editor instance, on unfocus
 				myCodeMirror.off("blur", blurCallback);
 				myCodeMirror.off("keyup", keyUpCallback);
