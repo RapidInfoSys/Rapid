@@ -839,12 +839,14 @@ function getDialogue(cell, propertyObject, property, details, width, title, opti
 				}
 				
 			});
-					
-			// remove this dialogue
-			dialogue.remove();
 			
-			// call an update on the master property to set the calling cell text
-			updateProperty(cell, propertyObject, property, details, propertyObject[property.key]);
+			dialogue.slideUp(200, function (){
+				// remove this dialogue
+				$(this).remove();
+				
+				// call an update on the master property to set the calling cell text
+				updateProperty(cell, propertyObject, property, details, propertyObject[property.key]);
+			});
 
 		}));
 		
@@ -1103,10 +1105,10 @@ function Property_bigtext(cell, propertyObject, property, details) {
 		// if we're in a dialogue
 		if ($(ev.target).closest(".propertyDialogue")) right = 11;
 		myCodeMirrorDialogue.css({
-			"position":"absolute", "height":"300px", "width":"600px", "right": right, "top": cell.offset().top, "z-index":_dialogueZindex ++
+			"position":"absolute", "height":"300px", "width":"600px", "right": right, "top": cell.offset().top, "z-index":_dialogueZindex ++, "display":"none"
 		});
 		
-		//get the main wrapper object, and hide it
+		//display animated with slideDown effect
 		myCodeMirrorDialogue.slideDown(500);
 		// focus it so a click anywhere else fires the unfocus and hides the textbox
 		myCodeMirror.focus();
@@ -2363,7 +2365,7 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 	// add inputs table, sql, and outputs table
 	table.append("<tr>" +
 				 "<td colspan='2' style='padding:0px;vertical-align: top;'>" +
-				 "<table class='dialogueTable inputs'><tr><td></td><td><b>Input</b></td><td colspan='2'><b>Field</b></td></tr></table>" +
+				 "<table class='dialogueTable inputs'><tr><td style='width: 20px;'></td><td><b>Input</b></td><td colspan='2'><b>Field</b></td></tr></table>" +
 				 "</td>" +
 				 "<td id='" + dialogue.attr("id") + "_dbTextAreaCell' colspan='3' style='width:50%;padding:2px 10px 0 10px;'>" +
 				 "<b>SQL</b><br/>" +
@@ -2619,7 +2621,7 @@ function Property_webserviceRequest(cell, propertyObject, property, details) {
 	// add inputs table, body, and outputs table
 	table.append("<tr>" +
 			     "<td colspan='2' rowspan='3' style='padding:0px;vertical-align: top;'><table class='dialogueTable'>" +
-			     "<tr><td><b>Input</b></td><td colspan='2'><b>Field</b></td></tr></table></td>" +
+			     "<tr><td style='width: 20px;'></td><td><b>Input</b></td><td><b>Field</b></td></tr></table></td>" +
 			     "<td class='normalInputs' colspan='2' style='width:500px;padding:0 6px;'><b style='display:block;'>Request type</b><input type='radio' name='WSType" + propertyObject.id + "' value='SOAP'/>SOAP<input type='radio' name='WSType" + propertyObject.id + "' value='JSON'/>JSON<input type='radio' name='WSType" + propertyObject.id + "' value='XML'/>XML<b style='display:block;margin-top:5px;margin-bottom:5px;'>URL</b><input class='WSUrl' /></br><b style='display:block;margin-top:5px;margin-bottom:5px;'>Action</b><input class='WSAction' />" +
 			     "<b style='display:block;margin-top:5px;margin-bottom:2px;'>Body</b>" +
 			     "<div id='bodySOA_" + dialogueId + "' style='width:100%;min-height:200px;' class='WSBody'></div><b style='display:block;'>Response transform</b><textarea style='width:100%;' class='WSTransform'></textarea><b style='display:block;;margin-bottom:5px;'>Response root element</b><input class='WSRoot' style='margin-bottom:5px;' /></td><td colspan='2' rowspan='3' style='padding:0px;vertical-align: top;'><table class='dialogueTable'><tr><td><b>Field</b></td><td colspan='2'><b>Output</b></td></tr></table></td></tr>");
@@ -2647,15 +2649,6 @@ function Property_webserviceRequest(cell, propertyObject, property, details) {
 		  autoRefresh: true
 		});
 	
-	/*
-	// get codeMirror dialogue element 
-	var myCodeEditorDialogue = $(myCodeEditor.getWrapperElement());
-	// give it an id
-	myCodeEditorDialogue.attr("id", dialogueId + "_codeMirror");
-	// give it x resizing
-	addDialogueResizeX(myCodeEditorDialogue);
-	*/
-	
 	// find the inputs table
 	var inputsTable = table.children().last().children().first().children().last();
 	// loop input parameters
@@ -2671,7 +2664,7 @@ function Property_webserviceRequest(cell, propertyObject, property, details) {
 		// make it an empty space if null
 		if (!field) field = "";
 		// add the row
-		inputsTable.append("<tr><td>" + itemName + "</td><td><input value='" + escapeApos(field) + "' /></td><td style='width:45px;'>" +
+		inputsTable.append("<tr><td style='text-align:center;'>" + (+i + 1) + ".</td><td>" + itemName + "</td><td><input value='" + escapeApos(field) + "' /></td><td style='width:45px;'>" +
 				"<div class='iconsPanel'>" +
 				"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
 				"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div>" +
@@ -2703,7 +2696,7 @@ function Property_webserviceRequest(cell, propertyObject, property, details) {
 		Property_webserviceRequest(cell, propertyObject, property); 
 	});
 	// add the add input
-	inputsTable.append("<tr><td style='padding:0px;'><select style='margin:0;'><option value=''>Add input...</option>" + getInputOptions() + "</select></td><td>&nbsp;</td><td>&nbsp;</td></tr>");
+	inputsTable.append("<tr><td colspan='2' style='padding:0px;'><select style='margin:0;'><option value=''>Add input...</option>" + getInputOptions() + "</select></td></tr>");
 	// find the input add
 	var inputAdd = inputsTable.find("tr").last().children().first().children().first();
 	// listener to add input
