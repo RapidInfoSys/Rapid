@@ -1295,7 +1295,7 @@ public class Page {
     private String getHeadStart(Application application) {
     	return
     	"  <head>\n" +
-		"    <title>" + _title + " - by Rapid</title>\n" +
+		"    <title>" + Html.escape(_title) + " - by Rapid</title>\n" +
 		"    <meta description=\"Created using Rapid - www.rapid-is.co.uk\"/>\n" +
 		"    <meta charset=\"utf-8\"/>\n" +
 		"    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\" />\n" +

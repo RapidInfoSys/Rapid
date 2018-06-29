@@ -168,21 +168,36 @@ public class Rapid extends RapidHttpServlet {
 
 						} else {
 
-							if ("pdf".equals(action)) {
-								// write the form pdf
-								formAdapter.doWriteFormPDF(rapidRequest, response, request.getParameter("f"), false);
+							// get the form details
+							UserFormDetails formDetails = formAdapter.getUserFormDetails(rapidRequest);
+
+							// check we got form details
+							if (formDetails == null) {
+
+								// go to the start page (invalidate session unless user has design role)
+								gotoStartPage(request, response, app, !security.checkUserRole(rapidRequest, DESIGN_ROLE));
+
 							} else {
-								// get the form details
-								UserFormDetails formDetails = formAdapter.getUserFormDetails(rapidRequest);
-								// if  we had some and this is the correct version
-								if (app.getId().equals(formDetails.getAppId()) && app.getVersion().equals(formDetails.getVersion())) {
-									// summary is never cached
-									RapidFilter.noCache(response);
-									// write the form summary page
-									formAdapter.writeFormSummary(rapidRequest, response);
+
+								// if this was the pdf - otherwise its the summary
+								if ("pdf".equals(action)) {
+
+									// write the form pdf
+									formAdapter.doWriteFormPDF(rapidRequest, response, request.getParameter("f"), false);
+
 								} else {
-									// request the correct version for the summary (this also avoids ERR_CACH_MISS issues on the back button )
-									response.sendRedirect("~?a=" + app.getId() + "&v=" + app.getVersion() + "&action=summary");
+
+									// if  we had some and this is the correct version
+									if (app.getId().equals(formDetails.getAppId()) && app.getVersion().equals(formDetails.getVersion())) {
+										// summary is never cached
+										RapidFilter.noCache(response);
+										// write the form summary page
+										formAdapter.writeFormSummary(rapidRequest, response);
+									} else {
+										// request the correct version for the summary (this also avoids ERR_CACH_MISS issues on the back button )
+										response.sendRedirect("~?a=" + app.getId() + "&v=" + app.getVersion() + "&action=summary");
+									}
+
 								}
 
 							}
