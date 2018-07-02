@@ -232,31 +232,5 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
     <param-value>true</param-value>
   </context-param>
    -->
-
-  <context-param>
-    <description>Monitor database connection string</description>
-    <param-name>monitor.jdbc</param-name>
-    <param-value>jdbc:sqlserver://vm-win-01:1433;databaseName=RapidTest;</param-value>
-  </context-param>
-  <context-param>
-    <description>Monitor database connection driver</description>
-    <param-name>monitor.class</param-name>
-    <param-value>com.microsoft.sqlserver.jdbc.SQLServerDriver</param-value>
-  </context-param>
-  <context-param>
-    <description>Monitor database username</description>
-    <param-name>monitor.user</param-name>
-    <param-value>rapid</param-value>
-  </context-param>  
-  <context-param>
-    <description>Monitor database password</description>
-    <param-name>monitor.password</param-name>
-    <param-value>Rapid123</param-value>
-  </context-param> 
-  <context-param>
-    <description>Monitor logging mode</description>
-    <param-name>monitor.mode</param-name>
-    <param-value>all</param-value>
-  </context-param>  
    
 </web-app>

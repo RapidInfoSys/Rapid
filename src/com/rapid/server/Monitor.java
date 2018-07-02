@@ -1,6 +1,7 @@
 package com.rapid.server;
 
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -39,23 +40,25 @@ public class Monitor {
 	public Monitor() {
 	}
 
-	private void setUpMonitor(ServletContext servletContect) throws SQLException {
-		String connectionString = servletContect.getInitParameter("monitor.jdbc");
-		String username = servletContect.getInitParameter("monitor.user");
-		String password = servletContect.getInitParameter("monitor.password");
+	public void setUpMonitor(ServletContext servletContext) throws SQLException  {
+		String connectionString = servletContext.getInitParameter("monitor.jdbc");
+		String username = servletContext.getInitParameter("monitor.user");
+		String password = servletContext.getInitParameter("monitor.password");
 		
-		if(connectionString==null || connectionString.length()==0 || username==null || username.length()==0 || password==null || password.length()==0) {
-			_logger.debug("No valid monitor database connection details found in web.xml. To enable, ensure monitor.jdbc, monitor.user and monitor.password are set correctly");
+		if(!_hasStarted && connectionString==null || connectionString.length()==0 || username==null || username.length()==0 || password==null || password.length()==0) {
+			_logger.info("Monitoring not initialised");
 			_isAlive = false;
+			_hasStarted = true;
 			return;
 		}
 
 		_connection = DriverManager.getConnection(connectionString, username, password);
+		
 		_isAlive = isDatabaseConnectionActive();
 		if(_isAlive)
 			_preparedInsertStatement = _connection.prepareStatement("insert monitor(url, serverName, context, username, appId, appVersion, pageId, actionId, actionType, actionName, details, requestSize, responseSize, component, ipAddress, requestDate, responseDate, respondeCode, exception) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-		String loggingMode = servletContect.getInitParameter("monitor.mode");
+		String loggingMode = servletContext.getInitParameter("monitor.mode");
 		if("all".equalsIgnoreCase(loggingMode)) {
 			_isLoggingExceptions = true;
 			_isLoggingAll = true;
@@ -212,7 +215,7 @@ public class Monitor {
 		}
 	}
 
-	public void createEntry(ServletContext servletContext, String appId, String appVersion, String actionName, long requestSize, long response) {
+	public void createEntry(ServletContext servletContext, String appId, String appVersion, String actionName, long requestSize, long response)  {
 		createEntry(servletContext, appId, appVersion, actionName, requestSize, response, null);
 	}
 

@@ -1257,6 +1257,8 @@ public class RapidServletContextListener extends Log4jServletContextListener imp
 				_logger.info("Encyption not initialised");
 			}
 
+			_monitor.setUpMonitor(servletContext);
+			
 			// create the encypted xml adapter (if the file above is not found there no encryption will occur)
 			RapidHttpServlet.setEncryptedXmlAdapter(new EncryptedXmlAdapter(encryptionProvider));
 
