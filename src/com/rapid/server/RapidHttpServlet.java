@@ -79,6 +79,9 @@ public class RapidHttpServlet extends HttpServlet {
 	private List<String> _uploadMimeTypes;
 	private Map<String, List<byte[]>> _uploadMimeTypeBytes;
 
+	// enterprise monitor
+	protected Monitor _monitor = new Monitor();
+	
 	// properties
 
 	public static JAXBContext getJAXBContext() { return _jaxbContext; }

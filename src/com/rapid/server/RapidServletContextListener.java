@@ -104,6 +104,9 @@ public class RapidServletContextListener extends Log4jServletContextListener imp
 	// all of the classes we are going to put into our jaxb context
 	private static ArrayList<Class> _jaxbClasses;
 
+	// enterprise monitor
+	protected static Monitor _monitor = new Monitor();
+
 	public static void logFileNames(File dir, String rootPath) {
 
 		for (File file : dir.listFiles()) {
@@ -952,6 +955,13 @@ public class RapidServletContextListener extends Log4jServletContextListener imp
 
 										// (re)load the application
 										application = Application.load(servletContext, applicationFile);
+
+										if(_monitor!=null && _monitor.isAlive(servletContext) && _monitor.isLoggingExceptions()) {
+											long versionFolderSize = Files.getSize(versionFolder);
+											File backupFolder = new File(versionFolder.getAbsoluteFile()+"/_backups");
+											long versionBackupFolderSize = Files.getSize(backupFolder);
+											_monitor.createEntry(servletContext, application.getName(), application.getVersion(), "loadApp", versionFolderSize-versionBackupFolderSize, versionFolderSize);
+										}
 
 										// put it in our collection
 										applications.put(application);

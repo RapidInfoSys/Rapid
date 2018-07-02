@@ -75,6 +75,7 @@ import com.rapid.security.SecurityAdapter.Roles;
 import com.rapid.security.SecurityAdapter.SecurityAdapaterException;
 import com.rapid.security.SecurityAdapter.User;
 import com.rapid.security.SecurityAdapter.Users;
+import com.rapid.server.Monitor;
 import com.rapid.server.RapidHttpServlet;
 import com.rapid.server.RapidRequest;
 import com.rapid.server.RapidServletContextListener;
@@ -111,6 +112,9 @@ public class Rapid extends Action {
 
 	public ArrayList<Action> getErrorActions() { return _errorActions; }
 	public void setErrorActions(ArrayList<Action> errorActions) { _errorActions = errorActions; }
+
+	// enterprise monitor
+	protected Monitor _monitor = new Monitor();
 
 	// constructors
 
@@ -498,6 +502,51 @@ public class Rapid extends Action {
 		return js;
 	}
 
+	private void recordMonitorEvent(RapidRequest rapidRequest, JSONObject jsonAction, String actionType) throws JSONException {
+
+		// if monitor not alive or we are not recording everything then do nothing
+		if(_monitor==null || !_monitor.isAlive(rapidRequest.getRapidServlet().getServletContext()) || !_monitor.isLoggingAll())
+			return;
+
+		// if the action is not one of the types being recorded then do nothing
+		if(!"NEWAPP".equals(actionType) && !"DELAPP".equals(actionType) || !"DUPAPP".equals(actionType) || !"GETAPPS".equals(actionType))
+			return;
+
+		// get the data required for recording the event
+		RapidHttpServlet rapidServlet = rapidRequest.getRapidServlet();		
+		String appId = jsonAction.getString("appId");
+		String appVersion = jsonAction.optString("version", null);
+		Application app = rapidServlet.getApplications().get(appId, appVersion);
+		
+		// record the event
+		if("NEWAPP".equals(actionType)) {
+			recordMonitorEvent(rapidRequest, actionType, jsonAction.getString("name").trim(), jsonAction.getString("newVersion").trim());
+		} else if("DELAPP".equals(actionType)) {
+			recordMonitorEvent(rapidRequest, actionType, app.getName(), app.getVersion());
+		} else if("DUPAPP".equals(actionType)) {
+			recordMonitorEvent(rapidRequest, actionType, app.getName(), jsonAction.getString("newVersion").trim());
+		} else if("GETAPPS".equals(actionType)) {
+			recordMonitorEventGetApps(rapidRequest, rapidServlet);
+		}
+	}
+	
+	private void recordMonitorEventGetApps(RapidRequest rapidRequest, RapidHttpServlet rapidServlet) {
+		for (String id : rapidServlet.getApplications().getIds()) {
+			for (String version : rapidServlet.getApplications().getVersions(id).keySet()) {
+				Application application = rapidServlet.getApplications().get(id, version);
+				recordMonitorEvent(rapidRequest, "", application.getName(), application.getVersion());
+			}
+		}
+	}
+
+	private void recordMonitorEvent(RapidRequest rapidRequest, String actionName, String appId, String appVersion) {
+		_monitor.openEntry();
+		_monitor.setActionName(actionName);
+		_monitor.setAppId(appId);
+		_monitor.setAppVersion(appVersion);
+		_monitor.commitEntry(rapidRequest, null, 0);
+	}
+
 	@Override
 	public JSONObject doAction(RapidRequest rapidRequest, JSONObject jsonAction) throws Exception {
 
@@ -540,6 +589,9 @@ public class Rapid extends Action {
 		String appVersion = jsonAction.optString("version", null);
 		// get the application we're about to manipulate
 		Application app = rapidServlet.getApplications().get(appId, appVersion);
+
+		// record the event to the monitor database table
+		recordMonitorEvent(rapidRequest, jsonAction, action);
 
 		// only if we had an application and one of the special Rapid roles
 		if (app != null && (rapidAdmin || rapidDesign || rapidUsers)) {

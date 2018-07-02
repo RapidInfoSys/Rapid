@@ -216,6 +216,13 @@ public class Designer extends RapidHttpServlet {
 
 		RapidRequest rapidRequest = new RapidRequest(this, request);
 
+		// if monitor is alive then log the event
+		if(_monitor!=null && _monitor.isAlive(rapidRequest.getRapidServlet().getServletContext()) && _monitor.isLoggingAll())
+			_monitor.openEntry();
+		
+		// we will store the length of the item we are adding
+		long responseLength = 0;
+
 		try {
 
 			getLogger().debug("Designer GET request : " + request.getQueryString());
@@ -1379,7 +1386,18 @@ public class Designer extends RapidHttpServlet {
 			// log the response
 			getLogger().debug("Designer GET response : " + output);
 
+			// add up the accumulated response data with the output
+			responseLength += output.length();
+			
+			// if monitor is alive then log the event
+			if(_monitor!=null && _monitor.isAlive(rapidRequest.getRapidServlet().getServletContext()) && _monitor.isLoggingAll())
+				_monitor.commitEntry(rapidRequest, response, responseLength);
+
 		} catch (Exception ex) {
+
+			// if monitor is alive then log the event
+			if(_monitor!=null && _monitor.isAlive(rapidRequest.getRapidServlet().getServletContext()) && _monitor.isLoggingExceptions())
+				_monitor.commitEntry(rapidRequest, response, responseLength, ex.getMessage());
 
 			getLogger().debug("Designer GET error : " + ex.getMessage(), ex);
 
@@ -1427,6 +1445,16 @@ public class Designer extends RapidHttpServlet {
 
 		// get the rapid request
 		RapidRequest rapidRequest = new RapidRequest(this, request);
+
+		// if monitor is alive then log the event
+		if(_monitor!=null && _monitor.isAlive(rapidRequest.getRapidServlet().getServletContext()) && _monitor.isLoggingAll())
+			_monitor.openEntry();
+
+		// we will store the length of the item we are adding
+		long responseLength = 0;
+
+		// extra detail for the monitor log
+		String monitorEntryDetails = null;
 
 		try {
 
@@ -1576,7 +1604,8 @@ public class Designer extends RapidHttpServlet {
 								}
 
 								// save the new page to file
-								newPage.save(this, rapidRequest, application, true);
+								long fileSize = newPage.save(this, rapidRequest, application, true);
+								monitorEntryDetails = "" + fileSize;
 
 								// get any pages collection (we're only sent it if it's been changed)
 								JSONArray jsonPages = jsonPage.optJSONArray("pages");
@@ -2102,7 +2131,8 @@ public class Designer extends RapidHttpServlet {
 												appNew.getPages().loadpages(getServletContext());
 
 												// save application (this will also initialise and rebuild the resources)
-												appNew.save(this, rapidRequest, false);
+												long fileSize = appNew.save(this, rapidRequest, false);
+												monitorEntryDetails = "" + fileSize;
 
 												// add application to the collection
 												getApplications().put(appNew);
@@ -2159,6 +2189,9 @@ public class Designer extends RapidHttpServlet {
 							PrintWriter out = response.getWriter();
 							out.print(output);
 							out.close();
+							
+							// record response size
+							responseLength = output.length();
 
 						} // got an application
 
@@ -2168,7 +2201,19 @@ public class Designer extends RapidHttpServlet {
 
 			} // got rapid application
 
+			// if monitor is alive then log the event
+			if(_monitor!=null && _monitor.isAlive(rapidRequest.getRapidServlet().getServletContext()) && _monitor.isLoggingAll()) {
+				_monitor.setDetails(monitorEntryDetails);
+				_monitor.commitEntry(rapidRequest, response, responseLength);
+			}
+
 		} catch (Exception ex) {
+
+			// if monitor is alive then log the event
+			if(_monitor!=null && _monitor.isAlive(rapidRequest.getRapidServlet().getServletContext()) && _monitor.isLoggingExceptions()) {
+				_monitor.setDetails(monitorEntryDetails);
+				_monitor.commitEntry(rapidRequest, response, responseLength, ex.getMessage());
+			}
 
 			getLogger().error("Designer POST error : ",ex);
 
