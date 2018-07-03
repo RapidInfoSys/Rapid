@@ -1262,6 +1262,9 @@ public class RapidServletContextListener extends Log4jServletContextListener imp
 			// create the encypted xml adapter (if the file above is not found there no encryption will occur)
 			RapidHttpServlet.setEncryptedXmlAdapter(new EncryptedXmlAdapter(encryptionProvider));
 
+			// store away the encryption provider
+			RapidHttpServlet.setEncryptionProvider(encryptionProvider);
+
 			// initialise the schema factory (we'll reuse it in the various loaders)
 			_schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 

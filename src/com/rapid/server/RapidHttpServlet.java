@@ -35,6 +35,7 @@ Mostly getters that retrieve from the servlet context
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
+import java.security.GeneralSecurityException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,6 +65,7 @@ import com.rapid.core.Workflows;
 import com.rapid.server.filter.RapidAuthenticationAdapter;
 import com.rapid.utils.Bytes;
 import com.rapid.utils.Exceptions;
+import com.rapid.utils.Encryption.EncryptionProvider;
 import com.rapid.utils.JAXB.EncryptedXmlAdapter;
 
 @SuppressWarnings({"serial", "unchecked", "rawtypes"})
@@ -74,6 +76,7 @@ public class RapidHttpServlet extends HttpServlet {
 	private static Logger _logger = LogManager.getLogger(RapidHttpServlet.class);
 	private static JAXBContext _jaxbContext;
 	private static EncryptedXmlAdapter _encryptedXmlAdapter;
+	private static EncryptionProvider _encryptionProvider;
 
 	// private instance variables
 	private List<String> _uploadMimeTypes;
@@ -89,6 +92,7 @@ public class RapidHttpServlet extends HttpServlet {
 
 	public static EncryptedXmlAdapter getEncryptedXmlAdapter() { return _encryptedXmlAdapter; }
 	public static void setEncryptedXmlAdapter(EncryptedXmlAdapter encryptedXmlAdapter) { _encryptedXmlAdapter = encryptedXmlAdapter; }
+	public static void setEncryptionProvider(EncryptionProvider encryptionProvider) { _encryptionProvider = encryptionProvider; }
 
 	// public methods
 
@@ -206,9 +210,16 @@ public class RapidHttpServlet extends HttpServlet {
 	}
 
 	public String getSecureInitParameter(String name) {
-		return getInitParameter(name);
+		String value = getInitParameter(name);
+		try {
+			if(value!=null && _encryptionProvider!=null)
+				return _encryptionProvider.decrypt(value);
+		} catch (GeneralSecurityException | IOException e) {
+			_logger.debug("Did not decrypt parameter value: "+value);
+		}
+		return value;
 	}
-
+	
 	// this is used to format between Java Date and XML date - not threadsafe so new instance each time
 	public SimpleDateFormat getXMLDateFormatter() {
 		return new SimpleDateFormat("yyyy-MM-dd");
