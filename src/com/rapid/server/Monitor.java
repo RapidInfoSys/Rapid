@@ -1,7 +1,6 @@
 package com.rapid.server;
 
 import java.sql.Connection;
-import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -40,13 +39,13 @@ public class Monitor {
 	public Monitor() {
 	}
 
-	public void setUpMonitor(ServletContext servletContext) throws SQLException  {
-		String connectionString = servletContext.getInitParameter("monitor.jdbc");
-		String username = servletContext.getInitParameter("monitor.user");
-		String password = servletContext.getInitParameter("monitor.password");
+	public void setUpMonitor(ServletContext servletContect) throws SQLException  {
+		String connectionString = servletContect.getInitParameter("monitor.jdbc");
+		String username = servletContect.getInitParameter("monitor.user");
+		String password = servletContect.getInitParameter("monitor.password");
 		
-		if(!_hasStarted && connectionString==null || connectionString.length()==0 || username==null || username.length()==0 || password==null || password.length()==0) {
-			_logger.info("Monitoring not initialised");
+		if(connectionString==null || connectionString.length()==0 || username==null || username.length()==0 || password==null || password.length()==0) {
+			_logger.debug("Monitoring not initialised");
 			_isAlive = false;
 			_hasStarted = true;
 			return;
@@ -57,8 +56,10 @@ public class Monitor {
 		_isAlive = isDatabaseConnectionActive();
 		if(_isAlive)
 			_preparedInsertStatement = _connection.prepareStatement("insert monitor(url, serverName, context, username, appId, appVersion, pageId, actionId, actionType, actionName, details, requestSize, responseSize, component, ipAddress, requestDate, responseDate, respondeCode, exception) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-
-		String loggingMode = servletContext.getInitParameter("monitor.mode");
+		else
+			_logger.debug("Monitoring not initialised");
+		
+		String loggingMode = servletContect.getInitParameter("monitor.mode");
 		if("all".equalsIgnoreCase(loggingMode)) {
 			_isLoggingExceptions = true;
 			_isLoggingAll = true;
@@ -256,14 +257,18 @@ public class Monitor {
 		}
 	}
 	
-	private boolean isDatabaseConnectionActive() throws SQLException {
-		Statement statement = _connection.createStatement();  
-		ResultSet resultSet = statement.executeQuery("select count(*) count from monitor");
-		if(resultSet!=null) {
-			resultSet.close();
-			return true;
+	private boolean isDatabaseConnectionActive() {
+		try {
+			Statement statement = _connection.createStatement();  
+			ResultSet resultSet = statement.executeQuery("select count(*) count from monitor");
+			if(resultSet!=null) {
+				resultSet.close();
+				return true;
+			}
+			return false;
+		} catch(SQLException ex) {
+			return false;
 		}
-		return false;
 	}
 
 	public void close() {
