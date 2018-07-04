@@ -1570,6 +1570,9 @@ public class Rapid extends Action {
 				// add a masked password
 				result.put("password", password);
 
+				// add isLocked status
+				result.put("isLocked", user.getIsLocked());
+
 				// add the device details
 				result.put("deviceDetails", user.getDeviceDetails());
 
@@ -2553,6 +2556,8 @@ public class Rapid extends Action {
 				String email = jsonAction.optString("email");
 				// get the password
 				String password = jsonAction.getString("password");
+				// get locked status
+				boolean isLocked = jsonAction.isNull("isLocked")?false:"true".equalsIgnoreCase(jsonAction.getString("isLocked"));
 				// get the device details
 				String deviceDetails = jsonAction.optString("deviceDetails");
 				// check for useAdmin - must have Radpid Admin to grant
@@ -2566,7 +2571,7 @@ public class Rapid extends Action {
 				rapidRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), app);
 
 				// add the user
-				security.addUser(rapidRequest, new User(userName, description, email, password, deviceDetails));
+				security.addUser(rapidRequest, new User(userName, description, email, password, isLocked, deviceDetails));
 
 				// update the Rapid Request to have the new user name
 				rapidRequest.setUserName(userName);
@@ -2655,9 +2660,11 @@ public class Rapid extends Action {
 				String email = jsonAction.optString("email");
 				// get the password
 				String password = jsonAction.getString("password");
+				// get locked status
+				String isLocked = jsonAction.isNull("isLocked")?"false":jsonAction.getString("isLocked");
 				// get the device details
-				String deviceDetails = jsonAction.getString("deviceDetails");
-
+				String deviceDetails = jsonAction.getString("deviceDetails");				
+				
 				// get the user
 				User user = security.getUser(rapidRequest);
 				// update the email
@@ -2666,6 +2673,8 @@ public class Rapid extends Action {
 				user.setDescription(description);
 				// update the device details
 				user.setDeviceDetails(deviceDetails);
+				// update the locked status
+				user.setIsLocked("true".equalsIgnoreCase(isLocked));
 
 				// if password is different from the mask
 				if ("********".equals(password)) {

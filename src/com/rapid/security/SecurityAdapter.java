@@ -171,6 +171,7 @@ public abstract class SecurityAdapter {
 		// private class variables
 		protected String _name, _description, _email, _password, _deviceDetails;
 		protected UserRoles _userRoles;
+		protected boolean _isLocked = false;
 
 		// properties
 		public String getName() { return _name; }
@@ -192,6 +193,9 @@ public abstract class SecurityAdapter {
 		public UserRoles getRoles() { return _userRoles; }
 		public void setRoles(UserRoles roles) { _userRoles = roles; }
 
+		public boolean getIsLocked() { return _isLocked; }
+		public void setIsLocked(boolean isLocked) { _isLocked = isLocked; }
+		
 		// constructors
 		public User() {
 			_userRoles = new UserRoles();
@@ -206,6 +210,16 @@ public abstract class SecurityAdapter {
 			_userRoles = roles;
 		}
 
+		public User(String name, String description, String email, String password, boolean isLocked, String deviceDetails, UserRoles roles) {
+			_name = name;
+			_description = description;
+			_email = email;
+			_password = password;
+			_deviceDetails = deviceDetails;
+			_userRoles = roles;
+			_isLocked = isLocked;
+		}
+
 		public User(User user) {
 			_name = user.getName();
 			_description = user.getDescription();
@@ -217,6 +231,10 @@ public abstract class SecurityAdapter {
 
 		public User(String name, String description, String email, String password, String deviceDetails) {
 			this(name, description, email, password, deviceDetails, new UserRoles());
+		}
+
+		public User(String name, String description, String email, String password, boolean isLocked, String deviceDetails) {
+			this(name, description, email, password, isLocked, deviceDetails, new UserRoles());
 		}
 
 		// public methods
@@ -556,4 +574,7 @@ public abstract class SecurityAdapter {
 		return gotPasswordReset;
 	}
 
+	public boolean checkUserLocked(RapidRequest rapidRequest, String userName) {
+		return false;
+	}
 }
