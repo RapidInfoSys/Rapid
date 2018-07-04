@@ -180,6 +180,8 @@ public class Minify {
 						end = compressed.indexOf("*/", start);
 						if (end > -1) {
 							compressed = compressed.substring(0, start) + compressed.substring(end + 2);
+						} else {
+							compressed = compressed.substring(0, start);
 						}
 						start = compressed.indexOf("/*");
 					}

@@ -858,6 +858,15 @@ select option {
 select:hover {
   color: #000;
   background: #b2b2b2;
+  outline: 1px solid #b2b2b2;
+}
+
+select {
+	height: 30px;
+	-webkit-border-radius: 0;
+	border: 0;
+	outline: 1px solid #494949;
+	outline-offset: -1px;
 }
 
 .dropdown1 {

@@ -28,7 +28,9 @@ package com.rapid.security;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.xml.bind.JAXBContext;
@@ -41,6 +43,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.rapid.core.Application;
+import com.rapid.security.SecurityAdapter.User;
 import com.rapid.server.Rapid;
 import com.rapid.server.RapidHttpServlet;
 import com.rapid.server.RapidRequest;
@@ -79,6 +82,7 @@ public class RapidSecurityAdapter extends SecurityAdapter {
 	private Marshaller _marshaller;
 	private Unmarshaller _unmarshaller;
 	private Security _security;
+	private Map<String, Integer> failedPasswordCheckAttempts = new HashMap<>();
 
 	// constructor
 
@@ -381,29 +385,48 @@ public class RapidSecurityAdapter extends SecurityAdapter {
 	@Override
 	public boolean checkUserPassword(RapidRequest rapidRequest, String userName, String password) throws SecurityAdapaterException {
 		User user = null;
+		boolean validated = false;
+		
 		for (User u : _security.getUsers()) {
 			if (u.getName().toLowerCase().equals(userName.toLowerCase())) {
 				user = u;
 				break;
 			}
 		}
-		if (user != null && password != null) {
+		if (user != null && password != null && !user.getIsLocked()) {
 			if (password.equals(user.getPassword())) {
 				// get the application
 				Application application = rapidRequest.getApplication();
 				// if there was one (soa authentication doesn't)
 				if (application == null) {
-					return true;
+					validated = true;
 				} else {
 					// if it has device security
 					if (application.getDeviceSecurity()) {
 						// check device security as well
-						if (user.checkDevice(rapidRequest)) return true;
-					} else return true;
+						if (user.checkDevice(rapidRequest))
+							validated = true;
+					} else
+						validated = true;
 				}
 			}
 		}
-		return false;
+
+		if(validated) 
+			failedPasswordCheckAttempts.remove(userName);
+		else {
+			Integer failedCount = 0;
+			if(failedPasswordCheckAttempts.containsKey(userName))
+				failedCount = failedPasswordCheckAttempts.get(userName) + 1;
+			failedPasswordCheckAttempts.put(userName, failedCount);
+			
+			if(failedCount>=5) {
+				user.setIsLocked(true);
+				updateUser(rapidRequest, user);
+			}
+		}
+
+		return validated;
 	}
 
 }

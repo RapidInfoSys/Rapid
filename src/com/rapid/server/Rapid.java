@@ -123,6 +123,13 @@ public class Rapid extends RapidHttpServlet {
 		// get a new rapid request passing in this servlet and the http request
 		RapidRequest rapidRequest = new RapidRequest(this, request);
 
+		// if monitor is alive then log the event
+		if(_monitor!=null && _monitor.isAlive(rapidRequest.getRapidServlet().getServletContext()) && _monitor.isLoggingAll())
+			_monitor.openEntry();
+
+		// we will store the length of the item we are adding
+		long responseLength = 0;
+
 		try {
 
 			// get the application object
@@ -234,6 +241,7 @@ public class Rapid extends RapidHttpServlet {
 						int length;
 						while ((length = in.read(buffer)) > 0){
 						  os.write(buffer, 0, length);
+						  responseLength += length;
 						}
 						in.close();
 						os.flush();
@@ -613,7 +621,15 @@ public class Rapid extends RapidHttpServlet {
 
 			} // app exists check
 
+			// if monitor is alive then log the event
+			if(_monitor!=null && _monitor.isAlive(rapidRequest.getRapidServlet().getServletContext()) && _monitor.isLoggingAll())
+				_monitor.commitEntry(rapidRequest, response, responseLength);
+
 		} catch (Exception ex) {
+
+			// if monitor is alive then log the event
+			if(_monitor!=null && _monitor.isAlive(rapidRequest.getRapidServlet().getServletContext()) && _monitor.isLoggingExceptions())
+				_monitor.commitEntry(rapidRequest, response, responseLength, ex.getMessage());
 
 			logger.error("Rapid GET error : ",ex);
 
@@ -662,6 +678,13 @@ public class Rapid extends RapidHttpServlet {
 
 		// read back the body bytes
 		byte[] bodyBytes = rapidRequest.getBodyBytes();
+
+		// if monitor is alive then log the event
+		if(_monitor!=null && _monitor.isAlive(rapidRequest.getRapidServlet().getServletContext()) && _monitor.isLoggingAll())
+			_monitor.openEntry();
+
+		// we will store the length of the item we are adding
+		long responseLength = 0;
 
 		try {
 
@@ -776,6 +799,9 @@ public class Rapid extends RapidHttpServlet {
 				// close the writer
 				out.close();
 
+				// store the length
+				responseLength = jsonApps.toString().length();
+
 				// log response
 				logger.debug("Rapid POST response : " + jsonApps.toString());
 
@@ -836,6 +862,9 @@ public class Rapid extends RapidHttpServlet {
 								// close the writer
 								out.close();
 
+								// store the response length
+								responseLength = jsonResult.length();
+
 								// log response
 								logger.debug("Rapid POST response : " + jsonResult);
 
@@ -857,6 +886,9 @@ public class Rapid extends RapidHttpServlet {
 
 							// close the writer
 							out.close();
+
+							// store the response length
+							responseLength = jsonVersion.toString().length();
 
 							// log response
 							logger.debug("Rapid POST response : " + jsonVersion.toString());
@@ -1001,6 +1033,9 @@ public class Rapid extends RapidHttpServlet {
 														fos.write(bodyBytes, bytesOffset, bodyBytes.length - bytesOffset - boundary.length());
 														// close the stream
 														fos.close();
+
+														// store the file length
+														responseLength = imageFile.length();
 
 														// log the file creation
 														logger.debug("Saved image file " + imagePath);
@@ -1369,7 +1404,15 @@ public class Rapid extends RapidHttpServlet {
 
 			} // pre app action check
 
+			// if monitor is alive then log the event
+			if(_monitor!=null && _monitor.isAlive(rapidRequest.getRapidServlet().getServletContext()) && _monitor.isLoggingAll())
+				_monitor.commitEntry(rapidRequest, response, responseLength);
+
 		} catch (Exception ex) {
+
+			// if monitor is alive then log the event
+			if(_monitor!=null && _monitor.isAlive(rapidRequest.getRapidServlet().getServletContext()) && _monitor.isLoggingExceptions())
+				_monitor.commitEntry(rapidRequest, response, responseLength, ex.getMessage());
 
 			logger.error("Rapid POST error : ", ex);
 

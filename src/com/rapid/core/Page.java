@@ -959,7 +959,7 @@ public class Page {
 
 	}
 
-	public void save(RapidHttpServlet rapidServlet, RapidRequest rapidRequest, Application application, boolean backup) throws JAXBException, IOException {
+	public long save(RapidHttpServlet rapidServlet, RapidRequest rapidRequest, Application application, boolean backup) throws JAXBException, IOException {
 
 		// create folders to save the pages
 		String pagePath = application.getConfigFolder(rapidServlet.getServletContext()) + "/pages";
@@ -998,6 +998,9 @@ public class Page {
 	 	// copy the tempFile to the newFile
 	    Files.copyFile(tempFile, newFile);
 
+	    // store the size of the file writter
+	    long fileSize = tempFile.length();
+
 	    // delete the temp file
 	    tempFile.delete();
 
@@ -1017,6 +1020,7 @@ public class Page {
 		// empty the page variables so they are rebuilt the next time
 		application.emptyPageVariables();
 
+		return fileSize;
 	}
 
 	public void delete(RapidHttpServlet rapidServlet, RapidRequest rapidRequest, Application application) throws JAXBException, IOException {

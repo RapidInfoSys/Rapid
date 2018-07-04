@@ -2090,7 +2090,7 @@ public class Application {
 
 	}
 
-	public void save(RapidHttpServlet rapidServlet, RapidRequest rapidRequest, boolean backup) throws JAXBException, IOException, IllegalArgumentException, SecurityException, JSONException, InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException {
+	public long save(RapidHttpServlet rapidServlet, RapidRequest rapidRequest, boolean backup) throws JAXBException, IOException, IllegalArgumentException, SecurityException, JSONException, InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException {
 
 		// create folders to save the app
 		String folderPath = getConfigFolder(rapidServlet.getServletContext());
@@ -2117,6 +2117,9 @@ public class Application {
 	    // copy / overwrite the app file with the temp file
 	    Files.copyFile(tempFile, appFile);
 
+	    // store the size of the file writter
+	    long fileSize = tempFile.length();
+
 	    // delete the temp file
 	    tempFile.delete();
 
@@ -2126,6 +2129,7 @@ public class Application {
 	    // initialise the application, rebuilding the resources
 	    initialise(rapidServlet.getServletContext(), true);
 
+	    return fileSize;
 	}
 
 	public void delete(RapidHttpServlet rapidServlet, RapidRequest rapidRequest, boolean allVersions) throws JAXBException, IOException {

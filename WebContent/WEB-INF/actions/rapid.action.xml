@@ -598,6 +598,7 @@ function Action_rapid(ev, appId, pageId, controlId, actionId, actionType, rapidA
 					description: $("#rapid_P16_C13_").val() ,
 					email: $("#rapid_P16_C63_").val() ,  
 					password: $("#rapid_P16_C17_").val(), 
+					isLocked: getData_checkbox(ev, "rapid_P16_C100_"),
 					deviceDetails: $("#rapid_P16_C57_").val(),
 					useAdmin: getData_checkbox(ev, "rapid_P16_C38_"),
 					useDesign: getData_checkbox(ev, "rapid_P16_C39_"),
@@ -656,14 +657,14 @@ function Action_rapid(ev, appId, pageId, controlId, actionId, actionType, rapidA
 			if (rapidApp) {
 				data = { actionType: actionType, appId: "rapid", version: _appVersion, 
 					userName: $("#rapid_P0_C834_").text(), 	description: $("#rapid_P0_C838_").val(), email: $("#rapid_P0_C2061_").val(), 
-					password: $("#rapid_P0_C843_").val(), deviceDetails: $("#rapid_P0_C1453_").val(), 
+					password: $("#rapid_P0_C843_").val(), deviceDetails: $("#rapid_P0_C1453_").val(), isLocked: getData_checkbox(ev, "rapid_P0_C2915_"), 
 					useAdmin: getData_checkbox(ev, "rapid_P0_C879_"), 
 					useDesign: getData_checkbox(ev, "rapid_P0_C880_"),
 					useUsers: getData_checkbox(ev, "rapid_P0_C2442_") 
 				}; 
 			} else {
 				data = { actionType: actionType, appId: $("#rapid_P0_C43").val(), version: $("#rapid_P0_C1044_").val(), 
-					userName: $("#rapid_P0_C216").find("tr.rowSelect").children().first().html(), description: $("#rapid_P0_C717_").val(), email: $("#rapid_P0_C2068_").val(),
+					userName: $("#rapid_P0_C216").find("tr.rowSelect").children().first().html(), description: $("#rapid_P0_C717_").val(), email: $("#rapid_P0_C2068_").val(), isLocked: getData_checkbox(ev, "rapid_P0_C2907_"),
 					password: $("#rapid_P0_C231").val(), deviceDetails: $("#rapid_P0_C1444_").val() 
 				};
 				callback = function() {

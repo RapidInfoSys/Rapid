@@ -252,6 +252,8 @@ public class RapidRequest {
 			// store the version
 			_version = application.getVersion();
 		}
+		// copy the action name
+		_actionName = request.getParameter("action");
 	}
 
 	// can also instantiate a rapid request with just an HttpServletRequest and an application
