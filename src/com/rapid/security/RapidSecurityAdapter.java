@@ -386,9 +386,12 @@ public class RapidSecurityAdapter extends SecurityAdapter {
 	public boolean checkUserPassword(RapidRequest rapidRequest, String userName, String password) throws SecurityAdapaterException {
 		User user = null;
 		boolean validated = false;
+
+		// change to lower case first to make all equality checks case insensitive
+		userName = userName.toLowerCase();
 		
 		for (User u : _security.getUsers()) {
-			if (u.getName().toLowerCase().equals(userName.toLowerCase())) {
+			if (u.getName().toLowerCase().equals(userName)) {
 				user = u;
 				break;
 			}
