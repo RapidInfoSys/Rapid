@@ -225,28 +225,27 @@ if (data && data.selectedRowNumber && data.rows && data.rows[data.selectedRowNum
 	// get a row for the currently selected
 	data = {fields:data.fields,rows:[data.rows[data.selectedRowNumber - 1]]};
 	// if we were provided with a field to drill into the row data
-  	if (field && data && data.fields && data.rows && data.rows.length > 0) {
-	  	// assume we can't find it	
-	  	var fieldIndex = -1;
-	  	// loop the fields
-	  	for (var i in data.fields) {
-	  		if (data.fields[i] && data.fields[i].toLowerCase() == field.toLowerCase()) {
-	  			fieldIndex = i;
-	  			break;
-	  		}
-	  	}
-	  	// if we found the field
-	  	if (fieldIndex > -1) {
+	if (field && data && data.fields && data.rows && data.rows.length > 0) {
+		// assume we can't find it	
+		var fieldIndex = -1;
+		// loop the fields
+		for (var i in data.fields) {
+			if (data.fields[i] && data.fields[i].toLowerCase() == field.toLowerCase()) {
+				fieldIndex = i;
+				break;
+			}
+		}
+		// if we found the field
+		if (fieldIndex > -1) {
 			// get the value at this field position
-	  		data = data.rows[0][fieldIndex];
-	  	} else {
-	  		// could not find field
-	  		data = null;
-	  	}
-	  	// return data
-	  	return data
+			data = data.rows[0][fieldIndex];
+		} else {
+			// could not find field
+			data = null;
+		}
 	}
-
+	// return data
+	return data
 }	     	                
 	                ]]>
 	            </getPropertyFunction>
