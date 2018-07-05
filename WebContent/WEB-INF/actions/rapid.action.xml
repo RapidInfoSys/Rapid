@@ -612,6 +612,7 @@ function Action_rapid(ev, appId, pageId, controlId, actionId, actionType, rapidA
 					description: $("#rapid_P6_C42_").val(), 
 					email: $("#rapid_P6_C77_").val(),
 					password: $("#rapid_P6_C18").val(),
+					isLocked: getData_checkbox(ev, "rapid_P6_C320_"),
 					deviceDetails: $("#rapid_P6_C70_").val(),
 					useAdmin: getData_checkbox(ev, "rapid_P6_C65_"),
 					useDesign: getData_checkbox(ev, "rapid_P6_C66_"),
