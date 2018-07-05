@@ -2671,7 +2671,7 @@ function Property_webserviceRequest(cell, propertyObject, property, details) {
 				"</div></td></tr>");
 		
 		// get the field input
-		var fieldInput = inputsTable.find("tr").last().children(":nth(1)").last().children().last();
+		var fieldInput = inputsTable.find("tr").last().find("input");
 		// add a listener
 		addListener( fieldInput.keyup( {parameters: request.inputs}, function(ev) {
 			// get the input
