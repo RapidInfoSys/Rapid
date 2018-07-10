@@ -37,6 +37,8 @@ var _dialogueZindex = 10012;
 var _dialogueRefeshProperties = {};
 // the control name is important for checking conflicts and the change event is not picked up if a new control is selected so we track it specially
 var _controlName;
+//track whether the mouse is on the codeEditor
+var _onCodeEditor = false;
 
 // this function returns a set of options for a dropdown using the current set of pages
 function getPageOptions(selectId, ignoreId) {
@@ -1095,8 +1097,19 @@ function Property_bigtext(cell, propertyObject, property, details) {
 				myCodeMirror.setOption("mode", "javascript");
 			}
 			
+			//track whether the mouse is on the codeEditor (result is used for the blur event)
+			//because codeEditor gets unfocused (i.e. blur) when clicking on the scrollbar
+			myCodeMirrorDialogue.mouseenter(function() {
+				_onCodeEditor = true;
+			});
+			
+			//
+			myCodeMirrorDialogue.mouseleave(function() {
+				_onCodeEditor = false;
+			});
+			
 		}//end of if
-		//otherwise, the codeEditor must have already been created
+		//otherwise, the codeEditor must have already been created, so just display it
 		//add the text into the codeEditor
 		myCodeMirror.setValue(value);
 		//style and position the codeEditor, hide it at start
@@ -1120,9 +1133,9 @@ function Property_bigtext(cell, propertyObject, property, details) {
 			updateProperty(cell, propertyObject, property, details, myCodeMirror.getValue());
 		};
 		var blurCallback = function() {
-			
-			// Blur only if mouse is not on the resize dialogue
-			if (!_dialogueSize) {
+
+			// Blur only if mouse is not on the (resize dialogue and codeeditor)
+			if (!_dialogueSize && !_onCodeEditor) {
 				
 				//update the value - so that it can be reused in the next click
 				value = myCodeMirror.getValue();
@@ -1135,9 +1148,8 @@ function Property_bigtext(cell, propertyObject, property, details) {
 				//remove the event handlers on the editor instance, on unfocus
 				myCodeMirror.off("blur", blurCallback);
 				myCodeMirror.off("keyup", keyUpCallback);
-				
 			}
-			
+
 		};
 		
 		// create listener - hide the textarea and update the cell on unfocus
