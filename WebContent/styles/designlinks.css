@@ -50,7 +50,7 @@ div#designLinks {
 	font-weight: bold;
 }
 
-div.designData table th, table td {
+div.designData table th, div.designData table td {
     padding: 12px;
     line-height: 20px;
     text-align: left;
