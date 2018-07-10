@@ -495,3 +495,10 @@ textarea {
 	box-sizing: border-box;
 	border:none;
 }
+
+.overflowDiv {
+	height: 100%;
+	overflow: auto;
+	overflow-x: hidden;
+	padding: 5px 0;
+}

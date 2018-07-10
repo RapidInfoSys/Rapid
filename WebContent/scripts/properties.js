@@ -2377,7 +2377,7 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 	// add inputs table, sql, and outputs table
 	table.append("<tr>" +
 				 "<td colspan='2' style='padding:0px;vertical-align: top;'>" +
-				 "<table class='dialogueTable inputs'><tr><td style='width: 20px;'></td><td><b>Input</b></td><td colspan='2'><b>Field</b></td></tr></table>" +
+				 "<div class='overflowDiv'><table class='dialogueTable inputs'><tr><td style='width: 20px;'></td><td><b>Input</b></td><td colspan='2'><b>Field</b></td></tr></table></div>" +
 				 "</td>" +
 				 "<td id='" + dialogue.attr("id") + "_dbTextAreaCell' colspan='3' style='width:50%;padding:2px 10px 0 10px;'>" +
 				 "<b>SQL</b><br/>" +
