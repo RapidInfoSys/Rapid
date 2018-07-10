@@ -2161,15 +2161,18 @@ public class Page {
 						+ "</div>"
 				    	+ "<script type='text/javascript'>\n"
 				    	+ "/* designLink */\n"
+				    	+ "	 var _onDesignTable = false;\n"
 				    	+ "$(document).ready( function() {\n"
-				    	+ "  $('#designShow').mouseover ( function(ev) {\n     $('#designLink').attr('href','design.jsp?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + _id + "'); $('#designLinkNewTab').attr('target','_blank').attr('href','design.jsp?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + _id + "'); $('#designLinks').show();\n  });\n"
-				    	+ "  $('#designLinks').mouseleave ( function(ev) {\n     $('#designLinks').hide();\n  });\n"
+				    	+ "	 var _onDesignLink = false;\n"
+				    	+ "  $('#designShow').mouseover ( function(ev) {\n     $('#designLink').attr('href','design.jsp?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + _id + "'); $('#designLinkNewTab').attr('target','_blank').attr('href','design.jsp?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + _id + "'); $('#designLinks').show(); _onDesignLink = true;\n  });\n"
+				    	+ "  $('#designLinks').mouseleave ( function(ev) {\n   $('#designLinks').hide(); _onDesignLink = false;\n  });\n"
+				    	+ "	 $('body').click(function(){\n if(!_onDesignLink && !_onDesignTable) 	$('div.designData').hide();\n });"
 				    	+ designLinkJQueryStringBuilder.toString()
 				    	+ "});\n"
 				    	+ "</script>\n");
 
 					}
-
+					
 				}
 
 			} catch (SecurityAdapaterException ex) {

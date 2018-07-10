@@ -24,6 +24,9 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 */
 
 function showDesignData(link) {
+	
+	//var myTest = _onDesignTable;
+	
 	var id = link.attr("data-id");
 	var name = link.find("img").attr("title");
 	var details = window[id + "details"];
@@ -33,8 +36,11 @@ function showDesignData(link) {
 		div.css({
 			"left": link.offset().left
 		});
+		div.mouseover( function(ev) {  
+			_onDesignTable = true;
+		});
 		div.mouseleave( function(ev) {  
-			div.hide();
+			_onDesignTable = false;
 		});
 	}
 	if (details) {		

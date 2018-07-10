@@ -43,8 +43,17 @@ div#designLinks {
 .designData table {
 	font-family: arial;
 	font-size: 12px;
+	border-collapse: collapse;
 }
 
 .designData table tr:first-child {
 	font-weight: bold;
+}
+
+div.designData table th, table td {
+    padding: 12px;
+    line-height: 20px;
+    text-align: left;
+    vertical-align: top;
+    border: 1px solid #C0D0C4;
 }
