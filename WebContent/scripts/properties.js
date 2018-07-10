@@ -3716,7 +3716,7 @@ var _gridCellFunctionHelpText = "// enter JavaScript here that can alter the con
 function Property_gridColumns(cell, grid, property, details) {
 	
 	// retrieve or create the dialogue
-	var dialogue = getDialogue(cell, grid, property, details, 650, "Columns",{sizeX: true, minWidth: 300});		
+	var dialogue = getDialogue(cell, grid, property, details, 650, "Columns",{sizeX: true, minWidth: 700});		
 	// grab a reference to the table
 	var table = dialogue.find("table").first();
 	// make sure table is empty
@@ -3744,7 +3744,7 @@ function Property_gridColumns(cell, grid, property, details) {
 	for (var i in columns) {
 		
 		// set the sort select (show the ellipses if custom)
-		var sortSelect = "<select " + (columns[i].sort == "c" ? "style='width:60px;'" : "" ) + ">";
+		var sortSelect = "<select " + (columns[i].sort == "c" ? "style='width: 75px;'" : "" ) + ">";
 		// loop the values and add
 		for (var j in _gridColumnSorts) {
 			sortSelect += "<option value='" + j + "'"+ (columns[i].sort == j ? " selected='selected'" : "") + ">" + _gridColumnSorts[j].text + "</option>";
