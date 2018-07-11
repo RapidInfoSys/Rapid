@@ -424,8 +424,10 @@ public class RapidSecurityAdapter extends SecurityAdapter {
 			failedPasswordCheckAttempts.put(userName, failedCount);
 			
 			if(failedCount>=5) {
-				user.setIsLocked(true);
-				updateUser(rapidRequest, user);
+				if(user!=null) {
+					user.setIsLocked(true);
+					updateUser(rapidRequest, user);
+				}
 			}
 		}
 
