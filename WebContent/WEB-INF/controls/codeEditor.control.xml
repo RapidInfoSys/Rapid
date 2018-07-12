@@ -405,6 +405,9 @@ return [[true],[false]];
 	    
 	    <setDataJavaScript>
 	    <![CDATA[
+	    if(data==null)
+	    		data = "";
+	    		
 	    _codeEditors[id].setValue(data);
 	    _codeEditors[id].refresh();
 	    	
