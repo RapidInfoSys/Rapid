@@ -102,7 +102,6 @@ return ["grey","white","black", "green"];
 	width: 20px;
 	height: 20px;
 	z-index: 101;
-	margin-top: -11px;
 	padding-top: 0px;
 }
 
@@ -248,6 +247,13 @@ switch (this.colour) {
 	case "green": this.object.addClass("slidePanelOpener-green"); break;
 	default: this.object.addClass("slidePanelOpener-grey");
 }
+
+var height = this.object.height();
+this.object.css({
+	'font-size': height + 'px',
+	'line-height': height + 'px'
+})
+
 	        ]]>
 	    </rebuildJavaScript>	
 	    	    	    
