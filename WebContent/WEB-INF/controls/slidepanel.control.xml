@@ -76,20 +76,21 @@ return ["grey","white","black", "green"];
 	    
 	    <resources>
 	        <resource>
-	            <type>file</type>
-	            <contents>images/controls/slidepanel/slidepanel_48x48.png</contents>
+	            <type>cssFile</type>
+	            <contents>styles/fonts/fontawesome/css/font-awesome.css</contents>
 	        </resource>
+	         <resource>
+	            <type>cssFile</type>
+	            <contents>styles/fonts/rapid/font-rapid.css</contents>
+	        </resource>
+	        <!-- Some browsers choose the tff instead of the woff so both are included -->
 	        <resource>
 	            <type>file</type>
-	            <contents>images/controls/slidepanel/slidepanel_black_48x48.png</contents>
-	        </resource>
+	            <contents>styles/fonts/fontawesome/fonts/fontawesome-webfont.woff</contents>
+	        </resource>		  
 	        <resource>
 	            <type>file</type>
-	            <contents>images/controls/slidepanel/slidepanel_white_48x48.png</contents>
-	        </resource>
-	        <resource>
-	            <type>file</type>
-	            <contents>images/controls/slidepanel/slidepanel_green_48x48.png</contents>
+	            <contents>styles/fonts/fontawesome/fonts/fontawesome-webfont.ttf</contents>
 	        </resource>
 	        <resource>
 	            <type>css</type>
@@ -101,6 +102,8 @@ return ["grey","white","black", "green"];
 	width: 20px;
 	height: 20px;
 	z-index: 101;
+	margin-top: -11px;
+	padding-top: 0px;
 }
 
 .slidePanel img {
@@ -125,6 +128,22 @@ return ["grey","white","black", "green"];
 	background-color: #ccc;
 	opacity: 0.75;
 	z-index: 99;
+}
+
+.slidePanelOpener-black {
+	color: black;
+}
+
+.slidePanelOpener-grey {
+	color: #B1B1B1;
+}
+
+.slidePanelOpener-white {
+	color: white;
+}
+
+.slidePanelOpener-green {
+	color: #95C459;
 }
 	                ]]>
 				</contents>
@@ -183,7 +202,7 @@ $(document).ready( function() {
 	    <getHtmlFunction>
 	        <![CDATA[
 // return html for adding to our parent object      
-return "<div id='" + this.id + "' class='slidePanel'><img src='images/controls/slidepanel/slidepanel_48x48.png'/></div>";
+return "<div id='" + this.id + "' class='slidePanel'><span class='fa fa-bars'></span></div>";
 	        ]]>
 	    </getHtmlFunction>
 	    	    
@@ -217,13 +236,18 @@ if (this.visible) {
 	this.object.removeClass("slidePanelOpen");
 }
 
-var image = "slidepanel_48x48.png";
+// color the burger
+this.object.removeClass("slidePanelOpener-white");
+this.object.removeClass("slidePanelOpener-black");
+this.object.removeClass("slidePanelOpener-green");
+this.object.removeClass("slidePanelOpener-grey");
+
 switch (this.colour) {
-	case "white": image = "slidepanel_white_48x48.png"; break;
-	case "black": image = "slidepanel_black_48x48.png"; break;
-	case "green": image = "slidepanel_green_48x48.png"; break;
+	case "white": this.object.addClass("slidePanelOpener-white"); break;
+	case "black": this.object.addClass("slidePanelOpener-black"); break;
+	case "green": this.object.addClass("slidePanelOpener-green"); break;
+	default: this.object.addClass("slidePanelOpener-grey");
 }
-this.object.children("img").attr("src","images/controls/slidepanel/" + image);
 	        ]]>
 	    </rebuildJavaScript>	
 	    	    	    
