@@ -2715,9 +2715,27 @@ $(document).ready( function() {
 		    	contentType: "application/json",
 		        dataType: "json",            
 		        data: getSavePageData(),            
-		        error: function(server, status, error) { 
+		        error: function(server, status, error) {
+		        	// assume offline
+		        	var message = "Rapid server cannot be contacted";
+		        	// use error if present
+		        	if (server.status > 0) message = error;
+		        	// hide cog
+		        	$("#saveAnimation").removeClass("fa-cog fa-spin").addClass("fa-close");
+		        	// show message
+		        	$("#saveMessage").html("Page NOT saved! " + message);
 		        	// show error
-		        	alert(error);
+		        	alert(message);
+		        	// auto close after 1 second
+		        	$("#save").delay(1000).animate({
+						"margin-top": -45
+					}, 500);
+		        	// enable undo if undo stack
+        			if (_undo.length > 0) $("#undo").enable();
+        			// enable redo if redo stack
+        			if (_redo.length > 0) $("#redo").enable();
+        			// enable save
+        			$("#pageSave").enable();
 		        },
 		        success: function(controls) {
 		        	// hide cog

@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2015 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -43,7 +43,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.rapid.core.Application;
-import com.rapid.security.SecurityAdapter.User;
 import com.rapid.server.Rapid;
 import com.rapid.server.RapidHttpServlet;
 import com.rapid.server.RapidRequest;
@@ -384,54 +383,61 @@ public class RapidSecurityAdapter extends SecurityAdapter {
 
 	@Override
 	public boolean checkUserPassword(RapidRequest rapidRequest, String userName, String password) throws SecurityAdapaterException {
+
+		// assume no user
 		User user = null;
-		boolean validated = false;
+		// assume the password check has failed
+		boolean pass = false;
 
 		// change to lower case first to make all equality checks case insensitive
 		userName = userName.toLowerCase();
-		
+
+		// loop users
 		for (User u : _security.getUsers()) {
 			if (u.getName().toLowerCase().equals(userName)) {
 				user = u;
 				break;
 			}
 		}
-		if (user != null && password != null && !user.getIsLocked()) {
-			if (password.equals(user.getPassword())) {
-				// get the application
-				Application application = rapidRequest.getApplication();
-				// if there was one (soa authentication doesn't)
-				if (application == null) {
-					validated = true;
-				} else {
-					// if it has device security
-					if (application.getDeviceSecurity()) {
-						// check device security as well
-						if (user.checkDevice(rapidRequest))
-							validated = true;
-					} else
-						validated = true;
-				}
-			}
-		}
 
-		if(validated) 
-			failedPasswordCheckAttempts.remove(userName);
-		else {
-			Integer failedCount = 0;
-			if(failedPasswordCheckAttempts.containsKey(userName))
-				failedCount = failedPasswordCheckAttempts.get(userName) + 1;
-			failedPasswordCheckAttempts.put(userName, failedCount);
-			
-			if(failedCount>=5) {
-				if(user!=null) {
+		// check we got a user
+		if (user != null) {
+			// if we were provided with a password and their're not locked
+			if (password != null && !user.getIsLocked()) {
+				// if the password matches
+				if (password.equals(user.getPassword())) {
+					// get the application
+					Application application = rapidRequest.getApplication();
+					// if there was one (soa authentication doesn't)
+					if (application == null) {
+						pass = true;
+					} else {
+						// if it has device security
+						if (application.getDeviceSecurity()) {
+							// check device security as well
+							if (user.checkDevice(rapidRequest))
+								pass = true;
+						} else
+							pass = true;
+					} // application not null
+				} // password != null && not locked
+			} // user not null
+
+			// if we passed
+			if (pass)
+				failedPasswordCheckAttempts.remove(userName);
+			else {
+				Integer failedCount = 0;
+				if (failedPasswordCheckAttempts.containsKey(userName)) failedCount = failedPasswordCheckAttempts.get(userName) + 1;
+				failedPasswordCheckAttempts.put(userName, failedCount);
+				if (failedCount >= 5) {
 					user.setIsLocked(true);
 					updateUser(rapidRequest, user);
 				}
 			}
-		}
 
-		return validated;
+		} // user != null
+		return pass;
 	}
 
 }
