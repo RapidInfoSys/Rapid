@@ -405,7 +405,7 @@ public class Database extends Action {
 			} // control found check
 		} // outputs loop
 		// remove the last comma from any conventional outputs
-		if (outputs.size() > 0) jsOutputs = jsOutputs.substring(0, jsOutputs.length() - 1);
+		if (jsOutputs.length() > 0) jsOutputs = jsOutputs.substring(0, jsOutputs.length() - 1);
 		// wrap the outputs with their variable
 		jsOutputs = "var outputs" + childName + " = [" + jsOutputs + "]";
 		// if jsPropertyOutputs, add them before
