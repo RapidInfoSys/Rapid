@@ -349,6 +349,8 @@ function getMapPosition(data, rowIndex, callBack, map, details, zoomMarkers) {
 				if (f == "title") pos.title = data.rows[rowIndex][i];
 				// do the info checks
 				if (f == "info") pos.info = data.rows[rowIndex][i];
+				// do the icon checks
+				if (f == "icon") pos.icon = data.rows[rowIndex][i];
 			}
 		}
 		// if not lat and lng 
@@ -441,16 +443,21 @@ function setMapCentre(map, pos) {
 // add a map marker, used by both the addMapMarkers function (from the properties), and the getPosition callback
 function addMapMarker(map, pos, details, data, rowIndex, zoomMarkers) {
 	// skip if no lat and lng - but we might be coming back if we then searched
-	if (map && pos && pos.lat && pos.lng) {		
+	if (map && pos && pos.lat && pos.lng) {
+
 		var markerOptions = {
 			map: map,
-			position: new google.maps.LatLng(pos.lat, pos.lng)				
+			position: new google.maps.LatLng(pos.lat, pos.lng)
 		};
+		
 		if (pos.title) markerOptions.title = pos.title;
+		if (pos.icon) markerOptions.icon = pos.icon;
 		if (details.markerImage) markerOptions.icon = "applications/" + _appId + "/" + _appVersion + "/" + details.markerImage;
+		
 		var marker = new google.maps.Marker(markerOptions);	
 		marker.index = map.markers.length;
 		marker.data = {fields:data.fields,rows:[data.rows[rowIndex]]};
+		
 		map.markers.push(marker);					
 		if (pos.info) {
 			var markerInfoWindow = new google.maps.InfoWindow({
