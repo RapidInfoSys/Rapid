@@ -697,6 +697,28 @@ function makeDataObject(data, field) {
 	return data;
 }
 
+function makeObjectFromData(data, fields) {
+	var object = data;
+	if (data && data.rows && data.fields) {
+		object = {};
+		if (data.rows.length > 0 && data.fields.length > 0) {
+			for (var i = 0; i < data.fields.length; i++) {
+				if (fields && fields.length > 0) {
+					for (var j = 0; j < fields.length; j++) {
+						if (data.fields[i] == fields[j]) {
+							object[data.fields[i]] = data.rows[0][i];
+							break;
+						}
+					}
+				} else {
+					object[data.fields[i]] = data.rows[0][i];
+				}
+			}
+		}
+	}
+	return object;
+}
+
 function mergeDataObjects(data1, data2, mergeType, field, maxRows) {
 	var data = null;
 	if (data1) {
