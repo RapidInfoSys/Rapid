@@ -178,21 +178,26 @@ public class RapidRequest {
 					// get the start page
 					_page = _application.getStartPage(rapidServlet.getServletContext());
 				} else {
-					// get the requested page
+					// look for the page by id 
 					_page = _application.getPages().getPage(rapidServlet.getServletContext(), pageId);
+					// if still no page found, look for the page by name
+					if (_page == null) _page = _application.getPages().getPageByName(rapidServlet.getServletContext(), pageId);
 				}
-				// if there is no control parameter could still have a page action
-				if (request.getParameter("c") == null) {
-					if (request.getParameter("act") != null) {
-						// get action from the page
-						_action = _page.getAction(request.getParameter("act"));
-					}
-				} else {
-					_control = _page.getControl(request.getParameter("c"));
-					// if we've found the control and have an action parameter
-					if (_control != null && request.getParameter("act") != null) {
-						// get action from the control
-						_action = _control.getAction(request.getParameter("act"));
+				// there must be a page to check the following
+				if (_page != null) {
+					// if there is no control parameter could still have a page action
+					if (request.getParameter("c") == null) {
+						if (request.getParameter("act") != null) {
+							// get action from the page
+							_action = _page.getAction(request.getParameter("act"));
+						}
+					} else {
+						_control = _page.getControl(request.getParameter("c"));
+						// if we've found the control and have an action parameter
+						if (_control != null && request.getParameter("act") != null) {
+							// get action from the control
+							_action = _control.getAction(request.getParameter("act"));
+						}
 					}
 				}
 			} catch (RapidLoadingException ex) {
