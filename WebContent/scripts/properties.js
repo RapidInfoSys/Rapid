@@ -816,7 +816,7 @@ function getDialogue(cell, propertyObject, property, details, width, title, opti
 		}
 		
 		// add a close link
-		var close = dialogue.append("<b class='dialogueTitle' style='float:left;margin-top:-5px;'>" + title + "</b><span class='dialogueClose' style='float:right;margin-top:-5px;'>close</span></div>").children().last();
+		var close = dialogue.append("<b class='dialogueTitle' style='float:left;margin-top:-5px;'>" + title + "</b><i class='fa dialogueClose fa-external-link-square' style='float:right; font-size:18px; color:#494949; padding-bottom:5px;'></i></div>").children().last();
 	
 		// add the close listener (it's put in the listener collection above)
 		addListener(close.click({dialogueId: dialogueId}, function(ev) {
@@ -835,7 +835,7 @@ function getDialogue(cell, propertyObject, property, details, width, title, opti
 				// if we got one
 				if (childDialogue[0]) {
 					// find the close link
-					var close = childDialogue.find("a.dialogueClose");
+					var close = childDialogue.find("fa.dialogueClose");
 					// click it
 					close.click();
 				}
@@ -892,7 +892,7 @@ function getDialogue(cell, propertyObject, property, details, width, title, opti
 // this function clears down all of the property dialogues
 function hideDialogues() {		
 	// execute the click on all visible dialogue close links to update the property and even the html
-	$("a.dialogueClose:visible").click();
+	$("fa.dialogueClose:visible").click();
 	// remove all listeners
 	removeListeners();	
 	// grab a reference to any dialogues
@@ -2381,10 +2381,9 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 				 "</td>" +
 				 "<td id='" + dialogue.attr("id") + "_dbTextAreaCell' colspan='3' style='width:50%;padding:2px 10px 0 10px;'>" +
 				 "<b>SQL</b><br/>" +
-				 "<!--<textarea id='dbTextArea' style='width:100%;min-width:100%;max-width:100%;min-height:200px;box-sizing:border-box;'></textarea>-->" +
 				 "</td>" +
 				 "<td colspan='2' rowspan='3' style='padding:0px;vertical-align: top;'>" +
-				 "<table  class='dialogueTable outputs'><tr><td><b>Field</b></td><td colspan='2'><b>Output</b></td></tr></table>" +
+				 "<div class='overflowDiv'><table  class='dialogueTable outputs'><tr><td><b>Field</b></td><td colspan='2'><b>Output</b></td></tr></table></div>" +
 				 "</td></tr>");
 	
 	
@@ -2439,24 +2438,29 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 	addReorder(query.inputs, inputsTable.find("div.reorder"), function() { 
 		Property_databaseQuery(cell, propertyObject, property); 
 	});
-	// add delete listeners
-	addListener( inputsTable.find("div.delete").click( {parameters: query.inputs}, function(ev) {
+	// get the delete
+	var fieldDelete = inputsTable.find("div.delete");
+
+	// add a listener
+	addListener( fieldDelete.click( {parameters: query.inputs}, function(ev) {
 		// get the input
 		var input = $(ev.target);
 		// remove from parameters
 		ev.data.parameters.splice(input.closest("tr").index()-1,1);
 		// remove row
-		input.closest("tr").remove();		
+		input.closest("tr").remove();
+		
 		//loop through all the rows, and update the input count column
 		inputsTable.find("tr:not(:first-child):not(:last-child) td:first-child").each(function(index, value){
 			$(this).text(++index);
 		});
+
 	}));
 	
 	// if multi row and at least one input
 	if (query.multiRow && query.inputs && query.inputs.length > 0) {
 		// add the add input linke
-		inputsTable.append("<tr><td style='padding:0px;' colspan='2'><span class='propertyAction' style='padding-left:5px;'>add input</span></td><td>&nbsp;</td></tr>");
+		inputsTable.append("<tr><td style='padding:0px;' colspan='3'><span class='propertyAction' style='padding-left:5px;'>add input</span></td><td>&nbsp;</td></tr>");
 		// find the input add
 		var inputAdd = inputsTable.find("span.propertyAction").last();
 		// listener to add input
@@ -2470,7 +2474,7 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 		}));
 	} else {
 		// add the add input select
-		inputsTable.append("<tr><td style='padding:0px;' colspan='2'><select style='margin:0px'><option value=''>add input...</option>" + getInputOptions() + "</select></td><td>&nbsp;</td></tr>");
+		inputsTable.append("<tr><td style='padding:0px;' colspan='3'><select style='margin:0px'><option value=''>add input...</option>" + getInputOptions() + "</select></td><td>&nbsp;</td></tr>");
 		// find the input add
 		var inputAdd = inputsTable.find("tr").last().children().first().children("select");
 		// listener to add input
@@ -2486,10 +2490,11 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 		}));
 	}
 			
-	// set the value of the sqlEditor or empty if null
-	sqlEditor.setValue(query.SQL || "");
-	// update the value with each change
-	sqlEditor.on("keyup", function () { query.SQL = sqlEditor.getValue();  });
+	//set the value of the sqlEditor or empty if null
+	sqlEditor.setValue((query.SQL || ""));
+	sqlEditor.on("keyup", function (){
+		query.SQL = sqlEditor.getValue();
+	});
 	
 	// find the outputs table
 	var outputsTable = table.find("table.outputs");
@@ -2520,23 +2525,22 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 			// update field value
 			ev.data.parameters[input.parent().parent().index()-1].field = input.val();
 		}));
+		// get the delete
+		var fieldDelete = outputsTable.find("div.delete");
+		// add a listener
+		addListener( fieldDelete.click( {parameters: query.outputs}, function(ev) {
+			// get the input
+			var input = $(ev.target);
+			// remove from parameters
+			ev.data.parameters.splice(input.closest("tr").index()-1,1);
+			// remove row
+			input.closest("tr").remove();
+		}));			
 	}
 	// add reorder listeners
 	addReorder(query.outputs, outputsTable.find("div.reorder"), function() { 
 		Property_databaseQuery(cell, propertyObject, property); 
 	});
-	
-	///////////////////  Reorders are not updating indexes when item is deleted!!!!! ///////////////////////
-	
-	// add delete listeners
-	addListener( outputsTable.find("div.delete").click( {parameters: query.outputs}, function(ev) {
-		// get the input
-		var input = $(ev.target);
-		// remove from parameters
-		ev.data.parameters.splice(input.closest("tr").index()-1,1);
-		// remove row
-		input.closest("tr").remove();
-	}));			
 	// add the add
 	outputsTable.append("<tr><td style='padding:0px;' colspan='2'><select class='addOutput' style='margin:0px'><option value=''>add output...</option>" + getOutputOptions() + "</select></td><td>&nbsp;</td></tr>");
 	// find the output add
@@ -2553,7 +2557,8 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 		Property_databaseQuery(ev.data.cell, ev.data.propertyObject, ev.data.property, ev.data.details);	
 	}));
 	
-	table.append("<tr><td colspan='2'>Multi-row input data?&nbsp;<input class='multi' type='checkbox'" + (query.multiRow ? "checked='checked'" : "" ) + " style='vertical-align: middle;margin-top: -3px;'/></td><td style='text-align: left;overflow:inherit;' colspan='2'>Database connection <select style='width:auto;'>" + getDatabaseConnectionOptions(query.databaseConnectionIndex) + "</select></td><td style='text-align:right;'><button>Test SQL</button></td></tr>");
+	table.append("<tr><td colspan='2'>Multi-row input data?&nbsp;<input class='multi' type='checkbox'" + (query.multiRow ? "checked='checked'" : "" ) + " style='vertical-align: middle;margin-top: -3px;'/></td>" +
+			"<td style='text-align: left;overflow:inherit;padding:0 10px;' colspan='2'>Database connection <select style='width:auto;'>" + getDatabaseConnectionOptions(query.databaseConnectionIndex) + "</select><button style='float:right;'>Test SQL</button></td></tr>");
 	
 	// get a reference to the multi-data check box
 	var multiRow = table.find("tr").last().find("input");

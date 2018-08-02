@@ -255,7 +255,7 @@ div.resizeX {
 	min-width: 25px;
 }
 
-.propertyAction, .dialogueClose {
+.propertyAction{
 	cursor:pointer;
 	color: #00e;
 	text-decoration: underline;
@@ -308,6 +308,7 @@ td.propertySubHeader {
 	box-sizing: border-box;
 	transition: background 0.3s ease;
 	max-width: 50px;
+	padding: 0;
 }
 
 .dialogueTable select:hover, .dialogueTable input:hover{
@@ -355,6 +356,10 @@ td.propertySubHeader {
 
 .dialogueTable b {
 	vertical-align: middle;
+}
+
+table.inputs tr td:last-child, table.outputs tr td:last-child  {
+	overflow: visible;
 }
 
 .dialogueTableBorders tr:not(:first-child) td {
@@ -497,8 +502,7 @@ textarea {
 }
 
 .overflowDiv {
-	height: 100%;
+	height: 95%;
 	overflow: auto;
 	overflow-x: hidden;
-	padding: 5px 0;
 }
