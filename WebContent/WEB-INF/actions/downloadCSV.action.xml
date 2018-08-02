@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<actions xmlVersion="1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="../schemas/action.xsd">
+
+	<!-- Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems gareth.edwards@rapid-is.co.uk 
+		This file is part of the Rapid Application Platform Rapid is free software: 
+		you can redistribute it and/or modify it under the terms of the GNU General 
+		Public License as published by the Free Software Foundation, either version 
+		3 of the License, or (at your option) any later version. The terms require 
+		you to include the original copyright, and the license notice in all redistributions. 
+		This program is distributed in the hope that it will be useful, but WITHOUT 
+		ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+		FOR A PARTICULAR PURPOSE.See the GNU General Public License for more details. 
+		You should have received a copy of the GNU General Public License in a file 
+		named "COPYING".If not, see <http://www.gnu.org/licenses/>. -->
+
+	<action>
+
+		<type>downloadCSV</type>
+		<name>Download CSV</name>
+		<class>com.rapid.actions.DownloadCSV</class>
+		<helpHtml>Need a source table and the output filename</helpHtml>
+
+		<addToNewApplications>true</addToNewApplications>
+		<canUseWorkflow>true</canUseWorkflow>
+
+		<properties>
+		
+			<property>
+				<key>gridId</key>
+				<name>Source grid</name>
+				<changeValueJavaScript>select</changeValueJavaScript>
+				<getValuesFunction>
+<![CDATA[
+return "<option value=''>Please select...</option>" + getControlOptions(this.gridId, null, "grid");
+]]>
+				</getValuesFunction>
+				<helpHtml>Select a control to produce a CSV data from it. Note: CSV action can only accept a grid control</helpHtml>
+			</property>
+
+			<property>
+				<key>outputFilename</key>
+				<name>Output file name</name>
+				<changeValueJavaScript>text</changeValueJavaScript>
+				<getValuesFunction>return "";</getValuesFunction>
+				<helpHtml>Provide an output filename for the generated CSV file</helpHtml>
+			</property>
+			
+		</properties>
+		
+		<actionJavaScript>
+<![CDATA[
+
+// JQuery is ready! 
+$(document).ready( function() {
+
+	// check if the download form id exists in the page and append it if not
+	if(!$("#downloadForm").length){
+		var form = $('<form/>', {id:'downloadForm', action: 'downloadCSV.jsp', method:'post', target:'_blank', style:'display:none'});
+		form.append($('<input/>', {id:'downloadFileName', name:'downloadFileName', value:'filename.csv'}));
+		form.append($('<input/>', {id:'downloadData', name:'downloadData'}));
+		//append the body
+		$("body").append(form);
+	}
+});
+
+function Action_downloadCSV(ev, actionId, gridId, fileName) {
+
+//set the output filename of the form
+$('#downloadFileName').attr({"value": fileName});
+
+// create an object for the data with rows and headers
+    var data = {rows:[],headers:[]};
+    // an array for the column headers
+    // loop the rows
+    $("#" + gridId).find('tr').each( function(idx) {
+    // add a rows collection if not header row
+    if (idx > 0) data.rows.push([]);
+    // loop the cells
+    $(this).find('td').each( function() {
+    // get a ref to the cell
+    var c = $(this);
+     // ignore hidden columns
+    if (c.is(':visible')) {
+    // if this the header row
+    if (idx == 0) {
+    // add to headers
+    data.headers.push(c.text());
+     } else {
+    data.rows[idx-1].push(c.text());
+     } } }); });
+    // stringify it so it can be sent in the form
+    data =  JSON.stringify(data);
+    // put it in the form input
+    $('#downloadData').val(data);
+    // submit the form
+    $('#downloadForm').submit();
+
+}
+
+
+]]>	
+		</actionJavaScript>
+		
+	</action>
+</actions>
