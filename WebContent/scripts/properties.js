@@ -2439,23 +2439,18 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 	addReorder(query.inputs, inputsTable.find("div.reorder"), function() { 
 		Property_databaseQuery(cell, propertyObject, property); 
 	});
-	// get the delete
-	var fieldDelete = inputsTable.find("div.delete");
-
-	// add a listener
-	addListener( fieldDelete.click( {parameters: query.inputs}, function(ev) {
+	// add delete listeners
+	addListener( inputsTable.find("div.delete").click( {parameters: query.inputs}, function(ev) {
 		// get the input
 		var input = $(ev.target);
 		// remove from parameters
 		ev.data.parameters.splice(input.closest("tr").index()-1,1);
 		// remove row
-		input.closest("tr").remove();
-		
+		input.closest("tr").remove();		
 		//loop through all the rows, and update the input count column
 		inputsTable.find("tr:not(:first-child):not(:last-child) td:first-child").each(function(index, value){
 			$(this).text(++index);
 		});
-
 	}));
 	
 	// if multi row and at least one input
@@ -2491,11 +2486,10 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 		}));
 	}
 			
-	//set the value of the sqlEditor or empty if null
-	sqlEditor.setValue((query.SQL || ""));
-	sqlEditor.on("keyup", function (){
-		query.SQL = sqlEditor.getValue();
-	});
+	// set the value of the sqlEditor or empty if null
+	sqlEditor.setValue(query.SQL || "");
+	// update the value with each change
+	sqlEditor.on("keyup", function () { query.SQL = sqlEditor.getValue();  });
 	
 	// find the outputs table
 	var outputsTable = table.find("table.outputs");
@@ -2526,22 +2520,23 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 			// update field value
 			ev.data.parameters[input.parent().parent().index()-1].field = input.val();
 		}));
-		// get the delete
-		var fieldDelete = outputsTable.find("div.delete");
-		// add a listener
-		addListener( fieldDelete.click( {parameters: query.outputs}, function(ev) {
-			// get the input
-			var input = $(ev.target);
-			// remove from parameters
-			ev.data.parameters.splice(input.closest("tr").index()-1,1);
-			// remove row
-			input.closest("tr").remove();
-		}));			
 	}
 	// add reorder listeners
 	addReorder(query.outputs, outputsTable.find("div.reorder"), function() { 
 		Property_databaseQuery(cell, propertyObject, property); 
 	});
+	
+	///////////////////  Reorders are not updating indexes when item is deleted!!!!! ///////////////////////
+	
+	// add delete listeners
+	addListener( outputsTable.find("div.delete").click( {parameters: query.outputs}, function(ev) {
+		// get the input
+		var input = $(ev.target);
+		// remove from parameters
+		ev.data.parameters.splice(input.closest("tr").index()-1,1);
+		// remove row
+		input.closest("tr").remove();
+	}));			
 	// add the add
 	outputsTable.append("<tr><td style='padding:0px;' colspan='2'><select class='addOutput' style='margin:0px'><option value=''>add output...</option>" + getOutputOptions() + "</select></td><td>&nbsp;</td></tr>");
 	// find the output add

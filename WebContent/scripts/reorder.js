@@ -37,16 +37,15 @@ function addReorder(collection, items, rerender) {
 		img.on('dragstart', function(event) { event.preventDefault(); });
 		
 		// add mousedown
-		addListener( img.mousedown( {collection: collection, index: index}, function(ev){
+		addListener( img.mousedown( {collection: collection}, function(ev){
 			// get a reference to the image
 			var img = $(ev.target);
-			
-			// retain a reference to the image we have selected
-			_reorderDetails = { object: img, collection: ev.data.collection, index: ev.data.index };
+			// retain a reference to the image we have selected - but ignore the index
+			_reorderDetails = { object: img, collection: ev.data.collection };
 		}));
 		
-		// add mousemove
-		addListener( img.mouseover( {collection: collection, index: index, rerender: rerender}, function(ev){
+		// add mousemove 
+		addListener( img.mouseover( {collection: collection, rerender: rerender}, function(ev){
 			// get a reference to the potential reorder to image
 			var reorderTo = $(this);
 			// if there are reorder details from mousing down on a different image
@@ -58,9 +57,9 @@ function addReorder(collection, items, rerender) {
 					// only if the object are from the same collection
 					if (_reorderDetails.collection === collection) {
 						// retain the position we are moving to
-						var toIndex = ev.data.index;
+						var toIndex = reorderTo.index();
 						// retain the position we are moving from
-						var fromIndex = _reorderDetails.index;		
+						var fromIndex = _reorderDetails.object.index();		
 						// if the from and to are different
 						if (toIndex != fromIndex) {
 							// retain the object we are moving as the "from"
