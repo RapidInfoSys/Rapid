@@ -34,20 +34,24 @@ function addReorder(collection, items, rerender) {
 		var img = $(this);
 		
 		// disable standard drag
-		img.on('dragstart', function(event) { event.preventDefault(); });
+		addListener( img.on('dragstart', function(ev) { 
+			event.preventDefault(); 
+		}));
 		
 		// add mousedown
 		addListener( img.mousedown( {collection: collection}, function(ev){
 			// get a reference to the image
-			var img = $(ev.target);
+			var img = $(this);
 			// retain a reference to the image we have selected - but ignore the index
 			_reorderDetails = { object: img, collection: ev.data.collection };
 		}));
 		
 		// add mousemove 
-		addListener( img.mouseover( {collection: collection, rerender: rerender}, function(ev){
+		addListener( img.mouseenter( {collection: collection, rerender: rerender}, function(ev){
+			
 			// get a reference to the potential reorder to image
 			var reorderTo = $(this);
+						
 			// if there are reorder details from mousing down on a different image
 			if (_reorderDetails) {	
 				// get a reference to the collection object of the image we've just hit
@@ -57,11 +61,11 @@ function addReorder(collection, items, rerender) {
 					// only if the object are from the same collection
 					if (_reorderDetails.collection === collection) {
 						// retain the position we are moving to
-						var toIndex = reorderTo.index();
+						var toIndex = items.index(reorderTo);
 						// retain the position we are moving from
-						var fromIndex = _reorderDetails.object.index();		
-						// if the from and to are different
-						if (toIndex != fromIndex) {
+						var fromIndex = items.index(_reorderDetails.object);
+						// if the from and to are found and different
+						if (toIndex >= 0 && fromIndex >= 0 && toIndex != fromIndex) {
 							// retain the object we are moving as the "from"
 							var fromObject = collection[fromIndex];
 							// check whether we're replacing up or down
@@ -81,7 +85,7 @@ function addReorder(collection, items, rerender) {
 								collection[toIndex] = fromObject;
 							}
 							// make the to object the from in the _reorderDetails to stop constant swapping
-							_reorderDetails = { object: $(ev.target), collection: collection, index: ev.data.index };
+							_reorderDetails = { object: reorderTo, collection: collection };
 							// re-render 
 							ev.data.rerender();
 						}
