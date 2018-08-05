@@ -56,7 +56,7 @@ function getControlOptions(selectId, ignoreId, type) {
 	var options = "";
 	for (var i in controls) {
 		var control = controls[i];
-		// note how only control with names are included, and type is only matched if included
+		// note how only controls with names are included, and type is only matched if included
 		if (control.id != ignoreId && control.name && (!type || type == control.type)) options += "<option value='" + control.id + "' " + (control.id == selectId ? "selected='selected'" : "") + ">" + control.name + "</option>"; 
 	}
 	// wrap if we had some
