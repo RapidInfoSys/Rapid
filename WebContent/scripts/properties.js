@@ -1555,6 +1555,9 @@ function Property_linkPage(cell, propertyObject, property, details) {
 	if (propertyObject.linkType == "P") {
 		// generate a select with refreshProperties = true
 		Property_select(cell, propertyObject, property, details);
+	} else if (propertyObject.navigationType == "P") {
+		//generate the special navigation select		
+		Property_navigationPage(cell, propertyObject, property, details);			
 	} else {
 		// remove the row
 		cell.parent().remove();
@@ -1563,7 +1566,7 @@ function Property_linkPage(cell, propertyObject, property, details) {
 
 function Property_linkURL(cell, propertyObject, property, details) {
 	// if the type is a url
-	if (propertyObject.linkType == "U")	{
+	if (propertyObject.linkType == "U" || propertyObject.navigationType == "U")	{
 		// add a text
 		Property_text(cell, propertyObject, property, details);
 	} else {
@@ -3015,11 +3018,36 @@ function Property_roles(cell, control, property, details) {
 
 }
 
+function Property_navigateDialogue(cell, propertyObject, property, details) {
+	// this is some reuse in the link control - if it's type isn't P for page
+	if ((propertyObject.navigationType && propertyObject.navigationType != "P") || (propertyObject.linkType && propertyObject.linkType != "P")) {
+		// remove this row
+		cell.parent().remove();
+		// stop going any further
+		return false;
+	}
+	
+	Property_checkbox(cell, propertyObject, property, details);
+}
+
+function Property_navigateNewtab(cell, propertyObject, property, details) {
+	//if property 'show as dialogue' is checked
+	if(propertyObject.dialogue == true || propertyObject.dialogue == "true") {
+		// remove this row
+		cell.parent().remove();
+		// stop going any further
+		return false;
+	}
+	
+	Property_checkbox(cell, propertyObject, property, details);
+
+}
+
 // this is a dialogue to specify the session variables to set when navigating
 function Property_navigationSessionVariables(cell, navigation, property, details) {
 	
 	// this is some reuse in the link control - if it's type isn't P for page
-	if (navigation.linkType && navigation.linkType != "P") {
+	if ((navigation.navigationType && navigation.navigationType != "P") || (navigation.linkType && navigation.linkType != "P")) {
 		// remove this row
 		cell.parent().remove();
 		// stop going any further

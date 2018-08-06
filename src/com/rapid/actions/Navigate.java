@@ -107,52 +107,74 @@ public class Navigate extends Action {
 
 	@Override
 	public String getJavaScript(RapidRequest rapidRequest, Application application, Page page, Control control, JSONObject jsonDetails) {
-		String pageId = getProperty("page");
-		if (pageId == null) {
-			return "";
+		
+		// the JavaScript we are making
+		String js = "";
+		
+		// check type, P or U
+		String navigationType = getProperty("navigationType");
+		String popup = getProperty("popup");
+		
+		if ("U".equals(navigationType)) {
+			
+			// get the url
+			String url = getProperty("url");
+			// set the js, including optional popup
+			js = "Action_navigate('" + url + "', false, null," +  popup + ");\n";
+			
 		} else {
-			// string into which we're about to build the session variables
-			String sessionVariables = "";
-			// check we have some
-			if (_sessionVariables != null) {
-				// loop
-				for (SessionVariable sessionVariable : _sessionVariables) {
-					// get the item id from which we are to get the value for this session/page variable
-					String itemId = sessionVariable.getItemId();
-					// null check
-					if (itemId != null) {
-						// length check
-						if (itemId.length() > 0) {
-							// get the data getter command
-							String getter = Control.getDataJavaScript(rapidRequest.getRapidServlet().getServletContext(), application, page, itemId, sessionVariable.getField());
-							// if we didn't get anything update to empty string
-							if (getter == null) getter = "''";
-							if (getter.length() == 0) getter = "''";
-							// build the concatenating string
-							sessionVariables += "&" + sessionVariable.getName() + "=' + " +  getter + " + '";
-						} // length check
-					} // null check
-				} // loop
-			}
-			// build the action string (also used in mobile action for online check type)
-			String action = "Action_navigate('~?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + pageId;
-			// check if this is a dialogue
-			if (Boolean.parseBoolean(getProperty("dialogue"))) {
-				action += "&action=dialogue" + sessionVariables + "',true,'" + pageId + "');\n";
-				// return false if we're stopping further actions
-				if (Boolean.parseBoolean(getProperty("stopActions"))) action += "return false;\n";
+			
+			// this code only for type == P
+			String pageId = getProperty("page");
+			if (pageId == null) {
+				return "// Page must be specified";
 			} else {
-				action += sessionVariables + "');\n";
+				// string into which we're about to build the session variables
+				String sessionVariables = "";
+				// check we have some
+				if (_sessionVariables != null) {
+					// loop
+					for (SessionVariable sessionVariable : _sessionVariables) {
+						// get the item id from which we are to get the value for this session/page variable
+						String itemId = sessionVariable.getItemId();
+						// null check
+						if (itemId != null) {
+							// length check
+							if (itemId.length() > 0) {
+								// get the data getter command
+								String getter = Control.getDataJavaScript(rapidRequest.getRapidServlet().getServletContext(), application, page, itemId, sessionVariable.getField());
+								// if we didn't get anything update to empty string
+								if (getter == null) getter = "''";
+								if (getter.length() == 0) getter = "''";
+								// build the concatenating string
+								sessionVariables += "&" + sessionVariable.getName() + "=' + " +  getter + " + '";
+							} // length check
+						} // null check
+					} // loop
+				}
+				// build the action string (also used in mobile action for online check type)
+				js = "Action_navigate('~?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + pageId;
+				// check if this is a dialogue
+				boolean dialogue = Boolean.parseBoolean(getProperty("dialogue"));
+				// if so add the action parameter to the url
+				if (dialogue) js += "&action=dialogue";
+				// now add the other parameters
+				js += sessionVariables + "'," + dialogue + ",'" + pageId + "'," + popup + ");\n";
+				// replace any unnecessary characters
+				js = js.replace(" + ''", "");
+				
 			}
-			// replace any unnecessary characters
-			action = action.replace(" + ''", "");
-			// stop event bubbling (both navigation types need this)
-			action += "ev.stopPropagation();\n";
-			// stop the form being submitted
-			action += "ev.preventDefault();\n";
-			// return it into the page!
-			return action;
+			
 		}
+
+		// return false if we're stopping further actions
+		if (Boolean.parseBoolean(getProperty("stopActions"))) js += "return false;\n";
+		// stop event bubbling (both navigation types need this)
+		js += "ev.stopPropagation();\n";
+		// stop the form being submitted
+		js += "ev.preventDefault();\n";
+		// return it into the page!
+		return js;
 
 	}
 

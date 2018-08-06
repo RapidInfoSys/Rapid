@@ -36,11 +36,33 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    <addToNewApplications>true</addToNewApplications>
 	    
 	    <properties>
+	   
+	    	<property>
+	            <key>navigationType</key>
+	            <name>Type</name>
+	            <setConstructValueFunction>return "P";</setConstructValueFunction>
+	            <changeValueJavaScript>select</changeValueJavaScript>
+	            <getValuesFunction>
+// for backwards compatibility	                
+if (!this.navigationType) this.navigationType = "P";
+// return the types	            
+return [["P","Page"],["U","URL"]];
+				</getValuesFunction>
+	            <refreshProperties>true</refreshProperties>
+	            <helpHtml>Sets the type of link. Page link to other pages on your Rapid app and url links to any webpage placed in the text field.</helpHtml>
+	        </property>
+	           
+	        <property>
+	            <key>url</key>
+	            <name>URL</name>
+	            <changeValueJavaScript>linkURL</changeValueJavaScript>
+	            <helpHtml>Sets the page that will be followed when the user clicks on the link.</helpHtml>
+	        </property>
 	        
 	        <property>
 	            <key>page</key>
 	            <name>Page</name>
-	            <changeValueJavaScript>navigationPage</changeValueJavaScript>
+	            <changeValueJavaScript>linkPage</changeValueJavaScript>
 	            <refreshProperties>true</refreshProperties>
 	            <helpHtml>Sets the page to navigate to.</helpHtml>
 	        </property>
@@ -55,7 +77,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	        <property>
 	            <key>dialogue</key>
 	            <name>Show as dialogue</name>
-	            <changeValueJavaScript>checkbox</changeValueJavaScript>
+	            <changeValueJavaScript>navigateDialogue</changeValueJavaScript>
 	            <refreshProperties>true</refreshProperties>
 	            <helpHtml>Sets whether to show the new page as a dialogue. Dialogue pages will appear in front of the currently selected page.</helpHtml>
 	        </property>
@@ -65,6 +87,13 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <name>Stop further actions</name>
 	            <changeValueJavaScript>navigationStopActions</changeValueJavaScript>
 	            <helpHtml>Sets whether to halt further actions on the current page whilst the dialogue is in view.</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>popup</key>
+	            <name>New tab</name>
+	            <changeValueJavaScript>navigateNewtab</changeValueJavaScript>
+	            <helpHtml>Opens the link in a new tab.</helpHtml>
 	        </property>
 	        
 	    </properties>
@@ -90,6 +119,8 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
                 </contents>                
             </resource> 
 	    </resources>
+	    
+	    
 	        	    
 	    <actionJavaScript>
 	        <![CDATA[
@@ -125,7 +156,7 @@ $(document).ready( function() {
 	
 });		        
 	        
-function Action_navigate(url, dialogue, id) {
+function Action_navigate(url, dialogue, id, popup) {
 
 	if (dialogue) {
 	
@@ -296,7 +327,11 @@ function Action_navigate(url, dialogue, id) {
 		});	      
 	
 	} else {
-		window.location = url;
+		if (popup) {
+			window.open(url, "_blank");
+		} else {
+			window.location = url;
+		}
 	}
 		
 }	        ]]>
