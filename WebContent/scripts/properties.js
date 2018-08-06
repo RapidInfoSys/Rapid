@@ -70,7 +70,7 @@ function getControlOptions(selectId, ignoreId, type) {
 				var pageControlOptions = "";												
 				for (var j in _pages[i].controls) {
 					var otherPageControl = _pages[i].controls[j];					
-					if (otherPageControl.otherPages) {
+					if (otherPageControl.otherPages && (!type || type == otherPageControl.type)) {
 						pageControlOptions +=  "<option value='" + otherPageControl.id + "' " + (otherPageControl.id == selectId ? "selected='selected'" : "") + ">" + otherPageControl.name + "</option>"; 
 					}
 				}
