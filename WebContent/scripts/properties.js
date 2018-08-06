@@ -2440,7 +2440,6 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 	});
 	// get the delete
 	var fieldDelete = inputsTable.find("div.delete");
-
 	// add a listener
 	addListener( fieldDelete.click( {parameters: query.inputs}, function(ev) {
 		// get the input
@@ -2454,7 +2453,6 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 		inputsTable.find("tr:not(:first-child):not(:last-child) td:first-child").each(function(index, value){
 			$(this).text(++index);
 		});
-
 	}));
 	
 	// if multi row and at least one input
@@ -2525,22 +2523,23 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 			// update field value
 			ev.data.parameters[input.parent().parent().index()-1].field = input.val();
 		}));
-		// get the delete
-		var fieldDelete = outputsTable.find("div.delete");
-		// add a listener
-		addListener( fieldDelete.click( {parameters: query.outputs}, function(ev) {
-			// get the input
-			var input = $(ev.target);
-			// remove from parameters
-			ev.data.parameters.splice(input.closest("tr").index()-1,1);
-			// remove row
-			input.closest("tr").remove();
-		}));			
+					
 	}
 	// add reorder listeners
 	addReorder(query.outputs, outputsTable.find("div.reorder"), function() { 
 		Property_databaseQuery(cell, propertyObject, property); 
 	});
+	// get the delete
+	var fieldDelete = outputsTable.find("div.delete");
+	// add a listener
+	addListener( fieldDelete.click( {parameters: query.outputs}, function(ev) {
+		// get the input
+		var input = $(ev.target);
+		// remove from parameters
+		ev.data.parameters.splice(input.closest("tr").index()-1,1);
+		// remove row
+		input.closest("tr").remove();
+	}));
 	// add the add
 	outputsTable.append("<tr><td style='padding:0px;' colspan='2'><select class='addOutput' style='margin:0px'><option value=''>add output...</option>" + getOutputOptions() + "</select></td><td>&nbsp;</td></tr>");
 	// find the output add
