@@ -77,6 +77,8 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	           	    	return "<option value=\'\'>Please select...</option>" + getPageOptions(this.page, _page.id);
 	           	    ]]>
 	           	</getValuesFunction>
+	           	<refreshHtml>true</refreshHtml>
+	           	<refreshProperties>true</refreshProperties>
 	           	<helpHtml>Dropdown for selecting the page in your Rapid app that will be linked to.</helpHtml>
 	        </property>
 	        
