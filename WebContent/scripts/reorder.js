@@ -40,55 +40,56 @@ function addReorder(collection, items, rerender) {
 		
 		// add mousedown
 		addListener( img.mousedown( {collection: collection}, function(ev){
-			// get a reference to the image
-			var img = $(this);
-			// retain a reference to the image we have selected - but ignore the index
-			_reorderDetails = { object: img, collection: ev.data.collection };
+			// get a reference to the fromItem (previously an image, but now a div)
+			var fromItem = $(this);
+			// retain a reference to the fromIndex
+			_reorderDetails = { fromIndex: items.index(fromItem), collection: ev.data.collection };
 		}));
 		
 		// add mousemove 
 		addListener( img.mouseenter( {collection: collection, rerender: rerender}, function(ev){
 			
-			// get a reference to the potential reorder to image
-			var reorderTo = $(this);
-						
-			// if there are reorder details from mousing down on a different image
-			if (_reorderDetails) {	
-				// get a reference to the collection object of the image we've just hit
-				var collection = ev.data.collection;
-				// if the image we're on is different from the image we started with
-				if (_reorderDetails.object[0] !== reorderTo[0]) {
-					// only if the object are from the same collection
-					if (_reorderDetails.collection === collection) {
-						// retain the position we are moving to
-						var toIndex = items.index(reorderTo);
-						// retain the position we are moving from
-						var fromIndex = items.index(_reorderDetails.object);
-						// if the from and to are found and different
-						if (toIndex >= 0 && fromIndex >= 0 && toIndex != fromIndex) {
-							// retain the object we are moving as the "from"
-							var fromObject = collection[fromIndex];
-							// check whether we're replacing up or down
-							if (fromIndex > toIndex) {
-								// a lower object has been moved up - shift all objects above from down one
-								for (var i = fromIndex; i > toIndex ; i--) {
-									collection[i] = collection[i - 1];
-								}
-								// put the from into the to
-								collection[toIndex] = fromObject;
-							} else {
-								// a high object has been moved down - shift all objects below to up one
-								for (var i = fromIndex; i < toIndex; i++) {
-									collection[i] = collection[i + 1];
-								}
-								// put the from into the to
-								collection[toIndex] = fromObject;
+			// get a reference to the collection object of the image we've just hit
+			var collection = ev.data.collection;
+			
+			// if there are reorder details and we have a fromIndex
+			if (_reorderDetails && _reorderDetails.fromIndex >= 0) {
+				
+				// only if the object are from the same collection
+				if (_reorderDetails.collection === collection) {
+				
+					// assume we can't find the object we are moving from
+					var fromIndex = 	_reorderDetails.fromIndex;
+					// get a reference to the potential reorder to image
+					var reorderTo = $(this);
+					// retain the position we are moving to
+					var toIndex = items.index(reorderTo);
+
+					// if the from and to are found and different
+					if (toIndex >= 0 && fromIndex >= 0 && toIndex != fromIndex) {
+						// retain the object we are moving as the "from"
+						var fromObject = collection[fromIndex];
+						// check whether we're replacing up or down
+						if (fromIndex > toIndex) {
+							// a lower object has been moved up - shift all objects above from down one
+							for (var i = fromIndex; i > toIndex ; i--) {
+								collection[i] = collection[i - 1];
 							}
-							// make the to object the from in the _reorderDetails to stop constant swapping
-							_reorderDetails = { object: reorderTo, collection: collection };
-							// re-render 
-							ev.data.rerender();
+							// put the from into the to
+							collection[toIndex] = fromObject;
+						} else {
+							// a high object has been moved down - shift all objects below to up one
+							for (var i = fromIndex; i < toIndex; i++) {
+								collection[i] = collection[i + 1];
+							}
+							// put the from into the to
+							collection[toIndex] = fromObject;
 						}
+						// make the to object null as we will loose it in the rerender, but set the fromIndex to the toIndex so we can move again from where are now
+						_reorderDetails = { fromIndex: toIndex, collection: collection };
+						// re-render 
+						ev.data.rerender();
+						
 					}
 				}
 			}
