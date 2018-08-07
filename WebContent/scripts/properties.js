@@ -1321,7 +1321,9 @@ function Property_fields(cell, action, property, details) {
 	}));
 	
 	// add reorder listeners
-	addReorder(fields, table.find("div.reorder"), function() { Property_fields(cell, action, property); });
+	addReorder(fields, table.find("div.reorder"), function() { 
+		Property_fields(cell, action, property); 
+	});
 		
 	// add delete listeners
 	addListener( table.find("div.delete").click( function (ev) {
@@ -1331,7 +1333,7 @@ function Property_fields(cell, action, property, details) {
 		var img = $(ev.target);
 		// remove the field at this location
 		fields.splice(img.closest("tr").index() - 1,1);
-		// update the dialogue;
+		// update the dialogue
 		Property_fields(cell, action, property, details);
 	}));
 	
