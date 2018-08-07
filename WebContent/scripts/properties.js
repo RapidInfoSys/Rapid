@@ -1299,16 +1299,15 @@ function Property_fields(cell, action, property, details) {
 		for (var i in fields) {
 			// add it to the text
 			text += fields[i];
+			// add comma if need be
 			if (i < fields.length -1) text += ", ";
-			// add it to the table
-			
+			// add reorder 			
 			table.append("<tr><td><input value='" + escapeApos(fields[i]) + "'/></td><td style='width:45px'>" +
 					"<div class='iconsPanel'>" +
 					"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
 					"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div>" +
 					"</div></td></tr>");
-		}
-				
+		}	
 	}
 	// set the cell text
 	cell.text(text);
@@ -1320,6 +1319,9 @@ function Property_fields(cell, action, property, details) {
 		// update the field field at this location
 		fields[input.parent().parent().index() - 1] = input.val();
 	}));
+	
+	// add reorder listeners
+	addReorder(fields, table.find("div.reorder"), function() { Property_fields(cell, action, property); });
 		
 	// add delete listeners
 	addListener( table.find("div.delete").click( function (ev) {
@@ -1333,9 +1335,6 @@ function Property_fields(cell, action, property, details) {
 		Property_fields(cell, action, property, details);
 	}));
 	
-	// add reorder listeners
-	addReorder(fields, table.find("div.reorder"), function() { Property_fields(cell, action, property); });
-		
 	// append add
 	table.append("<tr><td colspan='3'><span class='propertyAction'>add...</span></td></tr>");
 	
@@ -1437,6 +1436,14 @@ function Property_galleryImages(cell, gallery, property, details) {
 		image.caption = caption;
 	}));
 	
+	// add reorder listeners
+	addReorder(images, table.find("div.reorder"), function() {
+		// rebuild the gallery html
+		rebuildHtml(gallery); 
+		// rebuild this dialogue
+		Property_galleryImages(cell, gallery, property); 
+	});
+	
 	// add delete listeners
 	addListener( table.find("div.delete").click( function (ev) {
 		// add undo
@@ -1450,9 +1457,6 @@ function Property_galleryImages(cell, gallery, property, details) {
 		// update the dialogue;
 		Property_galleryImages(cell, gallery, property, details);
 	}));
-	
-	// add reorder listeners
-	addReorder(images, table.find("div.reorder"), function() { rebuildHtml(gallery); Property_galleryImages(cell, gallery, property); });
 	
 	// append add
 	table.append("<tr><td colspan='3'><span class='propertyAction'>add...</span></td></tr>");
@@ -1670,6 +1674,11 @@ function Property_validationControls(cell, propertyObject, property, details) {
 		}		
 	}	
 	
+	// add reorder listeners
+	addReorder(controls, table.find("div.reorder"), function() { 
+		Property_validationControls(cell, propertyObject, property); 
+	});
+	
 	// add listeners to the delete image
 	addListener( table.find("div.delete").click( function(ev) {
 		// get the row
@@ -1678,11 +1687,10 @@ function Property_validationControls(cell, propertyObject, property, details) {
 		propertyObject.controls.splice(row.index(),1);
 		// remove the row
 		row.remove();
+		// rebuild the dialogue to sychronise for reorder
+		Property_validationControls(cell, propertyObject, property);
 	}));
 	
-	// add reorder listeners
-	addReorder(controls, table.find("div.reorder"), function() { Property_validationControls(cell, propertyObject, property); });
-		
 	// add an add dropdown
 	var addControl = table.append("<tr><td colspan='2'><select><option value=''>Add control...</option>" + getValidationControlOptions(null, controls) + "</select></td></tr>").children().last().children().last().children().last();
 	addListener( addControl.change( {cell: cell, propertyObject: propertyObject, property: property, details: details}, function(ev) {
@@ -1941,18 +1949,7 @@ function Property_inputs(cell, propertyObject, property, details) {
 				var input = $(ev.target);
 				// update the field
 				ev.data.inputs[input.parent().parent().index()-1].inputField = input.val();				
-			}));
-			// get the delete image
-			var imgDelete = table.find("div.delete");
-			// add a listener
-			addListener( imgDelete.click( {inputs: inputs}, function(ev) {
-				// get the input
-				var imgDelete = $(ev.target);
-				// remove from parameters
-				ev.data.inputs.splice(imgDelete.closest("tr").index()-1,1);
-				// remove row
-				imgDelete.closest("tr").remove();
-			}));
+			}));			
 		} else {
 			// remove this entry from the collection
 			inputs.splice(i,1);
@@ -1965,6 +1962,18 @@ function Property_inputs(cell, propertyObject, property, details) {
 	addReorder(inputs, table.find("div.reorder"), function() { 
 		Property_inputs(cell, propertyObject, property, details); 
 	});
+
+	// add a listener
+	addListener( table.find("div.delete").click( {inputs: inputs}, function(ev) {
+		// get the input
+		var imgDelete = $(ev.target);
+		// remove from parameters
+		ev.data.inputs.splice(imgDelete.closest("tr").index()-1,1);
+		// remove row
+		imgDelete.closest("tr").remove();
+		// refresh dialogue
+		Property_inputs(cell, propertyObject, property, details); 
+	}));
 	
 	// add the add
 	table.append("<tr><td colspan='4' style='padding:0px;'><select style='margin:0px'><option value=''>Add input...</option>" + getInputOptions() + "</select></td></tr>");
@@ -2050,17 +2059,6 @@ function Property_outputs(cell, propertyObject, property, details) {
 				// update the field
 				ev.data.outputs[output.parent().parent().index()-1].field = output.val();
 			}));			
-			// get the delete image
-			var imgDelete = table.find("div.delete");
-			// add a listener
-			addListener( imgDelete.click( {outputs: outputs}, function(ev) {
-				// get the output
-				var imgDelete = $(ev.target);
-				// remove from parameters
-				ev.data.outputs.splice(imgDelete.closest("tr").index()-1,1);
-				// remove row
-				imgDelete.closest("tr").remove();
-			}));
 		} else {
 			// remove this entry from the collection
 			outputs.splice(i,1);
@@ -2071,8 +2069,20 @@ function Property_outputs(cell, propertyObject, property, details) {
 			
 	// add reorder listeners
 	addReorder(outputs, table.find("div.reorder"), function() { 
-		Property_outputs(cell, propertyObject, property, details); 
+		Property_outputs(cell, propertyObject, property, details);
 	});
+	
+	// add a listener
+	addListener( table.find("div.delete").click( {outputs: outputs}, function(ev) {
+		// get the output
+		var imgDelete = $(ev.target);
+		// remove from parameters
+		ev.data.outputs.splice(imgDelete.closest("tr").index()-1,1);
+		// remove row
+		imgDelete.closest("tr").remove();
+		// update the dialogue
+		Property_outputs(cell, propertyObject, property, details);
+	}));
 	
 	// add the add
 	table.append("<tr><td colspan='4' style='padding:0px;'><select style='margin:0px'><option value=''>Add output...</option>" + getOutputOptions() + "</select></td></tr>");
@@ -2165,6 +2175,11 @@ function Property_controlsForType(cell, propertyObject, property, details) {
 				}				
 			}
 			
+			// add reorder listeners
+			addReorder(controls, table.find("div.reorder"), function() { 
+				Property_controlsForType(cell, propertyObject, property, details); 
+			});
+			
 			// add listeners to the delete image
 			addListener( table.find("div.delete").click( function(ev) {
 				// get the row
@@ -2173,10 +2188,9 @@ function Property_controlsForType(cell, propertyObject, property, details) {
 				propertyObject[property.key].splice(row.index() - 1,1);
 				// remove the row
 				row.remove();
+				// refresh the dialogue
+				Property_controlsForType(cell, propertyObject, property, details);
 			}));
-			
-			// add reorder listeners
-			addReorder(controls, table.find("div.reorder"), function() { Property_controlsForType(cell, propertyObject, property, details); });
 			
 			// start the options
 			var options = "<option>add..</option>";
@@ -2451,11 +2465,8 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 		ev.data.parameters.splice(input.closest("tr").index()-1,1);
 		// remove row
 		input.closest("tr").remove();
-		
-		//loop through all the rows, and update the input count column
-		inputsTable.find("tr:not(:first-child):not(:last-child) td:first-child").each(function(index, value){
-			$(this).text(++index);
-		});
+		// refresh the query so that the reorder collection is synchronised and the numbers are updated
+		Property_databaseQuery(cell, propertyObject, property); 
 	}));
 	
 	// if multi row and at least one input
@@ -2542,6 +2553,8 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 		ev.data.parameters.splice(input.closest("tr").index()-1,1);
 		// remove row
 		input.closest("tr").remove();
+		// refresh the query so that the reorder collection is synchronised
+		Property_databaseQuery(cell, propertyObject, property); 
 	}));
 	// add the add
 	outputsTable.append("<tr><td style='padding:0px;' colspan='2'><select class='addOutput' style='margin:0px'><option value=''>add output...</option>" + getOutputOptions() + "</select></td><td>&nbsp;</td></tr>");
@@ -2692,23 +2705,23 @@ function Property_webserviceRequest(cell, propertyObject, property, details) {
 			var input = $(ev.target);
 			// update field value
 			ev.data.parameters[input.parent().parent().index()-1].field = input.val();
-		}));
-		// get the delete
-		var fieldDelete = inputsTable.find("div.delete");
-		// add a listener
-		addListener( fieldDelete.click( {parameters: request.inputs}, function(ev) {
-			// get the input
-			var input = $(ev.target);
-			// remove from parameters
-			ev.data.parameters.splice(input.closest("tr").index()-1,1);
-			// remove row
-			input.closest("tr").remove();
-		}));
+		}));		
 	}
 	// add reorder listeners
 	addReorder(request.inputs, inputsTable.find("div.reorder"), function() { 
 		Property_webserviceRequest(cell, propertyObject, property); 
 	});
+	// add delete listeners
+	addListener( inputsTable.find("div.delete").click( {parameters: request.inputs}, function(ev) {
+		// get the input
+		var input = $(ev.target);
+		// remove from parameters
+		ev.data.parameters.splice(input.closest("tr").index()-1,1);
+		// remove row
+		input.closest("tr").remove();
+		// update property so collection is sychcronised for reordering
+		Property_webserviceRequest(cell, propertyObject, property); 
+	}));
 	// add the add input
 	inputsTable.append("<tr><td colspan='2' style='padding:0px;'><select style='margin:0;'><option value=''>Add input...</option>" + getInputOptions() + "</select></td></tr>");
 	// find the input add
@@ -2721,7 +2734,7 @@ function Property_webserviceRequest(cell, propertyObject, property, details) {
 		var parameters = ev.data.propertyObject.request.inputs;
 		// add a new one
 		parameters.push({itemId: $(ev.target).val(), field: ""});
-		// rebuild the dialgue
+		// rebuild the dialogue
 		Property_webserviceRequest(ev.data.cell, ev.data.propertyObject, ev.data.property, ev.data.details);
 	}));
 	
@@ -2801,23 +2814,23 @@ function Property_webserviceRequest(cell, propertyObject, property, details) {
 			var input = $(ev.target);
 			// update field value
 			ev.data.parameters[input.parent().parent().index()-1].field = input.val();
-		}));
-		// get the delete
-		var fieldDelete = outputsTable.find("div.delete");
-		// add a listener
-		addListener( fieldDelete.click( {parameters: request.outputs}, function(ev) {
-			// get the input
-			var input = $(ev.target);
-			// remove from parameters
-			ev.data.parameters.splice(input.closest("tr").index()-1,1);
-			// remove row
-			input.closest("tr").remove();
-		}));			
+		}));		
 	}
 	// add reorder listeners
 	addReorder(request.outputs, outputsTable.find("div.reorder"), function() { 
 		Property_webserviceRequest(cell, propertyObject, property, details); 
 	});
+	// add delete listeners
+	addListener( outputsTable.find("div.delete").click( {parameters: request.outputs}, function(ev) {
+		// get the input
+		var input = $(ev.target);
+		// remove from parameters
+		ev.data.parameters.splice(input.closest("tr").index()-1,1);
+		// remove row
+		input.closest("tr").remove();
+		// rebuild the dialogue to sychronise reorders
+		Property_webserviceRequest(cell, propertyObject, property, details);
+	}));
 	// add the add
 	outputsTable.append("<tr><td>&nbsp;</td><td style='padding:0px;'><select style='margin:0px'><option value=''>Add output...</option>" + getOutputOptions() + "</select></td><td>&nbsp;</td></tr>");
 	// find the output add
@@ -2835,8 +2848,6 @@ function Property_webserviceRequest(cell, propertyObject, property, details) {
 	}));
 		
 }
-
-
 
 // this is a special drop down that can make the property below visible
 function Property_navigationPage(cell, navigationAction, property, details) {
@@ -3263,7 +3274,15 @@ function Property_radiobuttons(cell, control, property, details) {
 			// refresh
 			Property_radiobuttons(ev.data.cell, ev.data.control, ev.data.property, ev.data.details);		
 		}));
-				
+
+		// add reorder listeners
+		addReorder(buttons, table.find("div.reorder"), function() { 
+			// refresh the html and regenerate the mappings
+			rebuildHtml(control);
+			// refresh the property
+			Property_radiobuttons(cell, control, property, details); 
+		});
+		
 		// find the deletes
 		var buttonDelete = table.find("div.delete");
 		// add a listener
@@ -3279,14 +3298,6 @@ function Property_radiobuttons(cell, control, property, details) {
 			// refresh
 			Property_radiobuttons(ev.data.cell, ev.data.control, ev.data.property, ev.data.details);
 		}));
-		
-		// add reorder listeners
-		addReorder(buttons, table.find("div.reorder"), function() { 
-			// refresh the html and regenerate the mappings
-			rebuildHtml(control);
-			// refresh the property
-			Property_radiobuttons(cell, control, property, details); 
-		});
 		
 		// check we don't have a checkbox already
 		if (!dialogue.find("div.useCodes")[0]) {
@@ -3519,6 +3530,12 @@ function Property_logicConditions(cell, action, property, details) {
 	if (!text) text = "Click to add...";
 	// add in the text
 	cell.text(text);
+			
+	// add reorder listeners
+	addReorder(conditions, table.find("div.reorder"), function() { 		
+		// refresh the dialogue
+		Property_logicConditions(cell, action, property, details); 
+	});
 	
 	// find the deletes
 	var deleteImages = table.find("div.delete");
@@ -3531,14 +3548,10 @@ function Property_logicConditions(cell, action, property, details) {
 		// if there are now less than 2 conditions remove and/or row too
 		if (ev.data.conditions.length < 2) $(ev.target).closest("table").find("tr:last").prev().remove();
 		// remove row
-		delImage.closest("tr").remove();		
+		delImage.closest("tr").remove();
+		// refresh the dialogue
+		Property_logicConditions(cell, action, property, details);
 	}));
-		
-	// add reorder listeners
-	addReorder(conditions, table.find("div.reorder"), function() { 		
-		// refresh the property
-		Property_logicConditions(cell, action, property, details); 
-	});
 	
 	// only if there are 2 or more conditions
 	if (conditions.length > 1) {		
@@ -3648,6 +3661,14 @@ function Property_options(cell, control, property, details) {
 					
 		}
 		
+		// add reorder listeners
+		addReorder(options, table.find("div.reorder"), function() { 
+			// refresh the html and regenerate the mappings
+			rebuildHtml(control);
+			// refresh the dialogue
+			Property_options(cell, control, property, details); 
+		});
+		
 		// find the deletes
 		var deleteImages = table.find("div.delete");
 		// add a listener
@@ -3660,16 +3681,10 @@ function Property_options(cell, control, property, details) {
 			delImage.closest("tr").remove();
 			// update html if top row
 			if (delImage.parent().index() == 1) rebuildHtml(control);
-		}));
-			
-		// add reorder listeners
-		addReorder(options, table.find("div.reorder"), function() { 
-			// refresh the html and regenerate the mappings
-			rebuildHtml(control);
-			// refresh the property
-			Property_options(cell, control, property, details); 
-		});
-			
+			// refresh the dialogue
+			Property_options(cell, control, property, details);
+		}));		
+
 		// have an add row
 		table.append("<tr><td colspan='" + (control.codes ? "3" : "2") + "'><span class='propertyAction'>add...</span></td></tr>");
 		// get a reference to the add
@@ -3968,6 +3983,14 @@ function Property_gridColumns(cell, grid, property, details) {
 		}
 	}));
 	
+	// add reorder listeners
+	addReorder(columns, table.find("div.reorder"), function() { 
+		// refresh the html and regenerate the mappings
+		rebuildHtml(grid);
+		// refresh the dialogue
+		Property_gridColumns(cell, grid, property, details); 
+	});
+	
 	// add delete listeners
 	var deleteImages = table.find("div.delete");
 	// add a listener
@@ -3980,15 +4003,9 @@ function Property_gridColumns(cell, grid, property, details) {
 		input.closest("tr").remove();
 		// refresh the html and regenerate the mappings
 		rebuildHtml(grid);
+		// refresh the dialogue
+		Property_gridColumns(cell, grid, property, details);
 	}));
-	
-	// add reorder listeners
-	addReorder(columns, table.find("div.reorder"), function() { 
-		// refresh the html and regenerate the mappings
-		rebuildHtml(grid);
-		// refresh the property
-		Property_gridColumns(cell, grid, property, details); 
-	});
 	
 	// have an add row
 	table.append("<tr><td colspan='5'><span class='propertyAction'>add...</span></td></tr>");
@@ -4130,7 +4147,15 @@ function Property_controlHints(cell, hints, property, details) {
 		// update the control id
 		ev.data.controlHints[input.parent().parent().index()-1].style = input.val();
 	}));
-				
+
+	// add reorder listeners
+	addReorder(controlHints, table.find("div.reorder"), function() { 
+		// refresh the html and regenerate the mappings
+		rebuildHtml(hints);
+		// refresh the dialogue
+		Property_controlHints(cell, hints, property, details);
+	});
+	
 	// add delete listeners
 	var deleteImages = table.find("div.delete");
 	// add a listener
@@ -4143,15 +4168,9 @@ function Property_controlHints(cell, hints, property, details) {
 		input.closest("tr").remove();
 		// refresh the html and regenerate the mappings
 		rebuildHtml(controlHints);
+		// refresh the dialogue
+		Property_controlHints(cell, hints, property, details);
 	}));
-	
-	// add reorder listeners
-	addReorder(controlHints, table.find("div.reorder"), function() { 
-		// refresh the html and regenerate the mappings
-		rebuildHtml(hints);
-		// refresh the property
-		Property_controlHints(cell, hints, property, details); 
-	});
 		
 	// have an add row
 	table.append("<tr><td colspan='4'><span class='propertyAction'>add...</span></td></tr>");
@@ -4344,18 +4363,7 @@ function Property_datacopyDestinations(cell, propertyObject, property, details) 
 					var editField = $(ev.target);
 					// update the field
 					ev.data.dataDestinations[editField.parent().parent().index()-1].field = editField.val();
-				}));
-				// get the delete image
-				var imgDelete = table.find("div.delete");
-				// add a listener
-				addListener( imgDelete.click( {dataDestinations: dataDestinations}, function(ev) {
-					// get the input
-					var imgDelete = $(ev.target);
-					// remove from parameters
-					ev.data.dataDestinations.splice(imgDelete.closest("tr").index()-1,1);
-					// remove row
-					imgDelete.closest("tr").remove();
-				}));
+				}));				
 			} else {
 				// remove this entry from the collection
 				dataDestinations.splice(i,1);
@@ -4366,8 +4374,22 @@ function Property_datacopyDestinations(cell, propertyObject, property, details) 
 				
 		// add reorder listeners
 		addReorder(dataDestinations, table.find("div.reorder"), function() { 
-			Property_datacopyDestinations(cell, propertyObject, property, details); 
+			Property_datacopyDestinations(cell, propertyObject, property, details);
 		});
+		
+		// get the delete images
+		var imgDelete = table.find("div.delete");
+		// add a listener
+		addListener( imgDelete.click( {dataDestinations: dataDestinations}, function(ev) {
+			// get the input
+			var imgDelete = $(ev.target);
+			// remove from parameters
+			ev.data.dataDestinations.splice(imgDelete.closest("tr").index()-1,1);
+			// remove row
+			imgDelete.closest("tr").remove();
+			// refresh the dialogue
+			Property_datacopyDestinations(cell, propertyObject, property, details);
+		}));
 		
 		// add the add
 		table.append("<tr><td colspan='3' style='padding:0px;'><select style='margin:0px'><option value=''>Add destination...</option>" + getOutputOptions() + "</select></td></tr>");
@@ -4790,6 +4812,11 @@ function Property_datacopyCopies(cell, datacopyAction, property, details) {
 			ev.data.dataCopies[i].type = target.val();
 		}));
 		
+		// add reorder listeners
+		addReorder(dataCopies, table.find("div.reorder"), function() { 
+			Property_datacopyCopies(cell, datacopyAction, property);
+		});
+		
 		// get the delete images
 		var imgDelete = table.find("div.delete");
 		// add a listener
@@ -4800,13 +4827,10 @@ function Property_datacopyCopies(cell, datacopyAction, property, details) {
 			ev.data.dataCopies.splice(imgDelete.closest("tr").index()-1,1);
 			// remove row
 			imgDelete.closest("tr").remove();
+			// update dialogue
+			Property_datacopyCopies(cell, datacopyAction, property);
 		}));
-			
-		// add reorder listeners
-		addReorder(dataCopies, table.find("div.reorder"), function() { 
-			Property_datacopyCopies(cell, datacopyAction, property); 
-		});
-		
+
 		// add the add
 		table.append("<tr><td colspan='8'><span class='propertyAction' style='margin-left:5px;'>add...</span></td></tr>");
 		// find the add
@@ -5605,23 +5629,27 @@ function Property_emailContent(cell, propertyObject, property, details) {
 			var input = $(ev.target);
 			// update field value
 			ev.data.parameters[input.parent().parent().index()-1].field = input.val();
-		}));
-		// get the delete
-		var fieldDelete = inputsTable.find("div.delete");
-		// add a listener
-		addListener( fieldDelete.click( {parameters: content.inputs}, function(ev) {
-			// get the input
-			var input = $(ev.target);
-			// remove from parameters
-			ev.data.parameters.splice(input.closest("tr").index()-1,1);
-			// remove row
-			input.closest("tr").remove();
-		}));
+		}));		
 	}
+	
 	// add reorder listeners
 	addReorder(content.inputs, inputsTable.find("div.reorder"), function() { 
-		Property_emailContent(cell, propertyObject, property, details); 
+		Property_emailContent(cell, propertyObject, property, details);
 	});
+	
+	// get the delete images
+	var fieldDelete = inputsTable.find("div.delete");
+	// add a listener
+	addListener( fieldDelete.click( {parameters: content.inputs}, function(ev) {
+		// get the input
+		var input = $(ev.target);
+		// remove from parameters
+		ev.data.parameters.splice(input.closest("tr").index()-1,1);
+		// remove row
+		input.closest("tr").remove();
+		// update the dialogue
+		Property_emailContent(cell, propertyObject, property, details);
+	}));
 	
 	// add the add input select
 	inputsTable.append("<tr><td style='padding:0px;' colspan='2'><select style='margin:0px'><option value=''>add input...</option>" + getInputOptions() + "</select></td><td>&nbsp;</td></tr>");
