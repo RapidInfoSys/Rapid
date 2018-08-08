@@ -1542,7 +1542,7 @@ public class Page {
 			for (String line : pageLoadLines) jsStringBuilder.append("    " + line);
 
 			// close the try
-			jsStringBuilder.append("  } catch(ex) { $('body').html(ex); }\n");
+			jsStringBuilder.append("  } catch(ex) { $('body').html(ex.message || ex); }\n");
 
 			// after 200 milliseconds show and trigger a window resize for any controls that might be listening (this also cuts out any flicker), we also call focus on the elements we marked for focus while invisible (in extras.js)
 			jsStringBuilder.append("  window.setTimeout( function() {\n    $(window).resize();\n    $('body').css('visibility','visible');\n    $('[data-focus]').focus();\n  }, 200);\n");
@@ -1644,7 +1644,7 @@ public class Page {
 		writer.write("    <link rel='icon' href='favicon.ico'></link>\n");
 
 		// add the jQuery link
-		writer.write("    <script type='text/javascript' src='scripts/jquery-1.10.2.js'></script>\n");
+		writer.write("    <script type='text/javascript' src='scripts/" + Rapid.JQUERY + "'></script>\n");
 
 		// add the index.css
 		writer.write("    <link rel='stylesheet' type='text/css' href='styles/index.css'></link>\n");
