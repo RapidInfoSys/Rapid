@@ -201,10 +201,10 @@ return [[true],[false]];
 	            <type>css</type>
 	            <contents>
 	                <![CDATA[	                
-				    .codeEditorPanel {
-						width: 500px;
-						border: 1px solid #ccc;
-					}
+.codeEditorPanel {
+	width: 500px;
+	border: 1px solid #ccc;
+}
 	                ]]>
 				</contents>
 	        </resource>
@@ -212,10 +212,8 @@ return [[true],[false]];
 	        <resource>
 	        	<type>javascript</type>
 	        	<contents>
-	        	
-				// global for all code editors
-				_codeEditors = {};
-					       	
+// global for all code editors
+_codeEditors = {};
 	        	</contents>
 	        </resource>
 	        
@@ -305,112 +303,98 @@ return [[true],[false]];
 	    
 	    <getHtmlFunction>
 	    <![CDATA[
-	    
-		return "<div id='" + this.id + "' class='codeEditorPanel'></div>";
-		
+return "<div id='" + this.id + "' class='codeEditorPanel'></div>";
 	    ]]>
 	    </getHtmlFunction>	 
 	    
 	    <rebuildJavaScript>
 	    <![CDATA[
-	    
-	    // get a reference to the iFrame window
-		var w = _pageIframe[0].contentWindow;
-		
-		var myCodeMirror = w._codeEditors[this.id];
-		
-		//check if this codeEditor is loaded in the iframe
-		if(myCodeMirror){
-		//convert string booleans to real booleans
-			myCodeMirror.setOption("value", this.details.value);
-			myCodeMirror.setOption("placeholder", this.details.placeholder);
-			myCodeMirror.setOption("mode", this.details.mode);
-			myCodeMirror.setOption("theme", this.details.theme);
-			myCodeMirror.setOption("lineWrapping", this.details.lineWrapping);
-			myCodeMirror.setOption("lineNumbers", this.details.lineNumbers);
-			myCodeMirror.setOption("matchBrackets", this.details.matchBrackets);
-			myCodeMirror.setOption("autoCloseBrackets", this.details.autoCloseBrackets);
-			myCodeMirror.setOption("readOnly", this.details.readOnly);	
-		}
+// get a reference to the iFrame window
+var w = _pageIframe[0].contentWindow;
 
+var myCodeMirror = w._codeEditors[this.id];
+
+//check if this codeEditor is loaded in the iframe
+if(myCodeMirror){
+//convert string booleans to real booleans
+	myCodeMirror.setOption("value", this.details.value);
+	myCodeMirror.setOption("placeholder", this.details.placeholder);
+	myCodeMirror.setOption("mode", this.details.mode);
+	myCodeMirror.setOption("theme", this.details.theme);
+	myCodeMirror.setOption("lineWrapping", this.details.lineWrapping);
+	myCodeMirror.setOption("lineNumbers", this.details.lineNumbers);
+	myCodeMirror.setOption("matchBrackets", this.details.matchBrackets);
+	myCodeMirror.setOption("autoCloseBrackets", this.details.autoCloseBrackets);
+	myCodeMirror.setOption("readOnly", this.details.readOnly);	
+}
 	    ]]>
 	    </rebuildJavaScript>
 	    
 	    <!--  More efficient to call var myCodeMirror = w.CodeMirror once here and update properties in rebuildJavaScript  -->
 	    <initDesignJavaScript>
 	    <![CDATA[
-    
-		// get a reference to the iFrame window
-		var w = _pageIframe[0].contentWindow;
-		
-	    // get a reference to where the editor is going
-	    var myDiv = w.document.getElementById(this.id);
-	    
-		//creates an editor instance, and appends it to the given DOM element
-		//will start empty or with the value and will use the mode that we loaded
-		//mode generates the styling (text-color and indent) for a given language - in this case javascript
-		var myCodeMirror = w.CodeMirror(myDiv, {
-			  value: this.details.value,
-			  placeholder: this.details.placeholder,
-			  mode:  this.details.mode,
-			  theme: this.details.theme,
-			  lineWrapping: this.details.lineWrapping,
-			  lineNumbers: this.details.lineNumbers,
-			  matchBrackets: this.details.matchBrackets,
-			  autoCloseBrackets: this.details.autoCloseBrackets,
-			  extraKeys: {"Ctrl-Space": "autocomplete"},
-			  readOnly: this.details.readOnly
-			}); 
-			
-		// store a reference to this code editor
-		w._codeEditors[this.id] = myCodeMirror;
-		
+// get a reference to the iFrame window
+var w = _pageIframe[0].contentWindow;
+
+   // get a reference to where the editor is going
+   var myDiv = w.document.getElementById(this.id);
+   
+//creates an editor instance, and appends it to the given DOM element
+//will start empty or with the value and will use the mode that we loaded
+//mode generates the styling (text-color and indent) for a given language - in this case javascript
+var myCodeMirror = w.CodeMirror(myDiv, {
+	  value: this.details.value,
+	  placeholder: this.details.placeholder,
+	  mode:  this.details.mode,
+	  theme: this.details.theme,
+	  lineWrapping: this.details.lineWrapping,
+	  lineNumbers: this.details.lineNumbers,
+	  matchBrackets: this.details.matchBrackets,
+	  autoCloseBrackets: this.details.autoCloseBrackets,
+	  extraKeys: {"Ctrl-Space": "autocomplete"},
+	  readOnly: this.details.readOnly
+	}); 
+	
+// store a reference to this code editor
+w._codeEditors[this.id] = myCodeMirror;
 	    ]]>
 	    </initDesignJavaScript>
 	   
-	    
 	    <saveJavaScript>
 	    <![CDATA[
-		// remove any objects
-		this.object.children().remove();
+// remove any objects
+this.object.children().remove();
 	    ]]>
 	    </saveJavaScript>
 	    
 	    <getDetailsFunction>
 	    <![CDATA[
-	    
-		return {
-			value: this.value,
-			placeholder: this.placeholder,
-			mode: this.mode,
-			theme: this.theme,
-			lineWrapping: (this.lineWrapping == "true" || this.lineWrapping == true) ? true : false,
-			lineNumbers: (this.lineNumbers == "true" || this.lineNumbers == true) ? true : false,
-			matchBrackets: (this.matchBrackets == "true" || this.matchBrackets == true) ? true : false,
-			autoCloseBrackets: (this.autoCloseBrackets == "true" || this.autoCloseBrackets == true) ? true : false,
-			styleActiveLine: (this.styleActiveLine == "true" || this.styleActiveLine == true) ? true : false,
-			readOnly: (this.readOnly == "true" || this.readOnly == true) ? true : false
-		};
-
+return {
+	value: this.value,
+	placeholder: this.placeholder,
+	mode: this.mode,
+	theme: this.theme,
+	lineWrapping: (this.lineWrapping == "true" || this.lineWrapping == true) ? true : false,
+	lineNumbers: (this.lineNumbers == "true" || this.lineNumbers == true) ? true : false,
+	matchBrackets: (this.matchBrackets == "true" || this.matchBrackets == true) ? true : false,
+	autoCloseBrackets: (this.autoCloseBrackets == "true" || this.autoCloseBrackets == true) ? true : false,
+	styleActiveLine: (this.styleActiveLine == "true" || this.styleActiveLine == true) ? true : false,
+	readOnly: (this.readOnly == "true" || this.readOnly == true) ? true : false
+};
 	    ]]>
 	    </getDetailsFunction>
 	    
 	   	<getDataFunction>
 	    <![CDATA[
-	  
-	    return _codeEditors[id].getValue();	
-	    	
+return _codeEditors[id].getValue();
 	    ]]>
 	    </getDataFunction>
 	    
 	    <setDataJavaScript>
 	    <![CDATA[
-	    if(data==null)
-	    		data = "";
-	    		
-	    _codeEditors[id].setValue(data);
-	    _codeEditors[id].refresh();
-	    	
+ if (data==null) data = "";
+ _codeEditors[id].setValue(data);
+ _codeEditors[id].refresh();
 	    ]]>
 	    </setDataJavaScript>
 	    
@@ -467,29 +451,28 @@ return "#" + this.id + ":focus";
 	    <initJavaScript>
 	    <![CDATA[
 	        
-	    var myDiv = document.getElementById(id);
-		//creates an editor instance, and appends it to the given DOM element
-		//will start empty or with the value and will use the mode that we loaded
-		//mode generates the styling (text-color and indent) for a given language - in this case javascript
-		var myCodeMirror = CodeMirror(myDiv, {
-			  value: details.value,
-			  placeholder: details.placeholder,
-			  autoRefresh: true,
-			  mode:  details.mode,
-			  theme: details.theme,
-			  lineWrapping: details.lineWrapping,
-			  lineNumbers: details.lineNumbers,
-			  matchBrackets: details.matchBrackets,
-			  autoCloseBrackets: details.autoCloseBrackets,
-			  extraKeys: {"Ctrl-Space": "autocomplete"},
-			  styleActiveLine: details.styleActiveLine,
-			  readOnly: details.readOnly
-			});
-			
-		// store a reference to this code editor
-		_codeEditors[id] = myCodeMirror;
-			
-	    ]]>	        	       	        
+var myDiv = document.getElementById(id);
+// creates an editor instance, and appends it to the given DOM element
+// will start empty or with the value and will use the mode that we loaded
+// mode generates the styling (text-color and indent) for a given language - in this case javascript
+var myCodeMirror = CodeMirror(myDiv, {
+  value: details.value,
+  placeholder: details.placeholder,
+  autoRefresh: true,
+  mode:  details.mode,
+  theme: details.theme,
+  lineWrapping: details.lineWrapping,
+  lineNumbers: details.lineNumbers,
+  matchBrackets: details.matchBrackets,
+  autoCloseBrackets: details.autoCloseBrackets,
+  extraKeys: {"Ctrl-Space": "autocomplete"},
+  styleActiveLine: details.styleActiveLine,
+  readOnly: details.readOnly
+});
+	
+// store a reference to this code editor
+_codeEditors[id] = myCodeMirror;
+	    ]]>
 	    </initJavaScript>
 	    
 	        	    	    	    	            	    	    	        	    	    

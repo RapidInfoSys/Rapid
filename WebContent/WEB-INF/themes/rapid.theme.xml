@@ -620,8 +620,18 @@ button:disabled {
   color: black;
 }
 
+table.controlsActionsTable {
+	min-width: 280px;
+}
+
 .controlsActionsTable tr td:first-child {
 	text-align: center;
+	width: 10px;
+}
+
+.controlsActionsTable tr td:last-child {
+	text-align: center;
+	width: 10px;
 }
 
 .controlsActionsTable input.gridMultiSelectHeader {

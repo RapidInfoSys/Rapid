@@ -2726,8 +2726,8 @@ $(document).ready( function() {
 		        	$("#saveMessage").html("Page NOT saved! " + message);
 		        	// show error
 		        	alert(message);
-		        	// auto close after 1 second
-		        	$("#save").delay(1000).animate({
+		        	// auto close after 5 seconds
+		        	$("#save").delay(5000).animate({
 						"margin-top": -45
 					}, 500);
 		        	// enable undo if undo stack
