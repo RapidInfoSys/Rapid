@@ -1654,7 +1654,7 @@ public abstract class FormAdapter {
 				}
 			}
 			// check csrfpass
-			//if (!csrfPass) throw new ServerSideValidationException("Failed CSRF");
+			if (!csrfPass) throw new ServerSideValidationException("Failed CSRF");
 
 			// return values
 			return pageControlValues;
