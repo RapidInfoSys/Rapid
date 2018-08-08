@@ -1350,6 +1350,15 @@ function Property_fields(cell, action, property, details) {
 	
 }
 
+function Property_inputMaxLength(cell, input, property, details) {
+	// default to a 100 if undefined (for backwards population)
+	if (input.maxLength === undefined) input.maxLength = 100;
+	// if this is a large and is at the regular default, default to 1000
+	if (input.controlType == "L" && input.maxLength == 100) input.maxLength = 1000;
+	// now use a regular text
+	Property_text(cell, input, property);
+}
+
 function Property_inputAutoHeight(cell, input, property, details) {
 	// check if the input control type is large
 	if (input.controlType == "L") {

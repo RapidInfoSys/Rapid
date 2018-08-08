@@ -89,7 +89,8 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	        <property>
 	            <key>maxLength</key>
 	            <name>Character limit</name>
-	            <changeValueJavaScript>text</changeValueJavaScript>
+	            <setConstructValueFunction>return 100;</setConstructValueFunction>
+	            <changeValueJavaScript>inputMaxLength</changeValueJavaScript>
 	            <refreshHtml>true</refreshHtml>
 	            <helpHtml>Sets the character limit of the input box. Does not apply to the number input type.</helpHtml>
 	        </property>
