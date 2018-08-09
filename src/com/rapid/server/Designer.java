@@ -33,7 +33,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.ResultSet;
+import java.sql.PreparedStatement;
 import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -219,7 +219,7 @@ public class Designer extends RapidHttpServlet {
 		// if monitor is alive then log the event
 		if(_monitor!=null && _monitor.isAlive(rapidRequest.getRapidServlet().getServletContext()) && _monitor.isLoggingAll())
 			_monitor.openEntry();
-		
+
 		// we will store the length of the item we are adding
 		long responseLength = 0;
 
@@ -1388,7 +1388,7 @@ public class Designer extends RapidHttpServlet {
 
 			// add up the accumulated response data with the output
 			responseLength += output.length();
-			
+
 			// if monitor is alive then log the event
 			if(_monitor!=null && _monitor.isAlive(rapidRequest.getRapidServlet().getServletContext()) && _monitor.isLoggingAll())
 				_monitor.commitEntry(rapidRequest, response, responseLength);
@@ -1654,14 +1654,6 @@ public class Designer extends RapidHttpServlet {
 
 								JSONArray jsonOutputs = jsonQuery.optJSONArray("outputs");
 
-								Parameters parameters = new Parameters();
-
-								if (jsonInputs != null) {
-
-									for (int i = 0; i < jsonInputs.length(); i++) parameters.addNull();
-
-								}
-
 								DatabaseConnection databaseConnection = application.getDatabaseConnections().get(jsonQuery.optInt("databaseConnectionIndex",0));
 
 								ConnectionAdapter ca = databaseConnection.getConnectionAdapter(getServletContext(), application);
@@ -1702,6 +1694,10 @@ public class Designer extends RapidHttpServlet {
 								// some jdbc drivers need the line breaks removing before they'll work properly - here's looking at you MS SQL Server!
 								sql = sql.replace("\n", " ");
 
+								Parameters parameters = new Parameters();
+
+								for (int i = 0; i < jsonInputs.length(); i++) parameters.addNull();
+
 								if (outputs == 0) {
 
 									if (sql.toLowerCase().startsWith("select")) {
@@ -1713,41 +1709,57 @@ public class Designer extends RapidHttpServlet {
 								} else {
 
 									// check the verb
-									if (sql.toLowerCase().startsWith("select") || sql.toLowerCase().startsWith("with") || sql.toLowerCase().startsWith("exec")) {
+									if (sql.toLowerCase().startsWith("select") || sql.toLowerCase().startsWith("with")) {
 
-										ResultSet rs = df.getPreparedResultSet(rapidRequest, sql, parameters);
+										// get the prepared statement
+										PreparedStatement ps = df.getPreparedStatement(rapidRequest, sql, parameters);
 
-										ResultSetMetaData rsmd = rs.getMetaData();
+										// try and get meta data without executing the statement
+										ResultSetMetaData rsmd = ps.getMetaData();
 
+										// get the result columns
 										int cols = rsmd.getColumnCount();
 
+										// check there are enough columns for the outputs
 										if (outputs > cols) throw new Exception(outputs + " outputs, but only " + cols + " column" + (cols > 1 ? "s" : "") + " selected");
 
+										// check the outputs
 										for (int i = 0; i < outputs; i++) {
 
+											// get this output
 											JSONObject jsonOutput = jsonOutputs.getJSONObject(i);
 
+											// get the output field - it can be null or a blank space so this way we standardise on the blank
 											String field = jsonOutput.optString("field","");
 
+											// if there was one
 											if (!"".equals(field)) {
 
+												// lower case it
 												field = field.toLowerCase();
 
+												// assume we can't find a column for this output field
 												boolean gotOutput = false;
 
+												// loop the columns
 												for (int j = 0; j < cols; j++) {
 
+													// look for a query column with the same name as the field
 													String sqlField = rsmd.getColumnLabel(j + 1).toLowerCase();
 
+													// if we got one
 													if (field.equals(sqlField)) {
+														// remember
 														gotOutput = true;
+														// we're done
 														break;
 													}
 
 												}
 
+												// if we didn't get this output
 												if (!gotOutput) {
-													rs.close();
+													ps.close();
 													df.close();
 													throw new Exception("Field \"" + field + "\" from output " + (i + 1) + " is not present in selected columns");
 												}
@@ -1757,11 +1769,19 @@ public class Designer extends RapidHttpServlet {
 										}
 
 										// close the recordset
-										rs.close();
+										ps.close();
 										// close the data factory
 										df.close();
 
+									} else if (sql.toLowerCase().startsWith("exec")) {
+
+										//  get the prepared statement to check the parameters
+										df.getPreparedStatement(rapidRequest, sql, parameters);
+
 									} else {
+
+										// get the prepared statement to check the parameters
+										df.getPreparedStatement(rapidRequest, sql, parameters);
 
 										// check the verb
 										if (sql.toLowerCase().startsWith("insert") || sql.toLowerCase().startsWith("update")) {
@@ -2189,7 +2209,7 @@ public class Designer extends RapidHttpServlet {
 							PrintWriter out = response.getWriter();
 							out.print(output);
 							out.close();
-							
+
 							// record response size
 							responseLength = output.length();
 

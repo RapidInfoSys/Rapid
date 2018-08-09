@@ -34,6 +34,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.text.ParseException;
 import java.util.ArrayList;
 
 import com.rapid.data.ConnectionAdapter.ConnectionAdapterException;
@@ -227,43 +228,80 @@ public class DataFactory {
 
 	public boolean getAutoCommit() { return _autoCommit; }
 	public void setAutoCommit(boolean autoCommit) {	_autoCommit = autoCommit; }
-	
+
 	public boolean getReadOnly() { return _readOnly; }
-	public void setReadOnly(boolean readOnly) {	_readOnly = readOnly; }		
+	public void setReadOnly(boolean readOnly) {	_readOnly = readOnly; }
 
-	private void populateStatement(PreparedStatement statement, ArrayList<Parameter> parameters, int startColumn, boolean checkParameters) throws SQLException {
+	private void populateStatement(RapidRequest rapidRequest, PreparedStatement statement, ArrayList<Parameter> parameters, int startColumn, boolean checkParameters) throws SQLException {
 
-		// some jdbc drivers can't get parameter metadata for insert / update
-		boolean isUpdateOrInsert = _sql.trim().toLowerCase().startsWith("insert") || _sql.trim().toLowerCase().startsWith("update");
-		boolean isSqlServer = _connectionAdapter._connectionString.contains("sqlserver");
+		// get the parameter metadata - some jdbc drivers will return null, especially for more complex things like insert/update, or stored procedures
+		ParameterMetaData parameterMetaData = statement.getParameterMetaData();
 
-		ParameterMetaData parameterMetaData = null;
-		if(!isUpdateOrInsert && !isSqlServer)
-			parameterMetaData = statement.getParameterMetaData();
-
+		// if we're supposed the check the parameters but didn't get any
 		if (checkParameters && parameters == null) {
 
-			if (parameterMetaData!=null && parameterMetaData.getParameterCount() > 0) throw new SQLException("SQL has " + parameterMetaData.getParameterCount() + " parameters, none provided");
+			// if we have meta data to check, and it expects some
+			if (parameterMetaData != null && parameterMetaData.getParameterCount() > 0) throw new SQLException("SQL has " + parameterMetaData.getParameterCount() + " parameters, none provided");
 
 		} else {
 
-			if (parameterMetaData!=null && checkParameters && parameterMetaData.getParameterCount() - startColumn != parameters.size()) throw new SQLException("SQL has " + parameterMetaData.getParameterCount() + " parameters, " + (parameters.size() - startColumn) + " provided");
+			// if we're checking parameters and got parameter meta data from the jdbc
+			if (parameterMetaData != null) {
 
+				// if we're checking parameters
+				if (checkParameters) {
+					// we need exactly the same number of input and meta data parameters
+					if (parameterMetaData.getParameterCount() - startColumn != parameters.size()) throw new SQLException("SQL has " + parameterMetaData.getParameterCount() + " parameters, " + (parameters.size() - startColumn) + " provided");
+				} else {
+					// if there are inputs parameters and no metadata parameters this is most likely due to the procedure not being found
+					if (parameters.size() > 0 && parameterMetaData.getParameterCount() == 0) throw new SQLException("SQL object could not be found");
+					// if there are more inputs then metadata parameters
+					if (parameters.size() > parameterMetaData.getParameterCount()) throw new SQLException("SQL requires " + parameterMetaData.getParameterCount() + " parameters, " + (parameters.size() - startColumn) + " provided");
+				}
+
+			}
+
+			// start at start column - this is for Oracle callable statements as one parameter is already used
 			int i = startColumn;
 
+			// loop the parameters
 			for (Parameter parameter : parameters) {
 
+				// parameters are 1 based
 				i++;
 
+				// check the parameter type and populate accordingly
 				switch (parameter.getType()) {
 				case Parameter.NULL :
 					statement.setNull(i, Types.NULL);
 					break;
 				case Parameter.STRING :
-					if (parameter.getString() == null) {
+					// get the value
+					String value = parameter.getString();
+					// if null
+					if (value == null) {
 						statement.setNull(i, Types.NULL);
 					} else {
-						statement.setString(i, parameter.getString());
+						// assume we will not alter the value
+						boolean override = false;
+						// check we have meta data
+						if (parameterMetaData != null) {
+							// get the type
+							int type = parameterMetaData.getParameterType(i);
+							// if the parameter at this position is actually a date
+							if (value.length() > 0 && type == java.sql.Types.DATE) {
+								try {
+									// parse the string to a Java date
+									java.util.Date date = rapidRequest.getRapidServlet().getLocalDateFormatter().parse(value);
+									// set a new SQL date
+									statement.setDate(i, new Date(date.getTime()));
+									// remember we overrode the value
+									override = true;
+								} catch (ParseException e) {}
+							}
+						}
+						// set the value if not overridden
+						if (!override) statement.setString(i, value);
 					}
 					break;
 				case Parameter.DATE :
@@ -297,10 +335,10 @@ public class DataFactory {
 		// some jdbc drivers need various modifications to the sql
 		if (_connectionAdapter.getDriverClass().contains("sqlserver")) {
 			// line breaks in the sql replacing - here's looking at you MS SQL!
-			_sql = sql.replace("\n", " ");
+			_sql = sql.trim().replace("\n", " ");
 		} else {
-			// otherwise just retain
-			_sql = sql;
+			// otherwise just trim and retain
+			_sql = sql.trim();
 		}
 
 		if (_connection == null) _connection = getConnection(rapidRequest);
@@ -309,25 +347,25 @@ public class DataFactory {
 
 		_preparedStatement = _connection.prepareStatement(_sql);
 
-		// don't check parameters for execute queries
-		populateStatement(_preparedStatement, parameters, 0, !sql.trim().toLowerCase().startsWith("exec"));
+		// don't check parameter numbers for exec queries
+		populateStatement(rapidRequest, _preparedStatement, parameters, 0, !_sql.startsWith("exec"));
 
 		return _preparedStatement;
 
 	}
-	
+
 	private ResultSet getFirstResultSet(PreparedStatement preparedStatement) throws SQLException {
-		
+
 		preparedStatement.execute();
-	
+
 		_resultset = preparedStatement.getResultSet();
-	
+
 		while (_resultset == null && (preparedStatement.getMoreResults() || preparedStatement.getUpdateCount() > -1)) {
 			_resultset = preparedStatement.getResultSet();
 		}
-			
+
 		return _resultset;
-	
+
 	}
 	public ResultSet getPreparedResultSet(RapidRequest rapidRequest, String sql, ArrayList<Parameter> parameters) throws SQLException, ClassNotFoundException, ConnectionAdapterException {
 
@@ -346,12 +384,12 @@ public class DataFactory {
 	public int getPreparedUpdate(RapidRequest rapidRequest, String sql, ArrayList<Parameter> parameters) throws SQLException, ClassNotFoundException, ConnectionAdapterException {
 
 		if (sql.trim().toLowerCase().startsWith("begin")) {
-			
+
 			_sql = sql;
 
 			CallableStatement cs = getConnection(rapidRequest).prepareCall(sql);
 
-			populateStatement(cs, parameters, 0, false);
+			populateStatement(rapidRequest, cs, parameters, 0, false);
 
 			cs.execute();
 
@@ -392,7 +430,7 @@ public class DataFactory {
 				result = Integer.toString(getPreparedUpdate(rapidRequest, sql, parameters));
 
 			} else {
-				
+
 				_sql = sql;
 
 				if (_connection == null) _connection = getConnection(rapidRequest);
@@ -401,7 +439,7 @@ public class DataFactory {
 
 				_preparedStatement = st;
 
-				populateStatement(st, parameters, 1, false);
+				populateStatement(rapidRequest, st, parameters, 1, false);
 
 				st.registerOutParameter(1, Types.NVARCHAR);
 
