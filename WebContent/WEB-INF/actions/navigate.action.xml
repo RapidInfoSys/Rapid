@@ -113,6 +113,9 @@ return [["P","Page"],["U","URL"]];
 .dialogue {
 	background-color: white;
 	padding: 0px;
+    overflow: auto;
+    max-width: calc(100% - 100px);
+    max-height: calc(100% - 100px);
 }
                 
                     ]]>
