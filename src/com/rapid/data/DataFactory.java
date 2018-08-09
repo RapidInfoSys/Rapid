@@ -34,7 +34,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
-import java.text.ParseException;
 import java.util.ArrayList;
 
 import com.rapid.data.ConnectionAdapter.ConnectionAdapterException;
@@ -282,6 +281,8 @@ public class DataFactory {
 					if (value == null) {
 						statement.setNull(i, Types.NULL);
 					} else {
+						/*
+						This was turned off as too many customers already convert their own dates and this might create problems with Oracle, also all sql server parameters where nvarchar, even if date
 						// assume we will not alter the value
 						boolean override = false;
 						// check we have meta data
@@ -302,6 +303,8 @@ public class DataFactory {
 						}
 						// set the value if not overridden
 						if (!override) statement.setString(i, value);
+						*/
+						statement.setString(i, value);
 					}
 					break;
 				case Parameter.DATE :
