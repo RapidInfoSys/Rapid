@@ -542,7 +542,7 @@ public class Mobile extends Action {
 				if (controlIds.size() == 0) {
 					js += "  // no controls specified\n";
 				} else {
-					
+
 					// assume no success call back
 					String successCallback = "null";
 					// update to name of callback if we have any success actions
@@ -551,12 +551,12 @@ public class Mobile extends Action {
 					String errorCallback = "null";
 					// update to name of callback  if we have any error actions
 					if (_errorActions != null) errorCallback = "'" + getId() + "error'";
-					
+
 					// start building the js
 					js += "var urls = '';\n";
 					// get any urls from the gallery controls
 					for (String id : controlIds) {
-						
+
 						//create a control object from its id
 						Control imageControl = page.getControl(id);
 						//Check whether this control is a signature
@@ -566,7 +566,7 @@ public class Mobile extends Action {
 						} else {
 							js += "$('#" + id + "').find('img').each( function() { urls += $(this).attr('src') + ',' });\n";
 						}
-						
+
 					}
 					// if we got any urls
 					js += "if (urls) { \n";
@@ -580,7 +580,7 @@ public class Mobile extends Action {
 					js += "}";
 					// if there is a successCallback call it now
 					if (!"null".equals(successCallback) && successCallback.length() > 0) js += " else {\n  " + successCallback.replace("'", "") + "(ev);\n}\n";
-					
+
 				}
 
 			} else if ("navigate".equals(type)) {
@@ -597,12 +597,8 @@ public class Mobile extends Action {
 					String navigateField = getProperty("navigateField");
 					// get the mode
 					String navigateMode = getProperty("navigateMode");
-					// enclose if we got one
-					if (navigateMode != null) navigateMode = "'" + navigateMode + "'";
-					// mobile check
-					js += getMobileCheck(true);
 					// get the data
-					js += "  var data = " + Control.getDataJavaScript(rapidServlet.getServletContext(), application, page, navigateControlId, navigateField) + ";\n";
+					js += "var data = " + Control.getDataJavaScript(rapidServlet.getServletContext(), application, page, navigateControlId, navigateField) + ";\n";
 					// assume no search fields
 					String searchFields = getProperty("navigateSearchFields");
 					// if we got some
@@ -617,9 +613,27 @@ public class Mobile extends Action {
 						}
 					}
 					// get a position object
-					js += "  var pos = getMapPosition(data, 0, null, null, " + searchFields + ");\n";
-					// add js, replacing any dodgy inverted commas
-					js += "  if (pos && (pos.lat || pos.lng || pos.s)) _rapidmobile.navigateTo(pos.lat, pos.lng, pos.s, " + navigateMode + ");\n";
+					js += "var pos = getMapPosition(data, 0, null, null, " + searchFields + ");\n";
+					// assume no travelMode
+					String travelMode = "";
+					// use navigateMode to determine
+					if (navigateMode != null) {
+						switch (navigateMode) {
+							case "d": travelMode = "driving"; break;
+							case "w": travelMode = "walking"; break;
+							case "b": travelMode = "bicycling"; break;
+							case "t": travelMode = "transit"; break;
+						}
+						// enclose in commas
+						navigateMode = "'" + navigateMode + "'";
+					}
+					// mobile check
+					js += "if (typeof _rapidmobile == 'undefined') {\n";
+					// add js, replacing any dodgy inverted commas - simple data will not get lat, lng, or s so send it just as the search
+					js += "  if (pos && (pos.lat && pos.lng)) {\n     window.open('https://www.google.com/maps/dir/?api=1&destination=' + pos.lat + ',' + pos.lng + '&travelmode=" + travelMode + "','_blank');\n  } else {\n     window.open('https://www.google.com/maps/dir/?api=1&destination=' + data.replaceAll(' ','+') + '&travelmode=" + travelMode + "','_blank');\n  }\n";
+					js += "} else {\n";
+					// add js, replacing any dodgy inverted commas - simple data will not get lat, lng, or s so send it just as the search
+					js += "  if (pos && (pos.lat || pos.lng || pos.s)) {\n     _rapidmobile.navigateTo(pos.lat, pos.lng, pos.s, " + navigateMode + ");\n  } else {\n    _rapidmobile.navigateTo(null, null, data, " + navigateMode + ");\n  }\n";
 					// close mobile check
 					js += "}\n";
 				}
