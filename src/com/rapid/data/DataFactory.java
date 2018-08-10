@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -234,9 +234,15 @@ public class DataFactory {
 	private void populateStatement(RapidRequest rapidRequest, PreparedStatement statement, ArrayList<Parameter> parameters, int startColumn, boolean checkParameters) throws SQLException {
 
 		// get the parameter metadata - some jdbc drivers will return null, especially for more complex things like insert/update, or stored procedures
-		ParameterMetaData parameterMetaData = statement.getParameterMetaData();
+		ParameterMetaData parameterMetaData = null;
 
-		// if we're supposed the check the parameters but didn't get any
+		// identify sql server
+		boolean isSQLServer =  _connectionAdapter.getDriverClass().contains("sqlserver");
+
+		// sql server has problems getting parameter meta data for non-exec scripts, especially select statements with joins falsely reporting "The multi-part identifier could not be bound"
+		if (!isSQLServer || !checkParameters) parameterMetaData = statement.getParameterMetaData();
+
+		// if we're supposed the check the parameters but didn't get any -
 		if (checkParameters && parameters == null) {
 
 			// if we have meta data to check, and it expects some
@@ -282,7 +288,7 @@ public class DataFactory {
 						statement.setNull(i, Types.NULL);
 					} else {
 						/*
-						This was turned off as too many customers already convert their own dates and this might create problems with Oracle, also all sql server parameters where nvarchar, even if date
+						// This was turned off as too many customers already convert their own dates and this might create problems with Oracle, also all sql server exec parameters where nvarchar, even if date
 						// assume we will not alter the value
 						boolean override = false;
 						// check we have meta data
