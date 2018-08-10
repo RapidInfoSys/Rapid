@@ -939,12 +939,12 @@ public class Rapid extends Action {
 							// if we have rapid admin
 							if (rapidAdmin) {
 								// we need it in the app too
-								permission = security.checkUserRole(rapidRequest, com.rapid.server.Rapid.ADMIN_ROLE);
+								permission = security.checkUserRole(appSecurityRequest, com.rapid.server.Rapid.ADMIN_ROLE);
 							} else {
 								// if we have rapid design we need it in the app too
-								if (rapidDesign) permission = security.checkUserRole(rapidRequest, com.rapid.server.Rapid.ADMIN_ROLE);
+								if (rapidDesign) permission = security.checkUserRole(appSecurityRequest, com.rapid.server.Rapid.ADMIN_ROLE);
 								// if we have rapid users we need it in the app too
-								if (rapidUsers) permission = security.checkUserRole(rapidRequest, com.rapid.server.Rapid.USERS_ROLE);
+								if (rapidUsers) permission = security.checkUserRole(appSecurityRequest, com.rapid.server.Rapid.USERS_ROLE);
 							}
 						}
 
