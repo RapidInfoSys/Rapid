@@ -513,11 +513,11 @@ public class Rapid extends Action {
 			return;
 
 		// get the data required for recording the event
-		RapidHttpServlet rapidServlet = rapidRequest.getRapidServlet();		
+		RapidHttpServlet rapidServlet = rapidRequest.getRapidServlet();
 		String appId = jsonAction.getString("appId");
 		String appVersion = jsonAction.optString("version", null);
 		Application app = rapidServlet.getApplications().get(appId, appVersion);
-		
+
 		// record the event
 		if("NEWAPP".equals(actionType)) {
 			recordMonitorEvent(rapidRequest, actionType, jsonAction.getString("name").trim(), jsonAction.getString("newVersion").trim());
@@ -529,7 +529,7 @@ public class Rapid extends Action {
 			recordMonitorEventGetApps(rapidRequest, rapidServlet);
 		}
 	}
-	
+
 	private void recordMonitorEventGetApps(RapidRequest rapidRequest, RapidHttpServlet rapidServlet) {
 		for (String id : rapidServlet.getApplications().getIds()) {
 			for (String version : rapidServlet.getApplications().getVersions(id).keySet()) {
@@ -637,12 +637,12 @@ public class Rapid extends Action {
 							// if we have rapid admin
 							if (rapidAdmin) {
 								// we need it in the app too
-								permission = security.checkUserRole(rapidRequest, com.rapid.server.Rapid.ADMIN_ROLE);
+								permission = security.checkUserRole(appSecurityRequest, com.rapid.server.Rapid.ADMIN_ROLE);
 							} else {
 								// if we have rapid design we need it in the app too
-								if (rapidDesign) permission = security.checkUserRole(rapidRequest, com.rapid.server.Rapid.ADMIN_ROLE);
+								if (rapidDesign) permission = security.checkUserRole(appSecurityRequest, com.rapid.server.Rapid.ADMIN_ROLE);
 								// if we have rapid users we need it in the app too
-								if (rapidUsers) permission = security.checkUserRole(rapidRequest, com.rapid.server.Rapid.USERS_ROLE);
+								if (rapidUsers) permission = security.checkUserRole(appSecurityRequest, com.rapid.server.Rapid.USERS_ROLE);
 							}
 						}
 
@@ -2663,8 +2663,8 @@ public class Rapid extends Action {
 				// get locked status
 				String isLocked = jsonAction.isNull("isLocked")?"false":jsonAction.getString("isLocked");
 				// get the device details
-				String deviceDetails = jsonAction.getString("deviceDetails");				
-				
+				String deviceDetails = jsonAction.getString("deviceDetails");
+
 				// get the user
 				User user = security.getUser(rapidRequest);
 				// update the email
