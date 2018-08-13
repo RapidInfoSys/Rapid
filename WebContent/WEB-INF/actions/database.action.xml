@@ -50,7 +50,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	        <property>
 	            <key>showLoading</key>
 	            <name>Loading animation</name>
-	            <changeValueJavaScript>checkbox</changeValueJavaScript>
+	            <changeValueJavaScript>databaseNotChildCheckbox</changeValueJavaScript>
 	            <helpHtml>Displays a loading animation whilst the database query executes.</helpHtml>
 	        </property>	
 	        
@@ -65,7 +65,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	        <property>
 	            <key>successActions</key>
 	            <name>Success actions</name>
-	            <changeValueJavaScript>childActions</changeValueJavaScript>
+	            <changeValueJavaScript>databaseNotChildActions</changeValueJavaScript>
 	            <workflowOutput>true</workflowOutput>
 	            <helpHtml>Sets what events occur upon a successful query to the database.</helpHtml>
 	        </property>
@@ -73,7 +73,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	        <property>
 	            <key>errorActions</key>
 	            <name>Error actions</name>
-	            <changeValueJavaScript>childActions</changeValueJavaScript>
+	            <changeValueJavaScript>databaseNotChildActions</changeValueJavaScript>
 	            <workflowOutput>true</workflowOutput>
 	            <helpHtml>Sets what events occur upon an unsuccessful query to the database.</helpHtml>
 	        </property>

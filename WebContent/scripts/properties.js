@@ -2628,9 +2628,46 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 	}));
 }
 
+//database child actions like success and fail do not go against child database actions
+function Property_databaseNotChildCheckbox(cell, propertyObject, property, details) {
+	// look for any dialogue header text
+	var dialogueId = cell.closest(".propertyDialogue").attr("id");
+	// only if this is not a child database action
+	if (!dialogueId || dialogueId.indexOf("childDatabaseActions") < 0) {
+		// use the standard child actions as anything is allowed
+		Property_checkbox(cell, propertyObject, property, details);
+	} else {
+		// remove this row
+		cell.closest("tr").remove();
+	}	
+}
+
 // reuse the generic childActionsForType but set the details with type = database
 function Property_databaseChildActions(cell, propertyObject, property, details) {
-	Property_childActionsForType(cell, propertyObject, property, {type:"database"});
+	// look for any dialogue header text
+	var dialogueId = cell.closest(".propertyDialogue").attr("id");
+	// only if this is not a child database action
+	if (!dialogueId || dialogueId.indexOf("childDatabaseActions") < 0) {
+		// specify that only database actions are allowed here
+		Property_childActionsForType(cell, propertyObject, property, {type:"database"});
+	} else {
+		// remove this row
+		cell.closest("tr").remove();
+	}	
+}
+
+//database child actions like success and fail do not go against child database actions
+function Property_databaseNotChildActions(cell, propertyObject, property, details) {
+	// look for any dialogue header text
+	var dialogueId = cell.closest(".propertyDialogue").attr("id");
+	// only if this is not a child database action
+	if (!dialogueId || dialogueId.indexOf("childDatabaseActions") < 0) {
+		// use the standard child actions as anything is allowed
+		Property_childActions(cell, propertyObject, property, details);
+	} else {
+		// remove this row
+		cell.closest("tr").remove();
+	}	
 }
 
 //this is a dialogue to specify the inputs, post body, and outputs for the webservice action
