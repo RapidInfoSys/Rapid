@@ -2229,12 +2229,16 @@ public class Rapid extends Action {
 				String version = jsonAction.getString("newVersion").trim();
 				String title = jsonAction.optString("title").trim();
 				String type = jsonAction.optString("type");
+				String formAdapterType = jsonAction.optString("formAdapter", null);
 				boolean responsive = jsonAction.optBoolean("responsive");
 				String themeType = jsonAction.optString("themeType");
 				String description = jsonAction.optString("description").trim();
 
 				// create a new application with our reusable, private method
 				Application newApp = createApplication(rapidServlet, rapidRequest, name, version, title, type, responsive, themeType, description);
+
+				// if this is a form, add the adapter
+				if ("F".equals(type)) newApp.setFormAdapter(servletContext, formAdapterType);
 
 				// set the result message
 				result.put("message", "Application " + newApp.getTitle() + " created");

@@ -417,6 +417,7 @@ function Action_rapid(ev, appId, pageId, controlId, actionId, actionType, rapidA
 				newVersion: $("#rapid_P1_C48_").val(),
 				title: $("#rapid_P1_C11").val(),
 				type: $("#rapid_P1_C57_").find("input[type=radio]:checked").val(),
+				formAdapter: $("#rapid_P1_C98_").val(),
 				responsive: getData_checkbox(ev, "rapid_P1_C70_"),
 				themeType: $("#rapid_P1_C63_").val(),
 				description: $("#rapid_P1_C15").val()
