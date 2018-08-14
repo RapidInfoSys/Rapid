@@ -6,4 +6,6 @@
   <canSaveForms>true</canSaveForms>
   <canGeneratePDF>true</canGeneratePDF>
   <canSupportIntegrationProperties>true</canSupportIntegrationProperties>
+  <submittedPage>formSubmitted.jsp</submittedPage>
+  <errorPage>formError.jsp</errorPage>
 </formAdapter>

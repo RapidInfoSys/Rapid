@@ -1166,17 +1166,20 @@ public class Rapid extends RapidHttpServlet {
 												// do the submit (this will call the non-abstract submit, manage the form state, and retain the submit message)
 												if (csrfPass) formAdapter.doSubmitForm(rapidRequest);
 
-												// place holder for first submitted page
+												// place holder for first submitted page specified in the designer for the app
 												String submittedPageId = getFirstPageForFormType(app, Page.FORM_PAGE_TYPE_SUBMITTED);
+												// place holder for the submitted page from the adapter
+												String submittedPage = formAdapter.getSubmittedPage();
 
-												if (submittedPageId == null || !csrfPass) {
+												if ((submittedPageId == null && submittedPage == null) || !csrfPass) {
 
 													// invalidate the form
 													formAdapter.setUserFormDetails(rapidRequest, null);
 
-													if (submittedPageId == null) {
+													// if we passed csrf
+													if (csrfPass) {
 
-														logger.debug("Returning to start - form has been submitted, no submission page, or ");
+														logger.debug("Returning to start - form has been submitted, no submitted page");
 
 													} else {
 
@@ -1184,26 +1187,48 @@ public class Rapid extends RapidHttpServlet {
 
 													}
 
-													// go to the start page unless user has the design role
+													// go to the start page. Destroy session unless user has the design role
 													gotoStartPage(request, response, app, !security.checkUserRole(rapidRequest, DESIGN_ROLE));
 
 												} else {
 
-													// request the first submitted page
-													response.sendRedirect("~?a=" + app.getId() + "&v=" + app.getVersion() + "&p=" + submittedPageId);
+													// look for a submitted page from the adapter
+													if (submittedPage == null) {
+
+														// no adapter page so request the first designer submitted page
+														response.sendRedirect("~?a=" + app.getId() + "&v=" + app.getVersion() + "&p=" + submittedPageId);
+
+													} else {
+
+														// request the submitted page
+														response.sendRedirect(submittedPage);
+
+													}
 
 												}
 
 											} catch (Exception ex) {
 
-												// place holder for first submitted page
+												// place holder for first submitted page specified in designer for app
 												String errrorPageId = getFirstPageForFormType( app, Page.FORM_PAGE_TYPE_ERROR);
+												// place holder for the submitted page from the adapter
+												String errorPage = formAdapter.getErrorPage();
 
-												// check we got one
+												// check we got an error page from the designer
 												if (errrorPageId == null) {
 
-													// just re throw the error
-													throw ex;
+													// check we got an error page from the adapter
+													if (errorPage == null) {
+
+														// just rethrow the error
+														throw ex;
+
+													} else {
+
+														// request the error page
+														response.sendRedirect(errorPage);
+
+													}
 
 												} else {
 

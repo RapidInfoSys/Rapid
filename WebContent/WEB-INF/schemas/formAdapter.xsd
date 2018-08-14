@@ -84,6 +84,28 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 						<xs:documentation>Whether this form adapter makes use of the form integration properties: formObject, formObjectNumber, formObjectAttribute - affects whether these extra properties are offered for form controls</xs:documentation>
 					</xs:annotation>
 				</xs:element>
+				<xs:element name="submittedPage" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Each form adapter can have a submitted page to show once the form is complete. If the form application has it's own submitted page, this will be used instead. If no submitted page is available users will be directed to the first page of the form.
+						</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:minLength value="1" />
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="errorPage" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Each form adapter can have an error page to show if anything goes wrong on form submission. If the form application has it's own error page, this will be used instead. If no error page is available users will be shown the error.
+						</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:minLength value="1" />
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
 			</xs:sequence>
 			<xs:attribute name="xmlVersion" type="xs:integer" use="required">
 				<xs:annotation>

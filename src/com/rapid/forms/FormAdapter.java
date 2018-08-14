@@ -49,6 +49,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.rapid.core.Application;
@@ -285,10 +286,9 @@ public abstract class FormAdapter {
 
 	// instance variables
 
-	protected String _type;
+	protected String _type, _css, _submittedPage, _errorPage;
 	protected ServletContext _servletContext;
 	protected Application _application;
-	protected String _css;
 	protected static Logger _logger;
 
 	// properties
@@ -296,6 +296,8 @@ public abstract class FormAdapter {
 	public ServletContext getServletContext() { return _servletContext; }
 	public Application getApplication() { return _application; }
 	public String getType() { return _type; }
+	public String getSubmittedPage() { return _submittedPage; }
+	public String getErrorPage() { return _errorPage; }
 
 	// constructor
 
@@ -304,6 +306,26 @@ public abstract class FormAdapter {
 		_application = application;
 		_type = type;
 		_logger = LogManager.getLogger(FormAdapter.class);
+		// get the array of jsonFormAdapters from the servletContext - this is so we don't need to update the constructor on all FormAdpters out there in the wild
+		JSONArray jsonFormAdapters = (JSONArray) servletContext.getAttribute("jsonFormAdapters");
+		// loop them
+		for (int i = 0; i < jsonFormAdapters.length(); i ++) {
+			try {
+				// get an adapter
+				JSONObject jsonFormAdpter = jsonFormAdapters.getJSONObject(i);
+				// if this is us
+				if (_type.equals(jsonFormAdpter.getString("type"))) {
+					// store submitted and erorr pages that we get in the json (from the adapter.xml file)
+					_submittedPage = jsonFormAdpter.optString("submittedPage", null);
+					_errorPage = jsonFormAdpter.optString("errorPage", null);
+					// we're done
+					break;
+				}
+			} catch (JSONException ex) {
+				_logger.error("Error loading form adapter", ex);
+			}
+		}
+
 	}
 
 	// private instance methods
