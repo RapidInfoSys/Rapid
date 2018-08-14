@@ -1206,6 +1206,11 @@ path, .jtk-endpoint {
 	font-size: 24px;
 }
 
+span.fr {
+	width: 25px;
+	font-size: 15px;
+}
+
 .CodeMirror {
 	margin: 5px 0;
   	box-shadow: -1px 0px 5px 1px #9D9D9D;

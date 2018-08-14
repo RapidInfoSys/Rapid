@@ -4987,7 +4987,7 @@ function Property_glyphCode(cell, controlAction, property, details) {
 	// remove the standard table
 	dialogue.find("table").first().remove();
 	// add a scrolling div with the table inside
-	dialogue.append("<div style='overflow-y:scroll;max-height:400px;'><table></table></div>");
+	dialogue.append("<div style='overflow-y:scroll;max-height:400px;margin-top:10px;'><table></table></div>");
 	// get the new table
 	table = dialogue.find("table").first();
 	// add all of the glyphs, with the current one highlighted
