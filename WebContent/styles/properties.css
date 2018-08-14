@@ -66,7 +66,8 @@ table.propertiesPanelTable  {
 	/*transition: background 0.3s ease;*/
 }
 
-.propertiesPanelTable tr:hover td:first-child {
+.propertiesPanelTable tr:hover td:first-child:not(.propertyHeader) {
+	background: #D5D6D2;
 	font-weight: bold;
 }
 
