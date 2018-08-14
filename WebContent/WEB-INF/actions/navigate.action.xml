@@ -169,8 +169,7 @@ function Action_navigate(url, dialogue, id, popup) {
 		$.ajax({
 		   	url: url,
 		   	type: "GET",          
-		       data: null,        
-		       async: false,
+		       data: null,
 		       error: function(error, status, message) {
 		       		// if access denied
 		       		if (error && error.status == 403) {
