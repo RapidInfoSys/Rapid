@@ -220,10 +220,15 @@ function loadedMapJavaScript() {
 	}
 	// if all controls are loaded
 	if (_loadingControls < 1) {
-		// get any pageload method
-		var pageload = window["Event_pageload_" + _pageId];
-		// call it if there was one
-		if (pageload) pageload($.Event('pageload'));	
+		// loop any pages waiting to load
+		for (var i in _loadingPages) {
+			// get the page id
+			var pageId = _loadingPages[i];
+			// get any pageload method
+			var pageload = window["Event_pageload_" + pageId];
+			// call it if there was one
+			if (pageload) pageload($.Event('pageload'));
+		}
 	}
 
 }

@@ -1329,6 +1329,7 @@ public class Page {
 		stringBuilder.append("var _mobileResume = false;\n");
 		// this flag indicates if any controls are loading asynchronously and the page load method can't be called
 		stringBuilder.append("var _loadingControls = 0;\n");
+		stringBuilder.append("var _loadingPages = [];\n");
 		stringBuilder.append("    </script>\n");
 
 		return stringBuilder.toString();
@@ -1510,7 +1511,7 @@ public class Page {
 						// page is a special animal so we need to do each of it's event types differently
 						if ("pageload".equals(event.getType())) {
 							// call the page load if safe to do so - controls with asynchronous loading will need to check and call this method themselves
-							pageLoadLines.add("if (!_mobileResume && _loadingControls < 1) Event_pageload_" + _id + "($.Event('pageload'));\n");
+							pageLoadLines.add("if (!_mobileResume) { if (_loadingControls < 1) { Event_pageload_" + _id + "($.Event('pageload')) } else { _loadingPages.push('" + _id + "');} };\n");
         				}
 						// resume is also a special animal
 						if ("resume".equals(event.getType())) {
