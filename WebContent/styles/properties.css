@@ -397,15 +397,12 @@ table.inputs tr td:last-child, table.outputs tr td:last-child  {
 
 .inputTableWithTitles tr td:nth-child(7), .inputTableWithTitles tr td:last-child {
 	width: 50px;
+	max-width: 50px;
 }
 
 .inputTableWithTitles tr td:nth-child(7):hover {
 	background: #e6e6e6;
 }
-
-/*.inputTableWithTitles tr td:{
-	width: 80px !important;
-}*/
 
 td.center {
 	text-align:center;
