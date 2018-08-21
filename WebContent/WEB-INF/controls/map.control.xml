@@ -347,7 +347,7 @@ var map = _maps[id];
 // get the data object
 var data = makeDataObject(data, field);
 // get the position for the first row
-var pos = getMapPosition(data, 0, setMapCentre, map);
+var pos = getMapPosition(data, 0, setMapCentre, map, details);
 // if we got a map and data
 if (map && pos && pos.lat && pos.lng) {
 	setMapCentre(map, pos);

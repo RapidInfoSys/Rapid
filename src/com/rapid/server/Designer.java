@@ -1686,6 +1686,7 @@ public class Designer extends RapidHttpServlet {
 									}
 								}
 
+								// get and trim the sql
 								String sql = jsonQuery.getString("SQL").trim();
 
 								// merge in any parameters
@@ -1694,15 +1695,28 @@ public class Designer extends RapidHttpServlet {
 								// some jdbc drivers need the line breaks removing before they'll work properly - here's looking at you MS SQL Server!
 								sql = sql.replace("\n", " ");
 
-								Parameters parameters = new Parameters();
+								// placeholder for parameters we may need
+								Parameters parameters = null;
 
-								for (int i = 0; i < jsonInputs.length(); i++) parameters.addNull();
+								// if the query has inputs
+								if (jsonInputs != null) {
 
+									// make a parameters object to send
+									parameters = new Parameters();
+									// populate it with nulls
+									for (int i = 0; i < jsonInputs.length(); i++) parameters.addNull();
+
+								}
+
+								// check outputs
 								if (outputs == 0) {
 
+									// check verb
 									if (sql.toLowerCase().startsWith("select")) {
+										// select should have outputs
 										throw new Exception("Select statement should have at least one output");
 									} else {
+										// not a select so just prepare the statement by way of testing it
 										df.getPreparedStatement(rapidRequest,sql , parameters);
 									}
 
