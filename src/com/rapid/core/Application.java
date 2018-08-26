@@ -1091,7 +1091,7 @@ public class Application {
 				if (styleStartPos < styleEndPos && startPos < styleStartPos) {
 
 					// find the end of the class style target by the first brace
-					int endPos = styleStartPos - 1;
+					int endPos = styleStartPos;
 					// if it works out
 					if (endPos > startPos) {
 						// fetch the class without the . and any trailing space
