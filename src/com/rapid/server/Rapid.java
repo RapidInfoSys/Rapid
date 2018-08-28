@@ -155,11 +155,11 @@ public class Rapid extends RapidHttpServlet {
 					// get the user
 					User user = security.getUser(rapidRequest);
 
-					// get the action
-					String action = rapidRequest.getActionName();
+					// get the action name
+					String actionName = rapidRequest.getActionName();
 
 					// check if there is a Rapid action
-					if ("summary".equals(action) || "pdf".equals(action)) {
+					if ("summary".equals(actionName) || "pdf".equals(actionName)) {
 
 						// get the form adapter for both of the above
 						FormAdapter formAdapter = app.getFormAdapter();
@@ -171,7 +171,7 @@ public class Rapid extends RapidHttpServlet {
 							sendMessage(response, 500, "Not a form", "This Rapid app is not a form");
 
 							// log
-							logger.error("Rapid GET response (500) : Summary requested for " + app.getId() + "/" + app.getDescription() + " " + action +" but it does not have a form adapter");
+							logger.error("Rapid GET response (500) : Summary requested for " + app.getId() + "/" + app.getDescription() + " " + actionName +" but it does not have a form adapter");
 
 						} else {
 
@@ -187,7 +187,7 @@ public class Rapid extends RapidHttpServlet {
 							} else {
 
 								// if this was the pdf - otherwise its the summary
-								if ("pdf".equals(action)) {
+								if ("pdf".equals(actionName)) {
 
 									// write the form pdf
 									formAdapter.doWriteFormPDF(rapidRequest, response, request.getParameter("f"), false);
@@ -211,7 +211,7 @@ public class Rapid extends RapidHttpServlet {
 
 						}
 
-					} else if ("download".equals(action)) {
+					} else if ("download".equals(actionName)) {
 
 						// set the file name
 						String fileName = app.getId() + "_" + rapidRequest.getUserName() + ".zip";
@@ -309,14 +309,14 @@ public class Rapid extends RapidHttpServlet {
 									}
 
 									// check special form actions
-									if ("save".equals(action)) {
+									if ("save".equals(actionName)) {
 
 										// get the save page
 										page = app.getPages().getPageByFormType(Page.FORM_PAGE_TYPE_SAVE);
 										// if we got one set showSave
 										if (page != null) showSave = true;
 
-									} else if ("resume".equals(action)) {
+									} else if ("resume".equals(actionName)) {
 
 										// look for the form id and password from the url
 										String resumeFormId = request.getParameter("f");
@@ -356,7 +356,7 @@ public class Rapid extends RapidHttpServlet {
 										if (formAdapter.checkMaxPage(rapidRequest, formDetails, page.getId()) || security.checkUserRole(rapidRequest, DESIGN_ROLE)) {
 
 											// only if this is not a dialogue
-											if (!"dialogue".equals(action)) {
+											if (!"dialogue".equals(actionName)) {
 
 												// get all of the pages
 												PageHeaders pageHeaders = app.getPages().getSortedPages();
@@ -427,7 +427,7 @@ public class Rapid extends RapidHttpServlet {
 								}
 
 								// if this is a form resume
-								if ("resume".equals(action)) {
+								if ("resume".equals(actionName)) {
 									// get the form id and password from the url
 									String resumeFormId = request.getParameter("f");
 									String resumePassword = request.getParameter("pwd");
@@ -455,7 +455,7 @@ public class Rapid extends RapidHttpServlet {
 									if (formAdapter.checkMaxPage(rapidRequest, formDetails, page.getId()) || security.checkUserRole(rapidRequest, DESIGN_ROLE)) {
 
 										// only if this is not a dialogue
-										if (!"dialogue".equals(action)) {
+										if (!"dialogue".equals(actionName)) {
 
 											// get all of the pages
 											PageHeaders pageHeaders = app.getPages().getSortedPages();
@@ -686,10 +686,13 @@ public class Rapid extends RapidHttpServlet {
 		// we will store the length of the item we are adding
 		long responseLength = 0;
 
+		// get any action name
+		String actionName = rapidRequest.getActionName();
+
 		try {
 
 			// this is the only variant where an application isn't specified and secured first
-			if ("getApps".equals(rapidRequest.getActionName())) {
+			if ("getApps".equals(actionName) || "getForms".equals(actionName)) {
 
 				// create an empty array which we will populate
 				JSONArray jsonApps = new JSONArray();
@@ -715,68 +718,73 @@ public class Rapid extends RapidHttpServlet {
 						// loop the apps
 						for (Application app : apps) {
 
-							// if Rapid app must not be for testing / from Rapid Mobile
-							if (!"rapid".equals(app.getId()) || !forTesting) {
+							// allow unless when we are asking for forms, make sure this is a form
+							if (!"getForms".equals(actionName) || app.getIsForm()) {
 
-								// get the relevant security adapter
-								SecurityAdapter security = app.getSecurityAdapter();
+								// if Rapid app must not be for testing / from Rapid Mobile
+								if (!"rapid".equals(app.getId()) || !forTesting) {
 
-								// make a rapidRequest for this application
-								RapidRequest getAppsRequest = new RapidRequest(this, request, app);
+									// get the relevant security adapter
+									SecurityAdapter security = app.getSecurityAdapter();
 
-								// check the user password
-								if (security.checkUserPassword(getAppsRequest, rapidRequest.getUserName(), rapidRequest.getUserPassword())) {
+									// make a rapidRequest for this application
+									RapidRequest getAppsRequest = new RapidRequest(this, request, app);
 
-									// assume can add
-									boolean canAdd = true;
+									// check the user password
+									if (security.checkUserPassword(getAppsRequest, rapidRequest.getUserName(), rapidRequest.getUserPassword())) {
 
-									if ("rapid".equals(app.getId())) {
-										// must have one of the official Rapid roles to see Rapid Admin
-										canAdd = security.checkUserRole(rapidRequest, Rapid.ADMIN_ROLE) || security.checkUserRole(rapidRequest, Rapid.DESIGN_ROLE) || security.checkUserRole(rapidRequest, Rapid.USERS_ROLE) || security.checkUserRole(rapidRequest, Rapid.SUPER_ROLE);
-									}
+										// assume can add
+										boolean canAdd = true;
 
-									if (canAdd) {
-										// create a json object for the details of this application
-										JSONObject jsonApp = new JSONObject();
-										// add details
-										jsonApp.put("id", app.getId());
-										jsonApp.put("version", app.getVersion());
-										jsonApp.put("title", app.getTitle());
-										jsonApp.put("storePasswordDuration", app.getStorePasswordDuration());
-										// add app to our main array
-										jsonApps.put(jsonApp);
+										if ("rapid".equals(app.getId())) {
+											// must have one of the official Rapid roles to see Rapid Admin
+											canAdd = security.checkUserRole(rapidRequest, Rapid.ADMIN_ROLE) || security.checkUserRole(rapidRequest, Rapid.DESIGN_ROLE) || security.checkUserRole(rapidRequest, Rapid.USERS_ROLE) || security.checkUserRole(rapidRequest, Rapid.SUPER_ROLE);
+										}
 
-										// check if we are testing
-										if (forTesting) {
+										if (canAdd) {
+											// create a json object for the details of this application
+											JSONObject jsonApp = new JSONObject();
+											// add details
+											jsonApp.put("id", app.getId());
+											jsonApp.put("version", app.getVersion());
+											jsonApp.put("title", app.getTitle());
+											jsonApp.put("storePasswordDuration", app.getStorePasswordDuration());
+											// add app to our main array
+											jsonApps.put(jsonApp);
 
-											// if the user has Rapid Design for this application, (or Rapid Super if this is the rapid app)
-											if (security.checkUserRole(getAppsRequest, Rapid.DESIGN_ROLE) && (!app.getId().equals("rapid") || security.checkUserRole(rapidRequest, Rapid.SUPER_ROLE))) {
+											// check if we are testing
+											if (forTesting) {
 
-												// loop the versions
-												for (Application version :	getApplications().getVersions(app.getId()).sort()) {
+												// if the user has Rapid Design for this application, (or Rapid Super if this is the rapid app)
+												if (security.checkUserRole(getAppsRequest, Rapid.DESIGN_ROLE) && (!app.getId().equals("rapid") || security.checkUserRole(rapidRequest, Rapid.SUPER_ROLE))) {
 
-													// create a json object for the details of this version
-													jsonApp = new JSONObject();
-													// add details
-													jsonApp.put("id", version.getId());
-													jsonApp.put("version", version.getVersion());
-													jsonApp.put("status", version.getStatus());
-													jsonApp.put("title", version.getTitle());
-													jsonApp.put("storePasswordDuration", version.getStorePasswordDuration());
-													jsonApp.put("test", true);
-													// add app to our main array
-													jsonApps.put(jsonApp);
-												}
+													// loop the versions
+													for (Application version :	getApplications().getVersions(app.getId()).sort()) {
 
-											} // got design role
+														// create a json object for the details of this version
+														jsonApp = new JSONObject();
+														// add details
+														jsonApp.put("id", version.getId());
+														jsonApp.put("version", version.getVersion());
+														jsonApp.put("status", version.getStatus());
+														jsonApp.put("title", version.getTitle());
+														jsonApp.put("storePasswordDuration", version.getStorePasswordDuration());
+														jsonApp.put("test", true);
+														// add app to our main array
+														jsonApps.put(jsonApp);
+													}
 
-										} // forTesting check
+												} // got design role
 
-									} // rapid app extra check
+											} // forTesting check
 
-								} // user check
+										} // rapid app extra check
 
-							} // rapid app and not for testing check
+									} // user check
+
+								} // rapid app and not for testing check
+
+							} // form check
 
 						} // apps loop
 
@@ -870,7 +878,7 @@ public class Rapid extends RapidHttpServlet {
 
 							} // jsonData
 
-						} else if ("checkVersion".equals(rapidRequest.getActionName())) {
+						} else if ("checkVersion".equals(actionName)) {
 
 							// create a json version object
 							JSONObject jsonVersion = new JSONObject();
@@ -893,7 +901,7 @@ public class Rapid extends RapidHttpServlet {
 							// log response
 							logger.debug("Rapid POST response : " + jsonVersion.toString());
 
-						} else if ("uploadImage".equals(rapidRequest.getActionName())) {
+						} else if ("uploadImage".equals(actionName)) {
 
 							// get the name
 							String imageName = request.getParameter("name");

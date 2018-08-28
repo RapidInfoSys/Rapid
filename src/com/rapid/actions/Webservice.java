@@ -605,19 +605,26 @@ public class Webservice extends Action {
 					requestURL = requestURL.trim();
 					// insert any parameters
 					requestURL = application.insertParameters(rapidRequest.getRapidServlet().getServletContext(), requestURL);
-					// if the given request url starts with http
+					// if the given request url starts with http, or ~
 					if (_request.getUrl().toLowerCase().startsWith("http")) {
 						// use the url as is
 						url = new URL(requestURL);
 					} else {
 						// this must be the soa servlet get our request
 						HttpServletRequest httpRequest = rapidRequest.getRequest();
-						// make a url for the soa servlet
-						url = new URL(httpRequest.getScheme(), httpRequest.getServerName(), httpRequest.getServerPort(), httpRequest.getContextPath() + "/soa");
-						// check whether we have any id / version separators
-						String[] actionParts = action.split("/");
-						// add this app and version if none
-						if (actionParts.length < 2) action = application.getId() + "/" + application.getVersion() +  "/" + action;
+						// if this is dirctly to the Rapid servlet
+						if (_request.getUrl().toLowerCase().startsWith("~")) {
+							// make a url for the soa servlet
+							url = new URL(httpRequest.getScheme(), httpRequest.getServerName(), httpRequest.getServerPort(), httpRequest.getContextPath() + "/" + _request.getUrl());
+						} else {
+							// make a url for the soa servlet
+							url = new URL(httpRequest.getScheme(), httpRequest.getServerName(), httpRequest.getServerPort(), httpRequest.getContextPath() + "/soa");
+							// check whether we have any id / version separators
+							String[] actionParts = action.split("/");
+							// add this app and version if none
+							if (actionParts.length < 2) action = application.getId() + "/" + application.getVersion() +  "/" + action;
+						}
+
 					}
 
 					// establish the connection
