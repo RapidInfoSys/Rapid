@@ -430,7 +430,7 @@ public abstract class FormAdapter {
 			// get the theme
 			Theme theme = application.getTheme(getServletContext());
 			// check we got one
-			if (theme != null) themeHeader =  theme.getHeaderHtml();
+			if (theme != null && theme.getHeaderHtml() != null) themeHeader = theme.getHeaderHtml();
 			// return theme header and summary
 			return themeHeader + "<h1 class='formSummaryTitle'>Form summary</h1>\n";
 		}
@@ -443,14 +443,15 @@ public abstract class FormAdapter {
 			// no theme footer on email
 			return "";
 		} else {
+			// assume no theme footer
+			String themeFooter = "";
 			// get the theme
 			Theme theme = application.getTheme(getServletContext());
-			// check we got one
-			if (theme == null) {
-				return "";
-			} else {
-				return theme.getFooterHtml();
-			}
+			// check we got a theme and it has a footer
+			if (theme != null && theme.getFooterHtml() != null) themeFooter = theme.getFooterHtml();
+			// return theme footer
+			return themeFooter;
+			
 		}
 	}
 
