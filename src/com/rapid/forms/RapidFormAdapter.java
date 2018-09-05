@@ -265,7 +265,7 @@ public class RapidFormAdapter extends FormAdapter {
 			servletContext.setAttribute(USER_FORM_SUBMIT_DETAILS, submissionDetails);
 		}
 		// simple submission detail
-		SubmissionDetails submissionDetail = new SubmissionDetails("Form submitted", "Form submitted on " + rapidRequest.getRapidServlet().getLocalDateTimeFormatter().format(new Date()));
+		SubmissionDetails submissionDetail = new SubmissionDetails("Form submitted", "Submitted on " + rapidRequest.getRapidServlet().getLocalDateTimeFormatter().format(new Date()));
 		// get the form id
 		String formId = getFormId(rapidRequest);
 		// add to collection

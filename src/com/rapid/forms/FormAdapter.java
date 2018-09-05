@@ -25,6 +25,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 
 package com.rapid.forms;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.OutputStream;
@@ -41,6 +42,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import javax.imageio.ImageIO;
 import javax.mail.util.ByteArrayDataSource;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
@@ -48,6 +50,16 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentInformation;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
+import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -451,7 +463,7 @@ public abstract class FormAdapter {
 			if (theme != null && theme.getFooterHtml() != null) themeFooter = theme.getFooterHtml();
 			// return theme footer
 			return themeFooter;
-			
+
 		}
 	}
 
@@ -1354,7 +1366,330 @@ public abstract class FormAdapter {
 	}
 
 	// this writes the form pdf to an Output stream
-	public void writeFormPDF(RapidRequest rapidRequest, OutputStream outputStream, String formId, boolean email) throws Exception {}
+	protected static final float FONT_SIZE_HEADER1 = 14;
+	protected static final float FONT_SIZE_HEADER2 = 12;
+	protected static final float FONT_SIZE = 12;
+	protected static final float MARGIN_LEFT = 20;
+	protected static final float MARGIN_TOP = 10;
+	protected static final float MARGIN_RIGHT = 20;
+	protected static final float MARGIN_BOTTOM = 10;
+	protected static final float MARGIN_HEADER_BOTTOM = 5;
+	protected static final float MARGIN_SECTION_BOTTOM = 3;
+	protected static final float MARGIN_TEXT_BOTTOM = 2;
+
+	protected float getFontHeight(PDFont font, float fontSize) {
+		return (float) (font.getFontDescriptor().getFontBoundingBox().getHeight() / 1000 * fontSize * 0.865);
+	}
+
+	protected File getPDFLogoFile(RapidRequest rapidRequest) {
+		// assume we can't find the file
+		File file = null;
+		// get the application
+		Application application = rapidRequest.getApplication();
+		// if we got one
+		if (application != null) {
+			// look for the a pdfLogo image in the root images folder
+			File pdfFile = new File(application.getWebFolder(rapidRequest.getRapidServlet().getServletContext()) + "/images/pdfLogo.png");
+			// if we got one, set it
+			if (pdfFile.exists()) file = pdfFile;
+		}
+		return file;
+	}
+
+	public void writeFormPDF(RapidRequest rapidRequest, OutputStream outputStream, String formId, boolean email) throws Exception {
+
+		// make a new document
+		PDDocument document = new PDDocument();
+
+		// make a new page
+		PDPage p = new PDPage(PDRectangle.A4);
+		// add page to document
+		document.addPage(p);
+
+		// Start a new content stream which will "hold" the content we are making
+		PDPageContentStream cs = new PDPageContentStream(document, p);
+
+		// get the application
+		Application application = rapidRequest.getApplication();
+
+		// if we got one
+		if (application != null) {
+
+			// Create a new font object selecting one of the PDF base fonts
+			PDFont fontBold = PDType1Font.HELVETICA_BOLD;
+			PDFont font = PDType1Font.HELVETICA;
+
+			float h = p.getMediaBox().getHeight() - MARGIN_TOP - MARGIN_BOTTOM;
+			float w = p.getMediaBox().getWidth() - MARGIN_LEFT - MARGIN_RIGHT * 2;
+
+			PDDocumentInformation info = document.getDocumentInformation();
+			info.setTitle(application.getTitle());
+			info.setCreator("Rapid Information Systems - https://www.rapid-is.co.uk");
+			info.setSubject("Form number " + formId);
+
+			// look for the a pdfLogo image
+			File imageFile = getPDFLogoFile(rapidRequest);
+			// if we got one
+			if (imageFile != null) {
+				if (imageFile.exists()) {
+					// read the image
+					BufferedImage awtImage = ImageIO.read(imageFile);
+					// pass to pdf image
+					PDImageXObject ximage = LosslessFactory.createFromImage(document, awtImage);
+					// draw at half resolution in top right corner
+					cs.drawImage( ximage, w - MARGIN_RIGHT - ximage.getWidth()/2, h - MARGIN_TOP, ximage.getWidth()/2, ximage.getHeight()/2);
+				}
+			}
+
+			float y = MARGIN_TOP;
+
+			cs.beginText();
+			cs.setFont(fontBold, FONT_SIZE_HEADER1);
+			cs.newLineAtOffset(MARGIN_LEFT, h - y);
+			cs.showText(application.getTitle());
+			cs.endText();
+
+			y += getFontHeight(fontBold, FONT_SIZE_HEADER1) + MARGIN_SECTION_BOTTOM * 5;
+
+			// get the submitted dateTime
+			String submittedDateTime = getFormSubmittedDate(rapidRequest, formId);
+
+			// assume form not submitted
+			String headerText = "This form has not been submitted";
+
+			// if there was an app refno and submitted date
+			if (submittedDateTime != null) {
+				// update the headerText
+				headerText = "Form number " + formId + " - " + submittedDateTime;
+			}
+
+			// write the header text
+			cs.beginText();
+			cs.setFont(fontBold, FONT_SIZE_HEADER2);
+			cs.newLineAtOffset(MARGIN_LEFT, h - y);
+			cs.showText(headerText);
+			cs.endText();
+
+			y += getFontHeight(fontBold, FONT_SIZE_HEADER2) + MARGIN_SECTION_BOTTOM * 5;
+
+			for (PageHeader pageHeader : _application.getPages().getSortedPages()) {
+
+				// get any page control values
+				FormPageControlValues pageControlValues = _application.getFormAdapter().getFormPageControlValues(rapidRequest, formId, pageHeader.getId());
+
+				// if non null
+				if (pageControlValues != null) {
+
+					// if we got some
+					if (pageControlValues.size() > 0) {
+
+						// get the page with this id
+						Page page = _application.getPages().getPage(rapidRequest.getRapidServlet().getServletContext(), pageHeader.getId());
+
+						// get all page controls (in display order)
+						List<Control> pageControls = page.getAllControls();
+
+						// a list of control values to print
+						List<String> controlValues = new ArrayList<String>();
+
+						// a running height of this section
+						float sh = 0;
+
+						// get the standard font height
+						float fh = getFontHeight(font, FONT_SIZE);
+
+						// loop the page controls
+						for (Control control : pageControls) {
+
+							if (control.getLabel() != null) {
+
+								// loop the page control values
+								for (FormControlValue controlValue : pageControlValues) {
+
+									// only if control was visble
+									if (!controlValue.getHidden()) {
+
+										// look for an id match
+										if (control.getId().equals(controlValue.getId())) {
+
+											// get the type
+											String type = control.getType();
+											// get the value
+											String value = controlValue.getValue();
+											// don't show any nulls
+											if (value != null) {
+
+												// check for json
+												if (value.startsWith("{") && value.endsWith("}")) {
+													try {
+														JSONObject jsonValue = new JSONObject(value);
+														value = jsonValue.optString("text");
+													} catch (Exception ex) {}
+												}
+
+												// check for checkboxes
+												if ("checkbox".equals(type)) {
+													// just show the label
+													value = control.getLabel();
+												} else {
+													// show the label and value
+													value = control.getLabel() + " : " + control.getCodeText(_application, value);
+												}
+
+												// clean the value to only contain printable characters
+												StringBuilder sb = new StringBuilder();
+												for (int i = 0; i < value.length(); i++) {
+													if (WinAnsiEncoding.INSTANCE.contains(value.charAt(i))) sb.append(value.charAt(i));
+												}
+												// update value to only printable characters
+												value = sb.toString();
+
+												// get the width required to print the value
+												float vw = font.getStringWidth(value) / 1000 * FONT_SIZE;
+
+												// if this fits into our allowed width
+												if (vw <= w) {
+
+													// add this value
+													controlValues.add(value);
+													// increment the height by one line
+													sh += fh + MARGIN_SECTION_BOTTOM;
+
+												} else {
+
+													// split the value into parts
+													String[] parts = value.split(" ");
+													// start at the beginning
+													int pos = 0;
+
+													// while we have more parts
+													while (pos < parts.length) {
+
+														String line = parts[pos];
+														pos ++;
+														vw = 0;
+
+														// while we haven't crossed the end of the available width yet
+														while (vw < w) {
+															if (pos < parts.length) {
+																String part = parts[pos];
+																int breakPos = part.indexOf("\n");
+																if (breakPos > 0) {
+																	controlValues.add(line + " " + part.substring(0, breakPos));
+																	controlValues.add("");
+																	line = part.substring(breakPos).trim();
+																} else {
+																	line = line + " " + part;
+																}
+															}
+															pos ++;
+															if (pos >= parts.length) break;
+															vw = font.getStringWidth(line + parts[pos]) / 1000 * FONT_SIZE;
+														}
+
+														// add this line
+														controlValues.add(line);
+														// increment the height by one line and add
+														sh += fh + MARGIN_TEXT_BOTTOM;
+
+													} // parts left
+
+												} // width fit
+
+											}
+
+											// exit this loop
+											break;
+
+										}
+
+									}
+
+								}
+
+							}
+
+							// if there are no controlValues left we can stop entirely
+							if (pageControlValues.size() == 0) break;
+
+						} // page control loop
+
+						// if there are some values in the string builder
+						if (controlValues.size() > 0) {
+
+							// add the header height
+							sh += getFontHeight(fontBold, FONT_SIZE_HEADER2) + MARGIN_HEADER_BOTTOM;
+
+							// if this is going to push us past the page height make a new page and reset heights
+							if (y + sh > h) {
+								p = new PDPage(PDRectangle.A4);
+								document.addPage(p);
+								cs.close();
+								cs = new PDPageContentStream(document, p);
+								y = MARGIN_TOP;
+							}
+
+							String pageTitle = page.getLabel();
+							if (pageTitle == null) {
+								pageTitle = page.getTitle();
+							} else {
+								if (pageTitle.trim().length() == 0) pageTitle = page.getTitle();
+							}
+
+							if (pageTitle != null) {
+
+								cs.beginText();
+								cs.setFont(fontBold, FONT_SIZE_HEADER2);
+								cs.newLineAtOffset(MARGIN_LEFT, h - y);
+								cs.showText(pageTitle);
+								cs.endText();
+
+								y += getFontHeight(fontBold, FONT_SIZE_HEADER2) + MARGIN_HEADER_BOTTOM;
+
+								for (String value : controlValues) {
+
+									cs.beginText();
+									cs.setFont(font, FONT_SIZE);
+									cs.newLineAtOffset(MARGIN_LEFT, h - y);
+									cs.showText(value);
+									cs.endText();
+
+									y += getFontHeight(font, FONT_SIZE) + MARGIN_TEXT_BOTTOM;
+
+								}
+
+								y += getFontHeight(font, FONT_SIZE) + MARGIN_SECTION_BOTTOM;
+
+							} // page title check
+
+						} // values written check
+
+					} // control values length > 0
+
+				} // control values non null
+
+			} // page loop
+
+			// check there is space for the submitted details
+			if (y + getFontHeight(fontBold, FONT_SIZE) + MARGIN_SECTION_BOTTOM > h) {
+				p = new PDPage(PDRectangle.A4);
+				document.addPage(p);
+				cs.close();
+				cs = new PDPageContentStream(document, p);
+				y = MARGIN_TOP;
+			}
+
+		} // application check
+
+		// Make sure that the content stream is closed:
+		cs.close();
+
+		// write to response output stream
+		document.save(outputStream);
+		// close
+		document.close();
+
+	}
 
 	// writes the form PDF to the http response
 	public void doWriteFormPDF(RapidRequest rapidRequest, HttpServletResponse response, String formId, boolean email) throws Exception {
