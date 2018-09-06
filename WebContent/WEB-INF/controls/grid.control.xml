@@ -47,6 +47,14 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <changeValueJavaScript>text</changeValueJavaScript>
 	            <helpHtml>Name that can be given to the control. Names are used to help identify controls uniquely.</helpHtml>
 	        </property>
+	        
+	        <property>
+	            <key>label</key>
+	            <name>Form summary label</name>
+	            <setConstructValueFunction>return "";</setConstructValueFunction>
+	            <changeValueJavaScript>formText</changeValueJavaScript>
+	            <helpHtml>Summary label to appear at the end of the form. Leave blank to have the control and its value hidden.</helpHtml>
+	        </property>
 	                    
 	        <property>
 	            <key>columnHeadings</key>
@@ -1159,6 +1167,22 @@ if (details) {
 			}
 		});
 	} // datastorage type check
+	
+	// get any form
+	var form = $("form");
+	// if there was one
+	if (form) {
+		// add a hidden form input for the grid
+		form.append("<input id='" + id + "data' name='" + id + "' type='hidden'/>");
+		// listen for form submit and use getData_grid(ev, id, null, details)
+		$("form").submit(function(ev){
+			//getData_grid, // stringify with JSON.stringify and put into $("#" + id + "value")
+			var jsonData = JSON.stringify(getData_grid(ev, id, null, details));
+			$("#" + id + "data").val(jsonData);
+		});
+		
+	}
+	
 } 
 	        ]]>	        
 	    </initJavaScript>
