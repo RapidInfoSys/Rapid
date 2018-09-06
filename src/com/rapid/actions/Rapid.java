@@ -278,11 +278,11 @@ public class Rapid extends Action {
 					if (addNew && !addResponsive) controlTypes.add(controlType);
 				}
 				// add to list if app type is D and action has addToNewDesktopApplications
-				if ("D".equals(type) && jsonControlType.optBoolean("addToNewDesktopApplications")) actionTypes.add(controlType);
+				if ("D".equals(type) && jsonControlType.optBoolean("addToNewDesktopApplications")) controlTypes.add(controlType);
 				// add to list if app type is M and action has addToNewDesktopApplications
-				if ("M".equals(type) && jsonControlType.optBoolean("addToNewMobileApplications")) actionTypes.add(controlType);
+				if ("M".equals(type) && jsonControlType.optBoolean("addToNewMobileApplications")) controlTypes.add(controlType);
 				// add to list if app type is F and action has addToNewDesktopApplications
-				if ("F".equals(type) && jsonControlType.optBoolean("addToNewFormApplications")) actionTypes.add(controlType);
+				if ("F".equals(type) && jsonControlType.optBoolean("addToNewFormApplications")) controlTypes.add(controlType);
 			}
 		}
 
