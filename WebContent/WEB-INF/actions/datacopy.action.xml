@@ -184,7 +184,7 @@ function Action_datacopy(ev, data, outputs, changeEvents, copyType, copyData, fi
 				case "append" :	case "row" :
 					var mergeData = window["getData_" + output.type](ev, output.id, null, output.details);
 					data = makeDataObject(data, output.field);
-					outputData = mergeDataObjects(mergeData, data, copyType, field);
+					outputData = mergeDataObjects(mergeData, data, copyType, field, null, output.details);
 				break;
 				case "child" :
 					var mergeData = window["getData_" + output.type](ev, output.id, null, output.details);	

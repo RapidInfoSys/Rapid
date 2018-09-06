@@ -719,7 +719,7 @@ function makeObjectFromData(data, fields) {
 	return object;
 }
 
-function mergeDataObjects(data1, data2, mergeType, field, maxRows) {
+function mergeDataObjects(data1, data2, mergeType, field, maxRows, details) {
 	var data = null;
 	if (data1) {
 		data1 = makeDataObject(data1);
@@ -742,7 +742,7 @@ function mergeDataObjects(data1, data2, mergeType, field, maxRows) {
 					data = {};
 					data.fields = fields;
 					if (mergeType == "append") {						
-						if (data1.rows.length == 1 && data1.fields.length == 1 && data2.rows.length == 1 && data2.fields.length == 1 ) {
+						if (data1.rows.length == 1 && data1.fields.length == 1 && data2.rows.length == 1 && data2.fields.length == 1 && !(details && details.type == "grid")) {
 							data = data1.rows[0][0] + data2.rows[0][0]; 
 						} else {
 							data.rows = data1.rows;
