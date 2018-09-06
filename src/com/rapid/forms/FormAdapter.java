@@ -73,6 +73,7 @@ import com.rapid.core.Page;
 import com.rapid.core.Pages;
 import com.rapid.core.Pages.PageHeader;
 import com.rapid.core.Pages.PageHeaders;
+import com.rapid.forms.FormAdapter.FormControlValue;
 import com.rapid.core.Theme;
 import com.rapid.core.Validation;
 import com.rapid.security.SecurityAdapter;
@@ -496,6 +497,7 @@ public abstract class FormAdapter {
 
 	// a page control's value in the form summary
 	protected String getSummaryControlValueHtml(RapidRequest rapidRequest, Application application, Page page, FormControlValue controlValue, boolean email) {
+		
 		if (controlValue.getHidden()) {
 			return "";
 		} else {
@@ -507,11 +509,101 @@ public abstract class FormAdapter {
 				if (label == null) {
 					return "";
 				} else {
-					String value = getSummaryControlValue(application, control, controlValue, "(no value)");
-					return "<span class='formSummaryControl'>" + Html.escape(value) + "</span><br/>\n";
+					// if this control is a grid
+					if ("grid".equals(control.getType())) {
+						// grid summary html is created specially
+						return getSummaryGridHtml(application, control, controlValue);
+						
+						//return "<span class='formSummaryControl'>" + label + " :</br>" + controlValue.getValue() + "</span><br/>\n";
+					} else {
+						// otherwise use the conventional way of getting the html and value
+						String value = getSummaryControlValue(application, control, controlValue, "(no value)");
+						return "<span class='formSummaryControl'>" + Html.escape(value) + "</span><br/>\n";
+					}
 				}
 			}
 		}
+	}
+	
+	protected String getSummaryGridHtml(Application application, Control control, FormControlValue controlValue) {
+		
+		//Start of the summary grid table
+		String gridTable = "<span class='formSummaryControl'>" + Html.escape(control.getLabel()) + " : </br>\n" 
+						 + "<table><tr>\n";
+		try {
+			JSONObject jsonData = new JSONObject(controlValue.getValue());
+			
+			//get the fields jsonArray
+			JSONArray fields = jsonData.getJSONArray("fields");
+			//get all the properties for all the fields
+			JSONArray columnsProperties = new JSONArray(control.getProperty("columns"));
+			
+			// a list to store the visible fields
+			List<String> visibleFields = new ArrayList<String>();
+
+			//loop through all the fields, to populate the table headers
+			for(int i = 0; i < fields.length(); i++){
+				//a field
+				String field = fields.getString(i);
+				//check if we have 'columns' key 
+				if (columnsProperties != null) {
+					//loop through the columnsProperties
+					for(int c = 0; c < columnsProperties.length(); c++){
+						//for each column, get its properties
+						JSONObject column_properties = columnsProperties.getJSONObject(c);
+						
+						//find the properties for 'this' field and make sure its visible
+						if(field.equals(column_properties.getString("field")) && column_properties.getBoolean("visible")){
+							//create the header tag for this field 
+							gridTable += "<th>" + column_properties.getString("title") + "</th>\n";
+							//store the visible field in a list
+							visibleFields.add(field);
+							break;
+						}
+						
+					}// end of inner loop
+					 
+				}
+	
+			}// end of outer loop
+			
+			//close the tr tag
+			gridTable += "</tr>\n";
+				
+			//now loop through the rows, to populate the table data
+			JSONArray rows = jsonData.getJSONArray("rows");
+			for(int i = 0; i < rows.length(); i++){
+				//open a new row tag
+				gridTable += "<tr>\n";
+				JSONArray row = rows.getJSONArray(i);
+				
+				//for each row, loop through the row cells
+				for(int j = 0; j < row.length(); j++){
+					String field = fields.getString(j);
+				
+					//if this field is a visible field
+					if(visibleFields.contains(field)){
+						//get and create its column data table
+						gridTable += "<td>" + row.getString(j) + "</td>\n";
+					}
+					
+				}//end of inner loop
+					
+				gridTable += "</tr>\n";
+				
+			}// end of outer loop
+			
+			//close the table tag
+			gridTable += "</table></span><br/>\n";
+	
+			
+		} catch (JSONException ex) {
+			_logger.error("Error creating the grid summary data", ex);
+			return "Error creating the grid summary data : " + ex.getMessage();
+		}
+		
+		//return the html table
+		return gridTable;
 	}
 
 	// the end of the page block
