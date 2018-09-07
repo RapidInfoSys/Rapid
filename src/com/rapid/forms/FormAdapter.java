@@ -1510,9 +1510,11 @@ public abstract class FormAdapter {
 						// if the control is of the correct type then add its values to the list
 						if(controlType.equals(control.getType()) && control.getId().equals(controlValue.getId())) {
 							String controlValueString = controlValue.getValue();
-							String[] allValues = controlValueString.split(",");
-							for(String value : allValues)
-								valueList.add(value);
+							if(controlValueString!=null) {
+								String[] allValues = controlValueString.split(",");
+								for(String value : allValues)
+									valueList.add(value);
+							}
 						}
 					}
 				}
