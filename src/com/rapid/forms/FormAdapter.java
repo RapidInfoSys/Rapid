@@ -404,7 +404,8 @@ public abstract class FormAdapter {
 
 		// check for nulls
 		if (value == null) {
-			value = nullValue;
+			//show the label and no value
+			value = control.getLabel() + " : " + nullValue;
 		} else {
 
 			// check for json
