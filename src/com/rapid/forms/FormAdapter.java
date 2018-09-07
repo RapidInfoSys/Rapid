@@ -1428,7 +1428,7 @@ public abstract class FormAdapter {
 				List<String> namesOfFilesToAttach = getAllControlValues(rapidRequest, formId, "upload");
 
 				// get file data sources from list of file names
-				List<Attachment> attachmentList = getFileAttachments(namesOfFilesToAttach);
+				List<Attachment> attachmentList = getFileAttachments(rapidRequest, namesOfFilesToAttach);
 
 				// add the form summary attachment as the first in the list
 				attachmentList.add(0,  attachment);
@@ -1470,13 +1470,18 @@ public abstract class FormAdapter {
 		}
 	}
 
-	private List<Attachment> getFileAttachments(List<String> fileNames) {
+	private List<Attachment> getFileAttachments(RapidRequest rapidRequest, List<String> fileNames) {
 		List<Attachment> attachmentList = new ArrayList<>();
-		String path = "WebContent/uploads/"+_application.getName()+"/";
+		
+		String path = (rapidRequest.getRapidServlet().isPublic() ? "WEB-INF/" : "") + "uploads/"+_application.getId();
+		path = getServletContext().getRealPath(path);
 
-		for(String fileName : fileNames)
-			attachmentList.add(new Attachment(fileName, new FileDataSource(path+fileName)));
-
+		for(String fileName : fileNames) {
+			File file = new File(path+"/"+fileName);
+			if(file.exists())
+				attachmentList.add(new Attachment(fileName, new FileDataSource(file)));
+		}
+		
 		return attachmentList;
 	}
 	
