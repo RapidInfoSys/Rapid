@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import javax.activation.FileDataSource;
 import javax.imageio.ImageIO;
 import javax.mail.util.ByteArrayDataSource;
 import javax.servlet.ServletContext;
@@ -1423,9 +1424,20 @@ public abstract class FormAdapter {
 				// get the attachment (might not be one)
 				Attachment attachment = getEmailAttachment(rapidRequest, formId);
 
-				// send the email
-				Email.send(application.getFormEmailFrom(), application.getFormEmailTo(), getEmailSubject(rapidRequest, formId), "HTML preview not available", writer.toString(), attachment);
+				// get upload control file names
+				List<String> namesOfFilesToAttach = getAllControlValues(rapidRequest, formId, "upload");
 
+				// get file data sources from list of file names
+				List<Attachment> attachmentList = getFileAttachments(namesOfFilesToAttach);
+
+				// add the form summary attachment as the first in the list
+				attachmentList.add(0,  attachment);
+				
+				// create an array from the list
+				Attachment[] attachmentArray = attachmentList.toArray(new Attachment[attachmentList.size()]);				
+				
+				// send the email
+				Email.send(application.getFormEmailFrom(), application.getFormEmailTo(), getEmailSubject(rapidRequest, formId), "HTML preview not available", writer.toString(), attachmentArray);
 			}
 
 			// retain the submitted date/time in the details
@@ -1458,6 +1470,59 @@ public abstract class FormAdapter {
 		}
 	}
 
+	private List<Attachment> getFileAttachments(List<String> fileNames) {
+		List<Attachment> attachmentList = new ArrayList<>();
+		String path = "WebContent/uploads/"+_application.getName()+"/";
+
+		for(String fileName : fileNames)
+			attachmentList.add(new Attachment(fileName, new FileDataSource(path+fileName)));
+
+		return attachmentList;
+	}
+	
+	// returns all values of all the controls of the specified type
+	private List<String> getAllControlValues(RapidRequest rapidRequest, String formId, String controlType) throws Exception {
+		
+		// this is where we will put the result
+		List<String> valueList = new ArrayList<>();
+
+		// get the contaxt
+		ServletContext servletContext = this.getServletContext();
+
+		// go through the page headers
+		PageHeaders pageHeaders = _application.getPages().getSortedPages();
+		for (PageHeader pageHeader : pageHeaders) {
+
+			// get the page control values
+			FormPageControlValues pageControlValues = _application.getFormAdapter().getFormPageControlValues(rapidRequest, formId, pageHeader.getId());
+			if (pageControlValues != null && pageControlValues.size() > 0) {
+
+				// get the pages
+				Page page = _application.getPages().getPage(servletContext, pageHeader.getId());
+				
+				// get the controls from each page
+				List<Control> pageControls = page.getAllControls();
+				
+				// go through all of the controls on the page
+				for (Control control : pageControls) {
+					for (FormControlValue controlValue : pageControlValues) {
+						
+						// if the control is of the correct type then add its values to the list
+						if(controlType.equals(control.getType()) && control.getId().equals(controlValue.getId())) {
+							String controlValueString = controlValue.getValue();
+							String[] allValues = controlValueString.split(",");
+							for(String value : allValues)
+								valueList.add(value);
+						}
+					}
+				}
+			}
+		}
+
+		// a string list of all the control values
+		return valueList;
+	}
+	
 	// this writes the form pdf to an Output stream
 	protected static final float FONT_SIZE_HEADER1 = 14;
 	protected static final float FONT_SIZE_HEADER2 = 12;
