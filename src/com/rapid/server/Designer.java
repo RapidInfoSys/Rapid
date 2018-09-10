@@ -1728,7 +1728,10 @@ public class Designer extends RapidHttpServlet {
 										// get the prepared statement
 										PreparedStatement ps = df.getPreparedStatement(rapidRequest, sql, parameters);
 
-										// try and get meta data without executing the statement
+										// execute the statement - required by Oracle, but not MS SQL
+										ps.execute();
+
+										// get the meta data
 										ResultSetMetaData rsmd = ps.getMetaData();
 
 										// get the result columns
