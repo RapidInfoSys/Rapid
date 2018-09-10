@@ -259,7 +259,7 @@ function Action_navigate(url, dialogue, id, popup) {
 		           	dialogueCover = body.append("<div id='" + id + "cover' class='dialogueCover' style='position:absolute;left:0px;top:0px;z-index:1000;'></div>").children().last();
 		           			      		           			           		            	
 	            	// remove any existing dialogue container for this action
-		           	$("#" + id + "dialogue").remove();
+		           	$("#" + id).remove();
 		           	// add the dialogue container and remove the reference
 		           	dialogue = body.append("<div id='" + id + "' class='dialogue' style='position:fixed;z-index:1001;'></div>").children().last(); 
 		           	
