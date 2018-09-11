@@ -308,8 +308,13 @@ function sortGridByColumn(ev, id, details, column, asc) {
 					} else if (!d2Parts || d2Parts.length < 3) {
 						return -1;
 					} else {
+						// clean the year if need be
+						if (d1Parts[2].indexOf(" ") > 1) d1Parts[2] = d1Parts[2].substr(0,d1Parts[2].indexOf(" "));
+						if (d2Parts[2].indexOf(" ") > 1) d2Parts[2] = d2Parts[2].substr(0,d2Parts[2].indexOf(" "));
+						// make dates
 						var d1 = new Date(d1Parts[2], d1Parts[1]-1, d1Parts[0]);
 						var d2 = new Date(d2Parts[2], d2Parts[1]-1, d2Parts[0]);
+						// return their difference
 						return d1.getTime() - d2.getTime();
 					}
 				});					
@@ -325,11 +330,17 @@ function sortGridByColumn(ev, id, details, column, asc) {
 					} else if (!d2Parts || d2Parts.length < 3) {
 						return -1;
 					} else {
+						// clean the year if need be
+						if (d1Parts[2].indexOf(" ") > 1) d1Parts[2] = d1Parts[2].substr(0,d1Parts[2].indexOf(" "));
+						if (d2Parts[2].indexOf(" ") > 1) d2Parts[2] = d2Parts[2].substr(0,d2Parts[2].indexOf(" "));
+						// get the months
 						var months = ["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"];
 						for (m1 in months) if (d1Parts[1].toLowerCase().substr(0,3) == months[m1]) break;
 						for (m2 in months) if (d2Parts[1].toLowerCase().substr(0,3) == months[m2]) break;
+						// make the dates
 						var d1 = new Date(d1Parts[2], m1, d1Parts[0]);
 						var d2 = new Date(d2Parts[2], m2, d2Parts[0]);
+						// return their difference
 						return d1.getTime() - d2.getTime();
 					}
 				});					
@@ -345,8 +356,13 @@ function sortGridByColumn(ev, id, details, column, asc) {
 					} else if (!d2Parts || d2Parts.length < 3) {
 						return -1;
 					} else {
+						// clean the year if need be
+						if (d1Parts[2].indexOf(" ") > 1) d1Parts[2] = d1Parts[2].substr(0,d1Parts[2].indexOf(" "));
+						if (d2Parts[2].indexOf(" ") > 1) d2Parts[2] = d2Parts[2].substr(0,d2Parts[2].indexOf(" "));
+						// make the dates
 						var d1 = new Date(d1Parts[2], d1Parts[0]-1, d1Parts[1]);
 						var d2 = new Date(d2Parts[2], d2Parts[0]-1, d2Parts[1]);
+						// return their difference
 						return d1.getTime() - d2.getTime();
 					}
 				});					
@@ -362,8 +378,10 @@ function sortGridByColumn(ev, id, details, column, asc) {
 					} else if (!d2Parts || d2Parts.length < 3) {
 						return -1;
 					} else {
-						var d1 = new Date(d1Parts[0], d1Parts[1]-1, d1Parts[1]);
-						var d2 = new Date(d2Parts[0], d2Parts[1]-1, d2Parts[1]);
+						// make the dates
+						var d1 = new Date(d1Parts[0], d1Parts[1]-1, d1Parts[2]);
+						var d2 = new Date(d2Parts[0], d2Parts[1]-1, d2Parts[2]);
+						// return their difference
 						return d1.getTime() - d2.getTime();
 					}
 				});					
