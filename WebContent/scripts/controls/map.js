@@ -202,6 +202,8 @@ function loadMapJavaScript(id, details) {
 		var url = "https://maps.googleapis.com/maps/api/js?v=3&callback=loadedMapJavaScript"
 		// if there was one
 		if (details.key) url += "&key=" + details.key;
+		// if there is a heat map add the visualization library
+		if (details.heatmap) url += "&&libraries=visualization";
 		// append to the head and start loading
 		$("head").append("<script async defer id='mapJavaScript' type='text/javascript' src='" + url + "'></script>");
 	}
@@ -219,7 +221,7 @@ function loadedMapJavaScript() {
 		rebuildLoadedMap(id);			
 	}
 	// if all controls are loaded
-	if (_loadingControls < 1) {
+	if (window["_loadingPages"] && _loadingControls < 1) {
 		// loop any pages waiting to load
 		for (var i in _loadingPages) {
 			// get the page id
@@ -265,9 +267,8 @@ function rebuildLoadedMap(id) {
 			mapTypeId: mapTypeId,
 			mapTypeControl: details.showMapType,
 			zoomControl: details.showZoom,
-		   	panControl: details.showPan,
-		   	streetViewControl: details.showStreetView,
-		   	scaleControl: details.showScale
+			scaleControl: details.showScale,
+		   	streetViewControl: details.showStreetView
 		});
 		
 		// add it to the collections
@@ -450,60 +451,107 @@ function addMapMarker(map, pos, details, data, rowIndex, zoomMarkers) {
 	// skip if no lat and lng - but we might be coming back if we then searched
 	if (map && pos && pos.lat && pos.lng) {
 
-		var markerOptions = {
-			map: map,
-			position: new google.maps.LatLng(pos.lat, pos.lng)
-		};
+		// if this is heatmap
+		if (details.heatmap) {
+			
+			// if there isn't a heatmap object in the map yet
+			if (!map.heatmap) {
+				
+				// heatmap options
+				var options = {
+					data: [],
+				    map: map
+				};
+				
+				// check and add further options from details
+				if (details.maxIntensity) options.maxIntensity = details.maxIntensity;
+				if (details.radius) options.radius = details.radius;
+				if (details.opacity) options.opacity = details.opacity;
+				options.dissipating = details.dissipating;
+			
+				// create the heatmap
+				var heatmap = new google.maps.visualization.HeatmapLayer(options);
+	
+				// retain a reference to it in the map
+				map.heatmap = heatmap;
+				
+			}
+			
+			// make this point
+			var point = new google.maps.LatLng(pos.lat, pos.lng);
+			
+			// add this point to heatmap
+			map.heatmap.data.push(point);
+			// add it to map markers too
+			map.markers.push(point);
+						
+		} else {
 		
-		if (pos.title) markerOptions.title = pos.title;
-		if (pos.icon) markerOptions.icon = pos.icon;
-		if (details.markerImage) markerOptions.icon = "applications/" + _appId + "/" + _appVersion + "/" + details.markerImage;
+			var markerOptions = {
+				map: map,
+				position: new google.maps.LatLng(pos.lat, pos.lng)
+			};
+			
+			if (pos.title) markerOptions.title = pos.title;
+			if (pos.icon) markerOptions.icon = pos.icon;
+			if (details.markerImage) markerOptions.icon = "applications/" + _appId + "/" + _appVersion + "/" + details.markerImage;
+			
+			var marker = new google.maps.Marker(markerOptions);	
+			marker.index = map.markers.length;
+			marker.data = {fields:data.fields,rows:[data.rows[rowIndex]]};
+			
+			map.markers.push(marker);
+			
+			if (pos.info) {
+				var markerInfoWindow = new google.maps.InfoWindow({
+					content: pos.info
+				});
+				google.maps.event.addListener(marker, 'click', function() {
+				    markerInfoWindow.open(map,marker);
+				});
+			}
+			
+			if (details.markerClickFunction) {
+				google.maps.event.addListener(marker, 'click', function() {
+					map.markerSelectedIndex = marker.index;
+				    window[details.markerClickFunction]($.Event('markerclick'));
+				});
+			}
+
+		} // heatmap check
 		
-		var marker = new google.maps.Marker(markerOptions);	
-		marker.index = map.markers.length;
-		marker.data = {fields:data.fields,rows:[data.rows[rowIndex]]};
-		
-		map.markers.push(marker);					
-		if (pos.info) {
-			var markerInfoWindow = new google.maps.InfoWindow({
-				content: pos.info
-			});
-			google.maps.event.addListener(marker, 'click', function() {
-			    markerInfoWindow.open(map,marker);
-			});
-		}
-		if (details.markerClickFunction) {
-			google.maps.event.addListener(marker, 'click', function() {
-				map.markerSelectedIndex = marker.index;
-			    window[details.markerClickFunction]($.Event('markerclick'));
-			});
-		}
 		// if we have all the markers now, zoom and centre them - this seems to only do up to 10, it might have something to do with search limits
-		if (map.markers.length > 0 && zoomMarkers > 0) {
-			if (zoomMarkers == 0) {
+		if (map.markers.length > 0 && map.markers.length == zoomMarkers) {
+			if (zoomMarkers == 1) {
 				// single marker, check getPosition is present
 				if (map.markers[0].getPosition) {
 					// get the latlng position
-					var pos = map.markers[0].getPosition();
+					var pos = map.markers[0];
+					// if getPosition is present use that
+					if (pos.getPosition) pos = pos.getPosition();
 					// only if valid values
-					if (pos.lat() != 0 && pos.lng() != 0) map.panTo(pos);
+					if (pos.lat && pos.lng && pos.lat() != 0 && pos.lng() != 0) map.panTo(pos);
 				}
 			} else {
 				// multiple markers, use bounds
 				var bounds = new google.maps.LatLngBounds();
+				// loop the map markers
 				for (var i in map.markers) {
-					// check getPosition is present
-					if (map.markers[i].getPosition) {
-						// get position
-						var pos = map.markers[i].getPosition();
-						// only if valid values
-						if (pos.lat() != 0 && pos.lng() != 0) bounds.extend(pos);
-					}
+					// get position as marker
+					var pos = map.markers[i];
+					// if getPosition is present use that
+					if (pos.getPosition) pos = pos.getPosition();
+					// only if valid object and values
+					if (pos.lat && pos.lng && pos.lat() != 0 && pos.lng() != 0) bounds.extend(pos);
 				}
+				// fit to the bounds
 				map.fitBounds(bounds);
 			}
-		}
-	}	
+			
+		} // finished markers check
+		
+	}
+	
 }
 
 // adds markers to a map, used by add markers and replace markers

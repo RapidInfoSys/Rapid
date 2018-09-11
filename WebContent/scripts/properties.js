@@ -5103,6 +5103,28 @@ function Property_mapZoom(cell, propertyObject, property, details) {
 	}));
 }
 
+function Property_heatmapNumber(cell, propertyObject, property, details) {
+	// only if this is a heatmap
+	if (propertyObject.heatmap) {
+		// add the handler for this property
+		Property_number(cell, propertyObject, property, details);
+	} else {
+		// remove this row
+		cell.closest("tr").remove();
+	}
+}
+
+function Property_heatmapCheckbox(cell, propertyObject, property, details) {
+	// only if this is a heatmap
+	if (propertyObject.heatmap) {
+		// add the handler for this property
+		Property_checkbox(cell, propertyObject, property, details);
+	} else {
+		// remove this row
+		cell.closest("tr").remove();
+	}
+}
+
 // this is displayed as a page property but is actually held in local storage
 function Property_device(cell, propertyObject, property, details) {
 	// holds the options html

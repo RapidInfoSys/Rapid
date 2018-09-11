@@ -102,21 +102,10 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	        </property>
 	        
 	        <property>
-	            <key>showStreetView</key>
-	            <name>Show street view control</name>
-	            <setConstructValueFunction>return false;</setConstructValueFunction>
-	            <changeValueJavaScript>checkbox</changeValueJavaScript>
-	            <refreshHtml>true</refreshHtml>
-	            <helpHtml>Enables users to access street view on the map.</helpHtml>
-	        </property>
-	        
-	        <property>
-	            <key>showZoom</key>
-	            <name>Show zoom control</name>
-	            <setConstructValueFunction>return true;</setConstructValueFunction>
-	            <changeValueJavaScript>checkbox</changeValueJavaScript>
-	            <refreshHtml>true</refreshHtml>
-	            <helpHtml>Allows users to set their own level of zoom.</helpHtml>
+	            <key>searchFields</key>
+	            <name>Address search fields</name>
+	            <changeValueJavaScript>text</changeValueJavaScript>
+	            <helpHtml>When markers are added to the map and the data object does not have lat/lng or east/north, the value in the first of these comma-seperated fields will be searched on and the marker added to the results</helpHtml>
 	        </property>
 	        
 	        <property>
@@ -129,6 +118,15 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	        </property>
 	        
 	        <property>
+	            <key>showZoom</key>
+	            <name>Show zoom control</name>
+	            <setConstructValueFunction>return true;</setConstructValueFunction>
+	            <changeValueJavaScript>checkbox</changeValueJavaScript>
+	            <refreshHtml>true</refreshHtml>
+	            <helpHtml>Allows users to set their own level of zoom.</helpHtml>
+	        </property>
+	        
+	        <property>
 	            <key>showScale</key>
 	            <name>Show scale</name>
 	            <setConstructValueFunction>return true;</setConstructValueFunction>
@@ -136,12 +134,55 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <refreshHtml>true</refreshHtml>
 	            <helpHtml>Whether an indicator for the scale of the map is shown</helpHtml>
 	        </property>
+	        	        
+	        <property>
+	            <key>showStreetView</key>
+	            <name>Show street view control</name>
+	            <setConstructValueFunction>return false;</setConstructValueFunction>
+	            <changeValueJavaScript>checkbox</changeValueJavaScript>
+	            <refreshHtml>true</refreshHtml>
+	            <helpHtml>Enables users to access street view on the map.</helpHtml>
+	        </property>
 	        
 	        <property>
-	            <key>searchFields</key>
-	            <name>Address search fields</name>
-	            <changeValueJavaScript>text</changeValueJavaScript>
-	            <helpHtml>When markers are added to the map and the data object does not have lat/lng or east/north, the value in the first of these comma-seperated fields will be searched on and the marker added to the results</helpHtml>
+	            <key>heatmap</key>
+	            <name>Heatmap</name>
+	            <setConstructValueFunction>return true;</setConstructValueFunction>
+	            <changeValueJavaScript>checkbox</changeValueJavaScript>
+	            <refreshProperties>true</refreshProperties>
+	            <helpHtml>Whether to show a heatmap instead of conventional markers.</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>opacity</key>
+	            <name>Opacity</name>
+	            <setConstructValueFunction>return null;</setConstructValueFunction>
+	            <changeValueJavaScript>heatmapNumber</changeValueJavaScript>
+	            <helpHtml>The opacity of the heatmap, expressed as a number between 0 and 1. Defaults to 0.6.</helpHtml>
+	        </property>
+	        
+	         <property>
+	            <key>radius</key>
+	            <name>Radius</name>
+	            <setConstructValueFunction>return null;</setConstructValueFunction>
+	            <changeValueJavaScript>heatmapNumber</changeValueJavaScript>
+	            <helpHtml>The radius of influence for each data point, in pixels.</helpHtml>
+	        </property>
+	         
+	         <property>
+	            <key>maxIntensity</key>
+	            <name>Max intensity</name>
+	            <setConstructValueFunction>return null;</setConstructValueFunction>
+	            <changeValueJavaScript>heatmapNumber</changeValueJavaScript>
+	            <helpHtml>The maximum intensity of the heatmap. By default, heatmap colors are dynamically scaled according to the greatest concentration of points at any particular pixel on the map. This property allows you to specify a fixed maximum.</helpHtml>
+	        </property>
+	         
+	         <property>
+	            <key>dissipating</key>
+	            <name>Dissipating</name>
+	            <setConstructValueFunction>return false;</setConstructValueFunction>
+	            <changeValueJavaScript>heatmapCheckbox</changeValueJavaScript>
+	            <helpHtml>Specifies whether heatmaps dissipate on zoom. By default, the radius of influence of a data point is specified by the radius option only. When dissipating is disabled, the radius option is interpreted as a radius at zoom level 0.</helpHtml>
 	        </property>
 	        	        	        	        	        	        
 	    </properties>
@@ -229,15 +270,19 @@ return {
 	lng: this.lng,
 	zoom: this.zoom,
 	mapType: this.mapType,
-	showMapType: this.showMapType,
-	showZoom: this.showZoom,
-	showPan: this.showPan,
-	showStreetView: this.showStreetView,
-	showScale: this.showScale,
-	markerImage: this.markerImage,
 	key: this.key,
+	searchFields: this.searchFields,
+	showMapType: this.showMapType,
+	showScale: this.showScale,
+	showZoom: this.showZoom,
+	showStreetView: this.showStreetView,
+	markerImage: this.markerImage,
 	markerClickFunction: markerClickFunction,
-	searchFields: this.searchFields
+	heatmap: this.heatmap,
+    opacity: this.opacity,
+	radius: this.radius,
+	maxIntensity: this.maxIntensity,
+	dissipating: this.dissipating
 };
 	        ]]>
 	    </getDetailsFunction>
@@ -383,24 +428,35 @@ if (map && data && data.rows && data.rows.length > 0) {
 	                <![CDATA[
 // get the map
 var map = _maps[id];
-// redraw the map in case it was hidden (this will mean the centre hasn't been set correctly but the zoomExtents for the markers will fix this)
-google.maps.event.trigger(map, "resize");
-// get the data object
-var data = makeDataObject(data, field);
-// if there are any current markers
-if (map.markers) {
-	// loop them
-	for (var i in map.markers) {
-		map.markers[i].setMap(null);
+// if we got one
+if (map) {
+	// redraw the map in case it was hidden (this will mean the centre hasn't been set correctly but the zoomExtents for the markers will fix this)
+	google.maps.event.trigger(map, "resize");
+	// get the data object
+	var data = makeDataObject(data, field);
+	// if there are any current markers
+	if (map.markers) {
+		// loop them
+		for (var i in map.markers) {
+			// remove marker
+			if (map.markers[i].setMap) map.markers[i].setMap(null);
+		}
+	} 
+	// empty markers array
+	map.markers = [];
+	// if the map has a heatmap
+	if (map.heatmap) {
+		// remove from map render
+		map.heatmap.setMap(null);
+		// remove from map object
+		map.heatmap = null;
 	}
-} 
-// empty markers array
-map.markers = [];
-// if we got a map and data
-if (map && data && data.rows && data.rows.length > 0) {		
-	// add the markers, and zoom their extents and centre the map once all markers are resolved
-	addMapMarkers(map, data, details, data.rows.length - 1);
-}	                
+	// if we got data
+	if (data && data.rows && data.rows.length > 0) {		
+		// add the markers, and zoom their extents and centre the map once all markers are resolved
+		addMapMarkers(map, data, details, data.rows.length - 1);
+	}
+}           
 					]]>
 	            </setPropertyJavaScript>
 	        </runtimeProperty>
