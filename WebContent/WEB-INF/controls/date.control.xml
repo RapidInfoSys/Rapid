@@ -458,7 +458,7 @@ if (val) {
 	// assume not passing validation
 	var d = null;
 	// parse the date to check it's valid, with a silent fail
-	try { d = $.datepicker.parseDate(details.format, val); } catch() {}
+	try { d = $.datepicker.parseDate(details.format, val); } catch(ex) {}
 	// if we got a valid date
 	if (d) {
 		// get the age
