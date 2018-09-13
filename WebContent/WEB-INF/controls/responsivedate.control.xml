@@ -575,11 +575,24 @@ $( "#" + id ).find("input").datepicker("setDate", details.value);
 	    		<name>Age</name>
 	    		<getPropertyFunction>
 	    			        <![CDATA[
-var dp = $("#" + id).find("input");
-if (dp.val()) {
-	var d = dp.datepicker( "getDate" );
-	var age = (Date.now() - d) / 31557600000;
-	return age;
+// get the value
+var val = $("#" + id).find("input").val();
+// if there was a value and it is a valid date
+if (val) {
+	// assume not passing validation
+	var d = null;
+	// parse the date to check it's valid, with a silent fail
+	try { d = $.datepicker.parseDate(details.format, val); } catch {}
+	// if we got a valid date
+	if (d) {
+		// get the age
+		var age = (Date.now() - d) / 31557600000;
+		// return the age
+		return age;
+	} else {
+		// return not a number
+		return NaN;
+	}
 } else {
 	return null;
 }
