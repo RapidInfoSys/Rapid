@@ -74,7 +74,6 @@ import com.rapid.core.Page;
 import com.rapid.core.Pages;
 import com.rapid.core.Pages.PageHeader;
 import com.rapid.core.Pages.PageHeaders;
-import com.rapid.forms.FormAdapter.FormControlValue;
 import com.rapid.core.Theme;
 import com.rapid.core.Validation;
 import com.rapid.security.SecurityAdapter;
@@ -499,7 +498,7 @@ public abstract class FormAdapter {
 
 	// a page control's value in the form summary
 	protected String getSummaryControlValueHtml(RapidRequest rapidRequest, Application application, Page page, FormControlValue controlValue, boolean email) {
-		
+
 		if (controlValue.getHidden()) {
 			return "";
 		} else {
@@ -515,7 +514,7 @@ public abstract class FormAdapter {
 					if ("grid".equals(control.getType())) {
 						// grid summary html is created specially
 						return getSummaryGridHtml(application, control, controlValue);
-						
+
 						//return "<span class='formSummaryControl'>" + label + " :</br>" + controlValue.getValue() + "</span><br/>\n";
 					} else {
 						// otherwise use the conventional way of getting the html and value
@@ -526,20 +525,20 @@ public abstract class FormAdapter {
 			}
 		}
 	}
-	
+
 	protected String getSummaryGridHtml(Application application, Control control, FormControlValue controlValue) {
-		
+
 		//Start of the summary grid table
-		String gridTable = "<span class='formSummaryControl'>" + Html.escape(control.getLabel()) + " : </br>\n" 
+		String gridTable = "<span class='formSummaryControl'>" + Html.escape(control.getLabel()) + " : </br>\n"
 						 + "<table><tr>\n";
 		try {
 			JSONObject jsonData = new JSONObject(controlValue.getValue());
-			
+
 			//get the fields jsonArray
 			JSONArray fields = jsonData.getJSONArray("fields");
 			//get all the properties for all the fields
 			JSONArray columnsProperties = new JSONArray(control.getProperty("columns"));
-			
+
 			// a list to store the visible fields
 			List<String> visibleFields = new ArrayList<String>();
 
@@ -547,63 +546,63 @@ public abstract class FormAdapter {
 			for(int i = 0; i < fields.length(); i++){
 				//a field
 				String field = fields.getString(i);
-				//check if we have 'columns' key 
+				//check if we have 'columns' key
 				if (columnsProperties != null) {
 					//loop through the columnsProperties
 					for(int c = 0; c < columnsProperties.length(); c++){
 						//for each column, get its properties
 						JSONObject column_properties = columnsProperties.getJSONObject(c);
-						
+
 						//find the properties for 'this' field and make sure its visible
 						if(field.equals(column_properties.getString("field")) && column_properties.getBoolean("visible")){
-							//create the header tag for this field 
+							//create the header tag for this field
 							gridTable += "<th>" + column_properties.getString("title") + "</th>\n";
 							//store the visible field in a list
 							visibleFields.add(field);
 							break;
 						}
-						
+
 					}// end of inner loop
-					 
+
 				}
-	
+
 			}// end of outer loop
-			
+
 			//close the tr tag
 			gridTable += "</tr>\n";
-				
+
 			//now loop through the rows, to populate the table data
 			JSONArray rows = jsonData.getJSONArray("rows");
 			for(int i = 0; i < rows.length(); i++){
 				//open a new row tag
 				gridTable += "<tr>\n";
 				JSONArray row = rows.getJSONArray(i);
-				
+
 				//for each row, loop through the row cells
 				for(int j = 0; j < row.length(); j++){
 					String field = fields.getString(j);
-				
+
 					//if this field is a visible field
 					if(visibleFields.contains(field)){
 						//get and create its column data table
 						gridTable += "<td>" + row.getString(j) + "</td>\n";
 					}
-					
+
 				}//end of inner loop
-					
+
 				gridTable += "</tr>\n";
-				
+
 			}// end of outer loop
-			
+
 			//close the table tag
 			gridTable += "</table></span><br/>\n";
-	
-			
+
+
 		} catch (JSONException ex) {
 			_logger.error("Error creating the grid summary data", ex);
 			return "Error creating the grid summary data : " + ex.getMessage();
 		}
-		
+
 		//return the html table
 		return gridTable;
 	}
@@ -1432,10 +1431,10 @@ public abstract class FormAdapter {
 
 				// add the form summary attachment as the first in the list
 				attachmentList.add(0,  attachment);
-				
+
 				// create an array from the list
-				Attachment[] attachmentArray = attachmentList.toArray(new Attachment[attachmentList.size()]);				
-				
+				Attachment[] attachmentArray = attachmentList.toArray(new Attachment[attachmentList.size()]);
+
 				// send the email
 				Email.send(application.getFormEmailFrom(), application.getFormEmailTo(), getEmailSubject(rapidRequest, formId), "HTML preview not available", writer.toString(), attachmentArray);
 			}
@@ -1472,7 +1471,7 @@ public abstract class FormAdapter {
 
 	private List<Attachment> getFileAttachments(RapidRequest rapidRequest, List<String> fileNames) {
 		List<Attachment> attachmentList = new ArrayList<>();
-		
+
 		String path = (rapidRequest.getRapidServlet().isPublic() ? "WEB-INF/" : "") + "uploads/"+_application.getId();
 		path = getServletContext().getRealPath(path);
 
@@ -1481,13 +1480,13 @@ public abstract class FormAdapter {
 			if(file.exists())
 				attachmentList.add(new Attachment(fileName, new FileDataSource(file)));
 		}
-		
+
 		return attachmentList;
 	}
-	
+
 	// returns all values of all the controls of the specified type
 	private List<String> getAllControlValues(RapidRequest rapidRequest, String formId, String controlType) throws Exception {
-		
+
 		// this is where we will put the result
 		List<String> valueList = new ArrayList<>();
 
@@ -1504,14 +1503,14 @@ public abstract class FormAdapter {
 
 				// get the pages
 				Page page = _application.getPages().getPage(servletContext, pageHeader.getId());
-				
+
 				// get the controls from each page
 				List<Control> pageControls = page.getAllControls();
-				
+
 				// go through all of the controls on the page
 				for (Control control : pageControls) {
 					for (FormControlValue controlValue : pageControlValues) {
-						
+
 						// if the control is of the correct type then add its values to the list
 						if(controlType.equals(control.getType()) && control.getId().equals(controlValue.getId())) {
 							String controlValueString = controlValue.getValue();
@@ -1529,7 +1528,7 @@ public abstract class FormAdapter {
 		// a string list of all the control values
 		return valueList;
 	}
-	
+
 	// this writes the form pdf to an Output stream
 	protected static final float FONT_SIZE_HEADER1 = 14;
 	protected static final float FONT_SIZE_HEADER2 = 12;
@@ -2061,8 +2060,8 @@ public abstract class FormAdapter {
 												String regEx = validation.getRegEx();
 												// set to empty string if null (most seem to be empty)
 												if (regEx == null) regEx = "";
-												// not if none, and not if javascript
-												if (regEx.length() > 0 && !"".equals(validation.getType()) && !"none".equals(validation.getType()) && !"javascript".equals(validation.getType())) {
+												// not if none, and not if javascript nor logic
+												if (regEx.length() > 0 && !"".equals(validation.getType()) && !"none".equals(validation.getType()) && !"javascript".equals(validation.getType()) && !"logic".equals(validation.getType())) {
 													// check for null
 													if (value != null) {
 														// place holder for the patter

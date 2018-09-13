@@ -150,7 +150,7 @@ function Action_validation(ev, validations, showMessages) {
 					}
 				}
 				var value = getValueFunction(ev, validation.controlId, validation.field, details);
-				if (validation.validationType == "javascript") {
+				if (validation.validationType == "javascript" || validation.validationType == "logic") {
 					var validationFunction = new Function(["ev","id","value"], validation.javaScript);
 					var failMessage = validationFunction.apply(this, [ev,validation.controlId,value]);
 					if (failMessage != null && failMessage !== false && failMessage !== undefined) {

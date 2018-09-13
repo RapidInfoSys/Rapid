@@ -288,7 +288,7 @@ public class Control {
 	}
 
 	// this is here as a static to match getEvents, and getActions, even though there isn't currently a need to reuse it between pages/controls
-	public static Validation getValidation(RapidHttpServlet rapidServlet, JSONObject jsonValidation) {
+	public static Validation getValidation(RapidHttpServlet rapidServlet, JSONObject jsonValidation) throws JSONException {
 
 		// check we where given something
 		if (jsonValidation != null) {
@@ -300,6 +300,8 @@ public class Control {
 				jsonValidation.optBoolean("allowNulls"),
 				jsonValidation.optString("regEx"),
 				jsonValidation.optString("message"),
+				jsonValidation.optString("conditions"),
+				jsonValidation.optString("conditionsType"),
 				jsonValidation.optString("javaScript")
 			);
 

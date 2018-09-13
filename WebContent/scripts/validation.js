@@ -35,7 +35,8 @@ var _validationTypes = [
   {value:'dateORA',text:'date (dd-MMM-yyyy)',regex:'^(((([1-9])|([0-2][0-9])|(3[01]))[\\-]((JAN|MAR|MAY|JUL|AUG|OCT|DEC)|(1[02])))|((([1-9])|([0-2][0-9])|(30))[\\-]((APR|JUN|SEP|NOV)))|((([1-9])|([0-1][0-9]|2[0-8]))[\\-](FEB)))[\\-](\\d{2}){1,2}$|^(29\\-(FEB)\\-(19|20)?(00|04|08|12|16|20|24|28|32|36|40|44|48|52|56|60|64|68|72|76|80|84|88|92|96))$'},
   {value:'currency',text:'currency',regex:'^\\d+\\.?\\d{2}$'},
   {value:'email',text:'email',regex:'^[_a-zA-Z0-9-]+(\\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*(\\.[a-zA-Z]{2,4})$'},
-  {value:'custom',text:'custom',regex:''},
+  {value:'custom',text:'custom regex',regex:''},
+  {value:'logic',text:'logic',regex:''},
   {value:'javascript',text:'javascript',regex:''}
   ];
 
@@ -148,15 +149,23 @@ function showValidation(control) {
 					// add a javascript box
 					validationTable.append("<tr><td>RegEx</td><td>" + validation.regEx + "</td></tr>");
 					// get a reference to  the cell
-					var cell = validationTable.children().last().children().last();
+					var cell = validationTable.find("td").last();
 					// add a bigtext property listener	
 					Property_bigtext(cell, validation, {key: "regEx"});
-				break;			
+				break;
+				case "logic" :
+					// add a javascript box
+					validationTable.append("<tr><td>Conditions</td><td></td></tr>");
+					// get a reference to  the cell
+					var cell = validationTable.find("td").last();
+					// add a bigtext property listener	
+					Property_logicConditions(cell, validation, {key: "conditions"});
+				break;
 				case "javascript" :
 					// add a javascript box
 					validationTable.append("<tr><td>JavaScript</td><td></td></tr>");
 					// get a reference to  the cell
-					var cell = validationTable.children().last().children().last();
+					var cell = validationTable.find("td").last();
 					// set a helpful default value for the
 					if (!validation.javaScript) validation.javaScript = "// Enter your JavaScript here, return a message if the validation fails. The control value is available through the \"value\" variable, the event is \"ev\" and the control id is \"id\"";
 					// add a bigtext property listener	
@@ -165,7 +174,6 @@ function showValidation(control) {
 				}
 				// message is in the javascript so no need for it here (can null check there too)
 				if (type != "javascript") {
-					
 					// add a message box
 					validationTable.append("<tr><td>Message</td><td></td></tr>");
 					// get a reference to  the cell
