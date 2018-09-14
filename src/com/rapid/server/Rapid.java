@@ -194,15 +194,25 @@ public class Rapid extends RapidHttpServlet {
 
 								} else {
 
-									// if  we had some and this is the correct version
-									if (app.getId().equals(formDetails.getAppId()) && app.getVersion().equals(formDetails.getVersion())) {
-										// summary is never cached
-										RapidFilter.noCache(response);
-										// write the form summary page
-										formAdapter.writeFormSummary(rapidRequest, response);
+									// if user just hit the back button on a submitted form there will not be a max page yet
+									if (formDetails.getMaxPageId() == null) {
+
+										// go to the start page, but keep the session
+										gotoStartPage(request, response, app, false);
+
 									} else {
-										// request the correct version for the summary (this also avoids ERR_CACH_MISS issues on the back button )
-										response.sendRedirect("~?a=" + app.getId() + "&v=" + app.getVersion() + "&action=summary");
+
+										// if  we had some and this is the correct version
+										if (app.getId().equals(formDetails.getAppId()) && app.getVersion().equals(formDetails.getVersion())) {
+											// summary is never cached
+											RapidFilter.noCache(response);
+											// write the form summary page
+											formAdapter.writeFormSummary(rapidRequest, response);
+										} else {
+											// request the correct version for the summary (this also avoids ERR_CACH_MISS issues on the back button )
+											response.sendRedirect("~?a=" + app.getId() + "&v=" + app.getVersion() + "&action=summary");
+										}
+
 									}
 
 								}
@@ -1179,6 +1189,7 @@ public class Rapid extends RapidHttpServlet {
 												// place holder for the submitted page from the adapter
 												String submittedPage = formAdapter.getSubmittedPage();
 
+												// check for neither app nor adapter submit page or crf fail
 												if ((submittedPageId == null && submittedPage == null) || !csrfPass) {
 
 													// invalidate the form
@@ -1200,20 +1211,21 @@ public class Rapid extends RapidHttpServlet {
 
 												} else {
 
-													// look for a submitted page from the adapter
-													if (submittedPage == null) {
+													// look for an app submitted page
+													if (submittedPageId == null) {
+
+														// request the adapter submitted page
+														response.sendRedirect(submittedPage);
+
+													} else {
 
 														// no adapter page so request the first designer submitted page
 														response.sendRedirect("~?a=" + app.getId() + "&v=" + app.getVersion() + "&p=" + submittedPageId);
 
-													} else {
-
-														// request the submitted page
-														response.sendRedirect(submittedPage);
-
 													}
 
 												}
+
 
 											} catch (Exception ex) {
 
