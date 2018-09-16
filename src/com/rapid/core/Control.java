@@ -300,8 +300,7 @@ public class Control {
 				jsonValidation.optBoolean("allowNulls"),
 				jsonValidation.optString("regEx"),
 				jsonValidation.optString("message"),
-				jsonValidation.optString("conditions"),
-				jsonValidation.optString("conditionsType"),
+				jsonValidation.optString("logicMessages"),
 				jsonValidation.optString("javaScript")
 			);
 

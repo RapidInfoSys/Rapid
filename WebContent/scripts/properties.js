@@ -588,7 +588,7 @@ function showProperties(control) {
 				// if we support integration properties and this is a formControl check for special form integration properties (a bit like action comments)
 				if (control.type != "page" && _version.canSupportIntegrationProperties && property.key == "label" && properties[properties.length - 1].key != "formObjectText") {
 					// add form properties
-					properties.push({"name":"Form integration","changeValueJavaScript":"gap", "setConstructValueFunction": "return 'Form integration'"});
+					properties.push({"name":"Form integration","changeValueJavaScript":"gap", "setConstructValueFunction": "return 'Form integration'", "helpHtml":"Use this powerful feature to map form control values to meaningful real-world things. On submission of the form the integration mappings will be used to pass data to external systems. They can also be used to pre-populate form data from external systems."});
 					properties.push({"key":"formObject","name":"Object", "refreshProperties": true, "helpHtml":"The object that the control is holding data for in the form. Used for advanced form integration."}); // refreshProperties shows the dynamic properties below				
 					properties.push({"key":"formObjectRole","name":"Role", "refreshProperties": true, "helpHtml":"The role of the object. For example a case party, linked party, or the case itself."}); // refreshProperties allows party / case party to not show the type (used only for linked parties)
 					properties.push({"key":"formObjectPartyNumber","name":"Party number", "helpHtml":"A number identifying the party. The main or first party is 1. Use the same number to specify the other attributes for the same party."});
@@ -1268,6 +1268,13 @@ function Property_gap(cell, propertyObject, property, details) {
 		var name = f.apply(this, []); 
 		// display the name
 		cell.parent().after("<tr><td colspan='2' class='propertySubHeader'><h3>" + name + "</h3></td></tr>");
+		// if there is helphtml
+		if (property.helpHtml) {
+			// add the icon
+			cell.parent().next().find("td").last().append("<i id='" + propertyObject.id + "help_gap' class='actionHelp glyph fa hintIcon'></i>");
+			// add the listener
+			addHelp(propertyObject.id + "help_gap",true,true,property.helpHtml);
+		}
 	}
 }
 
@@ -5985,4 +5992,131 @@ function Property_webserviceAuthProperty(cell, propertyObject, property, details
 function Property_uploadControls(cell, propertyObject, property, details) {
 	// run the controls for type
 	Property_controlsForType(cell, propertyObject, property, {type:["upload"]});
+}
+
+// 
+function Property_validationLogic(cell, propertyObject, property, details) {
+	// retrieve or create the dialogue
+	var dialogue = getDialogue(cell, propertyObject, property, details, 320, "Messages", {sizeX: true});		
+	// grab a reference to the table
+	var table = dialogue.children().last().children().last();
+	// make sure its empty
+	table.children().remove();
+	
+	// change the default class
+	table.parent().removeClass("dialogueTable").addClass("propertiesPanelTable");
+	
+	// initialise the content according to the type object if need be
+	if (!propertyObject.logicMessages) propertyObject.logicMessages = [];
+	// get the messages
+	var logicMessages = propertyObject.logicMessages;
+	// if content is a string
+	if ($.type(logicMessages) === "string") {
+		// parse the JSON string back into proper objects
+		logicMessages = JSON.parse(logicMessages);
+		// update the propertyObject
+		propertyObject.logicMessages = logicMessages;
+	}
+	
+	// assume no cell text
+	var cellText = "";
+		
+	// loop conditons
+	for (var i in propertyObject.logicMessages) {		
+		// get the message
+		var message = propertyObject.logicMessages[i];
+		// give it an id for the dialogues
+		message.id = propertyObject.id + "message_" + i;
+		// add to cell text
+		cellText += message.text;
+		// add a trailing comma if not last one
+		if (i < propertyObject.logicMessages.length - 1) cellText += ", ";
+		
+		// add the condition row
+		table.append("<tr data-index='" + i + "'><td style='width:60px;'>Conditions</td><td></td><td style='min-width:45px'>" +
+					"<div class='iconsPanel'>" +
+					"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
+					"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div>" +
+					"</div></td></tr>");
+		// get the conditions cell
+		var conditionsCell = table.find("tr").last().children(":nth-child(2)");
+		// add a dialogue id attribute
+		conditionsCell.attr("data-dialogueId", cell.attr("data-dialogueId") + "conditions_" + i);
+		// add a logic conditions property for the conditions cell
+		Property_logicConditions(conditionsCell, message, {key:"conditions"}, details);
+		// add the message row and cell - listener is below
+		table.append("<tr><td style='width:60px;'>Message</td><td>" + message.text + "</td></tr>");
+		// get the text cell
+		var textCell = table.find("td").last();
+		// add a dialogue id attribute
+		textCell.attr("data-dialogueId", cell.attr("data-dialogueId") + "text_" + i);
+		// add a logic conditions property for the conditions cell
+		Property_bigtext(textCell, message, {key:"text"}, details);
+		/*
+		// add the type row and cell
+		table.append("<tr><td style='width:60px;'>Type</td><td>" + message.type + "</td></tr>");
+		// add a click listener to change the type
+		table.find("td").last().click({message: message}, function(ev){
+			// get the cell
+			var typeCell = $(this);
+			// check value
+			if (typeCell.text() == "Pass") {
+				// set text
+				typeCell.text("Fail");
+				// update value
+				ev.data.message.type = "Fail";
+			} else {
+				// set text
+				typeCell.text("Pass");
+				// update value
+				ev.data.message.type = "Pass";
+			}
+		});
+		*/
+	}
+	
+	// set cell text if not
+	if (!cellText) cellText = "Click to add..."
+	// update cell text
+	cell.text(cellText);
+		
+	// add reorder listeners
+	addReorder(propertyObject.logicMessages, table.find("div.reorder"), function() { 
+		Property_validationLogic(cell, propertyObject, property, details);
+	});
+	
+	// get the delete images
+	var fieldDelete = table.find("div.delete");
+	// add a listener
+	addListener( fieldDelete.click( {parameters: propertyObject.logicMessages}, function(ev) {
+		// get the input
+		var input = $(ev.target);
+		// get its index
+		var i = input.closest("tr").attr("data-index");
+		// remove from parameters
+		ev.data.parameters.splice(i,1);
+		// update the dialogue
+		Property_validationLogic(cell, propertyObject, property, details);
+	}));
+	
+	// have an add row
+	table.append("<tr><td colspan='3'><span class='propertyAction'>add...</span></td></tr>");
+	// get a reference to the add
+	var add = table.find("span.propertyAction").last();
+	// add a listener
+	addListener( add.click( {cell: cell, propertyObject: propertyObject, property: property, details: details}, function(ev) {
+		// add an undo snapshot
+		addUndo();
+		// initialise if required
+		if (!ev.data.propertyObject.logicMessages) ev.data.propertyObject.logicMessages = [];
+		// get the current control id
+		var controlId = _selectedControl.id;
+		// if this is a date
+		
+		// add a blank option with values defaulting to the selected control
+		ev.data.propertyObject.logicMessages.push({text:"Message",conditions:[{operation:"==",value1:{type:"CTL",id:controlId},value2:{type:"CTL",id:controlId}}]});
+		// refresh
+		Property_validationLogic(ev.data.cell, ev.data.propertyObject, ev.data.property, ev.data.details);		
+	}));
+		
 }

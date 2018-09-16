@@ -113,6 +113,8 @@ function showValidation(control) {
 			
 			// retain a reference to the validation object
 			var validation = control.validation;
+			// set the id from the control
+			validation.id = control.id + "validation_";
 			// retrieve the type
 			var type = validation.type;
 			// set the regEx just for good measure (as long as not custom)
@@ -127,7 +129,7 @@ function showValidation(control) {
 			// add the help listener
 			addHelp(control.id + "helpVal",true,true,_validationHelpHtml);
 			// add a type drop down
-			validationTable.append("<tr><td>Type</td><td><select>" + getValidationOptions(type) + "</select></td></tr>");
+			validationTable.append("<tr><td>Type<i id='" + control.id + "helpValType' class='propertyHelp glyph fa hintIcon'></i></td><td><select>" + getValidationOptions(type) + "</select></td></tr>");
 			// get a reference to the type drop down
 			var typeDropDown = validationTable.children().last().children().last().children().last();
 			// add a listener
@@ -140,61 +142,78 @@ function showValidation(control) {
 				_selectedControl.validation.regEx = getRegEx(type); 			
 				// refresh the validation
 				showValidation(_selectedControl);
-				}
-			));		
+			}));	
+			// add the help listener
+			addHelp(control.id + "helpValType",true,true,"Choose how to apply the validation for this control. There are various patterns you can choose from to check the control value, or use logic, or even javascript, for more speicalised validation.");
 			// if the type is not "none"
 			if (type) {
 				switch (type) {
 				case "custom" :
 					// add a javascript box
-					validationTable.append("<tr><td>RegEx</td><td>" + validation.regEx + "</td></tr>");
+					validationTable.append("<tr><td>RegEx<i id='" + control.id + "helpValRegEx' class='propertyHelp glyph fa hintIcon'></i></td><td>" + validation.regEx + "</td></tr>");
 					// get a reference to  the cell
 					var cell = validationTable.find("td").last();
 					// add a bigtext property listener	
 					Property_bigtext(cell, validation, {key: "regEx"});
+					// add the help listener
+					addHelp(control.id + "helpValRegEx",true,true,"Specify your own regular expression to check the value against. Useful for post codes or other non-standard patterns.");
 				break;
 				case "logic" :
 					// add a javascript box
-					validationTable.append("<tr><td>Conditions</td><td></td></tr>");
+					validationTable.append("<tr><td>Messages<i id='" + control.id + "helpValLogic' class='propertyHelp glyph fa hintIcon'></i></td><td></td></tr>");
 					// get a reference to  the cell
 					var cell = validationTable.find("td").last();
-					// add a bigtext property listener	
-					Property_logicConditions(cell, validation, {key: "conditions"});
+					// add a validationLogic property listener	
+					Property_validationLogic(cell, validation, {key: "logicMessages"});
+					// add the help listener
+					addHelp(control.id + "helpValLogic",true,true,"Specify any number of logic conditions and the messages to show should they not be true.");
 				break;
 				case "javascript" :
 					// add a javascript box
-					validationTable.append("<tr><td>JavaScript</td><td></td></tr>");
+					validationTable.append("<tr><td>JavaScript<i id='" + control.id + "helpValJavaScript' class='propertyHelp glyph fa hintIcon'></i></td><td></td></tr>");
 					// get a reference to  the cell
 					var cell = validationTable.find("td").last();
 					// set a helpful default value for the
 					if (!validation.javaScript) validation.javaScript = "// Enter your JavaScript here, return a message if the validation fails. The control value is available through the \"value\" variable, the event is \"ev\" and the control id is \"id\"";
 					// add a bigtext property listener	
 					Property_bigtext(cell, validation, {key: "javaScript"});
+					// add the help listener
+					addHelp(control.id + "helpValJavaScript",true,true,"Write your own JavaScript. Return a message if validation has failed.");
 				break;
 				}
+				
 				// message is in the javascript so no need for it here (can null check there too)
 				if (type != "javascript") {
-					// add a message box
-					validationTable.append("<tr><td>Message</td><td></td></tr>");
-					// get a reference to  the cell
-					var cell = validationTable.children().last().children().last();
-					// add a bigtext property listener	
-					Property_bigtext(cell, validation, {key: "message"});
+					
+					// logic has its own messages
+					if (type != "logic") {
+						// add a message box
+						validationTable.append("<tr><td>Message<i id='" + control.id + "helpValMessage' class='propertyHelp glyph fa hintIcon'></i></td><td></td></tr>");
+						// get a reference to  the cell
+						var cell = validationTable.children().last().children().last();
+						// add a bigtext property listener	
+						Property_bigtext(cell, validation, {key: "message"});
+						// add the help listener
+						addHelp(control.id + "helpValMessage",true,true,"The message to display if the value does not match the pattern in the type property.");
+					}
 					
 					// add a allowNulls checkbox
-					validationTable.append("<tr><td>Pass if no value</td><td></td></tr>");
+					validationTable.append("<tr><td>Pass if no value<i id='" + control.id + "helpValNoValue' class='propertyHelp glyph fa hintIcon'></i></td><td></td></tr>");
 					// get a reference to  the cell
 					cell = validationTable.children().last().children().last();
 					// add a checkbox property listener	
 					Property_checkbox(cell, validation, {key: "allowNulls"});
+					// add the help listener
+					addHelp(control.id + "helpValNoValue",true,true,"If checked, validation will pass if the control has no value.");
 					
 					// add a allowNulls checkbox
-					validationTable.append("<tr><td>Pass if hidden</td><td></td></tr>");
+					validationTable.append("<tr><td>Pass if hidden<i id='" + control.id + "helpValHidden' class='propertyHelp glyph fa hintIcon'></i></td><td></td></tr>");
 					// get a reference to  the cell
 					cell = validationTable.children().last().children().last();
 					// add a checkbox property listener	
 					Property_checkbox(cell, validation, {key: "passHidden"});
-					
+					// add the help listener
+					addHelp(control.id + "helpValHidden",true,true,"If checked, validation will pass if the control is hidden.");
 				}
 				
 			} // type check

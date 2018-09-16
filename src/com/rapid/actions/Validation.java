@@ -37,6 +37,7 @@ import com.rapid.core.Action;
 import com.rapid.core.Application;
 import com.rapid.core.Control;
 import com.rapid.core.Page;
+import com.rapid.core.Validation.LogicMessage;
 import com.rapid.server.RapidHttpServlet;
 import com.rapid.server.RapidRequest;
 
@@ -165,60 +166,65 @@ public class Validation extends Action {
 									case "logic" :
 										// start creating JavaScript
 										String jsLogic = "";
-										// get the logic conditions
-										List<Condition> conditions = controlValidation.getConditions();
-										// if we got some
-										if (conditions != null && conditions.size() > 0) {
-											// open the null logic
-											jsLogic += "if (";
-											// if nulls not allowed
-											if (!controlValidation.getAllowNulls()) {
-												// list of arguments
-												List<String> arguments = new ArrayList<String>();
-												// loop the conditions
-												for (Condition condition : conditions) {
-													// check arg1 is a control
-													if ("CTL".equals(condition.getValue1().getType())) {
-														// get arg1
-														String argument = condition.getValue1().getArgument(rapidRequest, application, page);
-														// add the argument if we don't have it already
-														if (!arguments.contains(argument)) arguments.add(argument);
+										// get the messages
+										List<LogicMessage> logicMessages = controlValidation.getLogicMessages();
+										// loop them
+										for (LogicMessage logicMessage : logicMessages) {
+											// get the logic conditions
+											List<Condition> conditions = logicMessage.getConditions();
+											// if we got some
+											if (conditions != null && conditions.size() > 0) {
+												// open the null logic
+												jsLogic += "if (";
+												// if nulls not allowed
+												if (!controlValidation.getAllowNulls()) {
+													// list of arguments
+													List<String> arguments = new ArrayList<String>();
+													// loop the conditions
+													for (Condition condition : conditions) {
+														// check arg1 is a control
+														if ("CTL".equals(condition.getValue1().getType())) {
+															// get arg1
+															String argument = condition.getValue1().getArgument(rapidRequest, application, page);
+															// add the argument if we don't have it already
+															if (!arguments.contains(argument)) arguments.add(argument);
+														}
+														// check arg 2 is a control
+														if ("CTL".equals(condition.getValue2().getType())) {
+															// get arg2
+															String argument = condition.getValue2().getArgument(rapidRequest, application, page);
+															// add the argument if we don't have it already
+															if (!arguments.contains(argument)) arguments.add(argument);
+														}
 													}
-													// check arg 2 is a control
-													if ("CTL".equals(condition.getValue2().getType())) {
-														// get arg2
-														String argument = condition.getValue2().getArgument(rapidRequest, application, page);
-														// add the argument if we don't have it already
-														if (!arguments.contains(argument)) arguments.add(argument);
+													// loop the arguments
+													for (String argument : arguments) {
+														// add the null check
+														jsLogic += argument + " == null || ";
 													}
 												}
-												// loop the arguments
-												for (String argument : arguments) {
-													// add the null check
-													jsLogic += argument + " == null || ";
+												// open the condition logic
+												jsLogic += "!(";
+												// loop them
+												for (int i = 0; i < conditions.size(); i++) {
+													// add the condition
+													jsLogic += conditions.get(i).getJavaScript(rapidRequest, application, page);
+													// if there is going to be another condition
+													if (i < conditions.size() - 1) {
+														// add the separator
+														if ("or".equals(logicMessage.getConditionsType())) {
+															jsLogic += " || ";
+														} else {
+															jsLogic += " && ";
+														}
+													}
 												}
+												// close the null logic and condition logic
+												jsLogic += ")) { " + "return '" + logicMessage.getText().replaceAll("'", "''") + "'; }\n";
+											} else {
+												// no conditions so just send the message
+												jsLogic += "return '" + logicMessage.getText().replaceAll("'", "''") + "';\n";
 											}
-											// open the inverse logic
-											jsLogic += "!(";
-											// loop them
-											for (int i = 0; i < conditions.size(); i++) {
-												// add the condition
-												jsLogic += conditions.get(i).getJavaScript(rapidRequest, application, page);
-												// if there is going to be another condition
-												if (i < conditions.size() - 1) {
-													// add the separator
-													if ("or".equals(controlValidation.getConditionsType())) {
-														jsLogic += " || ";
-													} else {
-														jsLogic += " && ";
-													}
-												}
-											}
-											// close the null logic and inverse logic
-											jsLogic += ")) { " + "return '" + controlValidation.getMessage().replaceAll("'", "''") + "' }";
-										} else {
-											// no conditions so just send the message
-											jsLogic = "return '" + controlValidation.getMessage().replaceAll("'", "''") + "'";
 										}
 										// add the JavaScript
 										jsonValidation.put("javaScript",jsLogic);
