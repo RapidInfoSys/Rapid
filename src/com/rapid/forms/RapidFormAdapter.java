@@ -169,8 +169,24 @@ public class RapidFormAdapter extends FormAdapter {
 			} else {
 				// get the application from the request
 				Application application = rapidRequest.getApplication();
-				// form found we're good
-				return new UserFormDetails(application.getId(), application.getVersion(), formId, null, null, false, null);
+				// it's important we set the max page to avoid a blank summary - and getting sent back to the start
+				String maxPageId = null;
+				// assume max page so far is 0
+				int maxPagePos = 0;
+				// loop the saved page controls
+				for (String pageId : userPageControlValues.keySet()) {
+					// get this pos
+					int pagePos = application.getPageOrders().get(pageId);
+					// check the order of this page against the max page so far
+					if (pagePos > maxPagePos) {
+						// remember this page id
+						maxPageId = pageId;
+						// remember the max position
+						maxPagePos = pagePos;
+					}
+				}
+				// form found we're good - make a new details with null password but maxPageId
+				return new UserFormDetails(application.getId(), application.getVersion(), formId, null, maxPageId, false, null);
 			}
 		}
 	}
