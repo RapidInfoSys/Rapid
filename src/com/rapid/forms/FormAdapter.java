@@ -75,7 +75,6 @@ import com.rapid.core.Page;
 import com.rapid.core.Pages;
 import com.rapid.core.Pages.PageHeader;
 import com.rapid.core.Pages.PageHeaders;
-import com.rapid.forms.FormAdapter.FormControlValue;
 import com.rapid.core.Theme;
 import com.rapid.core.Validation;
 import com.rapid.security.SecurityAdapter;
@@ -500,7 +499,7 @@ public abstract class FormAdapter {
 
 	// a page control's value in the form summary
 	protected String getSummaryControlValueHtml(RapidRequest rapidRequest, Application application, Page page, FormControlValue controlValue, boolean email) {
-		
+
 		if (controlValue.getHidden()) {
 			return "";
 		} else {
@@ -516,7 +515,7 @@ public abstract class FormAdapter {
 					if ("grid".equals(control.getType())) {
 						// grid summary html is created specially
 						return getSummaryGridHtml(application, control, controlValue);
-						
+
 						//return "<span class='formSummaryControl'>" + label + " :</br>" + controlValue.getValue() + "</span><br/>\n";
 					} else {
 						// otherwise use the conventional way of getting the html and value
@@ -527,20 +526,20 @@ public abstract class FormAdapter {
 			}
 		}
 	}
-	
+
 	protected String getSummaryGridHtml(Application application, Control control, FormControlValue controlValue) {
-		
+
 		//Start of the summary grid table
-		String gridTable = "<span class='formSummaryControl'>" + Html.escape(control.getLabel()) + " : </br>\n" 
+		String gridTable = "<span class='formSummaryControl'>" + Html.escape(control.getLabel()) + " : </br>\n"
 						 + "<table><tr>\n";
 		try {
 			JSONObject jsonData = new JSONObject(controlValue.getValue());
-			
+
 			//get the fields jsonArray
 			JSONArray fields = jsonData.getJSONArray("fields");
 			//get all the properties for all the fields
 			JSONArray columnsProperties = new JSONArray(control.getProperty("columns"));
-			
+
 			// a list to store the visible fields
 			List<String> visibleFields = new ArrayList<String>();
 
@@ -548,63 +547,63 @@ public abstract class FormAdapter {
 			for(int i = 0; i < fields.length(); i++){
 				//a field
 				String field = fields.getString(i);
-				//check if we have 'columns' key 
+				//check if we have 'columns' key
 				if (columnsProperties != null) {
 					//loop through the columnsProperties
 					for(int c = 0; c < columnsProperties.length(); c++){
 						//for each column, get its properties
 						JSONObject column_properties = columnsProperties.getJSONObject(c);
-						
+
 						//find the properties for 'this' field and make sure its visible
 						if(field.equals(column_properties.getString("field")) && column_properties.getBoolean("visible")){
-							//create the header tag for this field 
+							//create the header tag for this field
 							gridTable += "<th>" + column_properties.getString("title") + "</th>\n";
 							//store the visible field in a list
 							visibleFields.add(field);
 							break;
 						}
-						
+
 					}// end of inner loop
-					 
+
 				}
-	
+
 			}// end of outer loop
-			
+
 			//close the tr tag
 			gridTable += "</tr>\n";
-				
+
 			//now loop through the rows, to populate the table data
 			JSONArray rows = jsonData.getJSONArray("rows");
 			for(int i = 0; i < rows.length(); i++){
 				//open a new row tag
 				gridTable += "<tr>\n";
 				JSONArray row = rows.getJSONArray(i);
-				
+
 				//for each row, loop through the row cells
 				for(int j = 0; j < row.length(); j++){
 					String field = fields.getString(j);
-				
+
 					//if this field is a visible field
 					if(visibleFields.contains(field)){
 						//get and create its column data table
 						gridTable += "<td>" + row.getString(j) + "</td>\n";
 					}
-					
+
 				}//end of inner loop
-					
+
 				gridTable += "</tr>\n";
-				
+
 			}// end of outer loop
-			
+
 			//close the table tag
 			gridTable += "</table></span><br/>\n";
-	
-			
+
+
 		} catch (JSONException ex) {
 			_logger.error("Error creating the grid summary data", ex);
 			return "Error creating the grid summary data : " + ex.getMessage();
 		}
-		
+
 		//return the html table
 		return gridTable;
 	}
@@ -899,16 +898,16 @@ public abstract class FormAdapter {
 				Strings.saveString(getFormXML(rapidRequest, formId), formFile);
 
 			} else if ("pdf".equals(fileType)) {
-				
+
 				// open a stream for the file we're writing to
 				OutputStream outputStream = new FileOutputStream(formFile);
-				
+
 				// write the file
 				writeFormPDF(rapidRequest, outputStream, formId, false);
-				
+
 				// close the stream
 				outputStream.close();
-				
+
 
 			}  // file type check local save
 
@@ -1443,10 +1442,10 @@ public abstract class FormAdapter {
 
 				// add the form summary attachment as the first in the list
 				attachmentList.add(0,  attachment);
-				
+
 				// create an array from the list
-				Attachment[] attachmentArray = attachmentList.toArray(new Attachment[attachmentList.size()]);				
-				
+				Attachment[] attachmentArray = attachmentList.toArray(new Attachment[attachmentList.size()]);
+
 				// send the email
 				Email.send(application.getFormEmailFrom(), application.getFormEmailTo(), getEmailSubject(rapidRequest, formId), "HTML preview not available", writer.toString(), attachmentArray);
 			}
@@ -1483,7 +1482,7 @@ public abstract class FormAdapter {
 
 	private List<Attachment> getFileAttachments(RapidRequest rapidRequest, List<String> fileNames) {
 		List<Attachment> attachmentList = new ArrayList<>();
-		
+
 		String path = (rapidRequest.getRapidServlet().isPublic() ? "WEB-INF/" : "") + "uploads/"+_application.getId();
 		path = getServletContext().getRealPath(path);
 
@@ -1492,13 +1491,13 @@ public abstract class FormAdapter {
 			if(file.exists())
 				attachmentList.add(new Attachment(fileName, new FileDataSource(file)));
 		}
-		
+
 		return attachmentList;
 	}
-	
+
 	// returns all values of all the controls of the specified type
 	private List<String> getAllControlValues(RapidRequest rapidRequest, String formId, String controlType) throws Exception {
-		
+
 		// this is where we will put the result
 		List<String> valueList = new ArrayList<>();
 
@@ -1515,14 +1514,14 @@ public abstract class FormAdapter {
 
 				// get the pages
 				Page page = _application.getPages().getPage(servletContext, pageHeader.getId());
-				
+
 				// get the controls from each page
 				List<Control> pageControls = page.getAllControls();
-				
+
 				// go through all of the controls on the page
 				for (Control control : pageControls) {
 					for (FormControlValue controlValue : pageControlValues) {
-						
+
 						// if the control is of the correct type then add its values to the list
 						if(controlType.equals(control.getType()) && control.getId().equals(controlValue.getId())) {
 							String controlValueString = controlValue.getValue();
@@ -1540,7 +1539,7 @@ public abstract class FormAdapter {
 		// a string list of all the control values
 		return valueList;
 	}
-	
+
 	// this writes the form pdf to an Output stream
 	protected static final float FONT_SIZE_HEADER1 = 14;
 	protected static final float FONT_SIZE_HEADER2 = 12;
@@ -1679,7 +1678,7 @@ public abstract class FormAdapter {
 						for (Control control : pageControls) {
 
 							if (control.getLabel() != null) {
-								
+
 								// loop the page control values
 								for (FormControlValue controlValue : pageControlValues) {
 
@@ -1695,18 +1694,18 @@ public abstract class FormAdapter {
 											String value = controlValue.getValue();
 											// don't show any nulls
 											if (value != null) {
-												
+
 												// check for grid control
 												if ("grid".equals(type)) {
-													
+
 													// add the label
 													controlValues.add(control.getLabel() + " : ");
-													
+
 													// hold the detail for later
 													controlValues.add("[[grid," + control.getId() + "]]:" + value);
 
 												} else {
-												
+
 													// check for json
 													if (value.startsWith("{") && value.endsWith("}")) {
 														try {
@@ -1714,7 +1713,7 @@ public abstract class FormAdapter {
 															value = jsonValue.optString("text");
 														} catch (Exception ex) {}
 													}
-	
+
 													// check for checkboxes
 													if ("checkbox".equals(type)) {
 														// just show the label
@@ -1723,7 +1722,7 @@ public abstract class FormAdapter {
 														// show the label and value
 														value = control.getLabel() + " : " + control.getCodeText(_application, value);
 													}
-	
+
 													// clean the value to only contain printable characters
 													StringBuilder sb = new StringBuilder();
 													for (int i = 0; i < value.length(); i++) {
@@ -1731,32 +1730,32 @@ public abstract class FormAdapter {
 													}
 													// update value to only printable characters
 													value = sb.toString();
-	
+
 													// get the width required to print the value
 													float vw = font.getStringWidth(value) / 1000 * FONT_SIZE;
-	
+
 													// if this fits into our allowed width
 													if (vw <= w) {
-	
+
 														// add this value
 														controlValues.add(value);
 														// increment the height by one line
 														sh += fh + MARGIN_SECTION_BOTTOM;
-	
+
 													} else {
-	
+
 														// split the value into parts
 														String[] parts = value.split(" ");
 														// start at the beginning
 														int pos = 0;
-	
+
 														// while we have more parts
 														while (pos < parts.length) {
-	
+
 															String line = parts[pos];
 															pos ++;
 															vw = 0;
-	
+
 															// while we haven't crossed the end of the available width yet
 															while (vw < w) {
 																if (pos < parts.length) {
@@ -1774,16 +1773,16 @@ public abstract class FormAdapter {
 																if (pos >= parts.length) break;
 																vw = font.getStringWidth(line + parts[pos]) / 1000 * FONT_SIZE;
 															}
-	
+
 															// add this line
 															controlValues.add(line);
 															// increment the height by one line and add
 															sh += fh + MARGIN_TEXT_BOTTOM;
-	
+
 														} // parts left
-	
+
 													} // width fit
-												
+
 												} // control type / grid check
 
 											} // value null check
@@ -1806,7 +1805,7 @@ public abstract class FormAdapter {
 
 						// if there are some values in the string builder
 						if (controlValues.size() > 0) {
-							
+
 							// add the header height
 							sh += getFontHeight(fontBold, FONT_SIZE_HEADER2) + MARGIN_HEADER_BOTTOM;
 
@@ -1837,33 +1836,33 @@ public abstract class FormAdapter {
 								y += getFontHeight(fontBold, FONT_SIZE_HEADER2) + MARGIN_HEADER_BOTTOM;
 
 								for (String value : controlValues) {
-									
+
 									// look for { and }, must be a grid
 									if (value.startsWith("[[grid,") && value.endsWith("}")) {
-				
+
 										//[[grid,P3_C9_]]:{...
 										String controlId = value.substring(7, value.indexOf("]]:"));
-										
+
 										value = value.substring(value.indexOf("]]:") + 3);
-										
+
 										JSONObject jsonData = new JSONObject(value);
 										System.out.println(jsonData.toString());
-										
+
 										Control control = application.getControl(rapidRequest.getRapidServlet().getServletContext(), controlId);
-										
+
 										//get the fields
 										JSONArray fields = jsonData.getJSONArray("fields");
 										//get the rows
 										JSONArray rows = jsonData.getJSONArray("rows");
 										//get all the properties for all the fields
 										JSONArray columnsProperties = new JSONArray(control.getProperty("columns"));
-										
+
 										//get a list of the visible fields
 										List<String> visibleFields = new ArrayList<String>();
 										for(int i = 0; i < fields.length(); i++){
 											//a field
 											String field = fields.getString(i);
-											
+
 											if(columnsProperties != null){
 												//loop through the columnsProperties
 												for(int c = 0; c < columnsProperties.length(); c++){
@@ -1878,7 +1877,7 @@ public abstract class FormAdapter {
 												}
 											}
 										}
-										
+
 										float newXOffset = MARGIN_LEFT;
 										float initialYOffset = y;
 										for(int i = 0; i < fields.length(); i++){
@@ -1889,7 +1888,7 @@ public abstract class FormAdapter {
 												System.out.println("---------------------");
 												System.out.println(field);
 												System.out.println("---------------------");
-												
+
 												//keep a track of the maxWidth - assume maxWidth is the field
 												float maxWidth = font.getStringWidth(field) / 1000 * FONT_SIZE;
 												//System.out.println("width: " + maxWidth);
@@ -1900,38 +1899,38 @@ public abstract class FormAdapter {
 												cs.endText();
 												y += getFontHeight(font, FONT_SIZE) + MARGIN_TEXT_BOTTOM;
 												for(int j = 0; j < rows.length(); j++){
-													
+
 														JSONArray row = rows.getJSONArray(j);
 														String columnCell = row.getString(i);
 														System.out.println(columnCell);
-														
+
 														float cellWidth = font.getStringWidth(columnCell) / 1000 * FONT_SIZE;
 														//System.out.println("width: " + cellWidth);
-														
+
 														if(cellWidth > maxWidth){
 															maxWidth = cellWidth;
 														}
-														
+
 														cs.beginText();
 														cs.setFont(font, FONT_SIZE);
 														//newXOffset += maxWidth;
 														cs.newLineAtOffset(newXOffset, h - y);
 														cs.showText(columnCell);
 														cs.endText();
-														
+
 														y += getFontHeight(font, FONT_SIZE) + MARGIN_TEXT_BOTTOM;
 												}// end of inner loop
-												
+
 												//set the x position for the new column
 												newXOffset += maxWidth + MARGIN_GRID_COLUMN;
 												//reset the y position for the new column
 												y = initialYOffset;
 												//System.out.println("Max width: " + maxWidth);
-											
+
 											}
-											
+
 										}// end of outer loop
-										
+
 									} else {
 
 										cs.beginText();
@@ -1939,9 +1938,9 @@ public abstract class FormAdapter {
 										cs.newLineAtOffset(MARGIN_LEFT, h - y);
 										cs.showText(value);
 										cs.endText();
-	
+
 										y += getFontHeight(font, FONT_SIZE) + MARGIN_TEXT_BOTTOM;
-										
+
 									}
 
 								}
@@ -2022,15 +2021,15 @@ public abstract class FormAdapter {
 
 	}
 
-	// used when saving forms
+	// called by the form action when saving the form
 	public synchronized boolean saveForm(RapidRequest rapidRequest, String email, String password) throws Exception {
 
-		// assume we have not saved the form
+		// assume we are unable to save the form
 		return false;
 
 	}
 
-	// used when resuming forms
+	// called by the form action when resuming forms
 	public synchronized boolean resumeForm(RapidRequest rapidRequest, String formId, String password) throws Exception {
 
 		// assume we have not saved the form

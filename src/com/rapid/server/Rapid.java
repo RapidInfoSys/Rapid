@@ -434,7 +434,8 @@ public class Rapid extends RapidHttpServlet {
 									}
 									// redirect !
 									response.sendRedirect(url);
-								}
+
+								} // form details and version check
 
 								// if this is a form resume
 								if ("resume".equals(actionName)) {
@@ -452,68 +453,6 @@ public class Rapid extends RapidHttpServlet {
 									// get form id from the adapter
 									formDetails = formAdapter.getUserFormDetails(rapidRequest);
 								}
-
-								// if there isn't a form id, or we want to show the summary don't check the pages
-								if (formDetails == null || showSummary) {
-
-									// set the page check to false
-									pageCheck = false;
-
-								} else if (page != null) {
-
-									// check that we have progressed far enough in the form to view this page, or we are a designer
-									if (formAdapter.checkMaxPage(rapidRequest, formDetails, page.getId()) || security.checkUserRole(rapidRequest, DESIGN_ROLE)) {
-
-										// only if this is not a dialogue
-										if (!"dialogue".equals(actionName)) {
-
-											// get all of the pages
-											PageHeaders pageHeaders = app.getPages().getSortedPages();
-											// get this page position
-											int pageIndex = pageHeaders.indexOf(page.getId());
-											// check the page visibility
-											while (!page.isVisible(rapidRequest, app, formDetails)) {
-												// if we're here the visibility check on the current page failed so increment the index
-												pageIndex ++;
-												// if there are no more pages go to the summary
-												if (pageIndex > pageHeaders.size() - 1) {
-													// fail the check to print a page
-													pageCheck = false;
-													// but set the the show summary to true
-													showSummary = true;
-													// we're done
-													break;
-												} else {
-													// select the next page to check the visibility of
-													page = app.getPages().getPage(getServletContext(), pageHeaders.get(pageIndex).getId());
-													// if not submitted set that we're allowed to this page
-													if (!formDetails.getSubmitted()) formAdapter.setMaxPage(rapidRequest, formDetails, page.getId());
-												} // pages remaining check
-											} // page visible loop
-
-											// if this page has session values
-											if (page.getSessionVariables() != null) {
-												// loop them
-												for (String variable : page.getSessionVariables()) {
-													// look for session values
-													String value = (String) rapidRequest.getSessionAttribute(variable);
-													// if we got one update it's value
-													if (value != null) formAdapter.setFormPageVariableValue(rapidRequest, formDetails.getId(), variable, value);
-												}
-											}
-
-										} // dialogue check
-
-									} else {
-
-										// go back to the start
-										pageCheck = false;
-										//log
-										logger.debug("Not allowed on page " + page.getId() + " yet!");
-
-									} // page max check
-
-								} // form id check
 
 							} // form adapter check
 
@@ -1318,18 +1257,8 @@ public class Rapid extends RapidHttpServlet {
 												// if this is a request for the save page
 												if (requestSave) {
 
-													// loop the pages
-													for (PageHeader pageHeader : pageHeaders) {
-														// get this page
-														Page savePage = app.getPages().getPage(pageHeader.getId());
-														// if it the save page
-														if (savePage.getFormPageType() == Page.FORM_PAGE_TYPE_SAVE) {
-															// this is the page we want to go to
-															page = savePage;
-															// we're done
-															break;
-														}
-													}
+													// get the save page
+													page = app.getPages().getPageByFormType(Page.FORM_PAGE_TYPE_SAVE);
 
 												} else {
 
