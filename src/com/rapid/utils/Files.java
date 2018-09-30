@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2015 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -8,9 +8,9 @@ gareth.edwards@rapid-is.co.uk
 This file is part of the Rapid Application Platform
 
 RapidSOA is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as 
-published by the Free Software Foundation, either version 3 of the 
-License, or (at your option) any later version. The terms require you 
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version. The terms require you
 to include the original copyright, and the license notice in all redistributions.
 
 This program is distributed in the hope that it will be useful,
@@ -46,40 +46,40 @@ public class Files {
 				for (int i = 0; i < files.length; i ++) {
 					deleteRecurring(files[i]);
 				}
-			}			
-		} 
-		// if we're here we've arrived at a physical file, return its delete	
-		return file.delete();					
+			}
+		}
+		// if we're here we've arrived at a physical file, return its delete
+		return file.delete();
 	}
-	
+
 	// byte copies one file to another
 	public static void copyFile(File src, File dest) throws IOException {
-		
+
 		FileInputStream fis = new FileInputStream(src.getPath());
 		FileOutputStream fos = new FileOutputStream(dest.getPath());
-			 				
+
 		int size = 1024;
 	    byte data[] = new byte[size];
 	    int count;
-	    
+
 	    BufferedOutputStream bos = new BufferedOutputStream(fos, size);
 	    while ((count = fis.read(data, 0, size)) != -1) {
 	       bos.write(data, 0, count);
 	    }
-	    
+
 	    bos.flush();
 	    bos.close();
 	    fos.close();
 	    fis.close();
-		
+
 	}
-	
+
 	// copies the contents of one folder to another recursively, allowing for a list of files/folder to ignore by name
 	public static void copyFolder(File src, File dest, List<String> ignoreFiles) throws IOException {
-		
+
 		// whether to ignore
 		boolean ignore = false;
-		
+
 		// check if we have some ignore files
 		if (ignoreFiles != null) {
 			// loop them and compare
@@ -92,12 +92,12 @@ public class Files {
         		}
         	}
 		}
-		
+
 		// not ignoring so proceed
 		if (!ignore) {
-		
+
 			// if source is directory
-	    	if (src.isDirectory()){ 
+	    	if (src.isDirectory()){
 	    		// if directory not exists, create it
 	    		if (!dest.exists()) dest.mkdirs();
 	    		// list all the directory contents
@@ -116,20 +116,20 @@ public class Files {
 	    		}
 	    	} else {
 	    		// not a directory so only copy the file to the destination
-	    		copyFile(src, dest);    		
+	    		copyFile(src, dest);
 	    	}
-	    	
+
 		}
-    	
+
     }
-	
+
 	// an override to the above without the list of folder/file ignore names
-	public static void copyFolder(File src, File dest) throws IOException {		
-		copyFolder(src, dest, null);		
+	public static void copyFolder(File src, File dest) throws IOException {
+		copyFolder(src, dest, null);
 	}
-	
+
 	public static String safeName(String name) {
-		
+
 		// start with an empty string
 		String safeName = "";
 		// loop all the characters in the input and add back just those that are "safe"
@@ -141,15 +141,17 @@ public class Files {
 				safeName += c;
 			}
 		}
+		// if length > 255 (max length on Linx, Windows is 260 so we go for the shortest - should never need it) chop it
+		if (safeName.length() > 255) safeName = safeName.substring(0, 260);
 		// send back the string we just made of the safe characters
 		return safeName;
-		
+
 	}
-	
+
 	// this function is called recurringly in the tree walk
 	public static long getSize(File file) {
 		// instantiate the return value
-		long size = 0;		
+		long size = 0;
 		// if the file is a directory
 		if (file.isDirectory()) {
 			// get the file
@@ -158,18 +160,18 @@ public class Files {
 			if (childFiles != null) {
 				// loop the contents constantly incrimenting the size
 				for (File childFile : childFiles) {
-					size += getSize(childFile);			
+					size += getSize(childFile);
 				}
 			}
-		} else {			
+		} else {
 			// just return the size
-			return file.length();			
-		}	
+			return file.length();
+		}
 		// return the size of this branch
 		return size;
 	}
-	
-	// 
+
+	//
 	public static String getSizeName(File file) {
 		// assume there is no file
 		String sizeName = "unknown";
@@ -195,7 +197,7 @@ public class Files {
 		// return
 		return sizeName;
 	}
-	
+
 	// this function returns the path in a string, removing the file
 	public static String getPath(String fullFilePath) {
 		String path = "";
