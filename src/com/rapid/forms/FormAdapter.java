@@ -215,7 +215,7 @@ public abstract class FormAdapter {
 
 		@Override
 		public String toString() {
-			return _id + "  = " + _value + (_hidden ? " (hidden)"  : "");
+			return _id + "=" + _value + (_hidden ? " (hidden)"  : "");
 		}
 
 	}
@@ -1651,7 +1651,7 @@ public abstract class FormAdapter {
 			for (PageHeader pageHeader : _application.getPages().getSortedPages()) {
 
 				// get any page control values
-				FormPageControlValues pageControlValues = _application.getFormAdapter().getFormPageControlValues(rapidRequest, formId, pageHeader.getId());
+				FormPageControlValues pageControlValues = getFormPageControlValues(rapidRequest, formId, pageHeader.getId());
 
 				// if non null
 				if (pageControlValues != null) {
@@ -1884,10 +1884,6 @@ public abstract class FormAdapter {
 											//a field
 											String field = fields.getString(i);
 											if(visibleFields.contains(field)){
-
-												System.out.println("---------------------");
-												System.out.println(field);
-												System.out.println("---------------------");
 
 												//keep a track of the maxWidth - assume maxWidth is the field
 												float maxWidth = font.getStringWidth(field) / 1000 * FONT_SIZE;
@@ -2158,6 +2154,8 @@ public abstract class FormAdapter {
 									Control control = page.getControl(id);
 									// check we found a control
 									if (control == null) {
+										// if this is the hidden values
+										if (id.endsWith("_hiddenControls")) hiddenControls = value.split(",");
 										// if this is the recapcha store it
 										if ("g-recaptcha-response".equals(id)) recaptcha = value;
 										// if this is the csrfToken check it
@@ -2228,29 +2226,25 @@ public abstract class FormAdapter {
 											}
 										}
 
+										// if we have hidden controls to check
+										if (hiddenControls != null) {
+											// loop the hidden controls
+											for (String hiddenControl : hiddenControls) {
+												// if there's a match
+												if (id.equals(hiddenControl)) {
+													// retain as hidden
+													hidden = true;
+													// we're done
+													break;
+												} // this is a hidden control
+											} // loop the hidden controls
+										} // got hidden controls to check
+										// add name value pair
+										pageControlValues.add(id, value, hidden);
+
 									} // found control in page
 								} // null check
-								// if this is the hidden values
-								if (id.endsWith("_hiddenControls") && value != null) {
-									// retain the hidden values
-									hiddenControls = value.split(",");
-								} else	{
-									// if we have hidden controls to check
-									if (hiddenControls != null) {
-										// loop the hidden controls
-										for (String hiddenControl : hiddenControls) {
-											// if there's a match
-											if (id.equals(hiddenControl)) {
-												// retain as hidden
-												hidden = true;
-												// we're done
-												break;
-											} // this is a hidden control
-										} // loop the hidden controls
-									} // got hidden controls to check
-									// add name value pair
-									pageControlValues.add(id, value, hidden);
-								} // ends with hidden controls
+
 							} // last value
 						}	// id .length > 0
 					} // id != null

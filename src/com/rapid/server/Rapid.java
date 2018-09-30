@@ -525,8 +525,12 @@ public class Rapid extends RapidHttpServlet {
 
 									// if we have a form adapter and form details
 									if (formAdapter != null && formDetails != null) {
+										// now the page has been printed invalidate the form if this was a submission page
+										if (page.getFormPageType() == Page.FORM_PAGE_TYPE_SUBMITTED)
+											formAdapter.setUserFormDetails(rapidRequest, null);
 										// if this is an error page we have just shown the error, remove the error
-										if (page.getFormPageType() == Page.FORM_PAGE_TYPE_ERROR) formDetails.setErrorMessage(null);
+										if (page.getFormPageType() == Page.FORM_PAGE_TYPE_ERROR)
+											formDetails.setErrorMessage(null);
 									}
 
 								} else {

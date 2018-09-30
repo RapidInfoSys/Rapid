@@ -1926,9 +1926,6 @@ public class Page {
 						// write the form id into the page - not necessary for dialogues
 			    		if (designerLink) writer.write("var _formId = '" + formId + "';\n\n");
 
-			    		// now the page has been printed invalidate the form if this was a submission page
-						if (_formPageType ==FORM_PAGE_TYPE_SUBMITTED) formAdapter.setUserFormDetails(rapidRequest, null);
-
 					} catch (Exception ex) {
 						// log the error
 						rapidServlet.getLogger().error("Error create page form values", ex);

@@ -55,7 +55,7 @@ public class RapidFormAdapter extends FormAdapter {
 	// class methods
 
 	// the RapidFormAdapter holds all values in the user session so this method just gets them from there
-	protected Map<String,FormPageControlValues> getUserFormPageControlValues(RapidRequest rapidRequest) throws Exception {
+	protected Map<String,FormPageControlValues> getUserFormPageControlValues(RapidRequest rapidRequest, String formId) throws Exception {
 		// get the servlet context
 		ServletContext servletContext = rapidRequest.getRapidServlet().getServletContext();
 		// get all app page control values from the context
@@ -67,8 +67,6 @@ public class RapidFormAdapter extends FormAdapter {
 			// add to session
 			servletContext.setAttribute(USER_FORM_PAGE_CONTROL_VALUES, userAppPageControlValues);
 		}
-		// get the form id
-		String formId = getFormId(rapidRequest);
 		// the page controls for specified app
 		Map<String,FormPageControlValues> userPageControlValues = userAppPageControlValues.get(formId);
 		// if null, instantiate
@@ -222,7 +220,7 @@ public class RapidFormAdapter extends FormAdapter {
 
 	// return form page variables
 	@Override
-	public Map<String, String> getFormPageVariableValues( 	RapidRequest rapidRequest, String formId) throws Exception {
+	public Map<String, String> getFormPageVariableValues(RapidRequest rapidRequest, String formId) throws Exception {
 		// use our reusable function
 		return getUserFormPageVariableValues(rapidRequest, formId);
 	}
@@ -231,14 +229,14 @@ public class RapidFormAdapter extends FormAdapter {
 	@Override
 	public FormPageControlValues getFormPageControlValues(RapidRequest rapidRequest, String formId, String pageId) throws Exception	{
 		// retrieve
-		return getUserFormPageControlValues(rapidRequest).get(pageId);
+		return getUserFormPageControlValues(rapidRequest, formId).get(pageId);
 	}
 
 	// uses our user session method to set the form page control values (for hidden pages pageControlValues will be null)
 	@Override
 	public void setFormPageControlValues(RapidRequest rapidRequest, String formId, String pageId, FormPageControlValues pageControlValues) throws Exception {
 		// store them
-		getUserFormPageControlValues(rapidRequest).put(pageId, pageControlValues);
+		getUserFormPageControlValues(rapidRequest, formId).put(pageId, pageControlValues);
 	}
 
 	// uses our user session method to get a control value
@@ -251,7 +249,7 @@ public class RapidFormAdapter extends FormAdapter {
 			// get the page id from the first part of the id
 			String pageId = controlId.substring(0, controlIdPos);
 			// get all user form page values
-			Map<String,FormPageControlValues> userFormPageControlValues = getUserFormPageControlValues(rapidRequest);
+			Map<String,FormPageControlValues> userFormPageControlValues = getUserFormPageControlValues(rapidRequest, formId);
 			// if there are control values stored
 			if (userFormPageControlValues.size() > 0) {
 				// look for values from our page
