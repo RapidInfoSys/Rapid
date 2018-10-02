@@ -142,6 +142,7 @@ public class Http {
 		return request(true, url, headers, body);
 	}
 
+	// return the base url of the server as seen by the client, from the request
 	public static String getBaseUrl(HttpServletRequest request) {
 	    String scheme = request.getScheme() + "://";
 	    String serverName = request.getServerName();
