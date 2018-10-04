@@ -1601,7 +1601,7 @@ function Property_pageName(cell, page, property, details) {
 	// get the value from the page name
 	var value = page.name;
 	// append the adjustable form control
-	cell.append("<input class='propertiesPanelTable' value='" + escapeApos(value) + "' />");
+	cell.append("<input class='propertiesPanelTable' value='" + escapeApos(value) + "' maxlength='100' />");
 	// get a reference to the form control
 	var input = cell.children().last();
 	// add a listener to update the property

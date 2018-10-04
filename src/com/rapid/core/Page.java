@@ -329,7 +329,7 @@ public class Page {
 	// instance methods
 
 	public String getFile(ServletContext servletContext, Application application) {
-		return application.getConfigFolder(servletContext) + "/" + "/pages/" + Files.safeName(_name) + ".page.xml";
+		return application.getConfigFolder(servletContext) + "/" + "/pages/" + Files.safeName(_name + ".page.xml");
 	}
 
 	public void addControl(Control control) {
@@ -941,7 +941,7 @@ public class Page {
 		String dateString = formatter.format(new Date());
 
 		 // create a file object for the archive file
-	 	File archiveFile = new File(archivePath + "/" + Files.safeName(_name) + "_" + dateString + "_" + userName + ".page.xml");
+	 	File archiveFile = new File(archivePath + "/" + Files.safeName(_name + "_" + dateString + "_" + userName + ".page.xml"));
 
 	 	// copy the existing new file to the archive file
 	    Files.copyFile(pageFile, archiveFile);
@@ -967,13 +967,13 @@ public class Page {
 		if (!pageFolder.exists()) pageFolder.mkdirs();
 
 		// create a file object for the new file
-	 	File newFile = new File(pagePath + "/" + Files.safeName(getName()) + ".page.xml");
+	 	File newFile = new File(pagePath + "/" + Files.safeName(getName() + ".page.xml"));
 
 	 	// if we want a backup and the new file already exists it needs archiving
 	 	if (backup && newFile.exists()) backup(rapidServlet, rapidRequest, application, newFile, false);
 
 	 	// create a file for the temp file
-	    File tempFile = new File(pagePath + "/" + Files.safeName(getName()) + "-saving.page.xml");
+	    File tempFile = new File(pagePath + "/" + Files.safeName(getName() + "-saving.page.xml"));
 
 	    // update the modified by and date
 	    _modifiedBy = rapidRequest.getUserName();
@@ -1029,7 +1029,7 @@ public class Page {
 		String pagePath = application.getConfigFolder(rapidServlet.getServletContext()) + "/pages";
 
 		// create a file object for the delete file
-	 	File delFile = new File(pagePath + "/" + Files.safeName(getName()) + ".page.xml");
+	 	File delFile = new File(pagePath + "/" + Files.safeName(getName() + ".page.xml"));
 
 	 	// if the new file already exists it needs archiving
 	 	if (delFile.exists()) {
@@ -1045,13 +1045,13 @@ public class Page {
 	 	String resourcesPath = application.getWebFolder(rapidServlet.getServletContext());
 
 	 	// create a file object for deleting the page css file
-	 	File delCssFile = new File(resourcesPath + "/" + Files.safeName(getName()) + ".css");
+	 	File delCssFile = new File(resourcesPath + "/" + Files.safeName(getName() + ".css"));
 
 	 	// delete if it exists
 	 	if (delCssFile.exists()) delCssFile.delete();
 
 	 	// create a file object for deleting the page css file
-	 	File delCssFileMin = new File(resourcesPath + "/" + Files.safeName(getName()) + ".min.css");
+	 	File delCssFileMin = new File(resourcesPath + "/" + Files.safeName(getName() + ".min.css"));
 
 	 	// delete if it exists
 	 	if (delCssFileMin.exists()) delCssFileMin.delete();
@@ -1925,9 +1925,6 @@ public class Page {
 
 						// write the form id into the page - not necessary for dialogues
 			    		if (designerLink) writer.write("var _formId = '" + formId + "';\n\n");
-
-			    		// now the page has been printed invalidate the form if this was a submission page
-						if (_formPageType ==FORM_PAGE_TYPE_SUBMITTED) formAdapter.setUserFormDetails(rapidRequest, null);
 
 					} catch (Exception ex) {
 						// log the error

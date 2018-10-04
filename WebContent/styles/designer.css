@@ -1195,6 +1195,7 @@ path, .jtk-endpoint {
     text-align: center;
     font-size: 16px;
     margin-top: -45px;
+    z-index: 10006;
 }
 
 #save span {

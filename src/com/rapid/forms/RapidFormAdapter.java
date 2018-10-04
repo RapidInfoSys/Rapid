@@ -32,7 +32,9 @@ import java.util.Map;
 import javax.servlet.ServletContext;
 
 import com.rapid.core.Application;
+import com.rapid.core.Email;
 import com.rapid.server.RapidRequest;
+import com.rapid.utils.Http;
 
 public class RapidFormAdapter extends FormAdapter {
 
@@ -42,6 +44,7 @@ public class RapidFormAdapter extends FormAdapter {
 	private static final String USER_FORM_PAGE_CONTROL_VALUES = "userFormPageControlValues";
 	private static final String USER_FORM_COMPLETE_VALUES = "userFormCompleteValues";
 	private static final String USER_FORM_SUBMIT_DETAILS = "userFormSubmitDetails";
+	private static final String USER_FORM_SAVE_PASSWORDS = "userFormSavePasswords";
 
 	// constructor
 
@@ -52,7 +55,7 @@ public class RapidFormAdapter extends FormAdapter {
 	// class methods
 
 	// the RapidFormAdapter holds all values in the user session so this method just gets them from there
-	protected Map<String,FormPageControlValues> getUserFormPageControlValues(RapidRequest rapidRequest) throws Exception {
+	protected Map<String,FormPageControlValues> getUserFormPageControlValues(RapidRequest rapidRequest, String formId) throws Exception {
 		// get the servlet context
 		ServletContext servletContext = rapidRequest.getRapidServlet().getServletContext();
 		// get all app page control values from the context
@@ -64,8 +67,6 @@ public class RapidFormAdapter extends FormAdapter {
 			// add to session
 			servletContext.setAttribute(USER_FORM_PAGE_CONTROL_VALUES, userAppPageControlValues);
 		}
-		// get the form id
-		String formId = getFormId(rapidRequest);
 		// the page controls for specified app
 		Map<String,FormPageControlValues> userPageControlValues = userAppPageControlValues.get(formId);
 		// if null, instantiate
@@ -166,8 +167,24 @@ public class RapidFormAdapter extends FormAdapter {
 			} else {
 				// get the application from the request
 				Application application = rapidRequest.getApplication();
-				// form found we're good
-				return new UserFormDetails(application.getId(), application.getVersion(), formId, null, null, false, null);
+				// it's important we set the max page to avoid a blank summary - and getting sent back to the start
+				String maxPageId = null;
+				// assume max page so far is 0
+				int maxPagePos = 0;
+				// loop the saved page controls
+				for (String pageId : userPageControlValues.keySet()) {
+					// get this pos
+					int pagePos = application.getPageOrders().get(pageId);
+					// check the order of this page against the max page so far
+					if (pagePos > maxPagePos) {
+						// remember this page id
+						maxPageId = pageId;
+						// remember the max position
+						maxPagePos = pagePos;
+					}
+				}
+				// form found we're good - make a new details with null password but maxPageId
+				return new UserFormDetails(application.getId(), application.getVersion(), formId, null, maxPageId, false, null);
 			}
 		}
 	}
@@ -203,7 +220,7 @@ public class RapidFormAdapter extends FormAdapter {
 
 	// return form page variables
 	@Override
-	public Map<String, String> getFormPageVariableValues( 	RapidRequest rapidRequest, String formId) throws Exception {
+	public Map<String, String> getFormPageVariableValues(RapidRequest rapidRequest, String formId) throws Exception {
 		// use our reusable function
 		return getUserFormPageVariableValues(rapidRequest, formId);
 	}
@@ -212,14 +229,14 @@ public class RapidFormAdapter extends FormAdapter {
 	@Override
 	public FormPageControlValues getFormPageControlValues(RapidRequest rapidRequest, String formId, String pageId) throws Exception	{
 		// retrieve
-		return getUserFormPageControlValues(rapidRequest).get(pageId);
+		return getUserFormPageControlValues(rapidRequest, formId).get(pageId);
 	}
 
 	// uses our user session method to set the form page control values (for hidden pages pageControlValues will be null)
 	@Override
 	public void setFormPageControlValues(RapidRequest rapidRequest, String formId, String pageId, FormPageControlValues pageControlValues) throws Exception {
 		// store them
-		getUserFormPageControlValues(rapidRequest).put(pageId, pageControlValues);
+		getUserFormPageControlValues(rapidRequest, formId).put(pageId, pageControlValues);
 	}
 
 	// uses our user session method to get a control value
@@ -232,7 +249,7 @@ public class RapidFormAdapter extends FormAdapter {
 			// get the page id from the first part of the id
 			String pageId = controlId.substring(0, controlIdPos);
 			// get all user form page values
-			Map<String,FormPageControlValues> userFormPageControlValues = getUserFormPageControlValues(rapidRequest);
+			Map<String,FormPageControlValues> userFormPageControlValues = getUserFormPageControlValues(rapidRequest, formId);
 			// if there are control values stored
 			if (userFormPageControlValues.size() > 0) {
 				// look for values from our page
@@ -248,6 +265,88 @@ public class RapidFormAdapter extends FormAdapter {
 			} // page has values
 		} // parts > 1
 		return null;
+	}
+
+	// called by the form action when saving the form
+	@Override
+	public synchronized boolean saveForm(RapidRequest rapidRequest, String email, String password) throws Exception {
+
+		// get email settings
+		Email emailSettings = Email.getEmailSettings();
+
+		// if we have some
+		if (emailSettings != null) {
+
+			// get the form details
+			UserFormDetails formDetails = getUserFormDetails(rapidRequest);
+
+			// get the servlet context
+			ServletContext servletContext = rapidRequest.getRapidServlet().getServletContext();
+			// get the map of form values
+			Map<String, String> userFormSavePasswords = (Map<String, String>) servletContext.getAttribute(USER_FORM_SAVE_PASSWORDS);
+			// if there aren't any yet make some
+			if  (userFormSavePasswords == null) userFormSavePasswords = new HashMap<String,String>();
+
+			// retain the user save password
+			userFormSavePasswords.put(formDetails.getId(), password);
+			// store them
+			servletContext.setAttribute(USER_FORM_SAVE_PASSWORDS, userFormSavePasswords);
+
+			// get the application
+			Application application = rapidRequest.getApplication();
+
+			// get our base url
+			String url = Http.getBaseUrl(rapidRequest.getRequest());
+			// check url ends with /
+			if (!url.endsWith("/")) url += "/";
+			// add the rest
+			url = url + "~?a=" + application.getId() + "&v=" + application.getVersion() + "&action=resume&id=" + formDetails.getId();
+
+			// get save subject
+			String saveSubject = "Rapid form saved";
+			// get save body
+			String saveBody = "Use this link to resume your form " + url + "\n\n";
+
+			// if we did
+			Email.send(Email.getEmailSettings().getUserName(), email, saveSubject, saveBody);
+
+			return true;
+
+		} else {
+
+			return false;
+
+		}
+
+	}
+
+	// called by the form action when resuming forms
+	@Override
+	public synchronized boolean resumeForm(RapidRequest rapidRequest, String formId, String password) throws Exception {
+
+		// get the servlet context
+		ServletContext servletContext = rapidRequest.getRapidServlet().getServletContext();
+		// get the map of form values
+		Map<String, String> userFormSavePasswords = (Map<String, String>) servletContext.getAttribute(USER_FORM_SAVE_PASSWORDS);
+		// if we got them and a password to check against
+		if (userFormSavePasswords != null && password != null) {
+
+			// check the supplied user password against the saved user password
+			if (password.equals(userFormSavePasswords.get(formId))) {
+
+				// retrieve the form details into the session - the back-office password is not used in this implementation
+				UserFormDetails formDetails = doResumeForm(rapidRequest, formId, null);
+
+				// check we got some and resume accordingly
+				if (formDetails != null) return true;
+
+			}
+
+		}
+
+		// wasn't possible to resume
+		return false;
+
 	}
 
 	// submit the form - for the RapidFormAdapter nothing special happens, more sophisticated ones will write to databases, webservices, etc

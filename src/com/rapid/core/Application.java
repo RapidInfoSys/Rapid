@@ -1943,7 +1943,7 @@ public class Application {
 		String dateString = formatter.format(new Date());
 
 		// create a fileName for the archive
-		String fileName = _id + _version + "_" + dateString + "_" + Files.safeName(userName);
+		String fileName = Files.safeName(_id + _version + "_" + dateString + "_" + userName);
 
 		// create folders to backup the app
 		String backupPath = getBackupFolder(rapidServlet.getServletContext(), allVersions) + "/" + fileName;
