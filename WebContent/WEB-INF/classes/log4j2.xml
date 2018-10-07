@@ -4,8 +4,7 @@
 		<Console name="Console" target="SYSTEM_OUT">
 			<PatternLayout pattern="%d %5p - %m%n" />
 		</Console>
-		<!-- system logPath property is set in RapidServletContextListener.java -->
-		<RollingFile name="File" fileName="${web:rootDir}/WEB-INF/logs/Rapid.log" filePattern="${web:rootDir}/WEB-INF/logs/Rapid%d{yyyyMMdd}-%i.log">
+		<RollingFile name="File" fileName="${log4j:configParentLocation}/../logs/Rapid.log" filePattern="${log4j:configParentLocation}/../logs/Rapid%d{yyyyMMdd}-%i.log">
 			<PatternLayout pattern="%d %5p - %m \r\n" />
 			<Policies>
 			    <!-- Create a new log file every day, or if it exceeds 1 MB -->
