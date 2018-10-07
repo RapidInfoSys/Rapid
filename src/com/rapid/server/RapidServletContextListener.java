@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -812,16 +812,34 @@ public class RapidServletContextListener extends Log4jServletContextListener imp
 			}
 		}
 
+		// log
 		_logger.info("Loading applications");
+
+		// assume no apps to ignore
+		List<String> ignoreApps = new ArrayList<String>();
+		// find any applications to ignore
+		String ignoreAppsString = servletContext.getInitParameter("ignoreApps");
+		// if we got any
+		if (ignoreAppsString != null && ignoreAppsString.trim().length() > 0) {
+			// log
+			_logger.info("Ignoring applications " + ignoreAppsString);
+			// split them
+			String[] ignoreAppsArray = ignoreAppsString.split(",");
+			// loop, trim, and add
+			for (String ignoreApp : ignoreAppsArray) ignoreApps.add(ignoreApp.trim());
+		}
 
 		// make a new set of applications
 		applications = new Applications();
 
+		// the application root folder
 		File applicationFolderRoot = new File(servletContext.getRealPath("/WEB-INF/applications/"));
 
+		// loop the children of the application folder
 		for (File applicationFolder : applicationFolderRoot.listFiles()) {
 
-			if (applicationFolder.isDirectory()) {
+			// if this child file is a directory and not in our list of apps to ignore
+			if (applicationFolder.isDirectory() && !ignoreApps.contains(applicationFolder.getName())) {
 
 				// get the list of files in this folder - should be all version folders
 				File[] applicationFolders = applicationFolder.listFiles();
