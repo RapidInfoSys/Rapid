@@ -170,7 +170,7 @@ return html;
 	    
 	    <getDetailsFunction>
 	        <![CDATA[
-var details = {onImageClick: this.onImageClick};
+var details = {onImageClick: this.onImageClick, emptyText: this.emptyText};
 if (this.images && this.gotCaptions) {
 	details.captions = [];
 	for (var i in this.images) {
@@ -195,10 +195,17 @@ return data;
 	    </getDataFunction>
 	    
 	    <setDataJavaScript>
-	        <![CDATA[       
-if (data != null && data !== undefined) {
-	var control = $("#" + id);
+	        <![CDATA[
+// get the control	        
+var control = $("#" + id);
+// check we have some data       
+if (data == null || data === undefined) {
+	// no data so remove all images
+	control.find("img").remove();
+} else {
+	// make a proper data object	
 	data = makeDataObject(data, field);
+	// if it has rows
 	if (data.rows) {	
 		// assume image not set
 		var imageSet = false;
