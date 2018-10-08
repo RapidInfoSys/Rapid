@@ -1273,12 +1273,16 @@ if (details.dataStorageType) {
 	}
 }
 // if we were provided with a field to drill into the row data
-if (field && data && data.fields && data.rows) {
-	// assume we can't find it	
+if (field && data && data.fields && data.rows && data.rows.length > 0) {
+	// assume we can't find the field
 	var fieldIndex = -1;
+	// loop the fields
 	for (var i in data.fields) {
+		// if there is a field at this position and it case-insentively matches what we're looking for
 		if (data.fields[i] && data.fields[i].toLowerCase() == field.toLowerCase()) {
+			// remember we found it
 			fieldIndex = i;
+			// we're done
 			break;
 		}
 	}
@@ -1287,20 +1291,21 @@ if (field && data && data.fields && data.rows) {
 		// check multiSelect
 		if (details.multiSelect) {
 			// create complex data object if so
-			data = {fields:[field],rows:[]};
-		}
-		// loop rows - non multi select will have only 1
-		for (var i in data.rows) {
-			var value = data.rows[i][fieldIndex];
-			if (value != null) {
-				if (details.muliSelect) {
-					data.rows.push([]);
-					data.rows[i].push(value);
-				} else {
-					data = value;
-					break;
-				}
+			var multiRowData = {fields:[field],rows:[]};
+			// loop rows - non multi select will have only 1
+			for (var i in data.rows) {				
+				// get the value
+				var value = data.rows[i][fieldIndex];
+				// add an empty row array
+				multiRowData.rows.push([]);
+				// put the value in the row array
+				multiRowData.rows[i].push(value);
 			}
+			// set the data we're returning to what we just made
+			data = multiRowData;
+		} else {
+			// get the value from the first row
+			data = data.rows[0][fieldIndex];
 		}
 	} else {
 		// could not find field
