@@ -678,23 +678,66 @@ function Action_rapid(ev, appId, pageId, controlId, actionId, actionType, rapidA
 			}															
 		break;
 		case "CHECKPASSWORDCOMPLEXITY" :
-			if (rapidApp) {
-				$("#rapid_P0_C852_").removeClass("validation");
-				data = { actionType: actionType, appId: "rapid", version: _appVersion, password: $("#rapid_P0_C843_").val() }; 
+			// check top level or app level
+			if (rapidApp) {				
+				// set basic data
+				data = { actionType: actionType, appId: "rapid", version: _appVersion};
+				// check for new user dialogue				
+				if ($("#P16").is(":visible")) {
+					// clear any previous validation class
+					$("#rapid_P16_C105_").removeClass("validation");
+					// add password
+					data.password = $("#rapid_P16_C17_").val();
+				} else {
+					// clear any previous validation class
+					$("#rapid_P0_C852_").removeClass("validation");
+					// add password
+					data.password = $("#rapid_P0_C843_").val();
+				} 
 			} else {
-				$("#rapid_P0_C279").removeClass("validation");
-				data = { actionType: actionType, appId: $("#rapid_P0_C43").val(), version: $("#rapid_P0_C1044_").val(), password: $("#rapid_P0_C231").val()	};				
+				// set basic data
+				data = { actionType: actionType, appId: $("#rapid_P0_C43").val(), version: $("#rapid_P0_C1044_").val() };
+				// check for new user dialouge
+				if ($("#P6").is(":visible")) {
+					// clear any previous validation class
+					$("#rapid_P16_C105_").removeClass("validation");
+					// add password
+					data.password = $("#rapid_P6_C18").val();
+				} else {
+					// clear any previous validation class
+					$("#rapid_P0_C279").removeClass("validation");
+					// add password
+					data.password = $("#rapid_P0_C231").val();
+				}
 			}
+			// if password is unchanged 
 			if (data.password == "********") {
+				// invoke any success callback straight away
 				if (successCallback) successCallback(data);
+				// we're done
 				return true;
 			} else {
+				// make a callback for after the check password
 				callback = function(data, rapidApp) {
+					// if we failed to pass the password complexity rules
 	 				if (!data.complexPass) {
+	 					// check top level or low level
 	 					if (data.rapidApp) {
-	 						$("#rapid_P0_C852_").html(data.message).addClass("validation");
+	 						// check for new user dialogue
+	 						if ($("#P16").is(":visible")) {
+	 							$("#rapid_P16_C105_").html(data.message).addClass("validation"); // top level new user dialogue
+	 						} else {
+	 							$("#rapid_P0_C852_").html(data.message).addClass("validation"); // top level ammend user
+	 						}
 	 					} else {
-	 						$("#rapid_P0_C279").html(data.message).addClass("validation");
+	 						// check for new user dialouge
+							if ($("#P6").is(":visible")) {
+								// show message and add validation
+	 							$("#rapid_P6_C322_").html(data.message).addClass("validation"); // app level new user dialogue
+							} else {
+								// show message and add validation
+	 							$("#rapid_P0_C279").html(data.message).addClass("validation"); // app level ammend user
+	 						}
 	 					}
 	 					return false;
 	 				}
