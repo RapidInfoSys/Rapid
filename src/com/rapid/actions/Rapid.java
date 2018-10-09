@@ -184,7 +184,7 @@ public class Rapid extends Action {
 		// look for any new app parameters parameter
 		String newAppParameters = servletContext.getInitParameter("newapp.parameters");
 		// check we got one
-		if (newAppSecurityAdapter != null) {
+		if (newAppParameters != null) {
 			// trim it
 			newAppParameters = newAppParameters.trim();
 			// if it looks like an object
