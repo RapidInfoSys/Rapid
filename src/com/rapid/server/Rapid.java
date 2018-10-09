@@ -600,14 +600,37 @@ public class Rapid extends RapidHttpServlet {
 		// read the body into a string
 		String bodyString = new String(bodyBytes, "UTF-8");
 
+		// get a logger
+		Logger logger = getLogger();
+
 		// if there is something in the body string it must be json so parse it
-		if (!"".equals(bodyString)) {
-			// get a logger
-			Logger logger = getLogger();
+		if (bodyString != null && bodyString.trim().length() > 0) {
+			try {
+				// get the data
+				jsonData = new JSONObject(bodyString);
+				// only if debugging enabled
+				if (logger.isDebugEnabled()) {
+					// if the data contains a password key
+					if (jsonData.has("password")) {
+						// make a new json object
+						JSONObject cleanJsonData = new JSONObject(bodyString);
+						// clean the password
+						cleanJsonData.put("password", "***");
+						// log the clean version
+						logger.debug(cleanJsonData);
+					} else {
+						// log  the bodyString as usual
+						logger.debug(bodyString);
+					}
+				}
+			} catch (JSONException ex) {
+				// rethrow the exception
+				throw ex;
+			}
+
+		} else {
 			// log the body string
-			logger.debug(bodyString);
-			// get the data
-			jsonData = new JSONObject(bodyString);
+			logger.debug("No request body");
 		}
 
 		return jsonData;
