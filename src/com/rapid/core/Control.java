@@ -565,8 +565,8 @@ public class Control {
 				}
 				// check control
 				if (control == null) {
-					// if still null look for it in page variables
-					return " getPageVariableValue('" + id + "','" + page.getId() + "')";
+					// if still null look for it in page variables (removing any leading id part, like Sesssion.)
+					return " getPageVariableValue('" + idParts[idParts.length-1] + "','" + page.getId() + "')";
 				} else {
 					// assume no field
 					String fieldJS = "null";
