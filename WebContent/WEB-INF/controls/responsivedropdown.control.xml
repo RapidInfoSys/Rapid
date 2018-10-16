@@ -92,6 +92,14 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <helpHtml>Selects one of the options from the dropdown as its initial value.</helpHtml>
 	        </property>
 	        
+	         <property>
+	            <key>filter</key>
+	            <name>Filtering</name>
+	            <changeValueJavaScript>checkbox</changeValueJavaScript>
+	            <refreshHtml>true</refreshHtml>
+	            <helpHtml>Allows the user to filter the available options as they type.</helpHtml>
+	        </property>
+	        
 	        <property>
 	            <key>extraSmall</key>
 	            <name>Extra small width</name>
@@ -160,6 +168,47 @@ return [{value:"", text:"Please select..."}, {value:"lg-1", text:"1/12"}, {value
 				<type>javascriptLink</type>
 				<contents>scripts_min/bootstrap.min.js</contents>
 			</resource>
+			
+			<resource>
+				<type>javascriptLink</type>
+				<contents>scripts_min/jquery-ui-1.12.1.min.js</contents>
+			</resource>
+			
+			<resource>
+				<type>css</type>
+				<contents>
+.r-dropdown .custom-combobox {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.r-dropdown .custom-combobox-toggle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  padding: 0;
+  width: 25px;
+  background: url(../../../images/triangleDown_8x8.png) no-repeat center;
+}
+
+.ui-autocomplete {
+  max-height: 400px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.ui-autocomplete .ui-menu-item {
+  padding: 0 10px;
+}
+
+.ui-helper-hidden-accessible {
+  display:none;
+}				
+				</contents>
+			</resource>
+			
 		</resources>
 	    
 	    <getHtmlFunction>
@@ -208,9 +257,12 @@ if (this.options || this.valueList) {
 	}
 }
 // place into the select
-var html = "<select " + inputId + " name='" + this.id + "' class='dropdown form-control" + classes + "'>" + html + "</select>";
-// return
+var html = "<select " + inputId + " id='" + this.id + "select' name='" + this.id + "' class='dropdown form-control" + classes + "'>" + html + "</select>";
 
+// check filter
+if (this.filter) html = "<div class='ui-widget'>" + html + "</div>";
+
+// check responsive label
 if (this.responsiveLabel) {
 	return "<div id='" + this.id + "' class='r-dropdown" + classes + "'><label for='" + inputId + "'>" + this.responsiveLabel + "</label>" + html + "</div>";
 } else {
@@ -218,8 +270,14 @@ if (this.responsiveLabel) {
 }
 	        ]]>
 	    </getHtmlFunction>
-	    
+
 	    <updateChildObjects>true</updateChildObjects>
+	    
+	    <getDetailsFunction>
+	    	<![CDATA[
+return {filter:this.filter};
+			]]>
+	    </getDetailsFunction>
 	    
 	    <getDataFunction>
 	        <![CDATA[
@@ -232,7 +290,10 @@ return $("#" + id).find("select").val();
 if (data !== undefined) {
 	var control = $("#" + id).find("select");
 	if (data == null) {
+		// remove all children
 		if (!field) control.children().remove();
+		// empty any jquery ui
+		$("#" + id).find("input").val("");
 	} else {
 		data = makeDataObject(data, field);
 		if (data.rows && data.fields) {
@@ -272,14 +333,14 @@ if (data !== undefined) {
         
 	        ]]>
 	    </setDataJavaScript>
-	    
+
 	    <events>
 	        <event>
 	            <type>change</type>
 	            <name>Change</name>
 	        </event>
 	    </events>
-	    	    
+	    	    	    
 	    <styles>
 	        <style>
 	            <name>Responsive container</name>
@@ -315,6 +376,112 @@ return "#" + this.id + " select:focus";
 	        </style>	        
 	    </styles>
 	    
+	  	<initJavaScript>
+	    	<![CDATA[
+if (details && details.filter) {
+
+	$.widget( "custom.combobox", {
+
+      _create: function() {
+        this.wrapper = $("<span>").addClass("custom-combobox").insertAfter(this.element);
+        this.element.hide();
+        this._createAutocomplete();
+        this._createShowAllButton();
+      },
+ 
+      _createAutocomplete: function() {
+        var selected = this.element.children( ":selected" ), value = selected.val() ? selected.text() : "";
+        this.input = $( "<input>" )
+          .appendTo( this.wrapper )
+          .val( value )
+          .attr( "title", "" )
+          .addClass( "custom-combobox-input form-control" )
+          .autocomplete({
+            delay: 0,
+            minLength: 0,
+            source: $.proxy( this, "_source" )
+          });
+ 
+        this._on( this.input, {
+          autocompleteselect: function( event, ui ) {
+            ui.item.option.selected = true;
+            this._trigger( "select", event, {
+              item: ui.item.option
+            });
+          },
+          autocompletechange: "_removeIfInvalid"
+        });
+      },
+      
+      _createShowAllButton: function() {
+        var input = this.input, wasOpen = false;
+        $( "<a>" )
+          .attr( "tabIndex", -1 )
+          .appendTo( this.wrapper )
+          .removeClass( "ui-corner-all" )
+          .addClass( "custom-combobox-toggle" )
+          .on( "mousedown", function() {
+            wasOpen = input.autocomplete( "widget" ).is( ":visible" );
+          })
+          .on( "click", function() {
+            input.trigger( "focus" );
+            // Close if already visible
+            if ( wasOpen ) {
+              return;
+            }
+            // Pass empty string as value to search for, displaying all results
+            input.autocomplete( "search", "" );
+          });
+      },
+      
+      _source: function( request, response ) {
+        var matcher = new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
+        response( this.element.children( "option" ).map(function() {
+          var text = $( this ).text();
+          if ( this.value && ( !request.term || matcher.test(text) ) )
+            return {
+              label: text,
+              value: text,
+              option: this
+            };
+        }) );
+      },
+ 
+      _removeIfInvalid: function( event, ui ) {
+        // Selected an item, nothing to do
+        if ( ui.item ) {
+          return;
+        }
+        // Search for a match (case-insensitive)
+        var value = this.input.val(), valueLowerCase = value.toLowerCase(), valid = false;
+        this.element.children( "option" ).each(function() {
+          if ( $( this ).text().toLowerCase() === valueLowerCase ) {
+            this.selected = valid = true;
+            return false;
+          }
+        });
+        // Found a match, nothing to do
+        if ( valid ) {
+          return;
+        }
+        // Remove invalid value
+        this.input.val( "" )
+        this.element.val( "" );
+        this.input.autocomplete( "instance" ).term = "";
+      },
+ 
+      _destroy: function() {
+        this.wrapper.remove();
+        this.element.show();
+      }
+    });
+ 
+    $( "#" + id + "select" ).combobox();
+
+}    
+	    	]]>
+	    </initJavaScript>
+
 	   	<runtimeProperties>
 	        <runtimeProperty>
 	            <type>value</type>
@@ -324,19 +491,40 @@ return "#" + this.id + " select:focus";
 var	data = makeDataObject(data, field);
 var control = $("#" + id).find("select");
 if (data && data.rows) {
-	var foundField = false;
+	// assume first value
+	var value = data.rows[0][0];
+	// if a field was provided
 	if (field) {
 		for (var i in data.fields) {
 			if (data.fields[i] && field.toLowerCase() == data.fields[i].toLowerCase()) {
-				control.val(data.rows[0][i]);
-				foundField = true;
+				value = data.rows[0][i];
 				break;
 			}
 		}
 	}
-	if (!foundField) control.val(data.rows[0][0]);
+	// update the control value
+	control.val(value);
+	// look for jquery ui input
+	var input = $("#" + id).find("input");
+	// if we there was one
+	if (input.length > 0) {
+		// read the value back again which uses the select controls ability to check it has an option for the value
+		value = control.val();
+		// if there is a value
+		if (value) {
+			// find option with value
+			var option = control.find("option[value=" + value + "]");
+			// if we got one update value to text
+			if (option.length > 0) value = option.text();
+		}
+		// update the jquery input
+		$("#" + id).find("input").val(value);
+	}
 } else {
+	// empty select value
 	control.val("");
+	// empty any jquery ui input
+	$("#" + id).find("input").val("");
 }
 if (changeEvents) control.trigger("change");
 	                ]]>

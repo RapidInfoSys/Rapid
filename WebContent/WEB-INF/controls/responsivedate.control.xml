@@ -215,7 +215,7 @@ return [{value:"", text:"Please select..."}, {value:"lg-1", text:"1/12"}, {value
 	    		    		    	
 	    	<resource>
 	    		<type>javascriptFile</type>
-	    		<contents>scripts/controls/date.js</contents>
+	    		<contents>scripts_min/jquery-ui-1.12.1.min.js</contents>
 	    	</resource>
 	    	
 	    	<resource>
