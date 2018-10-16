@@ -210,7 +210,7 @@ return [{value:"", text:"Please select..."}, {value:"lg-1", text:"1/12"}, {value
 	    
 	    	<resource>
 	    		<type>cssFile</type>
-	    		<contents>styles/controls/date.css</contents>
+	    		<contents>styles/controls/jquery-ui.css</contents>
 	    	</resource>
 	    		    		    	
 	    	<resource>

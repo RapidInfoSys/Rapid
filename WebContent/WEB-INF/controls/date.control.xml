@@ -146,7 +146,7 @@ return [["dd/mm/yy","dd/mm/yyyy"],["mm/dd/yy","mm/dd/yyyy"],["yy-mm-dd","yyyy-mm
 	    
 	    	<resource>
 	    		<type>cssFile</type>
-	    		<contents>styles/controls/date.css</contents>
+	    		<contents>styles/controls/jquery-ui.css</contents>
 	    	</resource>
 	    		    		    	
 	    	<resource>
