@@ -822,14 +822,17 @@ public class Rapid extends Action {
 					if (themes != null) {
 						// loop what we have
 						for (Theme theme : themes) {
-							// make a simpler send item
-							jsonTheme = new JSONObject();
-							// add type
-							jsonTheme.put("value", theme.getType());
-							// add name
-							jsonTheme.put("text", theme.getName());
-							// add to collection
-							jsonThemes.put(jsonTheme);
+							// only if visible
+							if (theme.getVisible()) {
+								// make a simpler send item
+								jsonTheme = new JSONObject();
+								// add type
+								jsonTheme.put("value", theme.getType());
+								// add name
+								jsonTheme.put("text", theme.getName());
+								// add to collection
+								jsonThemes.put(jsonTheme);
+							}
 						}
 						// add the database drivers to the result
 						result.put("themes", jsonThemes);
@@ -840,8 +843,8 @@ public class Rapid extends Action {
 					JSONArray jsonActions = rapidServlet.getJsonActions();
 					for (int i = 0; i < jsonActions.length(); i++) {
 						JSONObject jsonSysAction = jsonActions.getJSONObject(i);
-						// do not send the rapid action
-						if (!"rapid".equals(jsonSysAction.getString("type"))) {
+						// only if visible
+						if (jsonSysAction.optBoolean("visible",true)) {
 							JSONObject jsonSendAction = new JSONObject();
 							jsonSendAction.put("name", jsonSysAction.get("name"));
 							jsonSendAction.put("type", jsonSysAction.get("type"));
@@ -857,8 +860,8 @@ public class Rapid extends Action {
 					JSONArray jsonControls = rapidServlet.getJsonControls();
 					for (int i = 0; i < jsonControls.length(); i++) {
 						JSONObject jsonSysControl = jsonControls.getJSONObject(i);
-						// only present controls users can add
-						if (jsonSysControl.optBoolean("canUserAdd")) {
+						// only present controls users can add, that aren't hidden
+						if (jsonSysControl.optBoolean("canUserAdd") && jsonSysControl.optBoolean("visible",true)) {
 							JSONObject jsonSendControl = new JSONObject();
 							jsonSendControl.put("name", jsonSysControl.getString("name"));
 							jsonSendControl.put("type", jsonSysControl.getString("type"));

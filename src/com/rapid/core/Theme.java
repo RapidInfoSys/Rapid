@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -32,11 +32,13 @@ public class Theme  {
 
 	// private instance variables
 	private String _type, _name, _css, _headerHtml, _footerHtml, _headerHtmlDesigner, _footerHtmlDesigner, _formSummaryHeaderHtml, _formSummaryPageStartHtml, _formSummaryPageEndHtml, _formSummaryPagesEndHtml, _formSummaryFooterHtml;
+	private boolean _visible;
 	private JSONObject _resources;
 
 	// properties
 	public String getType() { return _type; }
 	public String getName() { return _name; }
+	public boolean getVisible() { return _visible; }
 	public String getCSS() { return _css; }
 	public JSONObject getResources()  { return _resources; }
 	public String getHeaderHtml() { return _headerHtml; }
@@ -51,22 +53,23 @@ public class Theme  {
 
 	// constructor
 	public Theme(String xml) throws JSONException {
-		// convert the xml string into JSON
-		JSONObject jsonTemplate = org.json.XML.toJSONObject(xml).getJSONObject("template");
+		// convert the xml string into JSON - themes, were once called templates
+		JSONObject jsonTheme = org.json.XML.toJSONObject(xml).getJSONObject("template");
 		// retain properties
-		_type = jsonTemplate.getString("type");
-		_name = jsonTemplate.getString("name");
-		_css = jsonTemplate.getString("css").trim();
-		_resources = jsonTemplate.optJSONObject("resources");
-		_headerHtml = jsonTemplate.optString("headerHtml", null);
-		_footerHtml = jsonTemplate.optString("footerHtml", null);
-		_headerHtmlDesigner = jsonTemplate.optString("headerHtmlDesigner", null);
-		_footerHtmlDesigner = jsonTemplate.optString("footerHtmlDesigner", null);
-		_formSummaryHeaderHtml = jsonTemplate.optString("formSummaryHeaderHtml", null);
-		_formSummaryPageStartHtml = jsonTemplate.optString("formSummaryPageStartHtml", null);
-		_formSummaryPageEndHtml = jsonTemplate.optString("formSummaryPageEndHtml", null);
-		_formSummaryPagesEndHtml = jsonTemplate.optString("formSummaryPagesEndHtml", null);
-		_formSummaryFooterHtml = jsonTemplate.optString("formSummaryFooterHtml", null);
+		_type = jsonTheme.getString("type");
+		_name = jsonTheme.getString("name");
+		_visible = jsonTheme.optBoolean("visible", true);
+		_css = jsonTheme.getString("css").trim();
+		_resources = jsonTheme.optJSONObject("resources");
+		_headerHtml = jsonTheme.optString("headerHtml", null);
+		_footerHtml = jsonTheme.optString("footerHtml", null);
+		_headerHtmlDesigner = jsonTheme.optString("headerHtmlDesigner", null);
+		_footerHtmlDesigner = jsonTheme.optString("footerHtmlDesigner", null);
+		_formSummaryHeaderHtml = jsonTheme.optString("formSummaryHeaderHtml", null);
+		_formSummaryPageStartHtml = jsonTheme.optString("formSummaryPageStartHtml", null);
+		_formSummaryPageEndHtml = jsonTheme.optString("formSummaryPageEndHtml", null);
+		_formSummaryPagesEndHtml = jsonTheme.optString("formSummaryPagesEndHtml", null);
+		_formSummaryFooterHtml = jsonTheme.optString("formSummaryFooterHtml", null);
 	}
 
 }

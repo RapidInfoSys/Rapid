@@ -31,6 +31,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
         <name>Rapid</name>
 	    <class>com.rapid.actions.Rapid</class>
 	    <helpHtml>These actions are used by the Rapid Admin application.</helpHtml>
+	    <visible>false</visible>
 	    
 	    <properties>
 	        <property>
