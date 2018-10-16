@@ -224,11 +224,6 @@ if (this.small) classes += " col-" + this.small;
 if (this.medium) classes += " col-" + this.medium;
 if (this.large) classes += " col-" + this.large;
 
-// assume no input id required
-var inputId = "";
-// if we have a label set the id
-if (this.responsiveLabel) inputId = " id='" + this.id + "input'";
-
 // check we have options or a value list
 if (this.options || this.valueList) {
 	// if the options are a string turn them in an array
@@ -257,14 +252,14 @@ if (this.options || this.valueList) {
 	}
 }
 // place into the select
-var html = "<select " + inputId + " id='" + this.id + "select' name='" + this.id + "' class='dropdown form-control" + classes + "'>" + html + "</select>";
+var html = "<select id='" + this.id + "input' name='" + this.id + "' class='dropdown form-control" + classes + "'>" + html + "</select>";
 
 // check filter
 if (this.filter) html = "<div class='ui-widget'>" + html + "</div>";
 
 // check responsive label
 if (this.responsiveLabel) {
-	return "<div id='" + this.id + "' class='r-dropdown" + classes + "'><label for='" + inputId + "'>" + this.responsiveLabel + "</label>" + html + "</div>";
+	return "<div id='" + this.id + "' class='r-dropdown" + classes + "'><label for='" + this.id + "input'>" + this.responsiveLabel + "</label>" + html + "</div>";
 } else {
 	return "<div id='" + this.id + "' class='r-dropdown" + classes + "'>" + html + "</div>";
 }
@@ -476,7 +471,7 @@ if (details && details.filter) {
       }
     });
  
-    $( "#" + id + "select" ).combobox();
+    $( "#" + id + "input" ).combobox();
 
 }    
 	    	]]>
