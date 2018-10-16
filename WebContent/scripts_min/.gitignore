@@ -1,5 +1,4 @@
 *
-/*
 !.gitignore
-!jquery*js
+!jquery*.js
 !README
