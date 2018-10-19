@@ -1080,8 +1080,8 @@ public class Designer extends RapidHttpServlet {
 												// get the type
 												String type = control.getType();
 
-												// exclude panels, hidden values, and datastores for summary
-												if ("detail".equals(actionName) || (!"panel".equals(type) && !("hiddenvalue").equals(type) && !("dataStore").equals(type))) {
+												// exclude panels, hidden values (except for questions), and datastores for summary
+												if ("detail".equals(actionName) || (!type.contains("panel") && (!("hiddenvalue").equals(type) || "questions".equals(actionName)) && !("dataStore").equals(type))) {
 
 													// if questions it's likely to be a form
 													if ("questions".equals(actionName))  {
