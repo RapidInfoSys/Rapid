@@ -663,11 +663,13 @@ public class Webservice extends Action {
 								connection.setRequestProperty("Action", action);
 							}
 						}
-						// now set the type
+						// now check the type and set headers accordingly
 						if ("JSON".equals(_request.getType())) {
 							connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+							connection.setRequestProperty("Accept", "application/json, text/json, text/text");
 						} else {
 							connection.setRequestProperty("Content-Type", "text/xml; charset=UTF-8");
+							connection.setRequestProperty("Accept", "application/xml, text/xml, text/text");
 						}
 					}
 
@@ -699,7 +701,7 @@ public class Webservice extends Action {
 					int responseCode = connection.getResponseCode();
 
 					// read input stream if all ok, otherwise something meaningful should be in error stream
-					if (responseCode == 200) {
+					if (responseCode == 200 || responseCode == 201) {
 
 						// get the input stream
 						InputStream response = connection.getInputStream();
