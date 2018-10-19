@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<controls xmlVersion="1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../schemas/control.xsd">
+
+<!-- 
+
+Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
+
+gareth.edwards@rapid-is.co.uk
+
+
+This file is part of the Rapid Application Platform
+
+Rapid is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version. The terms require you to include
+the original copyright, and the license notice in all redistributions.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
+
+ -->
+
+	<control>
+	    
+	    <type>switch</type>
+	    <name>Switch</name>
+	    <image>images/checkbox_24x24.png</image>
+	    <category>Form controls</category>
+	    <helpHtml>A simple control that generates a single checkbox. Very useful for forms and questions with multiple answers, the checkbox can have it's values logged and used in a variety of differeny ways.</helpHtml>
+	         
+	    <canUserAdd>true</canUserAdd>
+	    <canUserMove>true</canUserMove>
+	    <canUserAddPeers>true</canUserAddPeers>
+	    <canBeUsedForFormPageVisibilty>true</canBeUsedForFormPageVisibilty>
+	    <canValidate>true</canValidate>
+	    
+	    <properties>
+	        
+	        <property>
+	            <key>name</key>
+	            <name>Name</name>
+	            <changeValueJavaScript>text</changeValueJavaScript>
+	            <helpHtml>Name that can be given to the control. Names are used to help identify controls uniquely.</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>label</key>
+	            <name>Form summary label</name>
+	            <setConstructValueFunction>return "";</setConstructValueFunction>
+	            <changeValueJavaScript>formText</changeValueJavaScript>	        
+	            <helpHtml>Summary label to appear at the end of the form. Leave blank to have the control and its value hidden.</helpHtml>
+	        </property>
+
+	        <property>
+	            <key>value</key>
+	            <name>Value</name>
+	            <setConstructValueFunction>return "true";</setConstructValueFunction>
+	            <changeValueJavaScript>text</changeValueJavaScript>
+	            <refreshHtml>true</refreshHtml>
+	            <helpHtml>Option that can be set to make validating on a switch easier.</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>on</key>
+	            <name>On</name>
+	            <setConstructValueFunction>return "false";</setConstructValueFunction>
+	            <changeValueJavaScript>checkbox</changeValueJavaScript>
+	            <refreshHtml>true</refreshHtml>
+	            <helpHtml>Sets the state of the checkbox to be true or false.</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>orientation</key>
+	            <name>Orientation</name>
+	            <setConstructValueFunction>return "h";</setConstructValueFunction>
+	            <changeValueJavaScript>select</changeValueJavaScript>
+	            <getValuesFunction>
+	                <![CDATA[
+return [["h","horizontal"],["v","vertical"]];
+					]]>
+	            </getValuesFunction>
+	            <refreshHtml>true</refreshHtml>
+	            <helpHtml>Sets the orientation and direction of the switch on/off change.</helpHtml>
+	        </property>
+	        	              
+	    </properties>
+	    
+	    <resources>
+	        <resource>
+	            <type>css</type>
+	            <contents>
+.switch {
+  position: relative;
+  display: inline-block;
+}
+
+.switchv {
+  width: 34px;
+  height: 60px;
+}
+
+.switchh {
+  width: 60px;
+  height: 34px;
+}
+
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switchslider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 34px;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.switchslider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  border-radius: 50%;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .switchslider {
+  background-color: #2196F3;
+}
+
+input:checked + .switchsliderv:before {
+  -webkit-transform: translateY(-100%);
+  -ms-transform: translateY(-100%);
+  transform: translateY(-100%);
+}
+
+input:checked + .switchsliderh:before {
+  -webkit-transform: translateX(100%);
+  -ms-transform: translateX(100%);
+  transform: translateX(100%);
+}
+                
+	            </contents>
+	        </resource>
+	        
+	    </resources>
+	    
+	    <getHtmlFunction>
+	        <![CDATA[	    
+var checked = "";
+if (this.on == "true" || this.on == true) checked=" checked='checked'";
+
+var value = "true";
+if (this.value) value = this.value;
+
+return "<label id='" + this.id + "' class='switch switch" + this.orientation + getStyleClasses(this) + "' for='" + this.id + "switch'><input type='hidden' name='" +  this.id + "' value=''></input><input id='" + this.id + "switch' name='" + this.id + "' type='checkbox'" + checked + " value='" + escapeApos(value) + "'></input><span class='switchslider switchslider" + this.orientation + "'></span></label>";
+
+	        ]]>
+	    </getHtmlFunction> 
+	    
+	    <removeJavaScript>
+	        <![CDATA[        
+// remove the hidden input
+this.object.closest("body").find("input[type=hidden][name='" + this.id + "']").remove();
+// remove the control
+this.object.remove();
+	        ]]>
+	    </removeJavaScript> 
+	    
+	    <getDataFunction>
+	        <![CDATA[
+var control = $("#" + id);
+if (!control.is("input")) control = control.find("#" + id + "switch");
+var value = null;
+var attr = control.attr("value");
+if (attr) {
+	if (control.prop("checked")) value = attr;
+} else {
+	if (control.prop("checked")) {
+		value = "true";
+	} else {
+		value = "false";
+	}
+}
+return value;
+			]]>
+	    </getDataFunction>
+	    
+	    <setDataJavaScript>
+	        <![CDATA[
+var value = false;
+if (data != null && data !== undefined) {
+	data = makeDataObject(data, field);
+	if (data.rows && data.rows[0]) {
+		if (field && data.fields) {
+			for (var i in data.fields) {
+				if (data.fields[i].toLowerCase() == field.toLowerCase()) {
+					value = data.rows[0][i];
+					break;
+				}
+			}
+		} else {
+			value = data.rows[0][0];
+		}
+	}
+}
+var control = $("#" + id);
+if (!control.is("input")) control = control.find("#" + id + "switch");
+var attr = control.attr("value");
+var checked = false;
+if (attr) {
+	if (value == attr || (value == true && attr == "true")) checked = true;	
+} else {
+	if (value && !value == "false") checked = true;
+}
+control.prop('checked', checked);
+if (changeEvents) control.trigger("change");    
+			]]>
+	    </setDataJavaScript>
+	    	    
+	    <events>        
+	        <event>
+	            <type>change</type>
+	            <name>Change</name>
+	        </event>
+	    </events>
+	    
+	    <styles>
+	         <style>
+	            <name>Switch button</name>  
+	            <getAppliesToFunction>
+					<![CDATA[	      
+return "#" + this.id + " .switchslider:before";
+	       			 ]]>	                
+	            </getAppliesToFunction>
+	        </style>
+	        <style>
+	            <name>Background (off)</name>  
+	            <getAppliesToFunction>
+					<![CDATA[	      
+return "#" + this.id + " .switchslider";
+	       			 ]]>	                
+	            </getAppliesToFunction>
+	        </style>
+	        <style>
+	            <name>Background (on)</name>
+	            <getAppliesToFunction>
+					<![CDATA[	      
+return "#" + this.id + " input:checked + .switchslider";
+	       			 ]]>	                
+	            </getAppliesToFunction>
+	        </style>
+	    </styles>
+	    
+	</control>
+</controls>
