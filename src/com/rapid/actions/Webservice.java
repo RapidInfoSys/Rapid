@@ -25,9 +25,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 
 package com.rapid.actions;
 
-import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -65,7 +63,7 @@ public class Webservice extends Action {
 	// details of the request (inputs, sql, outputs)
 	public static class Request {
 
-		private String _type, _url, _action, _body, _transform, _root;
+		private String _type, _url, _headers, _action, _body, _transform, _root;
 		private ArrayList<Parameter> _inputs, _outputs;
 
 		public ArrayList<Parameter> getInputs() { return _inputs; }
@@ -80,6 +78,9 @@ public class Webservice extends Action {
 		public String getAction() { return _action; }
 		public void setAction(String action) { _action = action; }
 
+		public String getHeaders() { return _headers; }
+		public void setHeaders(String headers) { _headers = headers; }
+
 		public String getBody() { return _body; }
 		public void setBody(String body) { _body = body; }
 
@@ -93,11 +94,12 @@ public class Webservice extends Action {
 		public void setOutputs(ArrayList<Parameter> outputs) { _outputs = outputs; }
 
 		public Request() {};
-		public Request(ArrayList<Parameter> inputs, String type, String url, String action, String body, String transform, String root, ArrayList<Parameter> outputs) {
+		public Request(ArrayList<Parameter> inputs, String type, String url, String action, String headers, String body, String transform, String root, ArrayList<Parameter> outputs) {
 			_inputs = inputs;
 			_type = type;
 			_url = url;
 			_action = action;
+			_headers = headers;
 			_body = body;
 			_transform = transform;
 			_root = root;
@@ -156,12 +158,13 @@ public class Webservice extends Action {
 			String type = jsonQuery.optString("type");
 			String url = jsonQuery.optString("url").trim();
 			String action = jsonQuery.optString("action").trim();
+			String headers = jsonQuery.optString("headers").trim();
 			String body = jsonQuery.optString("body");
 			String transform = jsonQuery.optString("transform");
 			String root = jsonQuery.optString("root").trim();
 			ArrayList<Parameter> outputs = getParameters(jsonQuery.optJSONArray("outputs"));
 			// make the object
-			_request = new Request(inputs, type, url, action, body, transform, root, outputs);
+			_request = new Request(inputs, type, url, action, headers, body, transform, root, outputs);
 		}
 
 		// look for showLoading
@@ -482,6 +485,80 @@ public class Webservice extends Action {
 		return js;
 	}
 
+	// escape by type
+	private String escapeType(String type, String value) {
+		// escape " if JSON
+		if ("JSON".equals(_request.getType())) value = value.replaceAll("\"", "\\\"");
+		// escape XML
+		if ("SOAP".equals(_request.getType()) || "XML".equals(_request.getType())) value = XML.escape(value);
+		// return
+		return value;
+	}
+
+	// insert / replace inputs to ? in headers / body
+	private String replaceInputs(RapidRequest rapidRequest, JSONArray jsonInputs, int index, String type, String placeHolder, String val) throws JSONException {
+
+		// retain the position of the first ?
+		int pos = val.indexOf(placeHolder);
+
+		// if there are any question marks
+		if (pos > 0 && jsonInputs.length() > index) {
+			// loop, but check condition at the end
+			do {
+				// get the input
+				JSONObject input = jsonInputs.getJSONObject(index);
+				// get the input id
+				String id = input.getString("id");
+				// get the input field
+				String field = input.optString("field");
+				// add field to id if present
+				if (field != null && !"".equals(field)) id += "." + field;
+				// retain the value
+				String value = null;
+				// if it looks like a control, or a system value (bit of extra safety checking)
+				if (id.indexOf("_C") > 0 || id.indexOf("System.") == 0) {
+					// device is a special case
+					if (id.equals("System.device")) {
+						// get the device from the request
+						value = rapidRequest.getDevice();
+					} else {
+						// get the value from the json inputs
+						value = escapeType(type, input.optString("value"));
+					}
+				} else {
+					// didn't look like a control so check page variables
+					if (rapidRequest.getPage() != null) {
+						// check for page variables
+						if (rapidRequest.getPage().getSessionVariables() != null) {
+							// loop them
+							for (String variable : rapidRequest.getPage().getSessionVariables()) {
+								// if this is the variable
+								if (variable.equalsIgnoreCase(id)) {
+									// get the value from the inputs
+									value = escapeType(type, input.optString("value"));
+									// no need to keep looking in the page variables
+									break;
+								}
+							}
+						}
+					}
+				}
+				// if still null try the session
+				if (value == null) value = (String) rapidRequest.getSessionAttribute(id);
+				// replace the ? with the input value
+				val = val.substring(0, pos) + value + val.substring(pos + placeHolder.length());
+				// look for the next question mark
+				pos = val.indexOf(placeHolder,pos + placeHolder.length());
+				// inc the index for the next round
+				index ++;
+				// stop looping if no more ?
+			} while (pos > 0);
+		}
+
+		// return the replaced value
+		return val;
+	}
+
 	@Override
 	public JSONObject doAction(RapidRequest rapidRequest, JSONObject jsonAction) throws Exception {
 
@@ -522,6 +599,13 @@ public class Webservice extends Action {
 			// if there is either no cache or we got no data
 			if (jsonData == null) {
 
+				// create a placeholder for the request url
+				URL url = null;
+				// get the request url
+				String requestURL  = _request.getUrl();
+				// get the headers into a string
+				String headers = _request.getHeaders();
+				if (headers == null) headers = "";
 				// get the body into a string
 				String body = _request.getBody().trim();
 				// remove prolog if present
@@ -530,74 +614,24 @@ public class Webservice extends Action {
 				// merge in any application parameters
 				body = application.insertParameters(rapidRequest.getRapidServlet().getServletContext(), body);
 
-				// check number of parameters
-				int pCount = Strings.occurrences(body, "?");
+				// get the number of escaped ? parameters in header
+				int pUrlCount = Strings.occurrences(requestURL, "[[?]]");
+				// get the number of ? parameters in header
+				int pHeaderCount = Strings.occurrences(headers, "?");
+				// check number of parameters in headers and body
+				int pBodyCount = Strings.occurrences(body, "?");
 				// throw error if incorrect
-				if (pCount != jsonInputs.length()) throw new Exception("Request has " + pCount + " parameter" + (pCount == 1 ? "" : "s") + ", " + jsonInputs.length() + " provided");
-				// retain the current position
-				int pos = body.indexOf("?");
-				// keep track of the index of the ?
-				int index = 0;
-				// if there are any question marks
-				if (pos > 0 && jsonInputs.length() > index) {
-					// loop, but check condition at the end
-					do {
-						// get the input
-						JSONObject input = jsonInputs.getJSONObject(index);
-						// get the input id
-						String id = input.getString("id");
-						// get the input field
-						String field = input.optString("field");
-						// add field to id if present
-						if (field != null && !"".equals(field)) id += "." + field;
-						// retain the value
-						String value = null;
-						// if it looks like a control, or a system value (bit of extra safety checking)
-						if (id.indexOf("_C") > 0 || id.indexOf("System.") == 0) {
-							// device is a special case
-							if (id.equals("System.device")) {
-								// get the device from the request
-								value = rapidRequest.getDevice();
-							} else {
-								// get the value from the json inputs
-								value = XML.escape(input.optString("value"));
-							}
-						} else {
-							// didn't look like a control so check page variables
-							if (rapidRequest.getPage() != null) {
-								// check for page variables
-								if (rapidRequest.getPage().getSessionVariables() != null) {
-									// loop them
-									for (String variable : rapidRequest.getPage().getSessionVariables()) {
-										// if this is the variable
-										if (variable.equalsIgnoreCase(id)) {
-											// get the value from the inputs
-											value = XML.escape(input.optString("value"));
-											// no need to keep looking in the page variables
-											break;
-										}
-									}
-								}
-							}
-						}
-						// if still null try the session
-						if (value == null) value = (String) rapidRequest.getSessionAttribute(id);
-						// replace the ? with the input value
-						body = body.substring(0, pos) + value + body.substring(pos + 1);
-						// look for the next question mark
-						pos = body.indexOf("?",pos + 1);
-						// inc the index for the next round
-						index ++;
-						// stop looping if no more ?
-					} while (pos > 0);
-				}
+				if (pUrlCount + pHeaderCount + pBodyCount != jsonInputs.length()) throw new Exception("Request has " + (pUrlCount + pHeaderCount + pBodyCount) + " parameter" + (pHeaderCount + pBodyCount > 1 ? "s" : "") + ", " + jsonInputs.length() + " provided");
+
+				// replace inputs in url
+				requestURL = replaceInputs(rapidRequest, jsonInputs, 0, _request.getType(), "[[?]]", requestURL);
+				// replace inputs in headers
+				headers = replaceInputs(rapidRequest, jsonInputs, pUrlCount, _request.getType(), "?", headers);
+				// replace inputs in body using index from headers
+				body = replaceInputs(rapidRequest, jsonInputs, pUrlCount + pHeaderCount, _request.getType(), "?", body);
 
 				// retrieve the action
 				String action = _request.getAction();
-				// create a placeholder for the request url
-				URL url = null;
-				// get the request url
-				String requestURL = _request.getUrl();
 
 				// if we got one
 				if (requestURL != null) {
@@ -673,6 +707,24 @@ public class Webservice extends Action {
 						}
 					}
 
+					// look for any headers
+					if (headers.trim().length() > 0) {
+						// split on ;
+						String[] headerParts = headers.split(";");
+						// loop them
+						for (String header : headerParts) {
+							// get their pairs
+							String[] headerKeyPair = header.split(":");
+							// assume no value
+							String value = "";
+							// get second part as value if it exists
+							if (headerKeyPair.length > 1) value = headerKeyPair[1];
+							// set header!
+							connection.setRequestProperty(headerKeyPair[0], value);
+						}
+					}
+
+					// look for any authentication - only basic for the time being but others could be supported in future
 			        String auth = getProperty("auth");
 			        if("true".equalsIgnoreCase(auth)) {
 			        	String authType = getProperty("authType");
@@ -683,6 +735,9 @@ public class Webservice extends Action {
 			        		connection.setRequestProperty("Authorization", "Basic "+encoded);
 			        	}
 			        }
+
+			        // log
+			        _logger.debug("Web service action request : " + url + " " + action + " " + headers + " " + body);
 
 					// if a body has been specified
 					if (body.length() > 0) {
@@ -695,10 +750,13 @@ public class Webservice extends Action {
 
 						// write the processed body string into the request output stream
 						output.write(body.getBytes("UTF8"));
+
 					}
 
 					// check the response code
 					int responseCode = connection.getResponseCode();
+
+					_logger.debug("Web service action response code : " + responseCode);
 
 					// read input stream if all ok, otherwise something meaningful should be in error stream
 					if (responseCode == 200 || responseCode == 201) {
@@ -710,8 +768,13 @@ public class Webservice extends Action {
 
 						// read the response accordingly
 						if ("JSON".equals(_request.getType())) {
-							SOAJSONReader jsonReader = new SOAJSONReader();
+							// get the response
 							String jsonResponse = Strings.getString(response);
+							// log
+							_logger.debug("Web service action JSON response : " + jsonResponse);
+							// get a JSON reader
+							SOAJSONReader jsonReader = new SOAJSONReader();
+							// read the data
 							soaData = jsonReader.read(jsonResponse);
 						} else {
 							SOAXMLReader xmlReader = new SOAXMLReader(_request.getRoot());
@@ -737,38 +800,39 @@ public class Webservice extends Action {
 
 					} else {
 
+						// get the error stream
 						InputStream response = connection.getErrorStream();
 
+						// assume no message
 						String errorMessage = null;
 
+						// reader the response body
+						String responseBody = Strings.getString(response);
+
+						// log
+						_logger.debug("Web service action error response : " + responseBody);
+
+						// if SOAP
 						if ("SOAP".equals(_request.getType())) {
 
-							String responseXML = Strings.getString(response);
+							// read the fault code as error message
+							errorMessage = XML.getElementValue(responseBody, "faultcode");
 
-							errorMessage = XML.getElementValue(responseXML, "faultcode");
-
+							// if the was a faultcode
 							if (errorMessage != null) {
 
-								String faultString = XML.getElementValue(responseXML, "faultstring");
+								// read read the fault string
+								String faultString = XML.getElementValue(responseBody, "faultstring");
 
+								// combine if both present
 								if (faultString != null) errorMessage += " " + faultString;
 
 							}
 
 						}
 
-						if (errorMessage == null) {
-
-							BufferedReader rd = new BufferedReader( new InputStreamReader(response));
-
-							if (rd.ready())	errorMessage = rd.readLine();
-
-							rd.close();
-
-						}
-
-						// log the error
-						_logger.error(errorMessage);
+						// if still no message use the body
+						if (errorMessage == null) errorMessage = responseBody;
 
 						// only if there is no application cache show the error, otherwise it sends an empty response
 						if (actionCache == null) {
@@ -783,6 +847,7 @@ public class Webservice extends Action {
 
 					}
 
+					// disconnect
 					connection.disconnect();
 
 				} // request url != null

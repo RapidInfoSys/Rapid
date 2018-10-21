@@ -2704,7 +2704,7 @@ function Property_webserviceRequest(cell, propertyObject, property, details) {
 	table.append("<tr>" +
 			     "<td colspan='2' rowspan='3' style='padding:0px;vertical-align: top;'><table class='dialogueTable'>" +
 			     "<tr><td style='width: 20px;'></td><td><b>Input</b></td><td><b>Field</b></td></tr></table></td>" +
-			     "<td class='normalInputs' colspan='2' style='width:500px;padding:0 6px;'><b style='display:block;'>Request type</b><input type='radio' name='WSType" + propertyObject.id + "' value='SOAP'/>SOAP<input type='radio' name='WSType" + propertyObject.id + "' value='JSON'/>JSON<input type='radio' name='WSType" + propertyObject.id + "' value='XML'/>XML<b style='display:block;margin-top:5px;margin-bottom:5px;'>URL</b><input class='WSUrl' /></br><b style='display:block;margin-top:5px;margin-bottom:5px;'>Action</b><input class='WSAction' />" +
+			     "<td class='normalInputs' colspan='2' style='width:500px;padding:0 6px;'><b style='display:block;'>Request type</b><input type='radio' name='WSType" + propertyObject.id + "' value='SOAP'/>SOAP<input type='radio' name='WSType" + propertyObject.id + "' value='JSON'/>JSON<input type='radio' name='WSType" + propertyObject.id + "' value='XML'/>XML<b style='display:block;margin-top:5px;margin-bottom:5px;'>URL</b><input class='WSUrl' /></br><b style='display:block;margin-top:5px;margin-bottom:5px;'>Action</b><input class='WSAction' /></br><b style='display:block;margin-top:5px;margin-bottom:5px;'>Headers</b><input class='WSHeaders' />" +
 			     "<b style='display:block;margin-top:5px;margin-bottom:2px;'>Body</b>" +
 			     "<div id='bodySOA_" + dialogueId + "' style='width:100%;min-height:200px;' class='WSBody'></div><b style='display:block;'>Response transform</b><textarea style='width:100%;' class='WSTransform'></textarea><b style='display:block;;margin-bottom:5px;'>Response root element</b><input class='WSRoot' style='margin-bottom:5px;' /></td><td colspan='2' rowspan='3' style='padding:0px;vertical-align: top;'><table class='dialogueTable'><tr><td><b>Field</b></td><td colspan='2'><b>Output</b></td></tr></table></td></tr>");
 	
@@ -2816,6 +2816,14 @@ function Property_webserviceRequest(cell, propertyObject, property, details) {
 	// listener for the action
 	addListener( actionControl.keyup( {request: request}, function(ev) {
 		ev.data.request.action = $(ev.target).val();
+	}));
+	
+	// find the headers input box
+	var actionControl = table.find("input.WSHeaders");
+	actionControl.val(request.headers);
+	// listener for the action
+	addListener( actionControl.keyup( {request: request}, function(ev) {
+		ev.data.request.headers = $(ev.target).val();
 	}));
 	
 	// find the request body textarea - i.e. codeEditor
