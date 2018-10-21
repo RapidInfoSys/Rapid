@@ -84,6 +84,8 @@ public class Strings {
 
 	}
 
+	/*
+
 	// a fast way to count the number of occurrences of a pattern within a string
 	public static int occurrences(String string, String pattern) {
 		// assume no occurrences
@@ -92,6 +94,30 @@ public class Strings {
 		if (string != null && pattern != null) {
 			// replace pattern with nothing and calc difference in length
 			count = string.length() - string.replace(pattern, "").length() / pattern.length();
+		}
+		// return
+		return count;
+	}
+
+	*/
+
+	// a fast way to count the number of occurrences of a pattern within a string
+	public static int occurrences(String string, String pattern) {
+		// assume no occurrences
+		int count = 0;
+		// if both the string and pattern are non null
+		if (string != null && pattern != null) {
+			// get the length
+			int length = string.length();
+			// get the replaced string length
+			int replacedLength = string.replace(pattern, "").length();
+			// if any replacement happened
+			if (length > replacedLength) {
+				// get the pattern length
+				int patternLength = pattern.length();
+				// replace pattern with nothing and calc difference in length
+				count = (length - replacedLength) / patternLength;
+			}
 		}
 		// return
 		return count;
