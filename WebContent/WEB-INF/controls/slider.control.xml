@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<controls xmlVersion="1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../schemas/control.xsd">
+
+<!-- 
+
+Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
+
+gareth.edwards@rapid-is.co.uk
+
+
+This file is part of the Rapid Application Platform
+
+Rapid is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version. The terms require you to include
+the original copyright, and the license notice in all redistributions.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
+
+ -->
+
+	<control>
+	    
+	    <type>slider</type>
+	    <name>Slider</name>
+	    <image>images/radiobutton_24x24.png</image>
+	    <helpHtml>A simple control that places a drop down list on the page. These can be especially helpful for allowing users of your app to select from a multitude of options.</helpHtml>
+    
+	    <canUserAdd>true</canUserAdd>
+	    <canUserMove>true</canUserMove>
+	    <canUserAddPeers>true</canUserAddPeers>
+	     <canBeUsedForFormPageVisibilty>true</canBeUsedForFormPageVisibilty>
+	    <canValidate>true</canValidate>
+	    
+	    <properties>
+	        
+	        <property>
+	            <key>name</key>
+	            <name>Name</name>
+	            <changeValueJavaScript>text</changeValueJavaScript>
+	            <helpHtml>Name that can be given to the control. Names are used to help identify controls uniquely.</helpHtml>
+	        </property>
+	        
+	         <property>
+	            <key>label</key>
+	            <name>Form summary label</name>
+	            <setConstructValueFunction>return "";</setConstructValueFunction>
+	            <changeValueJavaScript>formText</changeValueJavaScript>
+	            <helpHtml>Summary label to appear at the end of the form. Leave blank to have the control and its value hidden.</helpHtml>
+	        </property>
+	         
+	        <property>
+	            <key>value</key>
+	            <name>Initial value</name>
+	            <changeValueJavaScript>integer</changeValueJavaScript>
+	            <refreshHtml>true</refreshHtml>
+	            <helpHtml>Selects one of the options from the dropdown as its initial value.</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>orientation</key>
+	            <name>Orientation</name>
+	            <setConstructValueFunction>return "h";</setConstructValueFunction>
+	            <changeValueJavaScript>select</changeValueJavaScript>
+	            <getValuesFunction>
+	                <![CDATA[
+return [["h","horizontal"],["v","vertical"]];
+					]]>
+	            </getValuesFunction>
+	            <refreshHtml>true</refreshHtml>
+	            <helpHtml>Sets the orientation and direction of the switch on/off change.</helpHtml>
+	        </property>
+	         	        
+	    </properties>
+	    
+	   	<resources>
+			
+			<resource>
+				<type>javascriptFile</type>
+				<contents>scripts_min/jquery-ui-1.12.1.min.js</contents>
+			</resource>
+			
+			<resource>
+				<type>javascriptLink</type>
+				<contents>scripts_min/jquery-touchPunch-0.2.3.min.js</contents>
+			</resource>
+			
+			<resource>
+	    		<type>cssFile</type>
+	    		<contents>styles/controls/jquery-ui.css</contents>
+	    	</resource>
+						
+		</resources>
+	    
+	    <getHtmlFunction>
+	        <![CDATA[
+// return our html for adding to our parent object	
+var html = "<div id='" + this.id + "' class='slider" + getStyleClasses(this) + "'></div>";
+// check we have options or a value list
+// return
+return html;
+	        ]]>
+	    </getHtmlFunction>
+	    
+	    <rebuildJavaScript>
+	        <![CDATA[
+// return slider to initial state if need be
+if (this.object.hasClass("ui-slider")) this.object.slider("destroy");
+// start settings object
+var settings = {range:"min"};
+// if vertical add setting
+if (this.orientation == "v") settings.orientation = "vertical";
+// if value add
+if (this.value) settings.value = this.value;
+// apply slider!   	
+this.object.slider(settings);   
+	    	]]>
+	    </rebuildJavaScript>
+	    
+	    <saveJavaScript>
+// return slider to initial state
+this.object.slider("destroy");
+	    </saveJavaScript>
+	    
+	   	<getDetailsFunction>
+	    	<![CDATA[
+return {
+	orientation:this.orientation,
+	value:this.value
+};
+			]]>
+	    </getDetailsFunction>
+	       
+	    <getDataFunction>
+	        <![CDATA[
+return $("#" + id).slider("value");
+			]]>
+	    </getDataFunction>
+	    
+	    <!-- 
+	    <setDataJavaScript>
+	        <![CDATA[
+var	data = makeDataObject(data, field);        
+var control = $("#" + id);
+if (data && data.rows && data.rows.length > 0) {
+	var foundField = false;
+	if (field && data.fields && data.fields.length > 0) {
+		for (var i in data.fields) {
+			if (data.fields[i] && field.toLowerCase() == data.fields[i].toLowerCase()) {
+				control.val(data.rows[0][i]);
+				foundField = true;
+				break;
+			}
+		}
+	}
+	if (!foundField) control.val(data.rows[0][0]);
+} else {
+	control.val("");
+}	                
+if (changeEvents) control.trigger("change");
+	        ]]>
+	    </setDataJavaScript>
+	     -->
+	    
+	    <events>
+	        <event>
+	            <type>change</type>
+	            <name>Change</name>
+	        </event>
+	        <event>
+	            <type>slide</type>
+	            <name>Slide</name>
+	        </event>
+	    </events>
+	    	    
+	    <styles>
+	        <style>
+	            <name>Slider</name>  
+	            <getAppliesToFunction>
+					<![CDATA[	      
+return "#" + this.id;
+	       			 ]]>	                
+	            </getAppliesToFunction>
+	        </style>
+	    </styles>
+	    
+	    <initJavaScript>
+	    	<![CDATA[
+var settings = {
+	range: "min",
+	change: function(ev, ui) {
+		var id = this.id;
+		if (id && window["Event_change_" + id]) window["Event_change_" + id](ev);
+	},
+	slide: function(ev, ui) {
+		var id = this.id;
+		if (id && window["Event_slide_" + id]) window["Event_slide_" + id](ev);
+	}
+}
+if (details.orientation == "v") settings.orientation = "vertical";
+if (details.value) settings.value = details.value;
+$( "#" + id).slider(settings);   
+	    	]]>
+	    </initJavaScript>
+  	    
+	</control>
+</controls>
