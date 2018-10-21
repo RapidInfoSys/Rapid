@@ -244,6 +244,14 @@ if (changeEvents) control.trigger("change");
 	    </events>
 	    
 	    <styles>
+	        <style>
+	            <name>Switch</name>  
+	            <getAppliesToFunction>
+					<![CDATA[	      
+return "#" + this.id;
+	       			 ]]>	                
+	            </getAppliesToFunction>
+	        </style>
 	         <style>
 	            <name>Switch button</name>  
 	            <getAppliesToFunction>
