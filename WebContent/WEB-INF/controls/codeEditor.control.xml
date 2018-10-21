@@ -336,8 +336,8 @@ if(myCodeMirror){
 // get a reference to the iFrame window
 var w = _pageIframe[0].contentWindow;
 
-   // get a reference to where the editor is going
-   var myDiv = w.document.getElementById(this.id);
+// get a reference to where the editor is going
+var myDiv = w.document.getElementById(this.id);
    
 //creates an editor instance, and appends it to the given DOM element
 //will start empty or with the value and will use the mode that we loaded
