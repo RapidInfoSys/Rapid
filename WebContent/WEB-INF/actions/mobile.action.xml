@@ -387,7 +387,7 @@ return "<option value=''>Please select...</option><option value ='html'" + (this
             
 	        <resource>
 	            <type>javascriptLink</type>
-	            <contents>scripts_min/jquery.touchSwipe.min.js</contents>
+	            <contents>scripts_min/jquery-touchSwipe-1.6.18.min.js</contents>
 	        </resource>
             
 		</resources>
