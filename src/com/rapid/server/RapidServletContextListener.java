@@ -429,8 +429,11 @@ public class RapidServletContextListener implements ServletContextListener {
 
 		int adapterCount = 0;
 
-		// retain our class constructors in a hashtable - this speeds up initialisation
+		// retain our form adapter class constructors in a hashtable - this speeds up initialisation
 		HashMap<String,Constructor> formConstructors = new HashMap<String,Constructor>();
+		
+		// retain our payment class constructors in a hashtable - this speeds up initialisation
+		HashMap<String,Constructor> paymentConstructors = new HashMap<String,Constructor>();
 
 		// create a JSON Array object which will hold json for all of the available security adapters
 		JSONArray jsonAdapters = new JSONArray();
@@ -467,15 +470,28 @@ public class RapidServletContextListener implements ServletContextListener {
 			String type = jsonFormAdapter.getString("type");
 			// get the class name from the json
 			String className = jsonFormAdapter.getString("class");
+			
 			// get the class
 			Class classClass = Class.forName(className);
-			// check the class extends com.rapid.security.SecurityAdapter
+			// check the class extends com.rapid.forms.FormAdapter
 			if (!Classes.extendsClass(classClass, com.rapid.forms.FormAdapter.class)) throw new Exception(type + " form adapter class " + classClass.getCanonicalName() + " must extend com.rapid.forms.FormsAdapter");
 			// check this type is unique
 			if (formConstructors.get(type) != null) throw new Exception(type + " form adapter already loaded. Type names must be unique.");
 			// add to constructors hashmap referenced by type
 			formConstructors.put(type, classClass.getConstructor(ServletContext.class, Application.class, String.class));
 
+			// look for a paymentGateway class
+			className = jsonFormAdapter.optString("paymentClass", null);
+			// if a payment class was provided and we don't yet have a constructor for this payment class
+			if (className != null && paymentConstructors.get(className) == null) {
+				// get the payment class
+				classClass = Class.forName(className);
+				// check the class implements com.rapid.forms.PaymentGateway
+				if (!Classes.extendsClass(classClass, com.rapid.forms.PaymentGateway.class)) throw new Exception(type + " form adapter paymentClass " + classClass.getCanonicalName() + " must extend com.rapid.forms.PaymentGateway");
+				// add to constructors hashmap referenced by type
+				paymentConstructors.put(className, classClass.getConstructor(ServletContext.class, Application.class));
+			}
+			
 			// add to our collection
 			jsonAdapters.put(jsonFormAdapter);
 
@@ -487,9 +503,13 @@ public class RapidServletContextListener implements ServletContextListener {
 		// put the jsonControls in a context attribute (this is available via the getJsonActions method in RapidHttpServlet)
 		servletContext.setAttribute("jsonFormAdapters", jsonAdapters);
 
-		// put the constructors hashmapin a context attribute (this is available via the getContructor method in RapidHttpServlet)
+		// put the constructors hashmap in a context attribute (this is available via the getContructor method in RapidHttpServlet)
 		servletContext.setAttribute("formConstructors", formConstructors);
+		
+		// put the constructors hashmap in a context attribute (this is available via the getContructor method in RapidHttpServlet)
+		servletContext.setAttribute("paymentConstructors", paymentConstructors);
 
+		// log
 		_logger.info(adapterCount + " form adapters loaded in .formAdapter.xml files");
 
 		return adapterCount;

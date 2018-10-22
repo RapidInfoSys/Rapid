@@ -35,6 +35,7 @@ import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.lang.reflect.Constructor;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -99,7 +100,8 @@ public abstract class FormAdapter {
 		// instance variables
 		private final String _appId, _version, _id, _password;
 		private String _maxPageId, _submittedDateTime, _submitMessage, _errorMessage;
-		boolean _saved, _complete, _showSubmitPage;
+		boolean _saved, _complete, _showSubmitPage, _paymentStarted;
+		
 
 		// properties
 
@@ -123,6 +125,10 @@ public abstract class FormAdapter {
 		// whether this form has been completed
 		public boolean getComplete() { return _complete; }
 		public void setComplete(boolean complete) { _complete = complete; }
+		
+		// whether this form has started payment
+		public boolean getPaymentStarted() { return _paymentStarted; }
+		public void setPaymentStarted(boolean paymentStarted) { _paymentStarted = paymentStarted; }
 
 		// the date/time the form was submitted to show on the summary screen
 		public String getSubmittedDateTime() { return _submittedDateTime; }
@@ -303,12 +309,14 @@ public abstract class FormAdapter {
 	protected String _type, _css, _submittedPage, _errorPage;
 	protected ServletContext _servletContext;
 	protected Application _application;
+	protected PaymentGateway _paymentGateway;
 	protected static Logger _logger;
 
 	// properties
 
 	public ServletContext getServletContext() { return _servletContext; }
 	public Application getApplication() { return _application; }
+	public PaymentGateway getPaymentGateway() { return _paymentGateway; }
 	public String getType() { return _type; }
 	public String getSubmittedPage() { return _submittedPage; }
 	public String getErrorPage() { return _errorPage; }
@@ -326,12 +334,28 @@ public abstract class FormAdapter {
 		for (int i = 0; i < jsonFormAdapters.length(); i ++) {
 			try {
 				// get an adapter
-				JSONObject jsonFormAdpter = jsonFormAdapters.getJSONObject(i);
+				JSONObject jsonFormAdapter = jsonFormAdapters.getJSONObject(i);
 				// if this is us
-				if (_type.equals(jsonFormAdpter.getString("type"))) {
+				if (_type.equals(jsonFormAdapter.getString("type"))) {
+					// look for a paymentGateway class
+					String paymentClass = jsonFormAdapter.optString("paymentClass", null);
+					// if we got one
+					if (paymentClass != null) {
+						// get the payment constructors
+						Map<String, Constructor> paymentConstructors = (Map<String, Constructor>) servletContext.getAttribute("paymentConstructors");
+						try {
+							// get its contructor
+							Constructor constructor = paymentConstructors.get(paymentClass);
+							// instantiate it
+							_paymentGateway = (PaymentGateway) constructor.newInstance(servletContext, application);
+						} catch (Exception ex) {
+							// log
+							_logger.error("Error instantiating payment gateway " + paymentClass + " for form " + _type);
+						}
+					}
 					// store submitted and erorr pages that we get in the json (from the adapter.xml file)
-					_submittedPage = jsonFormAdpter.optString("submittedPage", null);
-					_errorPage = jsonFormAdpter.optString("errorPage", null);
+					_submittedPage = jsonFormAdapter.optString("submittedPage", null);
+					_errorPage = jsonFormAdapter.optString("errorPage", null);
 					// we're done
 					break;
 				}
@@ -486,10 +510,68 @@ public abstract class FormAdapter {
 	protected String getSummaryPageLinkHtml(Page page, String pageReturn) {
 		return "<a href='~?a=" + _application.getId() + "&v=" + _application.getVersion() + "&p=" + page.getId() + "'>" + pageReturn + "</a>\n";
 	}
-
+	
+	// get the default form payment button
+	protected String getFormPaymentButtonHtml(RapidRequest rapidRequest) throws Exception {
+		return "<form action='~?a=" + _application.getId() + "&v=" + _application.getVersion() + "&action=pay' method='POST'>\n<input type='hidden' name='csrfToken' value='" + rapidRequest.getCSRFToken() + "' />\n<button type='submit' class='formSummarySubmit'>Pay</button>\n</form>\n";
+	}
+	
 	// get the default form submit button
-	protected String getFormSubmitButtonHtml(RapidRequest rapidRequest) throws UnsupportedEncodingException{
-		return "<form action='~?a=" + _application.getId() + "&v=" + _application.getVersion()  + "&action=submit' method='POST'>\n<input type='hidden' name='csrfToken' value='" + rapidRequest.getCSRFToken() + "' />\n<button type='submit' class='formSummarySubmit'>Submit</button>\n</form>\n";
+	protected String getFormSubmitButtonHtml(RapidRequest rapidRequest) throws Exception {
+		
+		// default Submit button
+		String html = "<form action='~?a=" + _application.getId() + "&v=" + _application.getVersion()  + "&action=submit' method='POST'>\n<input type='hidden' name='csrfToken' value='" + rapidRequest.getCSRFToken() + "' />\n<button type='submit' class='formSummarySubmit'>Submit</button>\n</form>\n";
+				
+		// if no payment 
+		if (_paymentGateway == null) {
+			
+			// return simple submit straight away
+			return html;
+			
+		} else {
+			
+			// get the form details
+			UserFormDetails formDetails = getUserFormDetails(rapidRequest);
+			
+			// if payment has started 
+			if (formDetails.getPaymentStarted()) {
+				
+				// assume there was an error getting the status
+				int status = PaymentGateway.PAYMENT_ERROR;
+				
+				try {
+					
+					// get the status
+					status = _paymentGateway.getPaymentStatus(rapidRequest);
+					
+				} catch (Exception ex) {
+					
+					// log error
+					_logger.error("Error getting payment status : " + ex.getMessage(), ex);
+					
+				}
+				
+				// if complete
+				if (status != PaymentGateway.PAYMENT_SUCCESS) {
+					
+					// get the pay button html
+					html = getFormPaymentButtonHtml(rapidRequest);
+					// add the feedback
+					html += "<p class='paymentMessage'>" + _paymentGateway.getPaymentStatusMessage(rapidRequest, status) + "</p>";
+					
+				}
+				
+			} else {
+				
+				// a payment button without feedback
+				html = getFormPaymentButtonHtml(rapidRequest);
+				
+			}
+			
+			return html;
+			
+		}
+		
 	}
 
 	// the end of a page block in the form summary

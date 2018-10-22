@@ -59,6 +59,7 @@ import com.rapid.forms.FormAdapter.FormControlValue;
 import com.rapid.forms.FormAdapter.FormPageControlValues;
 import com.rapid.forms.FormAdapter.ServerSideValidationException;
 import com.rapid.forms.FormAdapter.UserFormDetails;
+import com.rapid.forms.PaymentGateway;
 import com.rapid.security.SecurityAdapter;
 import com.rapid.security.SecurityAdapter.User;
 import com.rapid.server.filter.RapidFilter;
@@ -1105,8 +1106,8 @@ public class Rapid extends RapidHttpServlet {
 									// log it!
 									logger.trace("Form data : " + formData);
 
-									// if there's a submit action
-									if ("submit".equals(request.getParameter("action"))) {
+									// if there's a submit or pay action
+									if ("submit".equals(request.getParameter("action")) || "pay".equals(request.getParameter("action")) ) {
 
 										// if submitted already go to start (should never happen)
 										if (formDetails.getSubmitted()) {
@@ -1146,52 +1147,81 @@ public class Rapid extends RapidHttpServlet {
 														}
 													}
 												}
-
-												// do the submit (this will call the non-abstract submit, manage the form state, and retain the submit message)
-												if (csrfPass) formAdapter.doSubmitForm(rapidRequest);
-
-												// place holder for first submitted page specified in the designer for the app
-												String submittedPageId = getFirstPageForFormType(app, Page.FORM_PAGE_TYPE_SUBMITTED);
-												// place holder for the submitted page from the adapter
-												String submittedPage = formAdapter.getSubmittedPage();
-
-												// check for neither app nor adapter submit page or crf fail
-												if ((submittedPageId == null && submittedPage == null) || !csrfPass) {
-
-													// invalidate the form
-													formAdapter.setUserFormDetails(rapidRequest, null);
-
-													// if we passed csrf
+												
+												// check for pay (if not must be submit)
+												if ("pay".equals(request.getParameter("action"))) {
+													
+													// check csrf
 													if (csrfPass) {
-
-														logger.debug("Returning to start - form has been submitted, no submitted page");
-
+														
+														// get payment gateway
+														PaymentGateway paymentGateway = formAdapter.getPaymentGateway();
+														
+														// get redirect url
+														String paymentUrl = paymentGateway.getPaymentUrl(rapidRequest);
+														
+														// update status to started
+														formDetails.setPaymentStarted(true);
+														
+														// redirect to payment url
+														response.sendRedirect(paymentUrl);
+														
 													} else {
-
-														logger.debug("Returning to start - csrf failed");
-
+														
+														// go to the start page. Destroy session unless user has the design role
+														gotoStartPage(request, response, app, !security.checkUserRole(rapidRequest, DESIGN_ROLE));
+														
 													}
-
-													// go to the start page. Destroy session unless user has the design role
-													gotoStartPage(request, response, app, !security.checkUserRole(rapidRequest, DESIGN_ROLE));
-
+													
 												} else {
+													
+													// do the submit (this will call the non-abstract submit, manage the form state, and retain the submit message)
+													if (csrfPass) formAdapter.doSubmitForm(rapidRequest);
 
-													// look for an app submitted page
-													if (submittedPageId == null) {
+													// place holder for first submitted page specified in the designer for the app
+													String submittedPageId = getFirstPageForFormType(app, Page.FORM_PAGE_TYPE_SUBMITTED);
+													// place holder for the submitted page from the adapter
+													String submittedPage = formAdapter.getSubmittedPage();
 
-														// request the adapter submitted page
-														response.sendRedirect(submittedPage);
+													// check for neither app nor adapter submit page or crf fail
+													if ((submittedPageId == null && submittedPage == null) || !csrfPass) {
+
+														// invalidate the form
+														formAdapter.setUserFormDetails(rapidRequest, null);
+
+														// if we passed csrf
+														if (csrfPass) {
+
+															logger.debug("Returning to start - form has been submitted, no submitted page");
+
+														} else {
+
+															logger.debug("Returning to start - csrf failed");
+
+														}
+
+														// go to the start page. Destroy session unless user has the design role
+														gotoStartPage(request, response, app, !security.checkUserRole(rapidRequest, DESIGN_ROLE));
 
 													} else {
 
-														// no adapter page so request the first designer submitted page
-														response.sendRedirect("~?a=" + app.getId() + "&v=" + app.getVersion() + "&p=" + submittedPageId);
+														// look for an app submitted page
+														if (submittedPageId == null) {
+
+															// request the adapter submitted page
+															response.sendRedirect(submittedPage);
+
+														} else {
+
+															// no adapter page so request the first designer submitted page
+															response.sendRedirect("~?a=" + app.getId() + "&v=" + app.getVersion() + "&p=" + submittedPageId);
+
+														}
 
 													}
-
-												}
-
+													
+												} // pay / submit check
+												
 
 											} catch (Exception ex) {
 

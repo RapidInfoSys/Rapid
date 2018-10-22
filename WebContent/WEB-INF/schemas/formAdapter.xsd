@@ -69,6 +69,18 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>
+				<xs:element name="paymentClass" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Forms that take payments must provide a class 
+						that implements com.rapid.forms.PaymentGateway
+						</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:minLength value="1" />
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
 				<xs:element name="canSaveForms" type="xs:boolean">
 					<xs:annotation>
 						<xs:documentation>Whether this form adapter supports saving and resuming of forms - affects whether this is offered as an option in the form actions</xs:documentation>
