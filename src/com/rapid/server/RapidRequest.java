@@ -100,6 +100,13 @@ public class RapidRequest {
 			return _session.getAttribute(name);
 		}
 	}
+	
+	// set a specified session attribute
+	public void setSessionAttribute(String name, Object object) {
+		if (_session != null) {
+			_session.setAttribute(name, object);
+		}
+	}
 
 	// get the device details
 	public String getDevice() {  return (String) getSessionAttribute(RapidFilter.SESSION_VARIABLE_USER_DEVICE); }
