@@ -148,7 +148,7 @@ public class XML {
 
 		int startPos = xml.indexOf("<" + elementName);
 
-	    if (startPos > 0) {
+	    if (startPos >= 0) {
 
 	    	char c = xml.charAt(startPos + elementName.length() + 1);
 
@@ -166,7 +166,7 @@ public class XML {
 
 	    	}
 
-	    	if (startPos > 0) {
+	    	if (startPos >= 0) {
 
 	    		int endPos = xml.indexOf("</" + elementName + ">");
 
