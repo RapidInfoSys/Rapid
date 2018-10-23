@@ -5796,6 +5796,7 @@ var _formObjects = {
 		"note": {"name" : "Note", "roles" : _formObjectRoles["CPL"], "types" : [["OTHER","Other"],["MEDICAL","Medical"],["TENANCY","Tenancy"]]},
 		"party": {"name" : "Party", "roles" : _formObjectRoles["PL"], "types": [["OTHER","Other"],["DOCTOR","Doctor"],["LANDLORD","Landlord"],["LETAGENT","Lettings agent"],["SOLICITOR","Solicitor"],["SUPTWORKER","Support worker"]], "attributes" : [["","Please select..."],["name","Full name"],["title","Title"],["forename","Forename"],["surname","Surname"],["dob","Date of birth"],["gender","Gender"],["ethnicity","Ethnicity"],["nationality","Nationality"],["relationship","Relationship"],["isJoint","Is joint case party"],["isWith","Is with main case party"],["name","Organisation name"],["startDate","Start date"],["endDate","End date"],["reference","Reference"],["contact","Contact preference"],["other","Other"]]},
 		"question": {"name" : "Question", "roles" : _formObjectRoles["CPL"]},
+		"payment": {"name" : "Payment", "roles" : [["case","Case"]], "types" : [["DESC","Description"],["AMT","Amount"]]},
 		"other" : {"name" : "Other", "roles" : _formObjectRoles["CPL"]}
 }
 
