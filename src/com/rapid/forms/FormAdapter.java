@@ -101,7 +101,7 @@ public abstract class FormAdapter {
 		private final String _appId, _version, _id, _password;
 		private String _maxPageId, _submittedDateTime, _submitMessage, _errorMessage;
 		boolean _saved, _complete, _showSubmitPage, _paymentStarted;
-		
+
 
 		// properties
 
@@ -125,7 +125,7 @@ public abstract class FormAdapter {
 		// whether this form has been completed
 		public boolean getComplete() { return _complete; }
 		public void setComplete(boolean complete) { _complete = complete; }
-		
+
 		// whether this form has started payment
 		public boolean getPaymentStarted() { return _paymentStarted; }
 		public void setPaymentStarted(boolean paymentStarted) { _paymentStarted = paymentStarted; }
@@ -510,68 +510,68 @@ public abstract class FormAdapter {
 	protected String getSummaryPageLinkHtml(Page page, String pageReturn) {
 		return "<a href='~?a=" + _application.getId() + "&v=" + _application.getVersion() + "&p=" + page.getId() + "'>" + pageReturn + "</a>\n";
 	}
-	
+
 	// get the default form payment button
 	protected String getFormPaymentButtonHtml(RapidRequest rapidRequest) throws Exception {
 		return "<form action='~?a=" + _application.getId() + "&v=" + _application.getVersion() + "&action=pay' method='POST'>\n<input type='hidden' name='csrfToken' value='" + rapidRequest.getCSRFToken() + "' />\n<button type='submit' class='formSummarySubmit'>Pay</button>\n</form>\n";
 	}
-	
+
 	// get the default form submit button
 	protected String getFormSubmitButtonHtml(RapidRequest rapidRequest) throws Exception {
-		
+
 		// default Submit button
 		String html = "<form action='~?a=" + _application.getId() + "&v=" + _application.getVersion()  + "&action=submit' method='POST'>\n<input type='hidden' name='csrfToken' value='" + rapidRequest.getCSRFToken() + "' />\n<button type='submit' class='formSummarySubmit'>Submit</button>\n</form>\n";
-				
-		// if no payment 
+
+		// if no payment
 		if (_paymentGateway == null) {
-			
+
 			// return simple submit straight away
 			return html;
-			
+
 		} else {
-			
+
 			// get the form details
 			UserFormDetails formDetails = getUserFormDetails(rapidRequest);
-			
-			// if payment has started 
+
+			// if payment has started
 			if (formDetails.getPaymentStarted()) {
-				
+
 				// assume there was an error getting the status
 				int status = PaymentGateway.PAYMENT_ERROR;
-				
+
 				try {
-					
+
 					// get the status
 					status = _paymentGateway.getPaymentStatus(rapidRequest);
-					
+
 				} catch (Exception ex) {
-					
+
 					// log error
 					_logger.error("Error getting payment status : " + ex.getMessage(), ex);
-					
+
 				}
-				
+
 				// if complete
 				if (status != PaymentGateway.PAYMENT_SUCCESS) {
-					
+
 					// get the pay button html
 					html = getFormPaymentButtonHtml(rapidRequest);
 					// add the feedback
 					html += "<p class='paymentMessage'>" + _paymentGateway.getPaymentStatusMessage(rapidRequest, status) + "</p>";
-					
+
 				}
-				
+
 			} else {
-				
+
 				// a payment button without feedback
 				html = getFormPaymentButtonHtml(rapidRequest);
-				
+
 			}
-			
+
 			return html;
-			
+
 		}
-		
+
 	}
 
 	// the end of a page block in the form summary

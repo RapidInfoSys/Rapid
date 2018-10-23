@@ -1100,6 +1100,9 @@ public class Rapid extends RapidHttpServlet {
 
 								} else {
 
+									// get any form action
+									String action = request.getParameter("action");
+
 									// this is a form page's data being submitted
 									String formData = new String(bodyBytes, "UTF-8");
 
@@ -1107,7 +1110,7 @@ public class Rapid extends RapidHttpServlet {
 									logger.trace("Form data : " + formData);
 
 									// if there's a submit or pay action
-									if ("submit".equals(request.getParameter("action")) || "pay".equals(request.getParameter("action")) ) {
+									if ("submit".equals(action) || "pay".equals(action) ) {
 
 										// if submitted already go to start (should never happen)
 										if (formDetails.getSubmitted()) {
@@ -1147,34 +1150,34 @@ public class Rapid extends RapidHttpServlet {
 														}
 													}
 												}
-												
+
 												// check for pay (if not must be submit)
-												if ("pay".equals(request.getParameter("action"))) {
-													
+												if ("pay".equals(action)) {
+
 													// check csrf
 													if (csrfPass) {
-														
+
 														// get payment gateway
 														PaymentGateway paymentGateway = formAdapter.getPaymentGateway();
-														
+
 														// get redirect url
 														String paymentUrl = paymentGateway.getPaymentUrl(rapidRequest);
-														
+
 														// update status to started
 														formDetails.setPaymentStarted(true);
-														
+
 														// redirect to payment url
 														response.sendRedirect(paymentUrl);
-														
+
 													} else {
-														
+
 														// go to the start page. Destroy session unless user has the design role
 														gotoStartPage(request, response, app, !security.checkUserRole(rapidRequest, DESIGN_ROLE));
-														
+
 													}
-													
+
 												} else {
-													
+
 													// do the submit (this will call the non-abstract submit, manage the form state, and retain the submit message)
 													if (csrfPass) formAdapter.doSubmitForm(rapidRequest);
 
@@ -1216,44 +1219,46 @@ public class Rapid extends RapidHttpServlet {
 															// no adapter page so request the first designer submitted page
 															response.sendRedirect("~?a=" + app.getId() + "&v=" + app.getVersion() + "&p=" + submittedPageId);
 
-														}
+														} // submittedPageId check
 
-													}
-													
+													} // submitted page or csrf fail check
+
 												} // pay / submit check
-												
 
 											} catch (Exception ex) {
+
+												// log the error
+												logger.error("Error with form submit " + action + " : " + ex.getMessage(), ex);
 
 												// place holder for first submitted page specified in designer for app
 												String errrorPageId = getFirstPageForFormType( app, Page.FORM_PAGE_TYPE_ERROR);
 												// place holder for the submitted page from the adapter
 												String errorPage = formAdapter.getErrorPage();
 
-												// check we got an error page from the designer
+												// check we got an error page from the application
 												if (errrorPageId == null) {
 
 													// check we got an error page from the adapter
 													if (errorPage == null) {
 
-														// just rethrow the error
+														// no error pages from adapter or designer just rethrow the error
 														throw ex;
 
 													} else {
 
-														// request the error page
+														// request the adapter error page
 														response.sendRedirect(errorPage);
 
-													}
+													} // error page check
 
 												} else {
 
-													// request the first error page
+													// request the first application error page
 													response.sendRedirect("~?a=" + app.getId() + "&v=" + app.getVersion() + "&p=" + errrorPageId);
 
-												}
+												} // errorPageId check
 
-											}
+											} // try / catch
 
 										} // submit check
 
