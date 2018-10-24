@@ -219,6 +219,18 @@ i.delete.fa.fa-trash {
 	float: right;
 }
 
+div.resizeX {
+	position:absolute;
+	top:0;
+	left:0;
+	width: 5px;
+	height: 100%;
+	background-color: red;
+	opacity: 0;
+	cursor:ew-resize;
+	z-index: 100;
+}
+
 div.propertyDialogue {
 	position: absolute;
 	right: 10px;
@@ -232,18 +244,7 @@ div.propertyDialogue {
   	-moz-user-select: -moz-none;
   	-ms-user-select: none;
   	user-select: none;
-}
-
-div.resizeX {
-	position:absolute;
-	top:0;
-	left:0;
-	width: 5px;
-	height: 100%;
-	background-color: red;
-	opacity: 0;
-	cursor:ew-resize;
-	z-index: 100;
+	box-shadow: -1px 0px 5px 1px #9D9D9D;
 }
 
 .propertyDialogue span {
@@ -254,6 +255,18 @@ div.resizeX {
 .propertyDialogue span.fa {
 	font-size: 20px;
 	min-width: 25px;
+}
+
+.propertyDialogue table {
+	width: 100%;
+}
+
+.propertyDialogue td.selected {
+	background-color: #bbb;
+}
+
+.propertyDialogue input:focus {
+    outline: 0;
 }
 
 .propertyAction{

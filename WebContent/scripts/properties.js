@@ -4998,11 +4998,13 @@ function Property_glyphCode(cell, controlAction, property, details) {
 	}
 	
 	// retrieve or create the dialogue
-	var dialogue = getDialogue(cell, controlAction, property, details, 200, "Glyphs");		
-	// remove the standard table
-	dialogue.find("table").first().remove();
-	// add a scrolling div with the table inside
-	dialogue.append("<div style='overflow-y:scroll;max-height:400px;margin-top:10px;'><table></table></div>");
+	var dialogue = getDialogue(cell, controlAction, property, details, 200, "Glyph");		
+	// remove any previous table
+	dialogue.find("table").remove();
+	// add a scrolling div with the search inside, if we need one
+	if (!dialogue.find("div")[0]) dialogue.append("<div style='overflow-y:scroll;max-height:400px;margin-top:10px;'><input class='glyphSearch' placeholder='Search'></div>");
+	// add the table
+	dialogue.find("div").append("<table></table>");
 	// get the new table
 	table = dialogue.find("table").first();
 	// add all of the glyphs, with the current one highlighted
@@ -5014,7 +5016,34 @@ function Property_glyphCode(cell, controlAction, property, details) {
 	}
 	// if a position was set go back to it
 	if (dialogue.attr("data-scroll")) table.parent().scrollTop(dialogue.attr("data-scroll"));
-		
+	
+	// add listener for searching for a gylph
+	addListener( dialogue.find("input.glyphSearch").keyup({table: table}, function(ev) {
+		// get the search term
+		var s = $(this).val();
+		// if there was one
+		if (s) {
+			// check every row
+			ev.data.table.find("tr").each(function(){
+				// get the row
+				var r = $(this);
+				// look for search term
+				if (r.text().indexOf(s) >= 0) {
+					r.show();
+				} else {
+					r.hide();
+				}
+			});
+		} else {
+			// show all rows
+			ev.data.table.find("tr").show();
+		}
+	}));
+	
+	// fire it for any previous searches
+	dialogue.find("input.glyphSearch").keyup();
+	
+	// add listener for selecting a gylph	
 	addListener( table.find("td").click({cell: cell, controlAction: controlAction, property: property, details: details}, function(ev) {
 		// get the cell
 		var cell = $(ev.target).closest("td");
@@ -5028,7 +5057,7 @@ function Property_glyphCode(cell, controlAction, property, details) {
 		var table = cell.closest("table");
 		// add the scroll position
 		dialogue.attr("data-scroll",table.parent().scrollTop());
-		// update the property
+		// update the property - this will apply the html change
 		updateProperty(ev.data.cell, ev.data.controlAction, ev.data.property, ev.data.details, code);
 	}));
 	

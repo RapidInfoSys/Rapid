@@ -1052,10 +1052,6 @@ table.propertiesPanelTable, table.stylesPanelTable {
 
 }
 
-.propertyDialogue {
-  box-shadow: -1px 0px 5px 1px #9D9D9D;
-}
-
 #controlPanel, #propertiesPanel {
   background: #202326;
 }
