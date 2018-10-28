@@ -113,13 +113,13 @@ public class Control extends Action {
 			} else if ("showError".equals(actionType)) {
 				js += "showError(server, status, message);";
 			} else if ("scrollTo".equals(actionType)) {
-				// check if page
-				if (page.getId().equals(controlId)) {
+				// check if page (or control js not populated)
+				if (page.getId().equals(controlId) || js.length() == 0) {
 					// scroll to top of page
 					js = "$('html, body').scrollTop(0);";
 				} else {
-					// scroll to control y position, if present
-					js = "if (js.length) $('html, body').scrollTop(" + js + "offset().top);";
+					// scroll to control y position
+					js = "$('html, body').scrollTop(" + js + "offset().top);";
 				}
 			} else if ("hideDialogue".equals(actionType)) {
 				js += "hideDialogue(false,'" + controlId + "');";
