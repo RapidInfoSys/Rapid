@@ -180,9 +180,6 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 			// cast response to http
 			HttpServletResponse response = (HttpServletResponse) res;
 
-			// only allow in frame if sameorigin
-			response.addHeader("X-FRAME-OPTIONS", "SAMEORIGIN" );
-
 			// assume default login page
 			String loginPath = LOGIN_PATH;
 			// assume default index page

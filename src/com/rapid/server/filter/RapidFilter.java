@@ -27,7 +27,6 @@ package com.rapid.server.filter;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,13 +39,10 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.mysql.jdbc.StringUtils;
-import com.rapid.core.Application;
 import com.rapid.core.Applications;
 import com.rapid.utils.Classes;
 
@@ -64,6 +60,7 @@ public class RapidFilter implements Filter {
 
 	private RapidAuthenticationAdapter _authenticationAdapter;
 	private boolean _noCaching;
+	private String _xFrameOptions;
 
 	private Set<String> _resourceDirs = null;
 	private int _contextIdx = 1;		//keep track of the context position of the URL
@@ -92,14 +89,16 @@ public class RapidFilter implements Filter {
 				// try and instantiate the authentication adapter
 				Class classClass = Class.forName(authenticationAdapterClass);
 				// check this class has the right super class
-				if (!Classes.extendsClass(classClass, com.rapid.server.filter.RapidAuthenticationAdapter.class))
-					throw new Exception(authenticationAdapterClass
-							+ " must extend com.rapid.server.filter.RapidAuthenticationAdapter.");
+				if (!Classes.extendsClass(classClass, com.rapid.server.filter.RapidAuthenticationAdapter.class)) throw new Exception(authenticationAdapterClass + " must extend com.rapid.server.filter.RapidAuthenticationAdapter.");
 				// instantiate an object and retain
-				_authenticationAdapter = (RapidAuthenticationAdapter) classClass.getConstructor(FilterConfig.class)
-						.newInstance(filterConfig);
+				_authenticationAdapter = (RapidAuthenticationAdapter) classClass.getConstructor(FilterConfig.class).newInstance(filterConfig);
 
 			}
+
+			// look for a specified xFrameOptions header, the default is SAMEORIGIN
+			_xFrameOptions = filterConfig.getInitParameter("xFrameOptions");
+			// if we didn't get one set to SAMEORIGIN, the default
+			if (_xFrameOptions == null) _xFrameOptions = "SAMEORIGIN";
 
 		} catch (Exception ex) {
 
@@ -111,8 +110,7 @@ public class RapidFilter implements Filter {
 	}
 
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
-			throws IOException, ServletException {
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
 
 		_logger.trace("Process filter request...");
 
@@ -129,15 +127,16 @@ public class RapidFilter implements Filter {
 		String ua = req.getHeader("User-Agent");
 
 		// if IE send X-UA-Compatible to prevent compatibility view
-		if (ua != null && ua.indexOf("MSIE") != -1)
-			res.addHeader("X-UA-Compatible", "IE=edge,chrome=1");
+		if (ua != null && ua.indexOf("MSIE") != -1) res.addHeader("X-UA-Compatible", "IE=edge,chrome=1");
+
+		// add x frame option for iframe's etc
+		if (_xFrameOptions != null && _xFrameOptions.length() > 0) res.addHeader("X-FRAME-OPTIONS", _xFrameOptions);
 
 		// set all responses as UTF-8
 		response.setCharacterEncoding("utf-8");
 
 		// if no caching is on, try and prevent cache
-		if (_noCaching)
-			noCache(res);
+		if (_noCaching) noCache(res);
 
 		// assume this request requires authentication
 		boolean requiresAuthentication = true;
@@ -170,15 +169,14 @@ public class RapidFilter implements Filter {
 		}
 
 		// online.htm doesn't need authentication
-		if ("/online.htm".equals(path))
-			requiresAuthentication = false;
+		if ("/online.htm".equals(path)) requiresAuthentication = false;
 
 		// safety doesn't need authentication
-		if ("/safety".equals(path))
-			requiresAuthentication = false;
+		if ("/safety".equals(path)) requiresAuthentication = false;
 
 		// if this request requires authentication
 		if (requiresAuthentication) {
+
 			// get a filtered request
 			ServletRequest filteredRequest = _authenticationAdapter.process(request, response);
 			String[] pathPart = (path.replaceFirst("/", "")).split("/");
@@ -188,39 +186,35 @@ public class RapidFilter implements Filter {
 
 				String rapidForwardURL;
 				Applications applications = (Applications) request.getServletContext().getAttribute("applications");
-				
-				
+
 				// if user has provided at least 1 path part (i.e. part1/) and the first part is a known application
 				if (pathPart.length >= 1 && applications.get(pathPart[0]) != null) {
 
 					// get the resource filenames only once
-					if (_resourceDirs == null) {
-						setResourceDirs(req);
-					}
+					if (_resourceDirs == null) 	setResourceDirs(req);
 
 					String appID = pathPart[0];
 					rapidForwardURL = "/~?a=" + appID;
-					
+
 					if ("POST".equals(req.getMethod()) || ("GET".equals(req.getMethod()) && "~".equals(pathPart[pathPart.length - 1]))) {
 						rapidForwardURL = "/~?" + req.getQueryString();
-					
 
 					} else { //any other get requests
 
 						String version, page;
-						
+
 						switch (pathPart.length) {
 						case 1:	//if URL contains only the appID
 							rapidForwardURL = "/~?a=" + appID;
 							break;
-						
+
 						case 2:	//if URL contains appID/p or appID/v
 							// if what followed by appID is a Resource folder deal with it
 							if (isResource(pathPart[1])) {
 								rapidForwardURL = path.replaceFirst("/" + appID, "");
-					
+
 							} else { // otherwise it must be an application
-								
+
 								// Check whether 2nd part is a page or version only
 								if ("p".equalsIgnoreCase(String.valueOf(pathPart[1].charAt(0)))) {
 									page = pathPart[1];
@@ -230,12 +224,12 @@ public class RapidFilter implements Filter {
 									version = pathPart[1];
 									rapidForwardURL += "&v=" + version;
 								}
-								
+
 								_contextIdx = 1;
 
 							}
 							break;
-							
+
 						default:	// if more than 2 parts
 							// check if this is a resource - remember the contextIdx position
 							if (isResource(pathPart[_contextIdx])) {
@@ -254,14 +248,14 @@ public class RapidFilter implements Filter {
 							}
 							break;
 						}//end of switch
-						
+
 
 					}// end of if
-					
+
 					// forward the newly reconstructed URL
 					RequestDispatcher dispatcher = filteredRequest.getRequestDispatcher(rapidForwardURL);
 					dispatcher.forward(filteredRequest, response);
-					
+
 				} else {
 
 					// for regular rapid url formats

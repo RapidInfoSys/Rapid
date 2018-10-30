@@ -88,11 +88,18 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
      -->
      <!-- 
     <init-param>
-         <description>Comma seperated values that the client IP address must start with in order to see sensitive pages such as login.jsp, logout.jsp, design.jsp, the designer servlet, and the Rapid Admin application</description>
+         <description>Comma separated values that the client IP address must start with in order to see sensitive pages such as login.jsp, logout.jsp, design.jsp, the designer servlet, and the Rapid Admin application</description>
         <param-name>ipcheck</param-name>
         <param-value>127.0.0.1,0:0:0:0:0:0:0:1,10.,192.</param-value>
     </init-param>
-     -->
+    -->
+    
+     <init-param>
+         <description>Value for the X-FRAME-OPTIONS header to prevent click-jacking, etc. If not specified will be SAMEORIGIN</description>
+        <param-name>xFrameOptions</param-name>
+        <param-value>ALLOWALL</param-value>
+    </init-param>
+     
   </filter>
   <filter-mapping>
     <filter-name>RapidFilter</filter-name>
