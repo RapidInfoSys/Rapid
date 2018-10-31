@@ -3619,7 +3619,7 @@ function Property_logicConditions(cell, action, property, details) {
 	// only if there are 2 or more conditions
 	if (conditions.length > 1) {		
 		// add type
-		table.append("<tr><td colspan='4' style='padding-left:12px;'><input type='radio' name='" + action.id + "type' value='and'" + (action.conditionsType == "and" ? " checked='checked'" : "") + "/>all conditions must be true (And) <input type='radio' name='" + action.id + "type' value='or'" + (action.conditionsType == "or" ? " checked='checked'" : "") + "/>any condition can be true (Or) </td></tr>");
+		table.append("<tr><td colspan='4' style='padding-left:12px;'><label><input type='radio' name='" + action.id + "type' value='and'" + (action.conditionsType == "and" ? " checked='checked'" : "") + "/>all conditions must be true (And)</label><label><input type='radio' name='" + action.id + "type' value='or'" + (action.conditionsType == "or" ? " checked='checked'" : "") + "/>any condition can be true (Or)</label></td></tr>");
 		// add change listeners
 		table.find("input[name=" + action.id + "type]").change( function(ev){
 			// set the condition type to the new val
