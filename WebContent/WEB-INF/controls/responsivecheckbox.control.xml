@@ -181,7 +181,7 @@ html += "<div id='" + this.id + "' class='r-checkbox" + classes + "'>";
 html += "<div class='check-input form-group" + "'>";
 html+= "<label id='" + this.id + "label' for='" + this.id + "checkbox'>";
 html += "<input name='" + this.id + "' type='hidden' value=''></input>"; // the stand-in if unticked
-html += "<input id='" + this.id + "checkbox' name='" + this.id + "' type='checkbox' " + checked + " value='" + value + "'></input>";
+html += "<input id='" + this.id + "checkbox' name='" + this.id + "' type='checkbox' " + checked + " value='" + value + "'></input><span></span>";
 html += "<span>" + (this.text ? this.text : "") + "</span>";
 html += "</label></div></div>";
 return html;

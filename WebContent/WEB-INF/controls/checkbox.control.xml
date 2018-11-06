@@ -101,7 +101,7 @@ if (this.checked == "true" || this.checked == true) checked=" checked='checked'"
 var value = "true";
 if (this.value) value = this.value;
 
-return "<label id='" + this.id + "' class='checkbox" + getStyleClasses(this) + "' for='" + this.id + "checkbox'><input type='hidden' name='" +  this.id + "' value=''></input><input id='" + this.id + "checkbox' name='" + this.id + "' type='checkbox'" + checked + " value='" + escapeApos(value) + "'></input><span>" + (this.text ? this.text : "") + "</span></label>";
+return "<label id='" + this.id + "' class='checkbox" + getStyleClasses(this) + "' for='" + this.id + "checkbox'><input type='hidden' name='" +  this.id + "' value=''></input><input id='" + this.id + "checkbox' name='" + this.id + "' type='checkbox'" + checked + " value='" + escapeApos(value) + "'></input><span></span><span>" + (this.text ? this.text : "") + "</span></label>";
 
 	        ]]>
 	    </getHtmlFunction> 

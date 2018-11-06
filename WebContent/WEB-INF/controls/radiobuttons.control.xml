@@ -162,7 +162,7 @@ if (this.buttons || this.valueList) {
 		label = "<span>" + label + "</span>";
 		radiobuttonHtml += "<label>";
 		if (this.buttonposition == 'R') radiobuttonHtml += label;
-		radiobuttonHtml += "<input type='radio' name='" + (this.group ? escapeApos(this.group) : this.id) + "' id='" + this.id + i + "' value='" + escapeApos(value) + "' " + (this.value == value ? "checked='checked'" :  "") + "></input>";
+		radiobuttonHtml += "<input type='radio' name='" + (this.group ? escapeApos(this.group) : this.id) + "' id='" + this.id + i + "' value='" + escapeApos(value) + "' " + (this.value == value ? "checked='checked'" :  "") + "></input><span></span>";
 		if (this.buttonposition == 'L') radiobuttonHtml += label;		
 		radiobuttonHtml += "</label>";
 		if (this.layout == 'V') radiobuttonHtml += "<br/>";
