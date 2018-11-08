@@ -1795,19 +1795,39 @@ public class Application {
 
 					if (id.startsWith(_id + _version) && nameParts.length >= 3) {
 
-						String size = Files.getSizeName(backup);
-
-						SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd HHmmss");
-
+						String name = "";
 						Date date = new Date();
+						String size = Files.getSizeName(backup);
+						SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd HHmmss");
+						String user = "";
 
-						try {
-							date = df.parse(nameParts[nameParts.length - 3] + " " + nameParts[nameParts.length - 2]);
-						} catch (ParseException ex) {
-							throw new JSONException(ex);
+						//loop through the parts
+						for (int i = 0; i < nameParts.length; i++) {
+
+							//if this part is a date
+							if (nameParts[i].matches("^\\d{8}$")) {
+								//remove the last underscore from the name
+								name = name.substring(0, name.length() - 1);
+								try {
+									//parse the date and time (adjacent index of date will always be time)
+									date = df.parse(nameParts[i] + " " + nameParts[i+1]);
+									String datetime = nameParts[i] +"_"+nameParts[i+1]+"_";
+									//get the index of the datetime string
+									int datetimeIndex = id.indexOf(datetime);
+									//the rest is the username part - until the beginning of .page.xml
+									user = id.substring(datetimeIndex + datetime.length(), id.length());
+								} catch (ParseException ex) {
+									throw new JSONException(ex);
+								}
+
+								break;
+							}
+
+							//otherwise just concatenate the file names
+							name += nameParts[i] + "_";
 						}
 
-						backups.add(new Backup(id, date, nameParts[nameParts.length - 1], size));
+						backups.add(new Backup(id, date, user, size));
 
 					} // name parts > 3
 
@@ -1865,37 +1885,36 @@ public class Application {
 						Date date = new Date();
 						String size = Files.getSizeName(backup);
 						SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd HHmmss");
-						String userPart = "";
-						
+						String user = "";
+
 						//loop through the parts
-						for(int i = 0; i < nameParts.length; i++) {
-							
+						for (int i = 0; i < nameParts.length; i++) {
+
 							//if this part is a date
-							if(nameParts[i].matches("^\\d{8}$")) {
+							if (nameParts[i].matches("^\\d{8}$")) {
 								//remove the last underscore from the name
 								name = name.substring(0, name.length() - 1);
-								
+
 								try {
 									//parse the date and time (adjacent index of date will always be time)
 									date = df.parse(nameParts[i] + " " + nameParts[i+1]);
-									String datetime = nameParts[i]+"_"+nameParts[i+1]+"_";
+									String datetime = nameParts[i] +"_"+nameParts[i+1]+"_";
 									//get the index of the datetime string
 									int datetimeIndex = fileName.indexOf(datetime);
 									//the rest is the username part - until the beginning of .page.xml
-									userPart = fileName.substring(datetimeIndex + datetime.length(), fileName.indexOf(".page.xml"));
+									user = fileName.substring(datetimeIndex + datetime.length(), fileName.indexOf(".page.xml"));
 								} catch (ParseException ex) {
 									throw new JSONException(ex);
 								}
-								
+
 								break;
 							}
-							
+
 							//otherwise just concatenate the file names
 							name += nameParts[i] + "_";
 						}
 
-
-						backups.add(new Backup(fileName, name, date, userPart, size));
+						backups.add(new Backup(fileName, name, date, user, size));
 
 					} // name parts > 3
 
