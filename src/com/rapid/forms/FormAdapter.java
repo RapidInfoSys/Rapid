@@ -2382,5 +2382,9 @@ public abstract class FormAdapter {
 			return pageControlValues;
 		} // postBody check
 	}
+	
+	// called when form application is deleted in Rapid Admin - might update any casework system reference tables, matching code for first insert / updates in Form Adapter constructor
+	public synchronized void delete(RapidRequest rapidRequest) {
+	}
 
 }
