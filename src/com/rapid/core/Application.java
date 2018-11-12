@@ -1317,6 +1317,20 @@ public class Application {
 			    					}
 			    				}
 
+			    				// look for any dependent action types
+			    				JSONObject dependantActionTypes = jsonControl.optJSONObject("dependentActionTypes");
+			    				// if we got some
+			    				if (dependantActionTypes != null) {
+
+			    					// loop _actions on this application
+			    					for (String actionType : _actionTypes) {
+
+			    						// TODO: if we can't the dependent action in this app, add it to _actionTypes
+
+			    					}
+
+			    				}
+
 			    				// we're done
 			    				break;
 			    			} // available control type check
