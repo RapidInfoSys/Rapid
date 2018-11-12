@@ -34,6 +34,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    <helpHtml>This action allows you to traverse to different pages on your application. Pages can also be shown as a dialogue box, meaning they can display over your current page. This is particularly useful for displaying pages where you do not want to navigate away from your current page whilst wishing to take data from another.</helpHtml>
 	    
 	    <addToNewApplications>true</addToNewApplications>
+	    <addToNewFormApplications>false</addToNewFormApplications>
 	    
 	    <properties>
 	   

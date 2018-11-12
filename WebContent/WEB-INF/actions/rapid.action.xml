@@ -604,7 +604,7 @@ function Action_rapid(ev, appId, pageId, controlId, actionId, actionType, rapidA
 					deviceDetails: $("#rapid_P16_C57_").val(),
 					useAdmin: getData_checkbox(ev, "rapid_P16_C38_"),
 					useDesign: getData_checkbox(ev, "rapid_P16_C39_"),
-					useDesign: getData_checkbox(ev, "rapid_P16_C70_")
+					useUsers: getData_checkbox(ev, "rapid_P16_C70_")
 				};
 			} else {	
 				data = { actionType: actionType, 

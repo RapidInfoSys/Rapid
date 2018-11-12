@@ -410,62 +410,8 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 					session.setAttribute(RapidFilter.SESSION_VARIABLE_USER_DEVICE, deviceDetails);
 
 					// remember whether we are authorised for at least one application
-					boolean authorised = false;
-
-					// get the applications collection
-					Applications applications = (Applications) getServletContext().getAttribute("applications");
-
-					// if there are some applications
-					if (applications != null) {
-						// if the index path is for a specific app
-						if (indexPath.contains("a=")) {
-							// get the app id
-							String appId = indexPath.substring(indexPath.indexOf("a=") + 2);
-							// assume no version
-							String version = null;
-							// see if the user is known to this application
-							try {
-								// if other parameters clean to there
-								if (appId.indexOf("&") > 0) appId = appId.substring(0, appId.indexOf("&"));
-								// if version parameter
-								if (indexPath.contains("v=")) {
-									// get the version
-									version = indexPath.substring(indexPath.indexOf("v=") + 2);
-									// if other parameters clean to there
-									if (version.indexOf("&") > 0) version = version.substring(0, version.indexOf("&"));
-								}
-								// get this application
-								Application application = applications.get(appId, version);
-								// if we got it
-								if (application == null) {
-									_logger.error("Error checking permission for app " + appId + " - can't be found");
-								} else {
-									// get a Rapid request
-									RapidRequest rapidRequest = new RapidRequest(request, application);
-									// check if authorised
-									authorised = application.getSecurityAdapter().checkUserPassword(rapidRequest, userName, userPassword);
-								}
-							} catch (SecurityAdapaterException ex) {
-								_logger.error("Error checking permission for app " + appId + " in login index : ", ex);
-							}
-						} else {
-							// loop all applications
-							for (Application application : applications.get()) {
-								try {
-									// get a Rapid request for the application
-									RapidRequest rapidRequest = new RapidRequest(request, application);
-									// see if the user is known to this application
-									authorised = application.getSecurityAdapter().checkUserPassword(rapidRequest, userName, userPassword);
-									// we can exit if so as we only need one
-									if (authorised) break;
-								} catch (Exception ex) {
-									// log the error
-									_logger.error("FormAuthenticationAdapter error checking user", ex);
-								}
-							}
-						}
-					}
-
+					boolean authorised = RapidFilter.isAuthorised(req, userName, userPassword, indexPath);
+					
 					// we passed authorisation so redirect the client to the resource they wanted
 					if (authorised) {
 

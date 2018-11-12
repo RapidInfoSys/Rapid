@@ -43,7 +43,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.rapid.core.Application;
 import com.rapid.core.Applications;
+import com.rapid.security.SecurityAdapter.SecurityAdapaterException;
+import com.rapid.server.RapidRequest;
 import com.rapid.utils.Classes;
 
 public class RapidFilter implements Filter {
@@ -307,7 +310,7 @@ public class RapidFilter implements Filter {
 	public void destroy() {
 	}
 
-	// public static method
+	// public static methods
 
 	public static void noCache(HttpServletResponse response) {
 
@@ -328,6 +331,72 @@ public class RapidFilter implements Filter {
 
 		}
 
+	}
+	
+	public static boolean isAuthorised(ServletRequest servletRequest, String userName, String userPassword, String indexPath) {
+		
+		// remember whether we are authorised for at least one application
+		boolean authorised = false;
+		
+		// get the applications collection
+		Applications applications = (Applications) servletRequest.getServletContext().getAttribute("applications");
+		
+		// cast the ServletRequest to a HttpServletRequest
+		HttpServletRequest request = (HttpServletRequest) servletRequest;
+		
+		// if there are some applications
+		if (applications != null) {
+			// if the index path is for a specific app
+			if (indexPath.contains("a=")) {
+				// get the app id
+				String appId = indexPath.substring(indexPath.indexOf("a=") + 2);
+				// assume no version
+				String version = null;
+				// see if the user is known to this application
+				try {
+					// if other parameters clean to there
+					if (appId.indexOf("&") > 0) appId = appId.substring(0, appId.indexOf("&"));
+					// if version parameter
+					if (indexPath.contains("v=")) {
+						// get the version
+						version = indexPath.substring(indexPath.indexOf("v=") + 2);
+						// if other parameters clean to there
+						if (version.indexOf("&") > 0) version = version.substring(0, version.indexOf("&"));
+					}
+					// get this application
+					Application application = applications.get(appId, version);
+					// if we got it
+					if (application == null) {
+						_logger.error("Error checking permission for app " + appId + " - can't be found");
+					} else {
+						// get a Rapid request
+						RapidRequest rapidRequest = new RapidRequest(request, application);
+						// check if authorised
+						authorised = application.getSecurityAdapter().checkUserPassword(rapidRequest, userName, userPassword);
+					}
+				} catch (SecurityAdapaterException ex) {
+					_logger.error("Error checking permission for app " + appId + " in login index : ", ex);
+				}
+			} else {
+				// loop all applications
+				for (Application application : applications.get()) {
+					try {
+						// get a Rapid request for the application
+						RapidRequest rapidRequest = new RapidRequest(request, application);
+						// see if the user is known to this application
+						authorised = application.getSecurityAdapter().checkUserPassword(rapidRequest, userName, userPassword);
+						// we can exit if so as we only need one
+						if (authorised) break;
+					} catch (Exception ex) {
+						// log the error
+						_logger.error("FormAuthenticationAdapter error checking user", ex);
+					}
+				}
+			}
+		}
+		
+		return authorised;
+		
 	}
 
 }

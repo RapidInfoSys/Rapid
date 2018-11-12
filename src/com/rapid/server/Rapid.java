@@ -176,22 +176,25 @@ public class Rapid extends RapidHttpServlet {
 
 						} else {
 
-							// get the form details
-							UserFormDetails formDetails = formAdapter.getUserFormDetails(rapidRequest);
+							// get the form id from the f parameter
+							String formId = request.getParameter("f");
 
-							// check we got form details
-							if (formDetails == null) {
+							// if this was the pdf with a form id - otherwise its the summary
+							if ("pdf".equals(actionName) && formId != null) {
 
-								// go to the start page (invalidate session unless user has design role)
-								gotoStartPage(request, response, app, !security.checkUserRole(rapidRequest, DESIGN_ROLE));
+								// write the form pdf
+								formAdapter.doWriteFormPDF(rapidRequest, response, formId, false);
 
 							} else {
 
-								// if this was the pdf - otherwise its the summary
-								if ("pdf".equals(actionName)) {
+								// get the form details
+								UserFormDetails formDetails = formAdapter.getUserFormDetails(rapidRequest);
 
-									// write the form pdf
-									formAdapter.doWriteFormPDF(rapidRequest, response, request.getParameter("f"), false);
+								// check we got form details
+								if (formDetails == null) {
+
+									// go to the start page (invalidate session unless user has design role)
+									gotoStartPage(request, response, app, !security.checkUserRole(rapidRequest, DESIGN_ROLE));
 
 								} else {
 
@@ -527,11 +530,9 @@ public class Rapid extends RapidHttpServlet {
 									// if we have a form adapter and form details
 									if (formAdapter != null && formDetails != null) {
 										// now the page has been printed invalidate the form if this was a submission page
-										if (page.getFormPageType() == Page.FORM_PAGE_TYPE_SUBMITTED)
-											formAdapter.setUserFormDetails(rapidRequest, null);
+										if (page.getFormPageType() == Page.FORM_PAGE_TYPE_SUBMITTED) formAdapter.setUserFormDetails(rapidRequest, null);
 										// if this is an error page we have just shown the error, remove the error
-										if (page.getFormPageType() == Page.FORM_PAGE_TYPE_ERROR)
-											formDetails.setErrorMessage(null);
+										if (page.getFormPageType() == Page.FORM_PAGE_TYPE_ERROR) formDetails.setErrorMessage(null);
 									}
 
 								} else {

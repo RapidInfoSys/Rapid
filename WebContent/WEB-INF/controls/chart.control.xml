@@ -252,7 +252,11 @@ function getChartData(data) {
 	var chartData = google.visualization.arrayToDataTable(dataArray);
 	
 	return chartData;
+	
 }
+
+// function that advanced Rapid application builders can override to introduce their own options before the chart is draw
+function updateChartOptions(id, details, chartData, options) {}
 
 // function for drawing a specific chart
 function drawChart(id, data) {
@@ -285,16 +289,23 @@ function drawChart(id, data) {
 		 	if (details.height) options.chartArea.height = details.height;
 		 }
 		 
+		 // if user defined colours were provided split them and put them on the options
 		 if (details.colours && details.colours.replaceAll(" ","")) options.colors = details.colours.replaceAll(" ","").split(",");
-		 	    
+
+		// now draw each chart according to its type
 	    if (details.chartType == "Pie") {
 	    
+	    	// update options from control details
 	    	if (details.sliceVisibilityThreshold) options.sliceVisibilityThreshold = details.sliceVisibilityThreshold / 100;
 			options.pieSliceText = details.pieSliceText;
 		    options.is3D = details.is3D;
 		    if (details.pieHole) options.pieHole = details.pieHole / 100;
-		    	    
+
+		    // make the chart	    
 		    var chart = new google.visualization.PieChart(element);
+		    
+		    // update chart options with any user-overridden code
+		 	updateChartOptions(id, details, chartData, options);
 		    		   
 		   // explode selected slice
 		    google.visualization.events.addListener(chart, 'select', function (ev) {
@@ -306,7 +317,8 @@ function drawChart(id, data) {
 		        	options.slices = slices;
 		        	google.visualization.events.addListener(chart, 'ready',	function() {
 		        		chart.setSelection(selection);
-					});
+					});					
+		 			// draw the chart
 		        	chart.draw(chartData, options);
 		        }
 		      });
@@ -318,7 +330,8 @@ function drawChart(id, data) {
 		        options.slices = {};
 		        for (var j = 0; j < data.rows.length; j++) {
 		        	options.slices[j] = {offset: i}
-		        }
+		        }		         
+		 		// draw the chart
 		        chart.draw(chartData, options);
 		        counter = counter + 0.1
 		        if (counter > 1) clearInterval(handler);
@@ -326,16 +339,30 @@ function drawChart(id, data) {
 		            		   
 		  } else if (details.chartType == "Line") {
 		  
+		  	// set curve type from control details
 		  	options.curveType = details.curveType ? "function" : "none";
-		  
+		  	
+		  	// make the line chart
 		  	var chart = new google.visualization.LineChart(element);
+		  	
+		  	 // update chart options with any user-overridden code
+		 	updateChartOptions(id, details, chartData, options);
+		  	
+		  	// draw the chart
         	chart.draw(chartData, options);
 		  			  
 		  } else {
 		  
-		  if (details.isStacked) options.isStacked = details.isStacked;
-		  		  
+		  	// default is bar chart
+		  	if (details.isStacked) options.isStacked = details.isStacked;
+		  	
+		  	// make the chart	  
 		  	var chart = new google.visualization.ColumnChart(element);
+		  	
+		  	 // update chart options with any user-overridden code
+		 	updateChartOptions(id, details, chartData, options);
+		  	
+		  	// draw the chart
         	chart.draw(chartData, options);
 		  
 		}
