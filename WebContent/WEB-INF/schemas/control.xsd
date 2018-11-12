@@ -118,6 +118,24 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 									</xs:sequence>									
 								</xs:complexType>							
 							</xs:element>
+							<xs:element name="dependentActionTypes" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Action types that this control depends on.
+									This will ensure that all necessary actions are added.
+									</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="dependentActionType" maxOccurs="unbounded">								
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:minLength value="1" />
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+									</xs:sequence>									
+								</xs:complexType>							
+							</xs:element>
 							<xs:element name="visible" type="xs:boolean"
 								minOccurs="0">
 								<xs:annotation>
