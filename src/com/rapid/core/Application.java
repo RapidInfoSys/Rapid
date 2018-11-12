@@ -1316,19 +1316,25 @@ public class Application {
 			    						if (!_controlTypes.contains(dependantType) && !dependentControls.contains(dependantType)) dependentControls.add(dependantType);
 			    					}
 			    				}
-
+			    				
 			    				// look for any dependent action types
 			    				JSONObject dependantActionTypes = jsonControl.optJSONObject("dependentActionTypes");
 			    				// if we got some
 			    				if (dependantActionTypes != null) {
-
-			    					// loop _actions on this application
-			    					for (String actionType : _actionTypes) {
-
-			    						// TODO: if we can't the dependent action in this app, add it to _actionTypes
-
+			    					// look for an array
+			    					JSONArray dependantActionTypesArray = dependantActionTypes.optJSONArray("dependentActionType");
+			    					// if we got one
+			    					if (dependantActionTypesArray == null) {
+			    						// just use the object
+			    						String dependantType = dependantActionTypes.getString("dependentActionType");
+			    						if (!_actionTypes.contains(dependantType) && !dependentControls.contains(dependantType)) dependentControls.add(dependantType);
+			    					} else {
+			    						// loop the array
+			    						for (int j = 0; j < dependantActionTypesArray.length(); j++) {
+			    							String dependantType = dependantActionTypesArray.getString(j);
+				    						if (!_actionTypes.contains(dependantType) && !dependentControls.contains(dependantType)) dependentControls.add(dependantType);
+			    						}
 			    					}
-
 			    				}
 
 			    				// we're done
