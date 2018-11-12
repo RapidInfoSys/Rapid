@@ -2230,28 +2230,28 @@ public abstract class FormAdapter {
 									// url decode value
 									try { value = URLDecoder.decode(parts[1],"UTF-8"); } catch (UnsupportedEncodingException ex) {}
 								} // parts > 0
-								// null can't do any harm so don't check them
-								if (value != null) {
-									// find the control in the page
-									Control control = page.getControl(id);
-									// check we found a control
-									if (control == null) {
-										// if this is the hidden values
-										if (id.endsWith("_hiddenControls")) hiddenControls = value.split(",");
-										// if this is the recapcha store it
-										if ("g-recaptcha-response".equals(id)) recaptcha = value;
-										// if this is the csrfToken check it
-										if ("csrfToken".equals(id)) {
-											// check the value
-											if (value.equals(rapidRequest.getCSRFToken())) {
-												// remember we passed
-												csrfPass = true;
-											} else {
-												// we're done
-												break;
-											}
+								// find the control in the page
+								Control control = page.getControl(id);
+								// check we found a control
+								if (control == null) {
+									// if this is the hidden values
+									if (id.endsWith("_hiddenControls")) hiddenControls = value.split(",");
+									// if this is the recapcha store it
+									if ("g-recaptcha-response".equals(id)) recaptcha = value;
+									// if this is the csrfToken check it
+									if ("csrfToken".equals(id)) {
+										// check the value
+										if (value.equals(rapidRequest.getCSRFToken())) {
+											// remember we passed
+											csrfPass = true;
+										} else {
+											// we're done
+											break;
 										}
-									} else {
+									}
+								} else {
+									// null can't do any harm so don't check them
+									if (value != null) {
 										// get any control validation
 										Validation validation = control.getValidation();
 										// if there was some
@@ -2306,26 +2306,28 @@ public abstract class FormAdapter {
 												// check length
 												if (value.length() > max) throw new ServerSideValidationException("Server side validation error - value " + id + " for form " + formId+ " failed regex");
 											}
-										}
+										} // maxlength check
 
-										// if we have hidden controls to check
-										if (hiddenControls != null) {
-											// loop the hidden controls
-											for (String hiddenControl : hiddenControls) {
-												// if there's a match
-												if (id.equals(hiddenControl)) {
-													// retain as hidden
-													hidden = true;
-													// we're done
-													break;
-												} // this is a hidden control
-											} // loop the hidden controls
-										} // got hidden controls to check
-										// add name value pair
-										pageControlValues.add(id, value, hidden);
-
-									} // found control in page
-								} // null check
+									} // null check
+									
+									// if we have hidden controls to check
+									if (hiddenControls != null) {
+										// loop the hidden controls
+										for (String hiddenControl : hiddenControls) {
+											// if there's a match
+											if (id.equals(hiddenControl)) {
+												// retain as hidden
+												hidden = true;
+												// we're done
+												break;
+											} // this is a hidden control
+										} // loop the hidden controls
+									} // got hidden controls to check
+									
+									// add name value pair - don't be tempted to avoid storing if null
+									pageControlValues.add(id, value, hidden);
+									
+								} // found control in page
 
 							} // last value
 						}	// id .length > 0
