@@ -2230,26 +2230,26 @@ public abstract class FormAdapter {
 								} // parts > 0
 								// find the control in the page
 								Control control = page.getControl(id);
-								// check we found a control
-								if (control == null) {
-									// if this is the hidden values
-									if (id.endsWith("_hiddenControls")) hiddenControls = value.split(",");
-									// if this is the recapcha store it
-									if ("g-recaptcha-response".equals(id)) recaptcha = value;
-									// if this is the csrfToken check it
-									if ("csrfToken".equals(id)) {
-										// check the value
-										if (value.equals(rapidRequest.getCSRFToken())) {
-											// remember we passed
-											csrfPass = true;
-										} else {
-											// we're done
-											break;
+								// null values can't do any harm so don't check
+								if (value != null) {
+									// check we found a control
+									if (control == null) {
+										// if this is the hidden values
+										if (id.endsWith("_hiddenControls")) hiddenControls = value.split(",");
+										// if this is the recapcha store it
+										if ("g-recaptcha-response".equals(id)) recaptcha = value;
+										// if this is the csrfToken check it
+										if ("csrfToken".equals(id)) {
+											// check the value
+											if (value.equals(rapidRequest.getCSRFToken())) {
+												// remember we passed
+												csrfPass = true;
+											} else {
+												// we're done
+												break;
+											}
 										}
-									}
-								} else {
-									// null can't do any harm so don't check them
-									if (value != null) {
+									} else {
 										// get any control validation
 										Validation validation = control.getValidation();
 										// if there was some
@@ -2305,9 +2305,14 @@ public abstract class FormAdapter {
 												if (value.length() > max) throw new ServerSideValidationException("Server side validation error - value " + id + " for form " + formId+ " failed regex");
 											}
 										} // maxlength check
-
-									} // null check
+										
+									} // found control in page
 									
+								} // value null check
+								
+								// if there was a control 
+								if (control != null) {
+								
 									// if we have hidden controls to check
 									if (hiddenControls != null) {
 										// loop the hidden controls
@@ -2322,11 +2327,10 @@ public abstract class FormAdapter {
 										} // loop the hidden controls
 									} // got hidden controls to check
 									
-									// add name value pair - don't be tempted to avoid storing if null
+									// add name value pair - controls with null values still need storing for display in the summary page
 									pageControlValues.add(id, value, hidden);
-									
-								} // found control in page
-
+								}
+								
 							} // last value
 						}	// id .length > 0
 					} // id != null
