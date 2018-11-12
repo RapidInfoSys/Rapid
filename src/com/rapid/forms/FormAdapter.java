@@ -1928,8 +1928,7 @@ public abstract class FormAdapter {
 										value = value.substring(value.indexOf("]]:") + 3);
 
 										JSONObject jsonData = new JSONObject(value);
-										System.out.println(jsonData.toString());
-
+										
 										Control control = application.getControl(rapidRequest.getRapidServlet().getServletContext(), controlId);
 
 										//get the fields
@@ -1969,22 +1968,22 @@ public abstract class FormAdapter {
 
 												//keep a track of the maxWidth - assume maxWidth is the field
 												float maxWidth = font.getStringWidth(field) / 1000 * FONT_SIZE;
-												//System.out.println("width: " + maxWidth);
+												
 												cs.beginText();
 												cs.setFont(fontBold, FONT_SIZE);
 												cs.newLineAtOffset(newXOffset, h - y);
 												cs.showText(field);
 												cs.endText();
+												
 												y += getFontHeight(font, FONT_SIZE) + MARGIN_TEXT_BOTTOM;
+												
 												for(int j = 0; j < rows.length(); j++){
 
 														JSONArray row = rows.getJSONArray(j);
 														String columnCell = row.getString(i);
-														System.out.println(columnCell);
 
 														float cellWidth = font.getStringWidth(columnCell) / 1000 * FONT_SIZE;
-														//System.out.println("width: " + cellWidth);
-
+														
 														if(cellWidth > maxWidth){
 															maxWidth = cellWidth;
 														}
@@ -2003,8 +2002,7 @@ public abstract class FormAdapter {
 												newXOffset += maxWidth + MARGIN_GRID_COLUMN;
 												//reset the y position for the new column
 												y = initialYOffset;
-												//System.out.println("Max width: " + maxWidth);
-
+												
 											}
 
 										}// end of outer loop
