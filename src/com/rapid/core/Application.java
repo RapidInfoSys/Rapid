@@ -2216,6 +2216,9 @@ public class Application {
 			if (webFolder.getParentFile().list().length == 0) webFolder.getParentFile().delete();
 		}
 
+		// call delete on the form adapter
+		getFormAdapter().delete(rapidRequest);
+		
 		// close the application
 		close(servletContext);
 
