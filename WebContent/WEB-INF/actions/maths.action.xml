@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<actions xmlVersion="1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../schemas/action.xsd">
+
+<!-- 
+
+Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
+
+gareth.edwards@rapid-is.co.uk
+
+
+This file is part of the Rapid Application Platform
+
+Rapid is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version. The terms require you to include
+the original copyright, and the license notice in all redistributions.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
+
+ -->
+
+    <action>
+    
+        <type>maths</type>
+        <name>Maths</name>
+	    <class>com.rapid.actions.Maths</class>
+	    <helpHtml>This action performs basic maths operations on given control values.</helpHtml>
+	    
+	    <addToNewApplications>true</addToNewApplications>
+	    <canUseWorkflow>true</canUseWorkflow>
+	    	    	    	    
+	    <properties> 
+	        <property>
+	            <key>inputs</key>
+	            <name>Inputs</name>
+	            <changeValueJavaScript>inputs</changeValueJavaScript>	            
+	            <helpHtml>Provide inputs for maths operation</helpHtml>
+	        </property>
+	          
+	        <property>
+	            <key>operation</key>
+	            <name>Operation</name>
+	            <setConstructValueFunction>return "+";</setConstructValueFunction>
+	            <changeValueJavaScript>select</changeValueJavaScript>
+	        	<getValuesFunction>
+	        		//return the values
+	        		return [["+","add"],["-","subtract"],["*","multiply"],["/","divide"]];
+	        	</getValuesFunction>
+	        	<refreshProperties>true</refreshProperties>
+	            <helpHtml>Choose your mathematical operation to be performed on the values of the controls in the inputs</helpHtml>
+	        </property>	
+	        
+	        <property>
+	            <key>output</key>
+	            <name>Output</name>
+	            <changeValueJavaScript>select</changeValueJavaScript>
+				<getValuesFunction>
+					<![CDATA[
+					return "<option value=''>Please select...</option>" + getOutputOptions(this.output);
+					]]>
+				</getValuesFunction>
+	            <helpHtml>Choose a control on the page that the result of the operation will be sent to</helpHtml>
+	        </property>	
+	             
+			<property>
+	            <key>outputField</key>
+	            <name>Output field</name>
+	            <changeValueJavaScript>text</changeValueJavaScript>
+	            <getValuesFunction>return "";</getValuesFunction>
+	            <helpHtml>Optionally specify a field or property that holds the data within the output control. An example of this is a specific cloumn's field name in a table or grid.</helpHtml>
+	        </property>
+	    </properties>
+	    
+	    <actionJavaScript>
+	        <![CDATA[ 
+function Action_maths(ev, data, operation, outputId, outputField) {
+	debugger;
+	// check we got data and somewhere to put it
+	if (data.inputs && output) {
+	    var result = data.inputs[0];
+	    	
+	    for(var i = 1; i < data.inputs.length; i++){
+	    	
+			switch(operation) {
+		    case "+":
+		        result += data.inputs[i];
+		        break;
+		    case "-":
+		        result -= data.inputs[i];
+		        break;
+		        
+	    	case "*":
+		        result *= data.inputs[i];
+		        break;  
+		             
+		    default:	//divide
+		        result /= data.inputs[i];
+			}
+			
+		}
+	}
+	
+	var outputType = $('#' + output).type;
+	
+	//now put the result in output 
+	$("#" + output + " input").text(result);
+	$("#" + output).val(result);
+
+}	        ]]>
+	    </actionJavaScript> 
+	     	    
+    </action> 
+</actions>
