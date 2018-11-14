@@ -70,7 +70,7 @@ function loadApps() {
         		var appHtml = "<ul>";
         		for (var i in data) {
         			var app = data[i];
-        			appHtml += "<a href='" + app.id + "'style='font-size:18px; font-weight:normal;'><li>" + app.title + "</li></a>";
+        			appHtml += "<a href='" + app.id + "' style='font-size:18px; font-weight:normal;'><li>" + app.title + "</li></a>";
         		}
         		appHtml += "</ul>";
         		appsDiv.html(appHtml);
