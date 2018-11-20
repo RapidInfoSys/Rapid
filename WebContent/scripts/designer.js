@@ -776,16 +776,46 @@ function positionAndSizeBorder(control) {
 
 // this function returns a flat array of all of the page controls
 function getControls(childControls, controls) {
+	// set child controls to those from page if non provided - this is how we start
 	if (!childControls) childControls = _page.childControls;
+	// initialise controls array if not provided - also how we start
 	if (!controls) controls = [];
+	// loop the child controls we were given
 	for (var i in childControls) {
+		// get this child control object
 		var c = childControls[i];
-		if (c) {
-			if (c.id) controls.push(c);
-			if (c.childControls || controls.length == 0) getControls(c.childControls, controls);
+		// if it is non-null and has an id
+		if (c && c.id) {
+			// add this control
+			controls.push(c);
+			// if it has children go recursive
+			if (c.childControls) getControls(c.childControls, controls);
 		}		
 	}	
 	return controls;
+}
+
+// check for any duplicate ids
+function checkForDuplicateIds(){
+	// get all controls in page
+	var controls = getControls();
+	// if we got some
+	if (controls && controls.length > 0) {
+		// controls we've shown messages about
+		var alertControls = {};
+		// compare each id to all other id
+		for (var i in controls) {
+			for (var j in controls) {
+				// if this control id is not being compared to itself yet it's the same
+				if (i != j && controls[i].id == controls[j].id) {
+					// show message
+					if (!alertControls[controls[i].id]) alert("Sorry, there are two controls with id " + controls[i].id + ". This is not supposed to happen, but please let us know how it can be repeated.");
+					// retain that we have shown the message (there are usually two)
+					alertControls[controls[i].id] = true;
+				}
+			}
+		}
+	}
 }
 
 // move the border and show properties and actions
@@ -1427,7 +1457,7 @@ function loadVersion(forceLoad) {
 
     	// load the pages with a forced page load
     	loadPages(null, true);
-		
+
 		// disable the delete button if no rapid app or this is the rapid app
 		if (_version.id == "rapid") {
 			$("#appDelete").attr("disabled","disabled");
@@ -1991,20 +2021,6 @@ function doPaste(control, _parent) {
 		
 	}
 	
-	// get all controls in page
-	var controls = getControls();
-	// if we got some
-	if (controls && controls.length > 0) {
-		// compare each id to every other id
-		for (var i in controls) {
-			for (var j in controls) {
-				if (i != j && controls[i].id == controls[j].id) {
-					alert("Sorry, there are two controls with id " + controls[i] + ". This is not supposed to happen, but please let us know how it can be repeated.");
-				}
-			}
-		}
-	}
-	
 	// return the updated control
 	return newControl;
 			
@@ -2451,6 +2467,9 @@ $(document).ready( function() {
 			        	
 			        	// update the url
 			        	if (window.history && window.history.replaceState) window.history.replaceState("page", _page.title, "design.jsp?a=" + _version.id + "&v=" + _version.version + "&p=" + _page.id );
+			        	
+			        	// check for duplicate ids
+			        	checkForDuplicateIds();
 			        				        	
 		        	} catch (ex) {
 		        		
@@ -3155,7 +3174,10 @@ $(document).ready( function() {
 						
 			// rebuild the page map
 			buildPageMap();
-					
+			
+			// check for duplicate control ids'
+			checkForDuplicateIds();
+
 		}		
 	});		
 	

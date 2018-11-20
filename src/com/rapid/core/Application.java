@@ -1316,7 +1316,7 @@ public class Application {
 			    						if (!_controlTypes.contains(dependantType) && !dependentControls.contains(dependantType)) dependentControls.add(dependantType);
 			    					}
 			    				}
-			    				
+
 			    				// look for any dependent action types
 			    				JSONObject dependantActionTypes = jsonControl.optJSONObject("dependentActionTypes");
 			    				// if we got some
@@ -2216,9 +2216,9 @@ public class Application {
 			if (webFolder.getParentFile().list().length == 0) webFolder.getParentFile().delete();
 		}
 
-		// call delete on the form adapter
-		getFormAdapter().delete(rapidRequest);
-		
+		// call delete on the form adapter if there is one
+		if (getFormAdapter() != null) getFormAdapter().delete(rapidRequest);
+
 		// close the application
 		close(servletContext);
 

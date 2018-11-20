@@ -146,7 +146,7 @@ public class Designer extends RapidHttpServlet {
 			out.print("\t\t\t" + key + "\t" + properties.get(key) + "\n");
 		}
 
-		// get a JSONObejct for them
+		// get a JSONObejct for this action which will turn the get/set properties into keys
 		JSONObject jsonAction = new JSONObject(action);
 		// get it's properties
 		Iterator<String> keys = jsonAction.keys();
@@ -156,8 +156,8 @@ public class Designer extends RapidHttpServlet {
 		while (keys.hasNext()) {
 			// get the next one
 			String key = keys.next();
-			// add it to the list
-			sortedKeys.add(key);
+			// add it to the list if not id
+			if (!"id".equals(key)) sortedKeys.add(key);
 		}
 		// sort them
 		Collections.sort(sortedKeys);
