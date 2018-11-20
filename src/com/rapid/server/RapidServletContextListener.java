@@ -846,7 +846,7 @@ public class RapidServletContextListener implements ServletContextListener {
 			// split them
 			String[] ignoreAppsArray = ignoreAppsString.split(",");
 			// loop, trim, and add
-			for (String ignoreApp : ignoreAppsArray) ignoreApps.add(ignoreApp.trim());
+			for (String ignoreApp : ignoreAppsArray) ignoreApps.add(ignoreApp.trim().toLowerCase());
 		}
 
 		// make a new set of applications
@@ -859,7 +859,7 @@ public class RapidServletContextListener implements ServletContextListener {
 		for (File applicationFolder : applicationFolderRoot.listFiles()) {
 
 			// if this child file is a directory and not in our list of apps to ignore
-			if (applicationFolder.isDirectory() && !ignoreApps.contains(applicationFolder.getName())) {
+			if (applicationFolder.isDirectory() && !ignoreApps.contains(applicationFolder.getName().toLowerCase())) {
 
 				// get the list of files in this folder - should be all version folders
 				File[] applicationFolders = applicationFolder.listFiles();
