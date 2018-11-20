@@ -795,7 +795,7 @@ function getControls(childControls, controls) {
 	return controls;
 }
 
-//check for any duplicate ids
+// check for any duplicate ids
 function checkForDuplicateIds(){
 	// get all controls in page
 	var controls = getControls();
@@ -2021,9 +2021,6 @@ function doPaste(control, _parent) {
 		
 	}
 	
-	// check for duplicate contro ids'
-	checkDuplicateIds();
-	
 	// return the updated control
 	return newControl;
 			
@@ -3177,7 +3174,10 @@ $(document).ready( function() {
 						
 			// rebuild the page map
 			buildPageMap();
-					
+			
+			// check for duplicate control ids'
+			checkForDuplicateIds();
+
 		}		
 	});		
 	
