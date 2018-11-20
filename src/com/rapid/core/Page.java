@@ -1573,28 +1573,31 @@ public class Page {
 		// only proceed if there are actions in this page
 		if (pageActions != null) {
 
+			// loop the list of all actions looking for redundancy
+			for (Action action : pageActions) {
+				// if this action adds redundancy to any others
+				if (action.getRedundantActions() != null) {
+					// loop them
+					for (String actionId : action.getRedundantActions()) {
+						// try and find the action
+						Action redundantAction = getAction(actionId);
+						// if we got one
+						if (redundantAction != null) {
+							// update the redundancy avoidance flag
+							redundantAction.avoidRedundancy(true);
+						}
+					}
+				} // redundantActions != null
+			} // action loop to check redundancy
+
 			// loop the list of actions
 			for (Action action : pageActions) {
-				// if this is a form action
-				// indentify potential redundancies before we create all the event handling JavaScript
+
 				try {
-					// look for any page javascript that this action may have
+					// look for any javascript to print into the page that this action may have
 					String actionPageJavaScript = action.getPageJavaScript(rapidRequest, application, this, null);
 					// print it here if so
 					if (actionPageJavaScript != null) jsStringBuilder.append(actionPageJavaScript.trim() + "\n\n");
-					// if this action adds redundancy to any others
-					if (action.getRedundantActions() != null) {
-						// loop them
-						for (String actionId : action.getRedundantActions()) {
-							// try and find the action
-							Action redundantAction = getAction(actionId);
-							// if we got one
-							if (redundantAction != null) {
-								// update the redundancy avoidance flag
-								redundantAction.avoidRedundancy(true);
-							}
-						}
-					} // redundantActions != null
 				} catch (Exception ex) {
 					// print the exception as a comment
 					jsStringBuilder.append("// Error producing page JavaScript : " + ex.getMessage() + "\n\n");
@@ -1604,7 +1607,8 @@ public class Page {
 
 			// add event handlers, staring at the root controls
 			getEventHandlersJavaScript(rapidRequest, jsStringBuilder, application, _controls);
-		}
+
+		} // page actions check
 
 		// if there was any js
 		if (jsStringBuilder.length() > 0) {
