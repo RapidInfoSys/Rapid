@@ -271,83 +271,83 @@ public class Mobile extends Action {
 	}
 
 	// a re-usable function for printing the details of the outputs
-		private String getOutputs(RapidHttpServlet rapidServlet, Application application, Page page, String outputsJSON, String data) throws JSONException {
+	private String getOutputs(RapidHttpServlet rapidServlet, Application application, Page page, String outputsJSON, String data) throws JSONException {
 
-			// start the outputs string
-			String outputsString = "";
+		// start the outputs string
+		String outputsString = "";
 
-			// read into json Array
-			JSONArray jsonOutputs = new JSONArray(outputsJSON);
+		// read into json Array
+		JSONArray jsonOutputs = new JSONArray(outputsJSON);
 
-			// loop
-			for (int i = 0; i < jsonOutputs.length(); i++) {
+		// loop
+		for (int i = 0; i < jsonOutputs.length(); i++) {
 
-				// get the gps desintation
-				JSONObject jsonGpsDestination = jsonOutputs.getJSONObject(i);
+			// get the gps desintation
+			JSONObject jsonGpsDestination = jsonOutputs.getJSONObject(i);
 
-				// get the itemId
-				String itemId = jsonGpsDestination.getString("itemId");
-				// split by escaped .
-				String idParts[] = itemId.split("\\.");
-				// if there is more than 1 part we are dealing with set properties, for now just update the destintation id
-				if (idParts.length > 1) itemId = idParts[0];
+			// get the itemId
+			String itemId = jsonGpsDestination.getString("itemId");
+			// split by escaped .
+			String idParts[] = itemId.split("\\.");
+			// if there is more than 1 part we are dealing with set properties, for now just update the destintation id
+			if (idParts.length > 1) itemId = idParts[0];
 
-				// get the field
-				String field = jsonGpsDestination.optString("field","");
+			// get the field
+			String field = jsonGpsDestination.optString("field","");
 
-				// first try and look for the control in the page
-				Control destinationControl = page.getControl(itemId);
-				// assume we found it
-				boolean pageControl = true;
-				// check we got a control
-				if (destinationControl == null) {
-					// now look for the control in the application
-					destinationControl = application.getControl(rapidServlet.getServletContext(), itemId);
-					// set page control to false
-					pageControl = false;
+			// first try and look for the control in the page
+			Control destinationControl = page.getControl(itemId);
+			// assume we found it
+			boolean pageControl = true;
+			// check we got a control
+			if (destinationControl == null) {
+				// now look for the control in the application
+				destinationControl = application.getControl(rapidServlet.getServletContext(), itemId);
+				// set page control to false
+				pageControl = false;
+			}
+
+			// check we got one from either location
+			if (destinationControl != null) {
+
+				// get any details we may have
+				String details = destinationControl.getDetailsJavaScript(application, page);
+
+				// if we have some details
+				if (details != null) {
+					// if this is a page control
+					if (pageControl) {
+						// the details will already be in the page so we can use the short form
+						details = destinationControl.getId() + "details";
+					}
 				}
 
-				// check we got one from either location
-				if (destinationControl != null) {
+				// if the idParts is greater then 1 this is a set property
+				if (idParts.length > 1) {
 
-					// get any details we may have
-					String details = destinationControl.getDetailsJavaScript(application, page);
+					// get the property from the second id part
+					String property = idParts[1];
 
-					// if we have some details
-					if (details != null) {
-						// if this is a page control
-						if (pageControl) {
-							// the details will already be in the page so we can use the short form
-							details = destinationControl.getId() + "details";
-						}
-					}
+					// make the getGps call to the bridge
+					outputsString += "setProperty_" + destinationControl.getType() +  "_" + property + "(ev,'" + itemId + "','" + field + "'," + details + "," + data + ")";
 
-					// if the idParts is greater then 1 this is a set property
-					if (idParts.length > 1) {
+				} else {
 
-						// get the property from the second id part
-						String property = idParts[1];
+					outputsString += "setData_" + destinationControl.getType() + "(ev,'" + itemId + "','" + field + "'," + details + "," + data + ")";
 
-						// make the getGps call to the bridge
-						outputsString += "setProperty_" + destinationControl.getType() +  "_" + property + "(ev,'" + itemId + "','" + field + "'," + details + "," + data + ")";
+				} // copy / set property check
 
-					} else {
+				// add a comma if more are to come
+				if (i < jsonOutputs.length() - 1) outputsString += ", ";
 
-						outputsString += "setData_" + destinationControl.getType() + "(ev,'" + itemId + "','" + field + "'," + details + "," + data + ")";
+			} // destination control check
 
-					} // copy / set property check
+		} // destination loop
 
-					// add a comma if more are to come
-					if (i < jsonOutputs.length() - 1) outputsString += ", ";
+		// return
+		return outputsString;
 
-				} // destination control check
-
-			} // destination loop
-
-			// return
-			return outputsString;
-
-		}
+	}
 
 	// a helper method to check controls exist
 	private boolean checkControl(ServletContext servletContext, Application application, Page page, String controlId) {
@@ -758,29 +758,32 @@ public class Mobile extends Action {
 							// add # if not html
 							if (!"html".equals(target)) target = "#" + target;
 
-							// see if there is a swipe handler present for the target
-							js += "if (!_swipeHandlers['" + target + "']) {\n";
+							// see if there is a swipe handler present for the target AND if this is a mobile browser
+							js += "if(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)){\n"
+								+ "		if (!_swipeHandlers['" + target + "']) {\n";
 							// register the handler for any fingers on the target
-							js += "  $('" + target + "').swipe( { swipe:function(event, direction, distance, duration, fingers, fingerData) { handleSwipe(event, direction, distance, duration, fingers, fingerData, '" + target + "', ev); },fingers:'all'});\n";
+							js += "			$('" + target + "').swipe( { swipe:function(event, direction, distance, duration, fingers, fingerData) { handleSwipe(event, direction, distance, duration, fingers, fingerData, '" + target + "', ev); },fingers:'all'});\n";
 							// make the array
-							js += "  _swipeHandlers['" + target + "'] = [];\n";
+							js += "  		_swipeHandlers['" + target + "'] = [];\n";
 							// close the check
-							js += "}\n";
+							js += "		}\n";
+								
 
 							// start the function
-							js += "var f = function(ev) {\n";
+							js += "		var f = function(ev) {\n";
 
 							// loop actions
 							for (Action action : _onlineActions) {
 								// add action js
-								js += "  " + action.getJavaScript(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n  ") + "\n";
+								js += "			" + action.getJavaScript(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n			") + "\n";
 							}
 
 							// close the functions
-							js += "};\n";
+							js += "		};\n";
 
-							// add this handler
-							js += "_swipeHandlers['" + target + "'].push({direction:'" + direction + "',fingers:" + fingers + ",function:f});";
+							// add this handler 
+							js += "		_swipeHandlers['" + target + "'].push({direction:'" + direction + "',fingers:" + fingers + ",function:f});\n"
+								+ "}\n";
 
 
 						} catch (Exception ex) {
