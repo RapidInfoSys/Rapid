@@ -71,7 +71,7 @@ public class FormSecurityAdapter extends RapidSecurityAdapter {
 		// if there was one
 		if (uri != null) {
 			// if this was a login .jsp page we need to check
-			if (uri.contains("login") && uri.endsWith(".jsp")) check = true;
+			if (uri.toLowerCase().contains("login") && uri.toLowerCase().endsWith(".jsp")) check = true;
 		}
 		// check will be true if the request to check came from a more sensitive area
 		if (check) {
