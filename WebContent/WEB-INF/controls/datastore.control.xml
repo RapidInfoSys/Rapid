@@ -161,20 +161,27 @@ if (data) {
 					if (data.fields[i] && data.fields[i].toLowerCase() == field.toLowerCase()) {
 						if (data.rows.length > 1) {
 							var d = {fields:[field], rows:[]};
+							var difference = false;
 							for (var j in data.rows) {
 								var value = data.rows[j][i];
 								if (value !== undefined) {
 									d.rows.push([value]);
+									if (!difference && d.rows.length > 1 && value != d.rows[d.rows.length - 2]) difference = true;
 								} else {
 									d.rows.push([null]);
+									diffrence = true;
 								}
 							}
-							return d;
+							if (difference) {
+								return d;
+							} else {
+								return value;
+							}
 						} else {
 							var value = data.rows[0][i];
-							if (value !== undefined) return value;						
-						}	
-						break;
+							if (value !== undefined) return value;
+						}
+						break;						
 					}
 				}
 			}
