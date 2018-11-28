@@ -111,15 +111,14 @@ public class Control {
 	public String getName() { return getProperty("name"); }
 	// the form summary label of this object
 	public String getLabel() {
+		//get default label
 		String label = getProperty("label");
-		String responsiveLabel = getProperty("responsiveLabel");
 		
-		//check if label is empty or null
-		if(label == null || label.trim().isEmpty()) label = responsiveLabel;
+		// try getting the responsive label, if label is null or empty
+		if(label == null || label.trim().isEmpty()) label = getProperty("responsiveLabel");
 		
-		if (label == null || label.trim().isEmpty()) {
-			return null;
-		} 
+		// label is null or empty, set label as null
+		if (label == null || label.trim().isEmpty()) label = null;
 		
 		return label;
 	}
