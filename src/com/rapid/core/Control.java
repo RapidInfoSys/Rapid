@@ -112,14 +112,18 @@ public class Control {
 	// the form summary label of this object
 	public String getLabel() {
 		String label = getProperty("label");
-		if (label == null) {
+		String responsiveLabel = getProperty("responsiveLabel");
+		
+		//check if label is empty or null
+		if(label == null || label.trim().isEmpty()) label = responsiveLabel;
+		
+		if (label == null || label.trim().isEmpty()) {
 			return null;
-		} else if (label.trim().length() == 0) {
-			return null;
-		} else {
-			return label;
-		}
+		} 
+		
+		return label;
 	}
+	
 	// the details used by the getData and setData method to map the data to the control
 	public String getDetails() { return getProperty("details"); }
 	// whether this control can be used from other pages
