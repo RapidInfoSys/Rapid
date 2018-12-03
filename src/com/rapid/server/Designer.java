@@ -1038,7 +1038,7 @@ public class Designer extends RapidHttpServlet {
 
 								} else {
 									// print the page name
-									out.print(page.getId() + " " + page.getName() + label);
+									out.print(page.getId() + "\t" + page.getName() + label);
 								}
 
 								// check questions, summary, detail
@@ -1047,8 +1047,10 @@ public class Designer extends RapidHttpServlet {
 									// print the number of controls
 									if ("questions".equals(actionName)) {
 										out.print("\r\n");
+									} else if("summary".equals(actionName)){
+										out.print("\t" + page.getTitle() + "\tnumber of controls: " + page.getAllControls().size() + "\r\n");
 									} else {
-										out.print(" - number of controls: " + page.getAllControls().size() + "\r\n");
+										out.print("\t" + "number of controls: " + page.getAllControls().size() + "\r\n");
 									}
 
 									// if detail
