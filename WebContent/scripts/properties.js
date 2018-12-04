@@ -109,7 +109,7 @@ function getRolesOptions(selectRole, ignoreRoles) {
 }
 
 // different system properties for inputs
-var _systemValues = ["app id","app version","parameter", "page id","page name","page title","user name","device","online","mobile","mobile version","true","false","null","empty","field"];
+var _systemValues = ["app id","app version","parameter", "page id","page name","page title","user name","device","online","mobile","mobile version","current date","current time","current date and time","true","false","null","empty","field"];
 
 // this function returns system values
 function getSystemValueOptions(selectId) {
@@ -1093,7 +1093,7 @@ function Property_bigtext(cell, propertyObject, property, details) {
 			addDialogueResizeX(myCodeMirrorDialogue, myCodeMirror);
 				
 			//check if this property is a javascript or command
-			if(["javascript", "command"].includes(property.key)) {
+			if(["javascript", "command"].indexOf(property.key) > -1) {
 				myCodeMirror.setOption("mode", "javascript");
 			}
 			
@@ -1115,6 +1115,7 @@ function Property_bigtext(cell, propertyObject, property, details) {
 		//style and position the codeEditor, hide it at start
 		// assume right is 10
 		var right = 10;
+	
 		// if we're in a dialogue
 		if ($(ev.target).closest(".propertyDialogue")) right = 11;
 		myCodeMirrorDialogue.css({
@@ -1122,11 +1123,13 @@ function Property_bigtext(cell, propertyObject, property, details) {
 		});
 		
 		//display animated with slideDown effect
-		myCodeMirrorDialogue.slideDown(500);
-		// focus it so a click anywhere else fires the unfocus and hides the textbox
-		myCodeMirror.focus();
-		// set the cursor at the end of existing content
-		myCodeMirror.setCursor(myCodeMirror.lineCount(), 0);
+		myCodeMirrorDialogue.slideDown(500, function() {	
+			// focus it so a click anywhere else fires the unfocus and hides the textbox
+			myCodeMirror.focus();
+			// set the cursor at the end of existing content
+			myCodeMirror.setCursor(myCodeMirror.lineCount(), 0);
+		});
+		
 		
 		//now create its event handlers
 		var keyUpCallback = function(){

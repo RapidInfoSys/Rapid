@@ -1212,3 +1212,9 @@ span.fr {
 	margin: 5px 0;
   	box-shadow: -1px 0px 5px 1px #9D9D9D;
 }
+
+
+/*IE10+ CSS overrides*/
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+	
+}

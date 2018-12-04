@@ -252,14 +252,14 @@ if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRe
 					<div class="buttons">
 						<button id="swapPeerLeft" class="buttonLeft" style="line-height:20px;"><i class="fa fa-backward" aria-hidden="true" title="Swap position with control before this one" style="font-size:15px; vertical-align:middle;"></i></button>
 						<button id="addPeerLeft">
-							<div class="fa-stack fa-lg" title="Add a new control before this one" style="height:20px; color:unset;">
+							<div class="fa-stack fa-lg" title="Add a new control before this one" style="height:20px;">
 								<i class="fa fa-plus fa-stack-1x" style="font-size:15px; top:4px;"></i>
 								<i class="fa fa-caret-left fa-stack-1x" style="left:9px; top:-2px; font-size:25px;"></i>
 							</div>
 						</button>
 						<button id="deleteControl" style="line-height:20px;">&nbsp;<i class="delete fa fa-trash" title="Delete this control"></i>&nbsp;</button>
 						<button id="addPeerRight">
-						<div class="fa-stack fa-lg" title="Add a new control after this one" style="height:20px; color:unset;">
+						<div class="fa-stack fa-lg" title="Add a new control after this one" style="height:20px;">
 								<i class="fa fa-caret-right fa-stack-1x" style="top:-2px; font-size:25px;"></i>
 								<i class="fa fa-plus fa-stack-1x" style="font-size:15px; top:4px; left:9px;"></i>
 							</div>
