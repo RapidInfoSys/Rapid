@@ -2994,7 +2994,7 @@ function Property_pageSessionVariables(cell, page, property, details, textOnly) 
 			// show variables
 			for (var i in variables) {
 				// add the line
-				table.append("<tr><td><input class='variable' value='" + escapeApos(variables[i]) + "' /></td><td style='width:16px; text-align:right;'>" +
+				table.append("<tr><td><input class='variable' value='" + escapeApos(variables[i]) + "' /></td><td style='width:25px; text-align:right;'>" +
 						"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div></td></tr>");
 				
 				// find the text

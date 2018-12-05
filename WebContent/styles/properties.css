@@ -167,6 +167,7 @@ i.propertyHelp, img.propertyHelp {
 	display:inline-block;
 	width: 18px;
 	line-height: normal;
+	height: auto;
 	vertical-align:top;
 	font-size:15px;
 	right: 5px;
@@ -312,7 +313,7 @@ td.propertySubHeader {
 }
 
 .dialogueTable td {
-	height:20px;
+	height:22px;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -321,6 +322,10 @@ td.propertySubHeader {
 	transition: background 0.3s ease;
 	max-width: 50px;
 	padding: 0;
+}
+
+.dialogueTable td:last-child {
+	width: 45px;
 }
 
 .dialogueTable select:hover, .dialogueTable input:hover{
@@ -332,7 +337,7 @@ td.propertySubHeader {
 	height: 100%;
 	border: none;
 	outline: none;
-	padding: 2px 10px;
+	padding: 0px 10px;
 }
 
 .dialogueTable input[type=checkbox] {	
