@@ -108,8 +108,26 @@ function getRolesOptions(selectRole, ignoreRoles) {
 	return options;
 }
 
+//different date time values for datacopy source
+var _datetimeValues = ["current date","current time","current date and time"];
+
+// this function returns system values
+function getDateTimeValueOptions(selectId) {
+	var options = "";
+	// system values
+	if (_datetimeValues) {
+		options += "<optgroup label='Date and time values'>";
+		for (var i in _datetimeValues) {
+			var val = "Datetime." + _datetimeValues[i];
+			options += "<option value='" + val + "'" + (val == selectId ? " selected='selected'" : "") + ">" + _datetimeValues[i] + "</option>";
+		}
+		options += "</optgroup>";
+	}
+	return options;
+}
+
 // different system properties for inputs
-var _systemValues = ["app id","app version","parameter", "page id","page name","page title","user name","device","online","mobile","mobile version","current date","current time","current date and time","true","false","null","empty","field"];
+var _systemValues = ["app id","app version","parameter", "page id","page name","page title","user name","device","online","mobile","mobile version","true","false","null","empty","field"];
 
 // this function returns system values
 function getSystemValueOptions(selectId) {
@@ -127,7 +145,7 @@ function getSystemValueOptions(selectId) {
 }
 
 // this function returns a set of options for a dropdown for inputs or outputs (depending on input true/false), can be controls, control properties (input only), other page controls, page variables (input only), system values (input only)
-function getDataOptions(selectId, ignoreId, input) {
+function getDataOptions(selectId, ignoreId, input, hasDatetime) {
 	var options = "";	
 	var controls = getControls();
 	var gotSelected = false;
@@ -237,6 +255,8 @@ function getDataOptions(selectId, ignoreId, input) {
 			}
 		}
 	}
+	// date time value, only for the datacopy inputs, set with dateTime = true
+	if (input && hasDatetime) options += getDateTimeValueOptions(selectId);
 	// system values, only for inputs - these are defined in an array above this function
 	if (input && _systemValues) options += getSystemValueOptions(selectId);
 	// return
@@ -303,8 +323,8 @@ function getFormValueOptions(selectId) {
 
 
 // this function returns a set of options for a dropdown of sessionVariables and controls with a getData method
-function getInputOptions(selectId, ignoreId) {
-	return getDataOptions(selectId, ignoreId, true);
+function getInputOptions(selectId, ignoreId, hasDatetime) {
+	return getDataOptions(selectId, ignoreId, true, hasDatetime);
 }
 
 // this function returns a set of options for a dropdown of sessionVariables and controls with a setData method
@@ -4316,8 +4336,8 @@ function Property_datacopySource(cell, datacopyAction, property, details) {
 }
 
 function Property_datacopySourceField(cell, datacopyAction, property, details) {
-	// only if datacopyAction type is not bulk
-	if (datacopyAction.copyType == "bulk") {
+	// only if datacopyAction type is not bulk, nor a date
+	if (datacopyAction.copyType == "bulk" || datacopyAction.dataSource.indexOf("Datetime.") == 0) {
 		// remove this row
 		cell.closest("tr").remove();
 	} else {
@@ -6035,7 +6055,7 @@ function Property_uploadControls(cell, propertyObject, property, details) {
 	Property_controlsForType(cell, propertyObject, property, {type:["upload"]});
 }
 
-// 
+// the validation logic dialogue handler
 function Property_validationLogic(cell, propertyObject, property, details) {
 	// retrieve or create the dialogue
 	var dialogue = getDialogue(cell, propertyObject, property, details, 320, "Messages", {sizeX: true});		
@@ -6093,27 +6113,6 @@ function Property_validationLogic(cell, propertyObject, property, details) {
 		textCell.attr("data-dialogueId", cell.attr("data-dialogueId") + "text_" + i);
 		// add a logic conditions property for the conditions cell
 		Property_bigtext(textCell, message, {key:"text"}, details);
-		/*
-		// add the type row and cell
-		table.append("<tr><td style='width:60px;'>Type</td><td>" + message.type + "</td></tr>");
-		// add a click listener to change the type
-		table.find("td").last().click({message: message}, function(ev){
-			// get the cell
-			var typeCell = $(this);
-			// check value
-			if (typeCell.text() == "Pass") {
-				// set text
-				typeCell.text("Fail");
-				// update value
-				ev.data.message.type = "Fail";
-			} else {
-				// set text
-				typeCell.text("Pass");
-				// update value
-				ev.data.message.type = "Pass";
-			}
-		});
-		*/
 	}
 	
 	// set cell text if not
@@ -6160,4 +6159,30 @@ function Property_validationLogic(cell, propertyObject, property, details) {
 		Property_validationLogic(ev.data.cell, ev.data.propertyObject, ev.data.property, ev.data.details);		
 	}));
 		
+}
+
+//  ["current date","current time","current date and time"];
+
+// presents different date formats for the data copy datetime options
+function Property_datacopyDateFormat(cell, propertyObject, property, details) {
+	// only if the data copy dataSource property starts with "Date"
+	if (propertyObject.dataSource && propertyObject.dataSource.indexOf("Datetime.") == 0 && propertyObject.dataSource.indexOf("date") > 10) {
+		// create the drop down, function for values is above.
+		Property_select(cell, propertyObject, property, details);
+	} else {
+		// remove this row
+		cell.closest("tr").remove();
+	}
+}
+
+//presents different time formats for the data copy datetime options
+function Property_datacopyTimeFormat(cell, propertyObject, property, details) {
+	// only if the data copy dataSource property starts with "time"
+	if (propertyObject.dataSource && propertyObject.dataSource.indexOf("Datetime.") == 0 && propertyObject.dataSource.lastIndexOf("time") > 10) {
+		// create the drop down, function for values is above.
+		Property_select(cell, propertyObject, property, details);
+	} else {
+		// remove this row
+		cell.closest("tr").remove();
+	}
 }

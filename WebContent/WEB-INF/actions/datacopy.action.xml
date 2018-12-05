@@ -71,9 +71,14 @@ This powerful control moves data around your application. The following differnt
 	                <![CDATA[
 // for backwards compatibility	                
 if (this.dataSource == "System.user") this.dataSource = "System.user name";
-return "<option value=''>Please select...</option>" + getInputOptions(this.dataSource);         
+// dateTime only available for copyType replace
+// assume no date time
+var hasDatetime = false;
+if (this.copyType == 'replace') hasDatetime = true;
+return "<option value=''>Please select...</option>" + getInputOptions(this.dataSource, true, hasDatetime);         
 	                ]]>
-	            </getValuesFunction>	
+	            </getValuesFunction>
+	            <refreshProperties>true</refreshProperties>
 	            <helpHtml>Dropdown list containing all page controls to be used as a source. System values can also be used.</helpHtml>
 	        </property>
 	        	        	      
@@ -83,6 +88,38 @@ return "<option value=''>Please select...</option>" + getInputOptions(this.dataS
 	            <changeValueJavaScript>datacopySourceField</changeValueJavaScript>
 	            <getValuesFunction>return "";</getValuesFunction>
 	            <helpHtml>Optionally specify a field or property that holds the data within the source control. An example of this is a specific cloumn's field name in a table or grid.</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>dateFormat</key>
+	            <name>Date format</name>
+	            <setConstructValueFunction>return "dd/mm/yy";</setConstructValueFunction>
+	            <changeValueJavaScript>datacopyDateFormat</changeValueJavaScript>
+	            <getValuesFunction>
+	                <![CDATA[
+return [["dd/mm/yy","dd/mm/yyyy"],["mm/dd/yy","mm/dd/yyyy"],["yy-mm-dd","yyyy-mm-dd"],["dd-M-yy","dd-MMM-yyyy"],["d MM yy","Short day, full month"],["DD, d MM, yy","Full date details"]];
+					]]>
+	            </getValuesFunction>
+	            <helpHtml>
+	            	<![CDATA[
+	                ]]>
+				</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>timeFormat</key>
+	            <name>Time format</name>
+	            <setConstructValueFunction>return "24";</setConstructValueFunction>
+	            <changeValueJavaScript>datacopyTimeFormat</changeValueJavaScript>
+	            <getValuesFunction>
+	                <![CDATA[
+return [["24","hh:mi"],["12","hh:mi AM/PM"]];
+					]]>
+	            </getValuesFunction>
+	            <helpHtml>
+	            	<![CDATA[
+	                ]]>
+				</helpHtml>
 	        </property>
 	        
 	        <property>
@@ -172,6 +209,13 @@ return "<option value=''>Please select...</option>" + getInputOptions(this.dataS
 	        </property>
 	        	        	        	 	        	        	          
 	    </properties>
+	    
+	    <resources>
+	    	<resource>
+	    		<type>javascriptFile</type>
+	    		<contents>scripts_min/jquery-ui-1.12.1.min.js</contents>
+	    	</resource>
+	    </resources>
 	    	    
 	    <actionJavaScript>
 	        <![CDATA[

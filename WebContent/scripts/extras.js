@@ -946,3 +946,57 @@ function Event_checkForm() {
 		}).addClass("disabled");
 	}
 }
+
+function formatDatetime(format, date) {
+	// check if format contains a time as well (split on " ")
+	var formatParts = format.split(" ");
+	var result = "";
+
+	//if we have date and time parts
+	if(formatParts.length > 1) {
+		
+		var dateFormatPart = formatParts[0];
+		var timeFormatPart = formatParts[1];
+		
+		var dateString = $.datepicker.formatDate(dateFormatPart, date);
+		var timeString = formatTime(timeFormatPart, date);
+		
+		result = dateString + " " + timeString;
+		
+	} else {	// we only have one part - either time or date
+		
+		if(formatParts[0].indexOf("yy") > -1) {
+			result = $.datepicker.formatDate(formatParts[0], date);
+			
+		} else { // its just a time
+			result = formatTime(formatParts[0], date);
+		}
+		
+	}
+	
+	return result;
+}
+
+function formatTime(timeFormat, date) {
+	var timePart = "";
+	if(timeFormat == "24") {
+		timePart = date.getTime() + ":" + date.getMinutes();
+		
+	} else {
+		timePart = format12hour(date);
+	} 
+	
+	return timePart;
+}
+
+function format12hour(date) {
+	  var hours = date.getHours();
+	  var minutes = date.getMinutes();
+	  var ampmString = hours >= 12 ? 'PM' : 'AM';
+	  hours = hours % 12;
+	  hours = hours ? hours : 12; // the hour '0' should be '12'
+	  minutes = minutes < 10 ? '0'+minutes : minutes;
+	  var strTime = hours + ':' + minutes + ' ' + ampmString;
+	  return strTime;
+}
+

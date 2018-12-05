@@ -25,7 +25,9 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 
 package com.rapid.actions;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -258,7 +260,7 @@ public class Datacopy extends Action {
 
 			// get the data source
 			String dataSourceId = getProperty("dataSource");
-
+			
 			// check there is a datasource
 			if (dataSourceId == null) {
 
@@ -268,9 +270,51 @@ public class Datacopy extends Action {
 			} else {
 
 				String dataSourceField = getProperty("dataSourceField");
+				
+				// if the dataSourceId is a date
+				/*if("System.current date".equalsIgnoreCase(dataSourceId)){
+					Date dateObj = new Date();
+					SimpleDateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy");
+					String date = dateFormat.format(dateObj);
+				}*/
+				 
+				
+				// Check if the dataSource
+				
+				// split by escaped .
+				String[] idParts = dataSourceId.split("\\.");
 
-				js = "var data = "  + Control.getDataJavaScript(rapidServlet.getServletContext(), application, page, dataSourceId, dataSourceField) + ";\n";
-
+				// if this is a datetime value, and it has a type
+				if ("Datetime".equals(idParts[0]) && idParts.length > 1) {
+					// get the type from the second part
+					String type = idParts[1];
+					// make format with dateFormat and timeFormat properties
+					String format = "";
+					//generate the date/time at run time
+					if("current date".equals(type)){
+						// get its, format
+						format = getProperty("dateFormat");
+						
+					} else if ("current time".equals(type)){
+						// get its, format
+						format = getProperty("timeFormat");
+						
+					} else { // if the date and time format is selected
+						// get its, format
+						format = getProperty("dateFormat") + " " + getProperty("timeFormat");
+					}
+					
+					// make the js!
+					js = "var data = formatDatetime('" + format + "', new Date());\n";
+					
+				} else {
+					
+					js = "var data = "  + Control.getDataJavaScript(rapidServlet.getServletContext(), application, page, dataSourceId, dataSourceField) + ";\n";
+					
+				}
+					
+				
+				
 				// we're going to work with the data destinations in a json array
 				JSONArray jsonDataDestinations = null;
 
@@ -302,7 +346,7 @@ public class Datacopy extends Action {
 							String destinationId = jsonDataDesintation.getString("itemId");
 
 							// split by escaped .
-							String idParts[] = destinationId.split("\\.");
+							idParts = destinationId.split("\\.");
 							// if there is more than 1 part we are dealing with set properties, for now just update the destintation id
 							if (idParts.length > 1) destinationId = idParts[0];
 
