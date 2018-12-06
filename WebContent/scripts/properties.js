@@ -4336,8 +4336,9 @@ function Property_datacopySource(cell, datacopyAction, property, details) {
 }
 
 function Property_datacopySourceField(cell, datacopyAction, property, details) {
+
 	// only if datacopyAction type is not bulk, nor a date
-	if (datacopyAction.copyType == "bulk" || datacopyAction.dataSource.indexOf("Datetime.") == 0) {
+	if (datacopyAction.copyType == "bulk" || (datacopyAction.dataSource && datacopyAction.dataSource.indexOf("Datetime.") == 0)) {
 		// remove this row
 		cell.closest("tr").remove();
 	} else {
