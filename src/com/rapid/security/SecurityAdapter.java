@@ -195,7 +195,7 @@ public abstract class SecurityAdapter {
 
 		public boolean getIsLocked() { return _isLocked; }
 		public void setIsLocked(boolean isLocked) { _isLocked = isLocked; }
-		
+
 		// constructors
 		public User() {
 			_userRoles = new UserRoles();
@@ -249,7 +249,7 @@ public abstract class SecurityAdapter {
 			if ("*".equals(_deviceDetails)) return true;
 
 			// get the user device details from the user session
-			String deviceDetails = (String) rapidRequest.getRequest().getSession().getAttribute(RapidFilter.SESSION_VARIABLE_USER_DEVICE);
+			String deviceDetails = (String) rapidRequest.getSessionAttribute(RapidFilter.SESSION_VARIABLE_USER_DEVICE);
 
 			// if we got some
 			if (deviceDetails != null) {
