@@ -33,10 +33,10 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	<xs:element name="process">
 		<xs:complexType>
 			<xs:sequence>				
+				
 				<xs:element name="name">
 					<xs:annotation>
-						<xs:documentation>The name is presented to users when
-							describing, or logging something about this process
+						<xs:documentation>The name is presented to users when describing, or logging something about this process
 						</xs:documentation>
 					</xs:annotation>
 					<xs:simpleType>
@@ -45,10 +45,10 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>
+				
 				<xs:element name="class">
 					<xs:annotation>
-						<xs:documentation>Each process must have a Java class, in the
-							classpath, that extends com.rapid.Process
+						<xs:documentation>Each process must have a Java class, in the classpath, that extends com.rapid.Process
 						</xs:documentation>
 					</xs:annotation>
 					<xs:simpleType>
@@ -57,6 +57,38 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>
+				
+				<xs:element name="parameters" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Parameters are available to the process and can be read at any time
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="parameter" minOccurs="1"	maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="name">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:minLength value="1" />
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="value">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:minLength value="1" />
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				
 				<xs:element name="interval" type="xs:integer">
 					<xs:annotation>
 						<xs:documentation>The number of seconds between runs of this process

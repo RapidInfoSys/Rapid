@@ -9,8 +9,11 @@ import javax.servlet.ServletContext;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.rapid.utils.JSON;
 
 public abstract class Process extends Thread {
 
@@ -18,19 +21,22 @@ public abstract class Process extends Thread {
 	protected ServletContext _servletContext;
 	protected String _name;
 	protected int _interval;
-	protected JSONObject _parameters;
+	protected JSONObject _config;
 	protected boolean _stopped;
 
 	// protected static variables
 	protected Logger _logger;
 
 	// constructor
-	public Process(ServletContext servletContext, JSONObject parameters) throws JSONException {
-		// store values
+	public Process(ServletContext servletContext, JSONObject config) throws JSONException {
+		// store context
 		_servletContext = servletContext;
-		_parameters = parameters;
-		_name = parameters.getString("name");
-		_interval = parameters.getInt("interval");
+		// store config - this is the JSON from the .process.xml file
+		_config = config;
+		// get the name from the config
+		_name = config.getString("name");
+		// get the interval from  the config
+		_interval = config.getInt("interval");
 
 		// get a logger for this class
 		_logger = LogManager.getLogger(this.getClass());
@@ -51,6 +57,21 @@ public abstract class Process extends Thread {
 
 	protected int getInterval() {
 		return _interval;
+	}
+	
+	// get a named parameter value from the parameters collection in the .process.xml file
+	protected String getParameterValue(String name) {
+		String value = null;
+		try {
+			JSONArray jsonParameters = JSON.getJSONArray(_config.optJSONObject("parameters"), "parameter");
+			if (jsonParameters != null) {
+				for (int i=0; i < jsonParameters.length(); i++) {
+					JSONObject jsonParameter = jsonParameters.getJSONObject(i);
+					if (name.equals(jsonParameter.getString("name"))) return jsonParameter.getString("value");
+				}
+			}
+		} catch (JSONException e) {}
+		return value;
 	}
 
 	protected Applications getApplications() {
@@ -83,11 +104,11 @@ public abstract class Process extends Thread {
 
 			try {
 				// If days specified in the schema
-				if (_parameters.has("days")) {
+				if (_config.has("days")) {
 
 					_logger.trace("There are days in the xml");
 
-					JSONObject days = _parameters.getJSONObject("days");
+					JSONObject days = _config.getJSONObject("days");
 					dateFormat = new SimpleDateFormat("EEEE");
 					String today = (dateFormat.format(now)).toLowerCase();
 
@@ -109,12 +130,12 @@ public abstract class Process extends Thread {
 				if (runToday) {
 
 					// Check if the duration are specified in the xml
-					if (_parameters.has("duration")) {
+					if (_config.has("duration")) {
 
 						_logger.trace("Durations are specified!");
 
 						// get the duration
-						JSONObject duration = _parameters.getJSONObject("duration");
+						JSONObject duration = _config.getJSONObject("duration");
 
 						// get the duration start and stop
 						String start = duration.getString("start");
@@ -186,10 +207,10 @@ public abstract class Process extends Thread {
 				} else {
 
 					// Check if the duration is provided
-					if (_parameters.has("duration")) {
+					if (_config.has("duration")) {
 
 						// Obtain the start time string
-						String start = _parameters.getJSONObject("duration").getString("start");
+						String start = _config.getJSONObject("duration").getString("start");
 						// get the start time
 						Date startTime = getTodayTimeDate(now, start);
 
