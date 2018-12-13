@@ -171,8 +171,14 @@ public class Logic extends Action {
 
 					// if left side is System.true or System.false or System.null
 					if ("System.true".equals(leftId) || "System.false".equals(leftId) || "System.null".equals(leftId)) {
-						// add an or clause with the literal
-						js += " || " + "'" + leftId.replace("System.", "") + "' "  + _operation + " " + rightSide;
+						// check for !=
+						if ("!=".equals(_operation)) {
+							// add an and clause with the literal
+							js += " && " + "'" + leftId.replace("System.", "") + "' "  + _operation + " " + rightSide;
+						} else {
+							// add an or clause with the literal
+							js += " || " + "'" + leftId.replace("System.", "") + "' "  + _operation + " " + rightSide;
+						}
 						// going to need extra brackets
 						brackets = true;
 					}
@@ -180,8 +186,14 @@ public class Logic extends Action {
 
 					// if right side is System.true or System.false or System.null
 					if ("System.true".equals(rightId) || "System.false".equals(rightId) || "System.null".equals(rightId)) {
-						// add an or clause with the literal
-						js += " || " + leftSide + " " + _operation + " '" + rightId.replace("System.", "") + "'";
+						// check for !=
+						if ("!=".equals(_operation)) {
+							// add an and clause with the literal
+							js += " && " + leftSide + " " + _operation + " '" + rightId.replace("System.", "") + "'";
+						} else {
+							// add an or clause with the literal
+							js += " || " + leftSide + " " + _operation + " '" + rightId.replace("System.", "") + "'";
+						}
 						// going to need extra brackets
 						brackets = true;
 					}
