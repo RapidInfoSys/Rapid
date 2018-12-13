@@ -31,9 +31,9 @@ How to use this file in Eclipse
 
 Import the Rapid source into Eclipse as a Dynamic Web Project
 
-Create a new, custom, Dynamic Web Project and copy the WebContent/WEB-INF/build folder into your new project
+Create a new, custom, Dynamic Web Project and copy the WebContent/WEB-INF/custombuild folder into your new project
 
-Edit the build.properties file that you just coped over in your new project and set rapid_base to the directory of the imported Rapid sources project above.
+Edit the build.properties file that you just copied over in your new project and set rapid_base to the directory of the imported Rapid sources project above.
 (Windows paths need the back slashes escaped i.e. c:\\users\\)
 
 View the properties of your new Dynamic Web Project, select "Builders", and click "New...". 
