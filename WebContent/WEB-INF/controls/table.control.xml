@@ -180,6 +180,13 @@ return "#" + this.id + " td";
 	            <changeValueJavaScript>text</changeValueJavaScript>
 	            <helpHtml>Name that can be given to the control. Names are used to help identify controls uniquely.</helpHtml>
 	        </property>
+	        
+	        <property>
+	            <key>roles</key>
+	            <name>User roles</name>
+	            <changeValueJavaScript>roles</changeValueJavaScript>
+	            <helpHtml>Only allows the viewing of the page based on the type of privileges a user has.</helpHtml>
+	        </property>
 	                   
 	    </properties>
 	    
