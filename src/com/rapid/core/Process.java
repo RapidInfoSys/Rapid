@@ -60,14 +60,14 @@ public abstract class Process extends Thread {
 	}
 	
 	// get a named parameter value from the parameters collection in the .process.xml file
-	protected String getParameterValue(String name) {
+	public String getParameterValue(String name) {
 		String value = null;
 		try {
 			JSONArray jsonParameters = JSON.getJSONArray(_config.optJSONObject("parameters"), "parameter");
 			if (jsonParameters != null) {
 				for (int i=0; i < jsonParameters.length(); i++) {
 					JSONObject jsonParameter = jsonParameters.getJSONObject(i);
-					if (name.equals(jsonParameter.getString("name"))) return jsonParameter.getString("value");
+					if (name.equals(jsonParameter.getString("name"))) return "" + jsonParameter.get("value");
 				}
 			}
 		} catch (JSONException e) {}
