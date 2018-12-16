@@ -1138,15 +1138,19 @@ public interface SOADataReader {
 
 				rootElement = soaJsonObject.getRootElement();
 
-			}
-
-			if (c == '[') {
+			} else if (c == '[') {
 
 				SOAJSONArray soaJsonArray = new SOAJSONArray(jsonTokener);
 
 				rootElement = soaJsonArray.getRootElement();
 
+			} else {
+
+				throw new JSONException("JSON body must start with either { or [");
+
 			}
+
+			if (rootElement == null) throw new JSONException("First key in JSON body must be either authenticate or " + _soaSchema.getRootElement().getName());
 
 			return new SOAData(rootElement, _soaSchema);
 

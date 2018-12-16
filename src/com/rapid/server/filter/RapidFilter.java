@@ -148,7 +148,7 @@ public class RapidFilter implements Filter {
 		String path = req.getServletPath();
 
 		// all webservice related requests got to the soa servelet
-		if ("/soa".equals(path)) {
+		if (path.startsWith("/soa")) {
 			// if this is a get request
 			if ("GET".equals(req.getMethod())) {
 				// remember we don't need authentication
@@ -161,10 +161,11 @@ public class RapidFilter implements Filter {
 					// put into lower case
 					contentType = contentType.toLowerCase();
 					// check this is known type of soa request xml
-					if (((req.getHeader("Action") != null || req.getHeader("SoapAction") != null)
-							&& contentType.contains("xml"))
-							|| (req.getHeader("Action") != null && contentType.contains("json"))) {
-						// remember we don't need authentication
+					if (
+							(contentType.contains("xml") && (req.getHeader("Action") != null || req.getHeader("SoapAction") != null))
+							|| contentType.contains("json")
+						) {
+						// remember we don't need standard authentication
 						requiresAuthentication = false;
 					}
 				}
@@ -200,6 +201,7 @@ public class RapidFilter implements Filter {
 					rapidForwardURL = "/~?a=" + appID;
 
 					if ("POST".equals(req.getMethod()) || ("GET".equals(req.getMethod()) && "~".equals(pathPart[pathPart.length - 1]))) {
+
 						rapidForwardURL = "/~?" + req.getQueryString();
 
 					} else { //any other get requests
@@ -332,18 +334,18 @@ public class RapidFilter implements Filter {
 		}
 
 	}
-	
+
 	public static boolean isAuthorised(ServletRequest servletRequest, String userName, String userPassword, String indexPath) {
-		
+
 		// remember whether we are authorised for at least one application
 		boolean authorised = false;
-		
+
 		// get the applications collection
 		Applications applications = (Applications) servletRequest.getServletContext().getAttribute("applications");
-		
+
 		// cast the ServletRequest to a HttpServletRequest
 		HttpServletRequest request = (HttpServletRequest) servletRequest;
-		
+
 		// if there are some applications
 		if (applications != null) {
 			// if the index path is for a specific app
@@ -394,9 +396,9 @@ public class RapidFilter implements Filter {
 				}
 			}
 		}
-		
+
 		return authorised;
-		
+
 	}
 
 }
