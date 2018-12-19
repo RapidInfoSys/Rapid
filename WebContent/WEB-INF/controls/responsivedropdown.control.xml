@@ -448,6 +448,7 @@ if (details && details.filter) {
       },
  
       _removeIfInvalid: function( event, ui ) {
+      	return;
         // Selected an item, nothing to do
         if ( ui.item ) {
           return;
@@ -513,7 +514,7 @@ if (data && data.rows) {
 		// if there is a value
 		if (value) {
 			// find option with value
-			var option = control.find("option[value=" + value + "]");
+			var option = control.find("option[value='" + value + "']");
 			// if we got one update value to text
 			if (option.length > 0) value = option.text();
 		}
