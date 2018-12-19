@@ -37,8 +37,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -125,7 +123,7 @@ public interface SOADataReader {
 			private List<SOAElement> _columnParents = new ArrayList<SOAElement>();
 			private Map<Integer,String> _columnArrays = new HashMap<Integer,String>();
 
-			private Logger _logger = LogManager.getLogger(this.getClass());
+			//private Logger _logger = LogManager.getLogger(this.getClass());
 
 			public SOAXMLContentHandler(SOASchema soaSchema, String root) {
 				// retain the schema
@@ -974,13 +972,14 @@ public interface SOADataReader {
 		            // special types need casting
 		            if (o instanceof Integer) {
 		            	int i = (Integer) o;
-		            	o = Integer.toString(i);
+		            	_currentElement.setValue("" + i);
 		            } else  if (o instanceof Double) {
 		            	Double d = (Double) o;
-		            	o = Double.toString(d);
+		            	o = "" + d;
+		            	_currentElement.setValue("" + d);
 		            } else if (o instanceof Boolean) {
 		            	Boolean b = (Boolean) o;
-		            	o = Boolean.toString(b);
+		            	_currentElement.setValue("" + b);
 		            }
 
 		            // dec the column
@@ -991,6 +990,9 @@ public interface SOADataReader {
 
 						// retain the authentication value
 						_authentication = (String) o;
+
+						// empty root so it's done property next time
+						_rootElement = null;
 
 					} else {
 
@@ -1150,7 +1152,7 @@ public interface SOADataReader {
 
 			}
 
-			if (rootElement == null) throw new JSONException("First key in JSON body must be either authenticate or " + _soaSchema.getRootElement().getName());
+			if (rootElement == null) throw new JSONException("First key in JSON body must be either authentication or " + _soaSchema.getRootElement().getName());
 
 			return new SOAData(rootElement, _soaSchema);
 

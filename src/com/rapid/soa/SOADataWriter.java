@@ -27,6 +27,8 @@ package com.rapid.soa;
 
 import java.util.List;
 
+import com.rapid.soa.SOASchema.SOASchemaElement;
+
 public abstract class SOADataWriter {
 
 	// private instance variables
@@ -131,13 +133,43 @@ public abstract class SOADataWriter {
 
 	public static class SOAJSONWriter extends SOADataWriter {
 
-		StringBuilder _stringBuilder;
+		protected StringBuilder _stringBuilder;
+		protected SOASchema _soaSchema;
 
 		public SOAJSONWriter(SOAData soaData) {
 			super(soaData);
 		}
 
-		private void append(SOAElement element) {
+		private String getJsonValue(SOAElement element, String id) {
+
+			// get the value (always a string)
+			String jsonValue = jsonEscape(element.getValue());
+
+			// assume it is a string
+			boolean isString = true;
+
+			// if we have a schema
+			if (_soaSchema != null) {
+				// get this element by its id
+				SOASchemaElement schemaElement = _soaSchema.getElementById(id);
+				// if we got one
+				if (schemaElement != null) {
+					// check type and adjust isString accordingly
+					switch (schemaElement.getDataType()) {
+					case SOASchema.BOOLEAN : case SOASchema.DECIMAL : case SOASchema.INTEGER : case SOASchema.NONE : isString = false; break;
+					}
+				}
+			}
+
+			// if string, add quotes
+			if (isString) jsonValue = "\"" + jsonValue + "\"";
+
+			// return
+			return jsonValue;
+
+		}
+
+		private void append(SOAElement element, String id) {
 
 			if (element.getIsArray()) {
 
@@ -149,7 +181,7 @@ public abstract class SOADataWriter {
 
 					for (int i = 0; i < childElements.size(); i ++) {
 
-						append(childElements.get(i));
+						append(childElements.get(i), id + "." + i);
 
 						if (i < childElements.size() - 1) _stringBuilder.append(",");
 
@@ -170,16 +202,31 @@ public abstract class SOADataWriter {
 					// get any children
 					List<SOAElement> childElements = element.getChildElements();
 
-					// if no children just print this value
+					// if no child data elements
 					if (childElements == null) {
 
-						_stringBuilder.append("\"" + element.getName() + "\":\"" + jsonEscape(element.getValue()) + "\"");
+						// assume no schema
+						boolean gotSchema = false;
+
+						// look for a schema
+						if (_soaSchema != null) {
+							// look for an element
+							SOASchemaElement schemaElement = _soaSchema.getElementById(id);
+							// if we got one
+							if (schemaElement != null) {
+								// we found a schema - set to true to avoid printing anything
+								gotSchema = true;
+							}
+						}
+
+						// no schema found print the element name
+						if (!gotSchema) _stringBuilder.append("\"" + element.getName() + "\":" + getJsonValue(element, id));
 
 					} else {
 
 						for (int i = 0; i < childElements.size(); i ++) {
 
-							append(childElements.get(i));
+							append(childElements.get(i), id + "." + i);
 
 							if (i < childElements.size() - 1) _stringBuilder.append(",");
 
@@ -202,7 +249,7 @@ public abstract class SOADataWriter {
 
 							for (int i = 0; i < childElements.size(); i ++) {
 
-								append(childElements.get(i));
+								append(childElements.get(i), id + "." + i);
 
 								// if we're not on the final element
 								if (i < childElements.size() - 1) {
@@ -223,7 +270,8 @@ public abstract class SOADataWriter {
 
 						if (value != null) {
 
-							_stringBuilder.append("\"" + element.getName() + "\":\"" + jsonEscape(value) + "\"");
+							// append value to json!
+							_stringBuilder.append("\"" + element.getName() + "\":" + getJsonValue(element, id));
 
 						}
 
@@ -242,7 +290,8 @@ public abstract class SOADataWriter {
 				return "{}";
 			} else {
 				_stringBuilder = new StringBuilder();
-				append(rootElement);
+				_soaSchema = _soaData.getSchema();
+				append(rootElement,"0");
 				return _stringBuilder.toString();
 			}
 

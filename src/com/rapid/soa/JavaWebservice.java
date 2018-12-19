@@ -1087,7 +1087,7 @@ public class JavaWebservice extends Webservice {
 			SOAElement responseElement = getResponseSOAElement(responseObject, null, propertyName);
 
 			// get the response data
-			SOAData responseData = new SOAData(responseElement);
+			SOAData responseData = new SOAData(responseElement, _responseSchema);
 
 			// return the response data
 			return responseData;
