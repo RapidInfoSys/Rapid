@@ -25,6 +25,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 
 package com.rapid.soa;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,11 +54,22 @@ public abstract class Webservice {
 		}
 
 		public WebserviceException(Exception ex) {
-			if (ex.getCause() == null) {
-				_ex = ex;
+
+			// if not cause but ex is an InvocationTargetException
+			if (_ex instanceof InvocationTargetException) {
+				// get the InvocationTargetException
+				InvocationTargetException itex = (InvocationTargetException) ex;
+				// grab its target
+				_ex = itex.getTargetException();
 			} else {
+				// start with the cause
 				_ex = ex.getCause();
 			}
+
+			// if still no ex, go for the given one
+			if (_ex == null) _ex = ex;
+
+			// get the message
 			_message = _ex.getMessage();
 		}
 
@@ -66,7 +78,7 @@ public abstract class Webservice {
 			if (_ex == null) {
 				return "";
 			} else {
-				return _ex.getLocalizedMessage();
+				return _message;
 			}
 		}
 
@@ -74,6 +86,7 @@ public abstract class Webservice {
 		public String getMessage() {
 			return _message;
 		}
+
 
 		@Override
 		public Throwable getCause() {
