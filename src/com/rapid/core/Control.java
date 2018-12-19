@@ -596,8 +596,16 @@ public class Control {
 						// get the runtime property
 						return "getProperty_" + control.getType() + "_" + idParts[1] + "(ev,'" + control.getId() + "'," + fieldJS + detailsJS + ")";
 					} else {
+						
+						String controlType = control.getType();
+						// Special check for responsive dropdown
+						// If type is 'responsivedropdown' check whether the filtering option is set
+						if("true".equals(control.getProperty("filter"))) {
+							// consider this as a responsiveinput 
+							controlType = "responsiveinput";
+						}
 						// no other parts return getData call
-						return "getData_" + control.getType() + "(ev,'" + control.getId() + "'," + fieldJS + detailsJS + ")";
+						return "getData_" + controlType + "(ev,'" + control.getId() + "'," + fieldJS + detailsJS + ")";
 					}
 
 				} // control check
