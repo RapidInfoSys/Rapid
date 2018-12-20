@@ -281,7 +281,13 @@ return {filter:this.filter};
 	    
 	    <getDataFunction>
 	        <![CDATA[
-return $("#" + id).find("select").val();
+
+if(details && details.filter){
+	return $("#" + id).find("input").val();
+} else {
+	return $("#" + id).find("select").val();
+}
+
 			]]>
 	    </getDataFunction>
 	    
