@@ -191,14 +191,14 @@ public class DataFactory {
 
 	}
 
-	// private instance variables
+	// protected instance variables
 
-	private ConnectionAdapter _connectionAdapter;
-	private String _sql;
-	private boolean _autoCommit, _readOnly;
-	private Connection _connection;
-	private PreparedStatement _preparedStatement;
-	private ResultSet _resultset;
+	protected ConnectionAdapter _connectionAdapter;
+	protected String _sql;
+	protected boolean _autoCommit, _readOnly;
+	protected Connection _connection;
+	protected PreparedStatement _preparedStatement;
+	protected ResultSet _resultset;
 
 	// constructors
 
@@ -231,7 +231,9 @@ public class DataFactory {
 	public boolean getReadOnly() { return _readOnly; }
 	public void setReadOnly(boolean readOnly) {	_readOnly = readOnly; }
 
-	private void populateStatement(RapidRequest rapidRequest, PreparedStatement statement, ArrayList<Parameter> parameters, int startColumn, boolean checkParameters) throws SQLException {
+	// protected methods
+
+	protected void populateStatement(RapidRequest rapidRequest, PreparedStatement statement, ArrayList<Parameter> parameters, int startColumn, boolean checkParameters) throws SQLException {
 
 		// get the parameter metadata - some jdbc drivers will return null, especially for more complex things like insert/update, or stored procedures
 		ParameterMetaData parameterMetaData = null;
@@ -288,7 +290,7 @@ public class DataFactory {
 						statement.setNull(i, Types.NULL);
 					} else {
 						/*
-						// This was turned off as too many customers already convert their own dates and this might create problems with Oracle, also all sql server exec parameters where nvarchar, even if date
+						// This was turned off as too many customers already convert their own dates and this might create problems with Oracle, also all sql server exec parameters were nvarchar, even if date
 						// assume we will not alter the value
 						boolean override = false;
 						// check we have meta data
@@ -339,6 +341,22 @@ public class DataFactory {
 
 	}
 
+	protected ResultSet getFirstResultSet(PreparedStatement preparedStatement) throws SQLException {
+
+		preparedStatement.execute();
+
+		_resultset = preparedStatement.getResultSet();
+
+		while (_resultset == null && (preparedStatement.getMoreResults() || preparedStatement.getUpdateCount() > -1)) {
+			_resultset = preparedStatement.getResultSet();
+		}
+
+		return _resultset;
+
+	}
+
+	// public methods
+
 	public PreparedStatement getPreparedStatement(RapidRequest rapidRequest, String sql, ArrayList<Parameter> parameters) throws SQLException, ClassNotFoundException, ConnectionAdapterException  {
 
 		// some jdbc drivers need various modifications to the sql
@@ -363,19 +381,6 @@ public class DataFactory {
 
 	}
 
-	private ResultSet getFirstResultSet(PreparedStatement preparedStatement) throws SQLException {
-
-		preparedStatement.execute();
-
-		_resultset = preparedStatement.getResultSet();
-
-		while (_resultset == null && (preparedStatement.getMoreResults() || preparedStatement.getUpdateCount() > -1)) {
-			_resultset = preparedStatement.getResultSet();
-		}
-
-		return _resultset;
-
-	}
 	public ResultSet getPreparedResultSet(RapidRequest rapidRequest, String sql, ArrayList<Parameter> parameters) throws SQLException, ClassNotFoundException, ConnectionAdapterException {
 
 		return getFirstResultSet(getPreparedStatement(rapidRequest, sql, parameters));
@@ -392,6 +397,8 @@ public class DataFactory {
 
 	public int getPreparedUpdate(RapidRequest rapidRequest, String sql, ArrayList<Parameter> parameters) throws SQLException, ClassNotFoundException, ConnectionAdapterException {
 
+		int rows = -1;
+
 		if (sql.trim().toLowerCase().startsWith("begin")) {
 
 			_sql = sql;
@@ -402,13 +409,21 @@ public class DataFactory {
 
 			cs.execute();
 
-			return cs.getUpdateCount();
+			rows = cs.getUpdateCount();
+
+			cs.close();
 
 		} else {
 
-			return getPreparedStatement(rapidRequest, sql, parameters).executeUpdate();
+			PreparedStatement ps = getPreparedStatement(rapidRequest, sql, parameters);
+
+			rows = ps.executeUpdate();
+
+			ps.close();
 
 		}
+
+		return rows;
 
 	}
 
@@ -434,6 +449,8 @@ public class DataFactory {
 
 				if (_resultset.next()) result = _resultset.getString(1);
 
+				_resultset.close();
+
 			} else if (sqlCheck.startsWith("insert") || sqlCheck.startsWith("update") || sqlCheck.startsWith("delete"))  {
 
 				result = Integer.toString(getPreparedUpdate(rapidRequest, sql, parameters));
@@ -455,6 +472,8 @@ public class DataFactory {
 				st.execute();
 
 				result = st.getString(1);
+
+				st.close();
 
 			}
 
@@ -486,11 +505,15 @@ public class DataFactory {
 
 	public void close() throws SQLException {
 
+		// close any statement that may still be open if we returned a resultset
 		if (_preparedStatement != null) _preparedStatement.close();
 
+		// if we have a connection adapter and a connection
 		if (_connectionAdapter != null && _connection != null) {
+			// have the adapter close the connection
 			_connectionAdapter.closeConnection(_connection);
 		} else if (_connection != null) {
+			// just close the connection if that's all we have
 			_connection.close();
 		}
 
