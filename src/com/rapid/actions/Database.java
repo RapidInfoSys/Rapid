@@ -781,9 +781,9 @@ public class Database extends Action {
 					// check the verb
 					if (sql.toLowerCase().startsWith("select") || sql.toLowerCase().startsWith("with") || sql.toLowerCase().startsWith("exec")) {
 
-						// if select set readonly to true (makes for faster querying)
-						if (sql.toLowerCase().startsWith("select")) df.setReadOnly(true);
-						
+						// if select set readonly to true (makes for faster querying) - but not for SQLite as it throws an exception if done after the connection is established
+						if (sql.toLowerCase().startsWith("select") && !df.getConnectionAdapter().getConnectionString().toLowerCase().contains("sqlite")) df.setReadOnly(true);
+
 						// got fields indicator
 						boolean gotFields = false;
 
@@ -792,30 +792,30 @@ public class Database extends Action {
 
 							// get the result set!
 							ResultSet rs = df.getPreparedResultSet(rapidRequest, sql, parameters);
-							
+
 							// check we got one
 							if (rs != null) {
 
 								// date formatters we might need but only want to fetch / initialise once
 								SimpleDateFormat localDateFormatter = null;
 								SimpleDateFormat localDateTimeFormatter = null;
-	
+
 								// assume results
 								boolean gotResults = true;
 								// get the statement
 								Statement st = rs.getStatement();
-	
+
 								while (gotResults) {
-	
+
 									// get this resultset's meta data for the field names
 									ResultSetMetaData rsmd = rs.getMetaData();
-	
+
 									// loop the result set
 									while (rs.next()) {
-	
+
 										// initialise the row
 										JSONArray jsonRow = new JSONArray();
-	
+
 										// loop the columns
 										for (int i = 0; i < rsmd.getColumnCount(); i++) {
 											// add the field name to the fields collection if not done yet
@@ -873,14 +873,14 @@ public class Database extends Action {
 										jsonRows.put(jsonRow);
 										// remember we now have our fields
 										gotFields = true;
-	
+
 									}
 									// close the record set
 									rs.close();
-								
+
 									// look for any more results
 									gotResults = st.getMoreResults();
-	
+
 									// if we got some
 									if (gotResults) {
 										// move result set on
@@ -890,9 +890,9 @@ public class Database extends Action {
 										// clear rows collection can start initialised
 										jsonRows = new JSONArray();
 									}
-	
+
 								} // got results loop
-								
+
 							} // check rs
 
 						} // parameters list loop - not sure whether this ever called
