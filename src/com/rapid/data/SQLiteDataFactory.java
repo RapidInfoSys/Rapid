@@ -140,4 +140,21 @@ public class SQLiteDataFactory extends DataFactory {
 		if (_staticConnection != null) _staticConnection.rollback();
 	}
 
+	// a close all method which also closes the static connection and should be used for cleanup/shutdown
+	public void closeAll() throws SQLException {
+
+		// close the non-static connection
+		close();
+
+		// if we have a connection adapter and a static connection
+		if (_connectionAdapter != null && _staticConnection != null) {
+			// have the adapter close the connection
+			_connectionAdapter.closeConnection(_staticConnection);
+		} else if (_staticConnection != null) {
+			// just close the static connection if that's all we have
+			_staticConnection.close();
+		}
+
+	}
+
 }
