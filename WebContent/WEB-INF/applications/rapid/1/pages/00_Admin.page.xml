@@ -190,6 +190,7 @@ if ((target.closest("tr").index() == 0 || target.is("tbody")) &amp;&amp; !target
         return true;
       }
     });
+    if (role == "RapidAdmin" || role == "RapidDesign" || role == "RapidUsers") gotRole = true;
     if (gotRole) {
       if ($("#rapid_P0_C270").text() == _userName &amp;&amp; row.children().first().text() == 'RapidAdmin') {
         row.append("&lt;td&gt;&lt;/td&gt;");

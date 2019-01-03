@@ -73,13 +73,16 @@ public class RapidFilter implements Filter {
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 
+		// placeholder for specified authentication adapter
+		String authenticationAdapterClass = null;
+
 		try {
 
 			// set the value from stopCaching from the init parameter in web.xml
 			_noCaching = Boolean.parseBoolean(filterConfig.getServletContext().getInitParameter("noCaching"));
 
 			// look for a specified authentication adapter
-			String authenticationAdapterClass = filterConfig.getInitParameter("authenticationAdapterClass");
+			authenticationAdapterClass = filterConfig.getInitParameter("authenticationAdapterClass");
 
 			// if we didn't find one
 			if (authenticationAdapterClass == null) {
@@ -105,6 +108,10 @@ public class RapidFilter implements Filter {
 
 		} catch (Exception ex) {
 
+			// log
+			_logger.error("Error initilsing Rapid filter, authenticationAdapterClass=" + authenticationAdapterClass + " : " + ex.getMessage(), ex);
+
+			// throw as ServletException
 			throw new ServletException("Rapid filter initialisation failed. Reason: " + ex, ex);
 
 		}
