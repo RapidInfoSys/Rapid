@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -1152,7 +1152,13 @@ public interface SOADataReader {
 
 			}
 
-			if (rootElement == null) throw new JSONException("First key in JSON body must be either authentication or " + _soaSchema.getRootElement().getName());
+			if (rootElement == null) {
+				if (_authentication == null) {
+					throw new JSONException(_soaSchema.getRootElement().getName() + " must be provided, even if empty");
+				} else {
+					throw new JSONException(_soaSchema.getRootElement().getName() + " must be provided after authentication, even if empty");
+				}
+			}
 
 			return new SOAData(rootElement, _soaSchema);
 

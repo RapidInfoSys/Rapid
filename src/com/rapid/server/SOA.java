@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -261,7 +261,7 @@ public class SOA extends RapidHttpServlet {
 			if (soapAction) {
 				// soap
 
-				 xmlResponse = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:soa=\"http://soa.rapid-is.co.uk\"><soapenv:Body>";
+				xmlResponse = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:soa=\"http://soa.rapid-is.co.uk\"><soapenv:Body>";
 
 				xmlResponse += xmlWriter.write();
 

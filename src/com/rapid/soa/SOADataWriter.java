@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -173,7 +173,7 @@ public abstract class SOADataWriter {
 
 			if (element.getIsArray()) {
 
-				_stringBuilder.append("{\"" + element.getName() + "\":[");
+				_stringBuilder.append("\"" + element.getName() + "\":[");
 
 				List<SOAElement> childElements = element.getChildElements();
 
@@ -181,7 +181,9 @@ public abstract class SOADataWriter {
 
 					for (int i = 0; i < childElements.size(); i ++) {
 
-						append(childElements.get(i), id + "." + i);
+						SOAElement childElement = childElements.get(i);
+
+						append(childElement, id + "." + i);
 
 						if (i < childElements.size() - 1) _stringBuilder.append(",");
 
@@ -189,7 +191,7 @@ public abstract class SOADataWriter {
 
 				}
 
-				_stringBuilder.append("]}");
+				_stringBuilder.append("]");
 
 			} else {
 
@@ -226,7 +228,9 @@ public abstract class SOADataWriter {
 
 						for (int i = 0; i < childElements.size(); i ++) {
 
-							append(childElements.get(i), id + "." + i);
+							SOAElement childElement = childElements.get(i);
+
+							append(childElement, id + "." + i);
 
 							if (i < childElements.size() - 1) _stringBuilder.append(",");
 
@@ -249,12 +253,16 @@ public abstract class SOADataWriter {
 
 							for (int i = 0; i < childElements.size(); i ++) {
 
-								append(childElements.get(i), id + "." + i);
+								SOAElement childElement = childElements.get(i);
+
+								append(childElement, id + "." + i);
 
 								// if we're not on the final element
 								if (i < childElements.size() - 1) {
-									// only add a separating comma if the next element has a value
-									if (element.getChildElements().get(i + 1).getValue() != null) _stringBuilder.append(",");
+									// get next child element
+									SOAElement nextChildElement = element.getChildElements().get(i + 1);
+									// only add a separating comma if the next element has a value, or is an array with child elements
+									if (nextChildElement.getValue() != null || (nextChildElement.getIsArray() && nextChildElement.getChildElements() != null && nextChildElement.getChildElements().size() > 0)) _stringBuilder.append(",");
 
 								}
 
