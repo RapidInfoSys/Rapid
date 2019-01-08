@@ -824,20 +824,30 @@ public class Database extends Action {
 											int columnType = rsmd.getColumnType(i + 1);
 											// add the data to the row according to it's type
 											switch (columnType) {
-											case (Types.NUMERIC) :
-												jsonRow.put(rs.getDouble(i + 1));
-											break;
-											case (Types.INTEGER) :
-												jsonRow.put(rs.getInt(i + 1));
-											break;
-											case (Types.BIGINT) :
-												jsonRow.put(rs.getLong(i + 1));
-											break;
-											case (Types.FLOAT) :
-												jsonRow.put(rs.getFloat(i + 1));
-											break;
-											case (Types.DOUBLE) : case (Types.DECIMAL) :
-												jsonRow.put(rs.getDouble(i + 1));
+											case (Types.DOUBLE) : case (Types.DECIMAL) : case (Types.NUMERIC) : case (Types.INTEGER) : case (Types.BIGINT) : case (Types.FLOAT) :
+												// get the value as a string
+												String value = rs.getString(i + 1);
+												// null check
+												if (value == null) {
+													// put the value as null
+													jsonRow.put(value);
+												} else {
+													// check the numbers in more detail
+													switch (columnType) {
+													case (Types.DOUBLE) : case (Types.DECIMAL) : case (Types.NUMERIC) :
+														jsonRow.put(rs.getDouble(i + 1));
+													break;
+													case (Types.INTEGER) :
+														jsonRow.put(rs.getInt(i + 1));
+													break;
+													case (Types.BIGINT) :
+														jsonRow.put(rs.getLong(i + 1));
+													break;
+													case (Types.FLOAT) :
+														jsonRow.put(rs.getFloat(i + 1));
+													break;
+													}
+												}
 											break;
 											case (Types.DATE) :
 												Date date = rs.getDate(i + 1);
