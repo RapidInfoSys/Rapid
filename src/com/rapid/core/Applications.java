@@ -185,9 +185,11 @@ public class Applications {
 
 	// fetch the most recent live version, then most recent dev
 	public Application get(String id) {
-		// get the latest live application
-		Application application = getLatestVersion(id, Application.STATUS_LIVE);
-		// get the very latest if no versions are live
+		// get the latest under maintenance application
+		Application application = getLatestVersion(id, Application.STATUS_MAINTENANCE);
+		// if no under maintenance look for latest live
+		if (application == null) application = getLatestVersion(id, Application.STATUS_LIVE);
+		// get the very latest if no versions are under maintenance or live
 		if (application == null) application = getLatestVersion(id);
 		// return our highest application
 		return application;

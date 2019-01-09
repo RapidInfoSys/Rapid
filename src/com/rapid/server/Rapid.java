@@ -125,8 +125,7 @@ public class Rapid extends RapidHttpServlet {
 		RapidRequest rapidRequest = new RapidRequest(this, request);
 
 		// if monitor is alive then log the event
-		if(_monitor!=null && _monitor.isAlive(rapidRequest.getRapidServlet().getServletContext()) && _monitor.isLoggingAll())
-			_monitor.openEntry();
+		if(_monitor!=null && _monitor.isAlive(rapidRequest.getRapidServlet().getServletContext()) && _monitor.isLoggingAll()) _monitor.openEntry();
 
 		// we will store the length of the item we are adding
 		long responseLength = 0;
@@ -577,14 +576,12 @@ public class Rapid extends RapidHttpServlet {
 			} // app exists check
 
 			// if monitor is alive then log the event
-			if(_monitor!=null && _monitor.isAlive(rapidRequest.getRapidServlet().getServletContext()) && _monitor.isLoggingAll())
-				_monitor.commitEntry(rapidRequest, response, responseLength);
+			if(_monitor!=null && _monitor.isAlive(rapidRequest.getRapidServlet().getServletContext()) && _monitor.isLoggingAll()) _monitor.commitEntry(rapidRequest, response, responseLength);
 
 		} catch (Exception ex) {
 
 			// if monitor is alive then log the event
-			if(_monitor!=null && _monitor.isAlive(rapidRequest.getRapidServlet().getServletContext()) && _monitor.isLoggingExceptions())
-				_monitor.commitEntry(rapidRequest, response, responseLength, ex.getMessage());
+			if(_monitor!=null && _monitor.isAlive(rapidRequest.getRapidServlet().getServletContext()) && _monitor.isLoggingExceptions()) _monitor.commitEntry(rapidRequest, response, responseLength, ex.getMessage());
 
 			logger.error("Rapid GET error : ",ex);
 
