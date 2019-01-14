@@ -1111,6 +1111,8 @@ public interface SOADataReader {
 		}
 
 
+		// private instance methods
+
 		private void reset() {
 
 			// reset all our counters when we first start the read

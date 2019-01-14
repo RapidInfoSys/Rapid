@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
