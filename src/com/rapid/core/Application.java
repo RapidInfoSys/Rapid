@@ -757,7 +757,7 @@ public class Application {
 					if (string.contains("[[appfolder]]")) string = string.replace("[[appfolder]]", getConfigFolder(servletContext, _id, _version));
 					if (string.contains("[[configfolder]]")) string = string.replace("[[configfolder]]", getConfigFolder(servletContext, _id, _version));
 					// root folder is WEB-INF
-					if (string.contains("[[rootfolder]]")) string = string.replace("[[rootfolder]]", servletContext.getRealPath("WEB-INF/"));
+					if (string.contains("[[rootfolder]]")) string = string.replace("[[rootfolder]]", servletContext.getRealPath("/") + "/WEB-INF/");
 					// if we have parameters
 					if (_parameters != null) {
 						// loop them
@@ -2258,7 +2258,7 @@ public class Application {
 				}
 
 				// set the delete folder
-				deleteFolder = new File(rapidServlet.getServletContext().getRealPath("/WEB-INF/temp/" + _id + "_" + rapidRequest.getUserName()));
+				deleteFolder = new File(rapidServlet.getServletContext().getRealPath("/") + "/WEB-INF/temp/" + _id + "_" + rapidRequest.getUserName());
 				// create it
 				deleteFolder.mkdirs();
 
@@ -2328,7 +2328,7 @@ public class Application {
 						// check they're any of our file types
 						if (resource.getType() == Resource.JAVASCRIPTFILE || resource.getType() == Resource.CSSFILE || resource.getType() == Resource.JAVASCRIPTLINK || resource.getType() == Resource.CSSLINK || resource.getType() == Resource.FILE) {
 							// get a file object for them
-							File resourceFile = new File(rapidServlet.getServletContext().getRealPath("") + "/" + resource.getContent());
+							File resourceFile = new File(rapidServlet.getServletContext().getRealPath("/") + "/" + resource.getContent());
 							// if file exists
 							if (resourceFile.exists()) {
 								// get the path from the file name
@@ -2360,12 +2360,12 @@ public class Application {
 			}
 
 			// get a file for the temp directory
-			File tempDir = new File(rapidServlet.getServletContext().getRealPath("/WEB-INF/temp"));
+			File tempDir = new File(rapidServlet.getServletContext().getRealPath("/") + "/WEB-INF/temp");
 			// create it if not there
 			if (!tempDir.exists()) tempDir.mkdir();
 
 			// create the zip file object with our destination, always in the temp folder
-			ZipFile zipFile = new ZipFile(new File(rapidServlet.getServletContext().getRealPath("/WEB-INF/temp/" + fileName)));
+			ZipFile zipFile = new ZipFile(new File(rapidServlet.getServletContext().getRealPath("/") + "/WEB-INF/temp/" + fileName));
 
 			// create a list of files to ignore
 			ArrayList<String> ignoreFiles = new ArrayList<String>();
@@ -2434,25 +2434,28 @@ public class Application {
 
 	// this is where the application configuration will be stored
 	public static String getConfigFolder(ServletContext servletContext, String id, String version) {
-		return servletContext.getRealPath("/WEB-INF/applications/" + id + "/" + version);
+		// this use of getRealPath was required under Jetty 9.4
+		return servletContext.getRealPath("/") + "/WEB-INF/applications/" + id + "/" + version;
 	}
 
 	// this is the web folder with the full system path
 	public static String getWebFolder(ServletContext servletContext, String id, String version) {
-		return servletContext.getRealPath("/applications/" + id + "/" + version);
+		// this use of getRealPath was required under Jetty 9.4
+		return servletContext.getRealPath("/") + "/applications/" + id + "/" + version;
 	}
 
 	// this is the web folder as seen externally
 	public static String getWebFolder(Application application) {
+		// this use of getRealPath was required under Jetty 9.4
 		return "applications/" + application.getId() + "/" + application.getVersion();
 	}
 
 	// this is the backup folder
 	public static String getBackupFolder(ServletContext servletContext, String id, String version, boolean allVersions) {
 		if (allVersions) {
-			return servletContext.getRealPath("/WEB-INF/applications/" +  BACKUP_FOLDER + "/" + id + "/" + version);
+			return servletContext.getRealPath("/") + "/WEB-INF/applications/" +  BACKUP_FOLDER + "/" + id + "/" + version;
 		} else {
-			return servletContext.getRealPath("/WEB-INF/applications/" + id + "/" + version + "/" + BACKUP_FOLDER);
+			return servletContext.getRealPath("/") + "/WEB-INF/applications/" + id + "/" + version + "/" + BACKUP_FOLDER;
 		}
 	}
 

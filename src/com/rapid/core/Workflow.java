@@ -196,7 +196,7 @@ public class Workflow {
 	// public static methods
 
 	public static String getConfigFolder(ServletContext servletContext) {
-		return servletContext.getRealPath("/WEB-INF/workflows");
+		return servletContext.getRealPath("/") + "/WEB-INF/workflows";
 	}
 
 	public static Workflow load(ServletContext servletContext, File file) throws ParserConfigurationException, SAXException, IOException, TransformerFactoryConfigurationError, TransformerException, JAXBException, RapidLoadingException {

@@ -178,7 +178,7 @@ public class Email {
 	public void save(ServletContext servletContext) throws JAXBException, IOException {
 
 		// get the file in which the control xml files are stored
-		File file = new File(servletContext.getRealPath("/WEB-INF/email/email.xml"));
+		File file = new File(servletContext.getRealPath("/") + "WEB-INF/email/email.xml");
 		// make dirs if need be
 		if (!file.exists()) file.getParentFile().mkdirs();
 
@@ -199,7 +199,7 @@ public class Email {
         Email email = null;
 
         // get the file in which the email xml file is stored
-        File file = new File(servletContext.getRealPath("/WEB-INF/email/email.xml"));
+        File file = new File(servletContext.getRealPath("/" + "WEB-INF/email/email.xml"));
 
         // if it exists
         if (file.exists()) {

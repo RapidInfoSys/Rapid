@@ -132,7 +132,7 @@ public class RapidServletContextListener implements ServletContextListener {
 		int loginCount = 0;
 
 		// get the directory in which the control xml files are stored
-		File dir = new File(servletContext.getRealPath("/WEB-INF/logins/"));
+		File dir = new File(servletContext.getRealPath("/") + "/WEB-INF/logins/");
 
 		// if the directory exists
 		if (dir.exists()) {
@@ -149,7 +149,7 @@ public class RapidServletContextListener implements ServletContextListener {
 		    };
 
 		    // create a schema object for the xsd
-		    Schema schema = _schemaFactory.newSchema(new File(servletContext.getRealPath("/WEB-INF/schemas/") + "/login.xsd"));
+		    Schema schema = _schemaFactory.newSchema(new File(servletContext.getRealPath("/") + "/WEB-INF/schemas/" + "/login.xsd"));
 		    // create a validator
 		    Validator validator = schema.newValidator();
 
@@ -187,12 +187,12 @@ public class RapidServletContextListener implements ServletContextListener {
 	public static int loadDatabaseDrivers(ServletContext servletContext) throws Exception {
 
 		// create a schema object for the xsd
-	    Schema schema = _schemaFactory.newSchema(new File(servletContext.getRealPath("/WEB-INF/schemas/") + "/databaseDrivers.xsd"));
+	    Schema schema = _schemaFactory.newSchema(new File(servletContext.getRealPath("/") + "/WEB-INF/schemas/" + "/databaseDrivers.xsd"));
 	    // create a validator
 	    Validator validator = schema.newValidator();
 
 		// read the xml into a string
-		String xml = Strings.getString(new File(servletContext.getRealPath("/WEB-INF/database/") + "/databaseDrivers.xml"));
+		String xml = Strings.getString(new File(servletContext.getRealPath("/") + "/WEB-INF/database/" + "/databaseDrivers.xml"));
 
 		// validate the control xml file against the schema
 		validator.validate(new StreamSource(new ByteArrayInputStream(xml.getBytes("UTF-8"))));
@@ -276,7 +276,7 @@ public class RapidServletContextListener implements ServletContextListener {
 		ArrayList<JSONObject> connectionAdapters = new ArrayList<JSONObject>();
 
 		// get the directory in which the control xml files are stored
-		File dir = new File(servletContext.getRealPath("/WEB-INF/database/"));
+		File dir = new File(servletContext.getRealPath("/") + "/WEB-INF/database/");
 
 		// create a filter for finding .control.xml files
 		FilenameFilter xmlFilenameFilter = new FilenameFilter() {
@@ -287,7 +287,7 @@ public class RapidServletContextListener implements ServletContextListener {
 	    };
 
 	    // create a schema object for the xsd
-	    Schema schema = _schemaFactory.newSchema(new File(servletContext.getRealPath("/WEB-INF/schemas/") + "/connectionAdapter.xsd"));
+	    Schema schema = _schemaFactory.newSchema(new File(servletContext.getRealPath("/") + "/WEB-INF/schemas/" + "/connectionAdapter.xsd"));
 	    // create a validator
 	    Validator validator = schema.newValidator();
 
@@ -364,7 +364,7 @@ public class RapidServletContextListener implements ServletContextListener {
 		JSONArray jsonSecurityAdapters = new JSONArray();
 
 		// get the directory in which the control xml files are stored
-		File dir = new File(servletContext.getRealPath("/WEB-INF/security/"));
+		File dir = new File(servletContext.getRealPath("/") + "/WEB-INF/security/");
 
 		// create a filter for finding .securityadapter.xml files
 		FilenameFilter xmlFilenameFilter = new FilenameFilter() {
@@ -375,7 +375,7 @@ public class RapidServletContextListener implements ServletContextListener {
 	    };
 
 	    // create a schema object for the xsd
-	    Schema schema = _schemaFactory.newSchema(new File(servletContext.getRealPath("/WEB-INF/schemas/") + "/securityAdapter.xsd"));
+	    Schema schema = _schemaFactory.newSchema(new File(servletContext.getRealPath("/") + "/WEB-INF/schemas/" + "/securityAdapter.xsd"));
 	    // create a validator
 	    Validator validator = schema.newValidator();
 
@@ -431,7 +431,7 @@ public class RapidServletContextListener implements ServletContextListener {
 
 		// retain our form adapter class constructors in a hashtable - this speeds up initialisation
 		HashMap<String,Constructor> formConstructors = new HashMap<String,Constructor>();
-		
+
 		// retain our payment class constructors in a hashtable - this speeds up initialisation
 		HashMap<String,Constructor> paymentConstructors = new HashMap<String,Constructor>();
 
@@ -439,7 +439,7 @@ public class RapidServletContextListener implements ServletContextListener {
 		JSONArray jsonAdapters = new JSONArray();
 
 		// get the directory in which the control xml files are stored
-		File dir = new File(servletContext.getRealPath("/WEB-INF/forms/"));
+		File dir = new File(servletContext.getRealPath("/") + "/WEB-INF/forms/");
 
 		// create a filter for finding .formadapter.xml files
 		FilenameFilter xmlFilenameFilter = new FilenameFilter() {
@@ -450,7 +450,7 @@ public class RapidServletContextListener implements ServletContextListener {
 	    };
 
 	    // create a schema object for the xsd
-	    Schema schema = _schemaFactory.newSchema(new File(servletContext.getRealPath("/WEB-INF/schemas/") + "/formAdapter.xsd"));
+	    Schema schema = _schemaFactory.newSchema(new File(servletContext.getRealPath("/") + "/WEB-INF/schemas/" + "/formAdapter.xsd"));
 	    // create a validator
 	    Validator validator = schema.newValidator();
 
@@ -470,7 +470,7 @@ public class RapidServletContextListener implements ServletContextListener {
 			String type = jsonFormAdapter.getString("type");
 			// get the class name from the json
 			String className = jsonFormAdapter.getString("class");
-			
+
 			// get the class
 			Class classClass = Class.forName(className);
 			// check the class extends com.rapid.forms.FormAdapter
@@ -491,7 +491,7 @@ public class RapidServletContextListener implements ServletContextListener {
 				// add to constructors hashmap referenced by type
 				paymentConstructors.put(className, classClass.getConstructor(ServletContext.class, Application.class));
 			}
-			
+
 			// add to our collection
 			jsonAdapters.put(jsonFormAdapter);
 
@@ -505,7 +505,7 @@ public class RapidServletContextListener implements ServletContextListener {
 
 		// put the constructors hashmap in a context attribute (this is available via the getContructor method in RapidHttpServlet)
 		servletContext.setAttribute("formConstructors", formConstructors);
-		
+
 		// put the constructors hashmap in a context attribute (this is available via the getContructor method in RapidHttpServlet)
 		servletContext.setAttribute("paymentConstructors", paymentConstructors);
 
@@ -532,7 +532,7 @@ public class RapidServletContextListener implements ServletContextListener {
 		ArrayList<Action> actions = new ArrayList<Action>();
 
 		// get the directory in which the control xml files are stored
-		File dir = new File(servletContext.getRealPath("/WEB-INF/actions/"));
+		File dir = new File(servletContext.getRealPath("/") + "/WEB-INF/actions/");
 
 		// create a filter for finding .control.xml files
 		FilenameFilter xmlFilenameFilter = new FilenameFilter() {
@@ -543,7 +543,7 @@ public class RapidServletContextListener implements ServletContextListener {
 	    };
 
 	    // create a schema object for the xsd
-	    Schema schema = _schemaFactory.newSchema(new File(servletContext.getRealPath("/WEB-INF/schemas/") + "/action.xsd"));
+	    Schema schema = _schemaFactory.newSchema(new File(servletContext.getRealPath("/") + "/WEB-INF/schemas/" + "/action.xsd"));
 	    // create a validator
 	    Validator validator = schema.newValidator();
 
@@ -650,7 +650,7 @@ public class RapidServletContextListener implements ServletContextListener {
 		List<JSONObject> jsonControls = new ArrayList<JSONObject>();
 
 		// get the directory in which the control xml files are stored
-		File dir = new File(servletContext.getRealPath("/WEB-INF/controls/"));
+		File dir = new File(servletContext.getRealPath("/") + "/WEB-INF/controls/");
 
 		// create a filter for finding .control.xml files
 		FilenameFilter xmlFilenameFilter = new FilenameFilter() {
@@ -661,7 +661,7 @@ public class RapidServletContextListener implements ServletContextListener {
 	    };
 
 	    // create a schema object for the xsd
-	    Schema schema = _schemaFactory.newSchema(new File(servletContext.getRealPath("/WEB-INF/schemas/") + "/control.xsd"));
+	    Schema schema = _schemaFactory.newSchema(new File(servletContext.getRealPath("/") + "/WEB-INF/schemas/" + "/control.xsd"));
 	    // create a validator
 	    Validator validator = schema.newValidator();
 
@@ -751,7 +751,7 @@ public class RapidServletContextListener implements ServletContextListener {
 		List<Theme> themes = new ArrayList<Theme>();
 
 		// get the directory in which the control xml files are stored
-		File dir = new File(servletContext.getRealPath("/WEB-INF/themes/"));
+		File dir = new File(servletContext.getRealPath("/") + "/WEB-INF/themes/");
 
 		// create a filter for finding .control.xml files
 		FilenameFilter xmlFilenameFilter = new FilenameFilter() {
@@ -762,7 +762,7 @@ public class RapidServletContextListener implements ServletContextListener {
 	    };
 
 	    // create a schema object for the xsd
-	    Schema schema = _schemaFactory.newSchema(new File(servletContext.getRealPath("/WEB-INF/schemas/") + "/theme.xsd"));
+	    Schema schema = _schemaFactory.newSchema(new File(servletContext.getRealPath("/") + "/WEB-INF/schemas/" + "/theme.xsd"));
 	    // create a validator
 	    Validator validator = schema.newValidator();
 
@@ -853,7 +853,7 @@ public class RapidServletContextListener implements ServletContextListener {
 		applications = new Applications();
 
 		// the application root folder
-		File applicationFolderRoot = new File(servletContext.getRealPath("/WEB-INF/applications/"));
+		File applicationFolderRoot = new File(servletContext.getRealPath("/") + "/WEB-INF/applications/");
 
 		// loop the children of the application folder
 		for (File applicationFolder : applicationFolderRoot.listFiles()) {
@@ -1064,7 +1064,7 @@ public class RapidServletContextListener implements ServletContextListener {
 		workflows = new Workflows();
 
 		// get their folder
-		File folderRoot = new File(servletContext.getRealPath("/WEB-INF/workflows/"));
+		File folderRoot = new File(servletContext.getRealPath("/") + "/WEB-INF/workflows/");
 
 		// if there is one
 		if (folderRoot.isDirectory()) {
@@ -1132,7 +1132,7 @@ public class RapidServletContextListener implements ServletContextListener {
 		processes = new ArrayList<Process>();
 
 		// get the directory in which the process xml files are stored
-		File dir = new File(servletContext.getRealPath("/WEB-INF/processes/"));
+		File dir = new File(servletContext.getRealPath("/") + "/WEB-INF/processes/");
 
 		// create a filter for finding .control.xml files
 		FilenameFilter xmlFilenameFilter = new FilenameFilter() {
@@ -1143,7 +1143,7 @@ public class RapidServletContextListener implements ServletContextListener {
 	    };
 
 	    // create a schema object for the xsd
-	    Schema schema = _schemaFactory.newSchema(new File(servletContext.getRealPath("/WEB-INF/schemas/") + "/process.xsd"));
+	    Schema schema = _schemaFactory.newSchema(new File(servletContext.getRealPath("/") + "/WEB-INF/schemas/" + "/process.xsd"));
 	    // create a validator
 	    Validator validator = schema.newValidator();
 
@@ -1202,6 +1202,9 @@ public class RapidServletContextListener implements ServletContextListener {
 
 		// request windows line breaks to make the files easier to edit (in particular the marshalled .xml files)
 		System.setProperty("line.separator", "\r\n");
+
+		// this fixes Illegal reflective access by com.sun.xml.bind.v2.runtime.reflect.opt.Injector, see https://github.com/javaee/jaxb-v2/issues/1197
+		System.setProperty("com.sun.xml.bind.v2.bytecode.ClassTailor.noOptimize","true");
 
 		// get a reference to the servlet context
 		ServletContext servletContext = event.getServletContext();

@@ -68,7 +68,7 @@ public class ActionCache {
 		public Cache(ServletContext servletContext, String appId) throws JAXBException {
 
 			// create a file object for the cache.xml file
-			_cacheFile = new File(servletContext.getRealPath("/WEB-INF/applications/" + Files.safeName(appId + "/cache.xml")));
+			_cacheFile = new File(servletContext.getRealPath("/") + "/WEB-INF/applications/" + Files.safeName(appId + "/cache.xml"));
 
 			if (_cacheFile.exists()) {
 				// unmarshall the file into an object

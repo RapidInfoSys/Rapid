@@ -1196,7 +1196,7 @@ public class Designer extends RapidHttpServlet {
 								response.setHeader("Content-disposition","attachment; filename=" + application.getId() + ".zip");
 
 								// get the file for the zip we're about to create
-								File zipFile = new File(getServletContext().getRealPath("/WEB-INF/temp/" + application.getId() + ".zip"));
+								File zipFile = new File(getServletContext().getRealPath("/") + "WEB-INF/temp/" + application.getId() + ".zip");
 
 								// send the file to browser
 								OutputStream out = response.getOutputStream();
@@ -1920,12 +1920,12 @@ public class Designer extends RapidHttpServlet {
 									}
 
 									// get a file for the temp directory
-									File tempDir = new File(getServletContext().getRealPath("/WEB-INF/temp"));
+									File tempDir = new File(getServletContext().getRealPath("/") + "WEB-INF/temp");
 									// create it if not there
 									if (!tempDir.exists()) tempDir.mkdir();
 
 									// the path we're saving to is the temp folder
-									String path = getServletContext().getRealPath("/WEB-INF/temp/" + appId + ".zip");
+									String path = getServletContext().getRealPath("/") + "WEB-INF/temp/" + appId + ".zip";
 									// create a file output stream to save the data to
 									FileOutputStream fos = new FileOutputStream (path);
 									// write the file data to the stream
@@ -1946,11 +1946,11 @@ public class Designer extends RapidHttpServlet {
 									zipFile.delete();
 
 									// unzip folder (for deletion)
-									File unZipFolder = new File(getServletContext().getRealPath("/WEB-INF/temp/" + appId));
+									File unZipFolder = new File(getServletContext().getRealPath("/") + "/WEB-INF/temp/" + appId);
 									// get application folders
-									File appFolderSource = new File(getServletContext().getRealPath("/WEB-INF/temp/" + appId + "/WEB-INF"));
+									File appFolderSource = new File(getServletContext().getRealPath("/") + "/WEB-INF/temp/" + appId + "/WEB-INF");
 									// get web content folders
-									File webFolderSource = new File(getServletContext().getRealPath("/WEB-INF/temp/" + appId + "/WebContent" ));
+									File webFolderSource = new File(getServletContext().getRealPath("/") + "/WEB-INF/temp/" + appId + "/WebContent");
 
 									// check we have the right source folders
 									if (webFolderSource.exists() && appFolderSource.exists()) {
