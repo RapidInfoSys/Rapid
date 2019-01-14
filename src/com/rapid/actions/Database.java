@@ -54,6 +54,7 @@ import com.rapid.data.ConnectionAdapter;
 import com.rapid.data.DataFactory;
 import com.rapid.data.DataFactory.Parameters;
 import com.rapid.data.DatabaseConnection;
+import com.rapid.data.SQLiteDataFactory;
 import com.rapid.server.ActionCache;
 import com.rapid.server.RapidHttpServlet;
 import com.rapid.server.RapidRequest;
@@ -824,30 +825,20 @@ public class Database extends Action {
 											int columnType = rsmd.getColumnType(i + 1);
 											// add the data to the row according to it's type
 											switch (columnType) {
-											case (Types.DOUBLE) : case (Types.DECIMAL) : case (Types.NUMERIC) : case (Types.INTEGER) : case (Types.BIGINT) : case (Types.FLOAT) :
-												// get the value as a string
-												String value = rs.getString(i + 1);
-												// null check
-												if (value == null) {
-													// put the value as null
-													jsonRow.put(value);
-												} else {
-													// check the numbers in more detail
-													switch (columnType) {
-													case (Types.DOUBLE) : case (Types.DECIMAL) : case (Types.NUMERIC) :
-														jsonRow.put(rs.getDouble(i + 1));
-													break;
-													case (Types.INTEGER) :
-														jsonRow.put(rs.getInt(i + 1));
-													break;
-													case (Types.BIGINT) :
-														jsonRow.put(rs.getLong(i + 1));
-													break;
-													case (Types.FLOAT) :
-														jsonRow.put(rs.getFloat(i + 1));
-													break;
-													}
-												}
+											case (Types.NUMERIC) :
+												jsonRow.put(rs.getDouble(i + 1));
+											break;
+											case (Types.INTEGER) :
+												jsonRow.put(rs.getInt(i + 1));
+											break;
+											case (Types.BIGINT) :
+												jsonRow.put(rs.getLong(i + 1));
+											break;
+											case (Types.FLOAT) :
+												jsonRow.put(rs.getFloat(i + 1));
+											break;
+											case (Types.DOUBLE) : case (Types.DECIMAL) :
+												jsonRow.put(rs.getDouble(i + 1));
 											break;
 											case (Types.DATE) :
 												Date date = rs.getDate(i + 1);
@@ -1139,8 +1130,17 @@ public class Database extends Action {
 			// get the connection adapter
 			ConnectionAdapter ca = databaseConnection.getConnectionAdapter(rapidRequest.getRapidServlet().getServletContext(), application);
 
-			// instantiate a data factory with autocommit = false;
-			DataFactory df = new DataFactory(ca, false);
+			// placeholder for data factory
+			DataFactory df = null;
+
+			// if this is sqlite
+			if (databaseConnection.getConnectionString().toLowerCase().contains("sqlite")) {
+				// instantiate a SQLite data factory with autocommit = false;
+				df = new SQLiteDataFactory(ca, false);
+			} else {
+				// instantiate a data factory with autocommit = false;
+				df = new DataFactory(ca, false);
+			}
 
 			// use the reusable do query function (so child database actions can use it as well)
 			jsonData = doQuery(rapidRequest, jsonAction, application, df);
