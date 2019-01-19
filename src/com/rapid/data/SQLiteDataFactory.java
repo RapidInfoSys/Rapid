@@ -84,7 +84,7 @@ public class SQLiteDataFactory extends DataFactory {
 			// make a new static connection if we need one
 			if (_staticConnection == null) {
 				_staticConnection = (SQLiteConnection) _connectionAdapter.getConnection(rapidRequest);
-				_staticConnection.setAutoCommit(false);
+				_staticConnection.setAutoCommit(true);
 				_staticConnection.setReadOnly(false);
 				_staticConnection.setBusyTimeout(1000);
 			}
@@ -130,17 +130,17 @@ public class SQLiteDataFactory extends DataFactory {
 	// must commit to clear any locks on the update connections so the select ones can proceed
 	@Override
 	public void commit() throws SQLException {
-		// only the static connection is doing updates so it's the one to commit
-		if (_staticConnection != null) _staticConnection.commit();
+		// only the static connection is doing updates so it's the one to commit - disabled for now as autocommit is true
+		// if (_staticConnection != null) _staticConnection.commit();
 	}
 
 	@Override
 	public void rollback() throws SQLException {
 		// only the static connection is doing updates so it's the one to rollback
-		if (_staticConnection != null) _staticConnection.rollback();
+		// if (_staticConnection != null) _staticConnection.rollback();
 	}
 
-	// a close all method which also closes the static connection and should be used for cleanup/shutdown
+	// a close all method which also closes the static connection and should be used for cleanup/shutdown - disable for now as autocommit is true
 	public void closeAll() throws SQLException {
 
 		// close the non-static connection
