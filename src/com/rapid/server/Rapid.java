@@ -687,82 +687,87 @@ public class Rapid extends RapidHttpServlet {
 						// assume we weren't passed any json
 						JSONObject jsonData = getJSONObject(bodyBytes);
 
-						// assume the request wasn't for testing on Rapid Mobile
-						boolean forTesting = false;
+						// assume the request wasn't from Rapid Mobile
+						boolean isRapidMobile = false;
 
 						// if we got some data, look for a test = true entry - this is sent from Rapid Mobile
-						if (jsonData != null) forTesting = jsonData.optBoolean("test");
+						if (jsonData != null) isRapidMobile = jsonData.optBoolean("test");
 
 						// loop the apps
 						for (Application app : apps) {
 
-							// allow unless when we are asking for forms, make sure this is a form
-							if (!"getForms".equals(actionName) || app.getIsForm()) {
+							// if this is from the Rapid Mobile client, do not send forms
+							if (!isRapidMobile || !app.getIsForm()) {
 
-								// if Rapid app must not be for testing / from Rapid Mobile
-								if (!"rapid".equals(app.getId()) || !forTesting) {
+								// allow unless when we are asking for forms, make sure this is a form - also stop forms going to Rapid Mobile
+								if (!"getForms".equals(actionName) || app.getIsForm()) {
 
-									// get the relevant security adapter
-									SecurityAdapter security = app.getSecurityAdapter();
+									// if Rapid app must not be for testing / from Rapid Mobile
+									if (!"rapid".equals(app.getId()) || !isRapidMobile) {
 
-									// make a rapidRequest for this application
-									RapidRequest getAppsRequest = new RapidRequest(this, request, app);
+										// get the relevant security adapter
+										SecurityAdapter security = app.getSecurityAdapter();
 
-									// check the user password
-									if (security.checkUserPassword(getAppsRequest, rapidRequest.getUserName(), rapidRequest.getUserPassword())) {
+										// make a rapidRequest for this application
+										RapidRequest getAppsRequest = new RapidRequest(this, request, app);
 
-										// assume can add
-										boolean canAdd = true;
+										// check the user password
+										if (security.checkUserPassword(getAppsRequest, rapidRequest.getUserName(), rapidRequest.getUserPassword())) {
 
-										if ("rapid".equals(app.getId())) {
-											// must have one of the official Rapid roles to see Rapid Admin
-											canAdd = security.checkUserRole(rapidRequest, Rapid.ADMIN_ROLE) || security.checkUserRole(rapidRequest, Rapid.DESIGN_ROLE) || security.checkUserRole(rapidRequest, Rapid.USERS_ROLE) || security.checkUserRole(rapidRequest, Rapid.SUPER_ROLE);
-										}
+											// assume can add
+											boolean canAdd = true;
 
-										if (canAdd) {
-											// create a json object for the details of this application
-											JSONObject jsonApp = new JSONObject();
-											// add details
-											jsonApp.put("id", app.getId());
-											jsonApp.put("version", app.getVersion());
-											jsonApp.put("title", app.getTitle());
-											jsonApp.put("storePasswordDuration", app.getStorePasswordDuration());
-											// add app to our main array
-											jsonApps.put(jsonApp);
+											if ("rapid".equals(app.getId())) {
+												// must have one of the official Rapid roles to see Rapid Admin
+												canAdd = security.checkUserRole(rapidRequest, Rapid.ADMIN_ROLE) || security.checkUserRole(rapidRequest, Rapid.DESIGN_ROLE) || security.checkUserRole(rapidRequest, Rapid.USERS_ROLE) || security.checkUserRole(rapidRequest, Rapid.SUPER_ROLE);
+											}
 
-											// check if we are testing
-											if (forTesting) {
+											if (canAdd) {
+												// create a json object for the details of this application
+												JSONObject jsonApp = new JSONObject();
+												// add details
+												jsonApp.put("id", app.getId());
+												jsonApp.put("version", app.getVersion());
+												jsonApp.put("title", app.getTitle());
+												jsonApp.put("storePasswordDuration", app.getStorePasswordDuration());
+												// add app to our main array
+												jsonApps.put(jsonApp);
 
-												// if the user has Rapid Design for this application, (or Rapid Super if this is the rapid app)
-												if (security.checkUserRole(getAppsRequest, Rapid.DESIGN_ROLE) && (!app.getId().equals("rapid") || security.checkUserRole(rapidRequest, Rapid.SUPER_ROLE))) {
+												// check if we are from Rapid Mobile
+												if (isRapidMobile) {
 
-													// loop the versions
-													for (Application version :	getApplications().getVersions(app.getId()).sort()) {
+													// if the user has Rapid Design for this application, (or Rapid Super if this is the rapid app)
+													if (security.checkUserRole(getAppsRequest, Rapid.DESIGN_ROLE) && (!app.getId().equals("rapid") || security.checkUserRole(rapidRequest, Rapid.SUPER_ROLE))) {
 
-														// create a json object for the details of this version
-														jsonApp = new JSONObject();
-														// add details
-														jsonApp.put("id", version.getId());
-														jsonApp.put("version", version.getVersion());
-														jsonApp.put("status", version.getStatus());
-														jsonApp.put("title", version.getTitle());
-														jsonApp.put("storePasswordDuration", version.getStorePasswordDuration());
-														jsonApp.put("test", true);
-														// add app to our main array
-														jsonApps.put(jsonApp);
-													}
+														// loop the versions
+														for (Application version :	getApplications().getVersions(app.getId()).sort()) {
 
-												} // got design role
+															// create a json object for the details of this version
+															jsonApp = new JSONObject();
+															// add details
+															jsonApp.put("id", version.getId());
+															jsonApp.put("version", version.getVersion());
+															jsonApp.put("status", version.getStatus());
+															jsonApp.put("title", version.getTitle());
+															jsonApp.put("storePasswordDuration", version.getStorePasswordDuration());
+															jsonApp.put("test", true);
+															// add app to our main array
+															jsonApps.put(jsonApp);
+														}
 
-											} // forTesting check
+													} // got design role
 
-										} // rapid app extra check
+												} // forTesting check
 
-									} // user check
+											} // rapid app extra check
 
-								} // rapid app and not for testing check
+										} // user check
 
-							} // form check
+									} // rapid app and not for testing check
+
+								} // getForms form check
+
+							} // isMobile not form check
 
 						} // apps loop
 
