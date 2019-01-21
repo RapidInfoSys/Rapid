@@ -77,14 +77,16 @@ public class AuthenticationWebservice extends Webservice {
 
 		// get the applications collection
 		Applications applications = rapidRequest.getRapidServlet().getApplications();
-
+		
 		// if there are some applications
 		if (applications != null) {
 			// loop them
 			for (Application app : applications.get()) {
 				try {
+					// create a new rapid request for this application
+					RapidRequest rapidApplicationRequest = new RapidRequest(rapidRequest.getRapidServlet(), rapidRequest.getRequest(), app);
 					// see if the user is known to this application
-					authorised = app.getSecurityAdapter().checkUserPassword(rapidRequest, username, password);
+					authorised = app.getSecurityAdapter().checkUserPassword(rapidApplicationRequest, username, password);
 					// we can exit if so as we only need one
 					if (authorised) break;
 				} catch (Exception ex) {
