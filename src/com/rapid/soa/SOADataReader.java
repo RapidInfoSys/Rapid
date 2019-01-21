@@ -969,19 +969,25 @@ public interface SOADataReader {
 		            // get the next object (this can create new columns)
 		            Object o = x.nextValue();
 
-		            // special types need casting
-		            if (o instanceof Integer) {
-		            	int i = (Integer) o;
-		            	_currentElement.setValue("" + i);
-		            } else  if (o instanceof Double) {
-		            	Double d = (Double) o;
-		            	o = "" + d;
-		            	_currentElement.setValue("" + d);
-		            } else if (o instanceof Boolean) {
-		            	Boolean b = (Boolean) o;
-		            	_currentElement.setValue("" + b);
-		            }
+		            if (_currentElement != null) {
 
+			            // special types need casting
+			            if (o instanceof Integer) {
+				            	int i = (Integer) o;
+				            	_currentElement.setValue("" + i);
+			            } else  if (o instanceof Double) {
+				            	Double d = (Double) o;
+				            	o = "" + d;
+				            	_currentElement.setValue("" + d);
+			            } else if (o instanceof Boolean) {
+				            	Boolean b = (Boolean) o;
+				            	_currentElement.setValue("" + b);
+			            } else if (o instanceof String) {
+				            	_currentElement.setValue(o.toString());
+			            }
+			            
+		            }		            
+		            
 		            // dec the column
 					_currentColumn --;
 
