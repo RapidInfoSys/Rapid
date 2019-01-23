@@ -1925,7 +1925,7 @@ public class Designer extends RapidHttpServlet {
 									if (!tempDir.exists()) tempDir.mkdir();
 
 									// the path we're saving to is the temp folder
-									String path = getServletContext().getRealPath("/") + "WEB-INF/temp/" + appId + ".zip";
+									String path = getServletContext().getRealPath("/") + "/WEB-INF/temp/" + appId + ".zip";
 									// create a file output stream to save the data to
 									FileOutputStream fos = new FileOutputStream (path);
 									// write the file data to the stream
