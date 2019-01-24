@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Path;
 import java.sql.PreparedStatement;
 import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
@@ -1196,7 +1197,7 @@ public class Designer extends RapidHttpServlet {
 								response.setHeader("Content-disposition","attachment; filename=" + application.getId() + ".zip");
 
 								// get the file for the zip we're about to create
-								File zipFile = new File(getServletContext().getRealPath("/") + "WEB-INF/temp/" + application.getId() + ".zip");
+								File zipFile = new File(getServletContext().getRealPath("/") + "/WEB-INF/temp/" + application.getId() + ".zip");
 
 								// send the file to browser
 								OutputStream out = response.getOutputStream();
