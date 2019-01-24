@@ -1271,6 +1271,12 @@ public class Application {
 			// string builder for our rapid.css file
 			StringBuilder resourceCSS = new StringBuilder();
 
+			// collection of dependent controls that need adding
+			ArrayList<String> dependentControls = new ArrayList<String>();
+
+			// collection of dependent actions that need adding
+			ArrayList<String> dependentActions = new ArrayList<String>();
+
 			// check controls
 			if (jsonControls != null) {
 
@@ -1281,9 +1287,6 @@ public class Application {
 					_controlTypes.remove("page");
 					// add it to the top of the list
 					_controlTypes.add(0, "page");
-
-					// collection of dependent controls that need adding
-					ArrayList<String> dependentControls = new ArrayList<String>();
 
 					// loop control types used by this application
 					for (String controlType : _controlTypes) {
@@ -1327,12 +1330,12 @@ public class Application {
 			    					if (dependantActionTypesArray == null) {
 			    						// just use the object
 			    						String dependantType = dependantActionTypes.getString("dependentActionType");
-			    						if (!_actionTypes.contains(dependantType) && !dependentControls.contains(dependantType)) dependentControls.add(dependantType);
+			    						if (!_actionTypes.contains(dependantType) && !dependentActions.contains(dependantType)) dependentActions.add(dependantType);
 			    					} else {
 			    						// loop the array
 			    						for (int j = 0; j < dependantActionTypesArray.length(); j++) {
 			    							String dependantType = dependantActionTypesArray.getString(j);
-				    						if (!_actionTypes.contains(dependantType) && !dependentControls.contains(dependantType)) dependentControls.add(dependantType);
+				    						if (!_actionTypes.contains(dependantType) && !dependentActions.contains(dependantType)) dependentActions.add(dependantType);
 			    						}
 			    					}
 			    				}
@@ -1454,9 +1457,6 @@ public class Application {
 	    		// check action types
 	    		if (_actionTypes != null) {
 
-	    			// collection of dependent controls that need adding
-					ArrayList<String> dependentActions = new ArrayList<String>();
-
 					// loop control types used by this application
 					for (String actionType : _actionTypes) {
 
@@ -1497,8 +1497,8 @@ public class Application {
 
 					}
 
-					// now add all of the dependent controls
-					_controlTypes.addAll(dependentActions);
+					// now add all of the dependent actions
+					_actionTypes.addAll(dependentActions);
 
 	    			// loop action types used by this application
 					for (String actionType : _actionTypes) {
