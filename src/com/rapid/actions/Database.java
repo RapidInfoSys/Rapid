@@ -821,53 +821,61 @@ public class Database extends Action {
 										for (int i = 0; i < rsmd.getColumnCount(); i++) {
 											// add the field name to the fields collection if not done yet
 											if (!gotFields) jsonFields.put(rsmd.getColumnLabel(i + 1));
-											// get the column type
-											int columnType = rsmd.getColumnType(i + 1);
-											// add the data to the row according to it's type
-											switch (columnType) {
-											case (Types.NUMERIC) :
-												jsonRow.put(rs.getDouble(i + 1));
-											break;
-											case (Types.INTEGER) :
-												jsonRow.put(rs.getInt(i + 1));
-											break;
-											case (Types.BIGINT) :
-												jsonRow.put(rs.getLong(i + 1));
-											break;
-											case (Types.FLOAT) :
-												jsonRow.put(rs.getFloat(i + 1));
-											break;
-											case (Types.DOUBLE) : case (Types.DECIMAL) :
-												jsonRow.put(rs.getDouble(i + 1));
-											break;
-											case (Types.DATE) :
-												Date date = rs.getDate(i + 1);
-												if (date == null) {
-													jsonRow.put(date);
-												} else {
-													if (localDateFormatter == null) localDateFormatter = rapidRequest.getRapidServlet().getLocalDateFormatter();
-													jsonRow.put(localDateFormatter.format(date));
-												}
-											break;
-											case (Types.TIMESTAMP) :
-												Timestamp timeStamp = rs.getTimestamp(i + 1);
-												if (timeStamp == null) {
-													jsonRow.put(timeStamp);
-												} else {
-													// check for 0 millseconds past midnight - a truncated date time (time zone offset is in minutes, multiplied by the number of millis in a minute modulus with number of millis in a day)
-													if ((timeStamp.getTime() - timeStamp.getTimezoneOffset() * 60000) % 86400000L == 0) {
-														// if so show just date
-														if (localDateFormatter == null) localDateFormatter = rapidRequest.getRapidServlet().getLocalDateFormatter();
-														jsonRow.put(localDateFormatter.format(timeStamp));
+											// get the value as a string
+											String value = rs.getString(i + 1);
+											// check for null
+											if (value == null) {
+												// put null
+												jsonRow.put(value);
+											} else {
+												// get the column type
+												int columnType = rsmd.getColumnType(i + 1);
+												// add the data to the row according to it's type
+												switch (columnType) {
+												case (Types.NUMERIC) :
+													jsonRow.put(rs.getDouble(i + 1));
+												break;
+												case (Types.INTEGER) :
+													jsonRow.put(rs.getInt(i + 1));
+												break;
+												case (Types.BIGINT) :
+													jsonRow.put(rs.getLong(i + 1));
+												break;
+												case (Types.FLOAT) :
+													jsonRow.put(rs.getFloat(i + 1));
+												break;
+												case (Types.DOUBLE) : case (Types.DECIMAL) :
+													jsonRow.put(rs.getDouble(i + 1));
+												break;
+												case (Types.DATE) :
+													Date date = rs.getDate(i + 1);
+													if (date == null) {
+														jsonRow.put(date);
 													} else {
-														// show date and time
-														if (localDateTimeFormatter == null) localDateTimeFormatter = rapidRequest.getRapidServlet().getLocalDateTimeFormatter();
-														jsonRow.put(localDateTimeFormatter.format(timeStamp));
+														if (localDateFormatter == null) localDateFormatter = rapidRequest.getRapidServlet().getLocalDateFormatter();
+														jsonRow.put(localDateFormatter.format(date));
 													}
+												break;
+												case (Types.TIMESTAMP) :
+													Timestamp timeStamp = rs.getTimestamp(i + 1);
+													if (timeStamp == null) {
+														jsonRow.put(timeStamp);
+													} else {
+														// check for 0 millseconds past midnight - a truncated date time (time zone offset is in minutes, multiplied by the number of millis in a minute modulus with number of millis in a day)
+														if ((timeStamp.getTime() - timeStamp.getTimezoneOffset() * 60000) % 86400000L == 0) {
+															// if so show just date
+															if (localDateFormatter == null) localDateFormatter = rapidRequest.getRapidServlet().getLocalDateFormatter();
+															jsonRow.put(localDateFormatter.format(timeStamp));
+														} else {
+															// show date and time
+															if (localDateTimeFormatter == null) localDateTimeFormatter = rapidRequest.getRapidServlet().getLocalDateTimeFormatter();
+															jsonRow.put(localDateTimeFormatter.format(timeStamp));
+														}
+													}
+												break;
+												default :
+													jsonRow.put(value);
 												}
-											break;
-											default :
-												jsonRow.put(rs.getString(i + 1));
 											}
 										}
 										// add the row to the rows collection
