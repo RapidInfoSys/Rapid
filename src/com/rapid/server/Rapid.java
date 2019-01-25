@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -231,7 +232,7 @@ public class Rapid extends RapidHttpServlet {
 						String fileName = app.getId() + "_" + rapidRequest.getUserName() + ".zip";
 
 						// create the zip file
-						app.zip(this, rapidRequest, user, fileName, true);
+						File zipFile = app.zip(this, rapidRequest, user, fileName, true);
 
 						// set the type as a .zip
 						response.setContentType("application/x-zip-compressed");
@@ -239,29 +240,44 @@ public class Rapid extends RapidHttpServlet {
 						// Shows the download dialog
 						response.setHeader("Content-disposition","attachment; filename=" + app.getId() + ".zip");
 
-						// get the file for the zip we're about to create
-						File zipFile = new File(getServletContext().getRealPath("/") + "/WEB-INF/temp/" + fileName);
+						// download it to the response
+						long fileLength = downloadFile(zipFile, response);
 
-						// get it's size
-						long fileSize = Files.getSize(zipFile);
-
-						// add size to response headers if small enough
-						if (fileSize < Integer.MAX_VALUE) response.setContentLength((int) fileSize);
-
-						// send the file to browser
-						OutputStream os = response.getOutputStream();
-						FileInputStream in = new FileInputStream(zipFile);
-						byte[] buffer = new byte[1024];
-						int length;
-						while ((length = in.read(buffer)) > 0){
-						  os.write(buffer, 0, length);
-						  responseLength += length;
-						}
-						in.close();
-						os.flush();
+						// add to response length for monitoring
+						responseLength += fileLength;
 
 						// delete the file
 						zipFile.delete();
+
+					} else if ("file".equals(actionName)) {
+
+						// get the requested file name from the n parameter
+						String fileName = request.getParameter("n");
+
+						// get the application id that the file should be sitting in
+						String applicationId = request.getParameter("a");
+
+						// if we had both of what we needed
+						if (fileName!=null && applicationId!=null) {
+
+							// determine the storage from the applications id, also different if server is public
+							String uploadPath = (rapidRequest.getRapidServlet().isPublic() ? "WEB-INF/" : "") + "uploads/" + applicationId;
+
+							// get the file path
+							String filePath = getServletContext().getRealPath("/") + "/" + uploadPath + "/" + fileName;
+
+							// get the mime type
+							response.setContentType(URLConnection.guessContentTypeFromName(fileName));
+
+							// set for streaming (then download)
+							response.setHeader("Content-disposition", "inline; filename=" + fileName);
+
+							// download the file to the response
+							long fileLength = downloadFile(filePath, response);
+
+							// append the file length for monitoring
+							responseLength += fileLength;
+						}
 
 					} else {
 
@@ -594,6 +610,45 @@ public class Rapid extends RapidHttpServlet {
 
 	}
 
+	private long downloadFile(File file, HttpServletResponse response) throws IOException {
+
+		// get the size of the file
+		long fileSize = Files.getSize(file);
+
+		// add size to response headers if small enough
+		if (fileSize < Integer.MAX_VALUE) response.setContentLength((int) fileSize);
+
+		// assume no length
+		long responseLength = 0;
+
+		// send the file to browser
+		OutputStream os = response.getOutputStream();
+		FileInputStream in = new FileInputStream(file);
+		byte[] buffer = new byte[1024];
+		int length;
+		while ((length = in.read(buffer)) > 0){
+			os.write(buffer, 0, length);
+			responseLength += length;
+		}
+		in.close();
+		os.flush();
+
+		return responseLength;
+
+	}
+
+	// an override to the above
+	private long downloadFile(String filePath, HttpServletResponse response) throws IOException {
+
+		// get the file from the path
+		File file = new File(filePath);
+
+		// use that
+		return downloadFile(file, response);
+
+	}
+
+	// gets a JSON object from the body bytes - also remove any passwords when logging
 	private JSONObject getJSONObject(byte[] bodyBytes) throws UnsupportedEncodingException, JSONException {
 
 		// assume we weren't passed any json

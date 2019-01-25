@@ -2228,7 +2228,7 @@ public class Application {
 	}
 
 	// create a named .zip file for the app in the /temp folder
-	public void zip(RapidHttpServlet rapidServlet, RapidRequest rapidRequest, User user, String fileName, boolean offlineUse) throws JAXBException, IOException, JSONException, RapidLoadingException {
+	public File zip(RapidHttpServlet rapidServlet, RapidRequest rapidRequest, User user, String fileName, boolean offlineUse) throws JAXBException, IOException, JSONException, RapidLoadingException {
 
 		// create folders to save locate app file
 		String folderPath = getConfigFolder(rapidServlet.getServletContext());
@@ -2364,8 +2364,11 @@ public class Application {
 			// create it if not there
 			if (!tempDir.exists()) tempDir.mkdir();
 
+			// get a file for the temp file
+			File tempFile = new File(rapidServlet.getServletContext().getRealPath("/") + "/WEB-INF/temp/" + fileName);
+
 			// create the zip file object with our destination, always in the temp folder
-			ZipFile zipFile = new ZipFile(new File(rapidServlet.getServletContext().getRealPath("/") + "/WEB-INF/temp/" + fileName));
+			ZipFile zipFile = new ZipFile(tempFile);
 
 			// create a list of files to ignore
 			ArrayList<String> ignoreFiles = new ArrayList<String>();
@@ -2386,6 +2389,14 @@ public class Application {
 				}
 
 			}
+
+			// return tempFile file object
+			return tempFile;
+
+		} else {
+
+			// no file
+			return null;
 
 		}
 
