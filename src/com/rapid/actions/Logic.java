@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -154,11 +154,23 @@ public class Logic extends Action {
 
 					// check which side the empty is on
 					if ("System.empty".equals(leftId)) {
-						// if on the left set to undefined or no value
-						leftSide = "undefined || !" + rightSide;
+						// check for !=
+						if ("!=".equals(_operation)) {
+							// if != on the left set to undefined or no value with an and
+							leftSide = "undefined && " + rightSide;
+						} else {
+							// if on the left set to undefined or no value
+							leftSide = "undefined || !" + rightSide;
+						}
 					} else {
-						// if on the right set  to undefined or no value
-						rightSide = "undefined || !" + leftSide;
+						// check for !=
+						if ("!=".equals(_operation)) {
+							// if != on the right set  to undefined or no value with an and
+							rightSide = "undefined && " + leftSide;
+						} else {
+							// if on the right set  to undefined or no value
+							rightSide = "undefined || !" + leftSide;
+						}
 					}
 
 					// construct the condition with an additional = (so ===, !===, etc)
