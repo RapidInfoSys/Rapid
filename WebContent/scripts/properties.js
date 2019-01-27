@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -2718,6 +2718,8 @@ function Property_webserviceRequest(cell, propertyObject, property, details) {
 	var text = request.type;
 	// change to message if not provided
 	if (!text) text = "Click to define...";
+	// change TEXT to Text
+	if (text == "TEXT") text = "Text";
 	// put the elipses in the cell
 	cell.text(text);
 	
@@ -2727,7 +2729,12 @@ function Property_webserviceRequest(cell, propertyObject, property, details) {
 	table.append("<tr>" +
 			     "<td colspan='2' rowspan='3' style='padding:0px;vertical-align: top;'><table class='dialogueTable'>" +
 			     "<tr><td style='width: 20px;'></td><td><b>Input</b></td><td><b>Field</b></td></tr></table></td>" +
-			     "<td class='normalInputs' colspan='2' style='width:500px;padding:0 6px;'><b style='display:block;'>Request type</b><input type='radio' name='WSType" + propertyObject.id + "' value='SOAP'/>SOAP<input type='radio' name='WSType" + propertyObject.id + "' value='JSON'/>JSON<input type='radio' name='WSType" + propertyObject.id + "' value='XML'/>XML<b style='display:block;margin-top:5px;margin-bottom:5px;'>URL</b><input class='WSUrl' /></br><b style='display:block;margin-top:5px;margin-bottom:5px;'>Action</b><input class='WSAction' /></br><b style='display:block;margin-top:5px;margin-bottom:5px;'>Headers</b><input class='WSHeaders' />" +
+			     "<td class='normalInputs' colspan='2' style='width:500px;padding:0 6px;'><b style='display:block;'>Request type</b>" + 
+			     "<input type='radio' name='WSType" + propertyObject.id + "' id='WSTypeSOAP" + propertyObject.id + "' value='SOAP'/><label for='WSTypeSOAP" + propertyObject.id + "'>SOAP</label>" + 
+			     "<input type='radio' name='WSType" + propertyObject.id + "' id='WSTypeJSON" + propertyObject.id + "' value='JSON'/><label for='WSTypeJSON" + propertyObject.id + "'>JSON</label>" + 
+			     "<input type='radio' name='WSType" + propertyObject.id + "' id='WSTypeXML" + propertyObject.id + "' value='XML'/><label for='WSTypeXML" + propertyObject.id + "'>XML</label>" + 
+			     "<input type='radio' name='WSType" + propertyObject.id + "' id='WSTypeTEXT" + propertyObject.id + "' value='TEXT'/><label for='WSTypeTEXT" + propertyObject.id + "'>Text</label>" + 
+			     "<b style='display:block;margin-top:5px;margin-bottom:5px;'>URL</b><input class='WSUrl' /></br><b style='display:block;margin-top:5px;margin-bottom:5px;'>Action</b><input class='WSAction' /></br><b style='display:block;margin-top:5px;margin-bottom:5px;'>Headers</b><input class='WSHeaders' />" +
 			     "<b style='display:block;margin-top:5px;margin-bottom:2px;'>Body</b>" +
 			     "<div id='bodySOA_" + dialogueId + "' style='width:100%;min-height:200px;' class='WSBody'></div><b style='display:block;'>Response transform</b><textarea style='width:100%;' class='WSTransform'></textarea><b style='display:block;;margin-bottom:5px;'>Response root element</b><input class='WSRoot' style='margin-bottom:5px;' /></td><td colspan='2' rowspan='3' style='padding:0px;vertical-align: top;'><table class='dialogueTable'><tr><td><b>Field</b></td><td colspan='2'><b>Output</b></td></tr></table></td></tr>");
 	
