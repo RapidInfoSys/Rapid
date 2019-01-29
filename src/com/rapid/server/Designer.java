@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Path;
 import java.sql.PreparedStatement;
 import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
@@ -1202,7 +1203,7 @@ public class Designer extends RapidHttpServlet {
 								response.setHeader("Content-disposition","attachment; filename=" + application.getId() + ".zip");
 
 								// get the file for the zip we're about to create
-								File zipFile = new File(getServletContext().getRealPath("/") + "WEB-INF/temp/" + application.getId() + ".zip");
+								File zipFile = new File(getServletContext().getRealPath("/") + "/WEB-INF/temp/" + application.getId() + ".zip");
 
 								// send the file to browser
 								OutputStream out = response.getOutputStream();
@@ -1931,7 +1932,7 @@ public class Designer extends RapidHttpServlet {
 									if (!tempDir.exists()) tempDir.mkdir();
 
 									// the path we're saving to is the temp folder
-									String path = getServletContext().getRealPath("/") + "WEB-INF/temp/" + appId + ".zip";
+									String path = getServletContext().getRealPath("/") + "/WEB-INF/temp/" + appId + ".zip";
 									// create a file output stream to save the data to
 									FileOutputStream fos = new FileOutputStream (path);
 									// write the file data to the stream

@@ -1295,15 +1295,20 @@ public class Page {
     	}
     }
 
-    // this method produces the start of the head (which is shared by the no permission respone)
-    private String getHeadStart(Application application) {
+    // this method produces the start of the head (which is shared by the no permission response)
+    private String getHeadStart(RapidHttpServlet rapidServlet, Application application) {
+    	// look for the page title suffix
+    	String pageTitleSuffix = rapidServlet.getServletContext().getInitParameter("pageTitleSuffix");
+    	// if null make default
+    	if (pageTitleSuffix == null) pageTitleSuffix = " - by Rapid";
+    	// create start of head html and return
     	return
     	"  <head>\n" +
-		"    <title>" + Html.escape(_title) + " - by Rapid</title>\n" +
+		"    <title>" + Html.escape(_title) + pageTitleSuffix + "</title>\n" +
 		"    <meta description=\"Created using Rapid - www.rapid-is.co.uk\"/>\n" +
 		"    <meta charset=\"utf-8\"/>\n" +
 		"    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\" />\n" +
-		(application != null ? "    <meta name=\"theme-color\" content=\"" + application.getStatusBarColour() + "\" />\n" : "" )+
+		(application != null ? "    <meta name=\"theme-color\" content=\"" + application.getStatusBarColour() + "\" />\n" : "" ) +
 		"    <link rel=\"icon\" href=\"favicon.ico\"></link>\n";
     }
 
@@ -1311,7 +1316,7 @@ public class Page {
 	private String getHeadLinks(RapidHttpServlet rapidServlet, Application application, boolean isDialogue) throws JSONException {
 
 		// create a string builder containing the head links
-    	StringBuilder stringBuilder = new StringBuilder(getHeadStart(application));
+    	StringBuilder stringBuilder = new StringBuilder(getHeadStart(rapidServlet, application));
 
 		// if you're looking for where the jquery link is added it's the first resource in the page.control.xml file
 		stringBuilder.append("    " + getResourcesHtml(application, false).trim() + "\n");
@@ -1640,10 +1645,10 @@ public class Page {
     }
 
 	// this routine will write the no page permission - used by both page permission and if control permission permutations fail to result in any html
-	public void writeMessage(Writer writer, String title, String message) throws IOException {
+	public void writeMessage(RapidHttpServlet rapidServlet, Writer writer, String title, String message) throws IOException {
 
 		// write the head html without the JavaScript and CSS (index.css is substituted for us)
-		writer.write(getHeadStart(null));
+		writer.write(getHeadStart(rapidServlet, null));
 
 		// add the icon
 		writer.write("    <link rel='icon' href='favicon.ico'></link>\n");
@@ -1725,7 +1730,7 @@ public class Page {
 		// check for undermaintenance status
 		if (application.getStatus() == Application.STATUS_MAINTENANCE) {
 
-			writeMessage(writer, "Rapid - Under maintenance", "This application is currently under maintenance. Please try again in a few minutes.");
+			writeMessage(rapidServlet, writer, "Rapid - Under maintenance", "This application is currently under maintenance. Please try again in a few minutes.");
 
 		} else {
 
@@ -2074,7 +2079,7 @@ public class Page {
 				if (bodyHtml == null) {
 
 					// didn't get any body html, show no permission
-					writeMessage(writer, "Rapid - No permission", "You do not have permssion to view this page");
+					writeMessage(rapidServlet, writer, "Rapid - No permission", "You do not have permssion to view this page");
 
 				} else {
 
@@ -2098,7 +2103,7 @@ public class Page {
 			} else {
 
 				// no page permission
-				writeMessage(writer, "Rapid - No permission", "You do not have permssion to view this page");
+				writeMessage(rapidServlet, writer, "Rapid - No permission", "You do not have permssion to view this page");
 
 			} // page permission check
 

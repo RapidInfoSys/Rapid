@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -55,6 +55,7 @@ import com.rapid.soa.SOADataReader.SOAJSONReader;
 import com.rapid.soa.SOADataReader.SOAXMLReader;
 import com.rapid.soa.SOADataWriter;
 import com.rapid.soa.SOADataWriter.SOARapidWriter;
+import com.rapid.soa.SOAElement;
 import com.rapid.utils.Strings;
 import com.rapid.utils.XML;
 
@@ -676,7 +677,7 @@ public class Webservice extends Action {
 					if ("SOAP".equals(_request.getType())) {
 						connection.setRequestProperty("Content-Type", "text/xml; charset=UTF-8");
 						connection.setRequestProperty("SOAPAction", action);
-					} else if ("JSON".equals(_request.getType()) || "XML".equals(_request.getType())) {
+					} else if ("JSON".equals(_request.getType()) || "XML".equals(_request.getType()) || "TEXT".equals(_request.getType())) {
 						// if there is an action
 						if (action.length() > 0) {
 							// get it in upper case
@@ -701,6 +702,8 @@ public class Webservice extends Action {
 						if ("JSON".equals(_request.getType())) {
 							connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
 							connection.setRequestProperty("Accept", "application/json, text/json, text/text");
+						} else if ("TEXT".equals(_request.getType())) {
+							connection.setRequestProperty("Content-Type", "text/plain; charset=UTF-8");
 						} else {
 							connection.setRequestProperty("Content-Type", "text/xml; charset=UTF-8");
 							connection.setRequestProperty("Accept", "application/xml, text/xml, text/text");
@@ -763,36 +766,52 @@ public class Webservice extends Action {
 
 						// get the input stream
 						InputStream response = connection.getInputStream();
+
 						// prepare an soaData object
 						SOAData soaData = null;
 
-						// read the response accordingly
-						if ("JSON".equals(_request.getType())) {
-							// get the response
-							String jsonResponse = Strings.getString(response);
-							// log
-							_logger.debug("Web service action JSON response : " + jsonResponse);
-							// get a JSON reader
-							SOAJSONReader jsonReader = new SOAJSONReader();
-							// read the data
-							soaData = jsonReader.read(jsonResponse);
+						if ("TEXT".equals(_request.getType())) {
+
+							// read the string response
+							String value = Strings.getString(response);
+
+							// create a simple soaElement with it
+							SOAElement soaElement = new SOAElement("value",value);
+
+							// use element to soa data object
+							soaData = new SOAData(soaElement);
+
 						} else {
-							SOAXMLReader xmlReader = new SOAXMLReader(_request.getRoot());
-							String transform = _request.getTransform();
-							if (transform != null) {
-								if (transform.length() > 0) {
-									_logger.debug("Applying transform :" + transform);
-									response = XML.transform(response, transform);
+
+							// read the response accordingly
+							if ("JSON".equals(_request.getType())) {
+								// get the response
+								String jsonResponse = Strings.getString(response);
+								// log
+								_logger.debug("Web service action JSON response : " + jsonResponse);
+								// get a JSON reader
+								SOAJSONReader jsonReader = new SOAJSONReader();
+								// read the data
+								soaData = jsonReader.read(jsonResponse);
+							} else if ("JSON".equals(_request.getType())) {
+								SOAXMLReader xmlReader = new SOAXMLReader(_request.getRoot());
+								String transform = _request.getTransform();
+								if (transform != null) {
+									if (transform.length() > 0) {
+										_logger.debug("Applying transform :" + transform);
+										response = XML.transform(response, transform);
+									}
 								}
+								soaData = xmlReader.read(response);
 							}
-							soaData = xmlReader.read(response);
+
 						}
 
-						SOADataWriter rapidWriter = new SOARapidWriter(soaData);
+						SOADataWriter rapidDataWriter = new SOARapidWriter(soaData);
 
-						String jsonString = rapidWriter.write();
+						String jsonDataString = rapidDataWriter.write();
 
-						jsonData = new JSONObject(jsonString);
+						jsonData = new JSONObject(jsonDataString);
 
 						if (actionCache != null) actionCache.put(application.getId(), getId(), jsonInputs.toString(), jsonData);
 

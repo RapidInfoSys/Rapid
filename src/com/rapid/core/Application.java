@@ -1271,6 +1271,12 @@ public class Application {
 			// string builder for our rapid.css file
 			StringBuilder resourceCSS = new StringBuilder();
 
+			// collection of dependent controls that need adding
+			ArrayList<String> dependentControls = new ArrayList<String>();
+
+			// collection of dependent actions that need adding
+			ArrayList<String> dependentActions = new ArrayList<String>();
+
 			// check controls
 			if (jsonControls != null) {
 
@@ -1281,9 +1287,6 @@ public class Application {
 					_controlTypes.remove("page");
 					// add it to the top of the list
 					_controlTypes.add(0, "page");
-
-					// collection of dependent controls that need adding
-					ArrayList<String> dependentControls = new ArrayList<String>();
 
 					// loop control types used by this application
 					for (String controlType : _controlTypes) {
@@ -1327,12 +1330,12 @@ public class Application {
 			    					if (dependantActionTypesArray == null) {
 			    						// just use the object
 			    						String dependantType = dependantActionTypes.getString("dependentActionType");
-			    						if (!_actionTypes.contains(dependantType) && !dependentControls.contains(dependantType)) dependentControls.add(dependantType);
+			    						if (!_actionTypes.contains(dependantType) && !dependentActions.contains(dependantType)) dependentActions.add(dependantType);
 			    					} else {
 			    						// loop the array
 			    						for (int j = 0; j < dependantActionTypesArray.length(); j++) {
 			    							String dependantType = dependantActionTypesArray.getString(j);
-				    						if (!_actionTypes.contains(dependantType) && !dependentControls.contains(dependantType)) dependentControls.add(dependantType);
+				    						if (!_actionTypes.contains(dependantType) && !dependentActions.contains(dependantType)) dependentActions.add(dependantType);
 			    						}
 			    					}
 			    				}
@@ -1454,9 +1457,6 @@ public class Application {
 	    		// check action types
 	    		if (_actionTypes != null) {
 
-	    			// collection of dependent controls that need adding
-					ArrayList<String> dependentActions = new ArrayList<String>();
-
 					// loop control types used by this application
 					for (String actionType : _actionTypes) {
 
@@ -1497,8 +1497,8 @@ public class Application {
 
 					}
 
-					// now add all of the dependent controls
-					_controlTypes.addAll(dependentActions);
+					// now add all of the dependent actions
+					_actionTypes.addAll(dependentActions);
 
 	    			// loop action types used by this application
 					for (String actionType : _actionTypes) {
@@ -2228,7 +2228,7 @@ public class Application {
 	}
 
 	// create a named .zip file for the app in the /temp folder
-	public void zip(RapidHttpServlet rapidServlet, RapidRequest rapidRequest, User user, String fileName, boolean offlineUse) throws JAXBException, IOException, JSONException, RapidLoadingException {
+	public File zip(RapidHttpServlet rapidServlet, RapidRequest rapidRequest, User user, String fileName, boolean offlineUse) throws JAXBException, IOException, JSONException, RapidLoadingException {
 
 		// create folders to save locate app file
 		String folderPath = getConfigFolder(rapidServlet.getServletContext());
@@ -2364,8 +2364,11 @@ public class Application {
 			// create it if not there
 			if (!tempDir.exists()) tempDir.mkdir();
 
+			// get a file for the temp file
+			File tempFile = new File(rapidServlet.getServletContext().getRealPath("/") + "/WEB-INF/temp/" + fileName);
+
 			// create the zip file object with our destination, always in the temp folder
-			ZipFile zipFile = new ZipFile(new File(rapidServlet.getServletContext().getRealPath("/") + "/WEB-INF/temp/" + fileName));
+			ZipFile zipFile = new ZipFile(tempFile);
 
 			// create a list of files to ignore
 			ArrayList<String> ignoreFiles = new ArrayList<String>();
@@ -2386,6 +2389,14 @@ public class Application {
 				}
 
 			}
+
+			// return tempFile file object
+			return tempFile;
+
+		} else {
+
+			// no file
+			return null;
 
 		}
 
