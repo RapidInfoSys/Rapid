@@ -979,6 +979,9 @@ public class Designer extends RapidHttpServlet {
 							// print the app name and version
 							out.print(application.getName() + "\t" + application.getVersion() + "\r\n");
 
+							// get any page id
+							String pageId = request.getParameter("p");
+
 							// get the page headers
 							PageHeaders pageHeaders = application.getPages().getSortedPages();
 
@@ -987,6 +990,9 @@ public class Designer extends RapidHttpServlet {
 
 								// get the page
 								Page page = application.getPages().getPage(getServletContext(), pageHeader.getId());
+
+								// if a specific page has been asked for continue until it comes up
+								if (pageId != null && !page.getId().equals(pageId)) continue;
 
 								// get the label
 								String label = page.getLabel();
