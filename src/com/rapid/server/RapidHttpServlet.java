@@ -34,6 +34,7 @@ Mostly getters that retrieve from the servlet context
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.lang.reflect.Constructor;
 import java.security.GeneralSecurityException;
 import java.text.SimpleDateFormat;
@@ -387,8 +388,8 @@ public class RapidHttpServlet extends HttpServlet {
 		sendException(null, response, ex);
 	}
 
-	// send the user a general message in a formatted page
-	public void sendMessage(HttpServletResponse response, int status, String title, String message ) throws IOException {
+	// send the user a general message in a formatted page - used by Rapid servlet to send 404 and others
+	public void sendMessage(HttpServletResponse response, int status, String title, String message) throws IOException {
 
 		// set the status
 		response.setStatus(status);
@@ -400,13 +401,30 @@ public class RapidHttpServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 
 		// write a header
-		out.write("<html>\n  <head>\n    <title>Rapid - " + title + "</title>\n    <meta charset=\"utf-8\"/>\n    <link rel='stylesheet' type='text/css' href='styles/index.css'></link>\n  </head>\n");
+		out.write("<html>\n  <head>\n    <title>Rapid - " + title + "</title>\n    <meta charset=\"utf-8\"/>\n  </head>\n");
 
-		// write body
-		out.write("  <body>\n    <div class=\"image\"><a href=\"http://www.rapid-is.co.uk\"><img title=\"Rapid Information Systems\" src=\"images/RapidLogo.svg\" /></a></div>\n    <div class=\"midTitle\"><span>Rapid</span></div>\n    <div class=\"subBar\"><span class=\"link\"><a href=\"logout.jsp\">LOG OUT</a></span><span class=\"versionColumn\">" + Rapid.VERSION + "</span></div>\n    <div class=\"body\">\n      <div class=\"columnMiddle\">\n          <div class=\"info\">\n            <h1>" + title + "</h1>\n            <p>" + message + "</p>\n          </div>\n        </div>\n      </div>\n    </div>\n  </body>\n</html>");
+		// open body
+		out.write("  <body>\n");
+
+		// write the message
+		writeMessage(out, title, message);
+
+		// close the body and html
+		out.write("\n  </body>\n</html>");
 
 		// close the writer
 		out.close();
+
+	}
+
+	// used by the above and the page to write messages in a standardised way
+	public void writeMessage(Writer writer, String title, String message) throws IOException {
+
+		// write styles
+		writer.write("    <link rel='stylesheet' type='text/css' href='styles/index.css'></link>\n");
+
+		// write body
+		writer.write("    <div class=\"image\"><a href=\"http://www.rapid-is.co.uk\"><img title=\"Rapid Information Systems\" src=\"images/RapidLogo.svg\" /></a></div>\n    <div class=\"midTitle\"><span>Rapid</span></div>\n    <div class=\"subBar\"><span class=\"link\"><a href=\"logout.jsp\">LOG OUT</a></span><span class=\"versionColumn\">" + Rapid.VERSION + "</span></div>\n    <div class=\"body\">\n      <div class=\"columnMiddle\">\n          <div class=\"info\">\n            <h1>" + title + "</h1>\n            <p>" + message + "</p>\n          </div>\n        </div>\n      </div>\n    </div>");
 
 	}
 

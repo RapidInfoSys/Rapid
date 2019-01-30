@@ -1341,7 +1341,7 @@ public class Page {
 
     }
 
-	// this private method writes JS specific to the user
+	// this private method writes JavaScript specific to the user
 	private void writeUserJS(Writer writer, RapidRequest rapidRequest, Application application, User user, Boolean download) throws RapidLoadingException, IOException, JSONException {
 
 		// open js
@@ -1644,31 +1644,19 @@ public class Page {
 
     }
 
+	/*
 	// this routine will write the no page permission - used by both page permission and if control permission permutations fail to result in any html
-	public void writeMessage(RapidHttpServlet rapidServlet, Writer writer, String title, String message) throws IOException {
+	void writeMessagex(RapidHttpServlet rapidServlet, Writer writer, String title, String message) throws IOException {
 
-		// write the head html without the JavaScript and CSS (index.css is substituted for us)
-		writer.write(getHeadStart(rapidServlet, null));
+		// write a header
+		writer.write("<html>\n  <head>\n    <title>Rapid - " + title + "</title>\n    <meta charset=\"utf-8\"/>\n    <link rel='stylesheet' type='text/css' href='styles/index.css'></link>\n  </head>\n");
 
-		// add the icon
-		writer.write("    <link rel='icon' href='favicon.ico'></link>\n");
-
-		// add the jQuery link
-		writer.write("    <script type='text/javascript' src='scripts/" + Rapid.JQUERY + "'></script>\n");
-
-		// add the index.css
-		writer.write("    <link rel='stylesheet' type='text/css' href='styles/index.css'></link>\n");
-
-		// close the head
-		writer.write("</head>\n");
-
-		// open the body
-		writer.write("  <body>\n");
-
-		// write no permission (body is closed at the end of this method)
-		writer.write("<div class=\"image\"><img src=\"images/RapidLogo_60x40.png\" /></div><div class=\"title\"><span>" + title + "</span></div><div class=\"info\"><p>" + message + "</p></div>\n");
+		// write body
+		writer.write("  <body>\n    <div class=\"image\"><a href=\"http://www.rapid-is.co.uk\"><img title=\"Rapid Information Systems\" src=\"images/RapidLogo.svg\" /></a></div>\n    <div class=\"midTitle\"><span>Rapid</span></div>\n    <div class=\"subBar\"><span class=\"link\"><a href=\"logout.jsp\">LOG OUT</a></span><span class=\"versionColumn\">" + Rapid.VERSION + "</span></div>\n    <div class=\"body\">\n      <div class=\"columnMiddle\">\n          <div class=\"info\">\n            <h1>" + title + "</h1>\n            <p>" + message + "</p>\n          </div>\n        </div>\n      </div>\n    </div>\n  </body>\n</html>");
 
 	}
+
+	*/
 
 	// this function interatively checks permission and writes control role html
 	private void writeRoleControlHtml(Writer writer, List<String> userRoles, RoleControlHtml roleControlHtml) throws IOException {
@@ -1730,7 +1718,7 @@ public class Page {
 		// check for undermaintenance status
 		if (application.getStatus() == Application.STATUS_MAINTENANCE) {
 
-			writeMessage(rapidServlet, writer, "Rapid - Under maintenance", "This application is currently under maintenance. Please try again in a few minutes.");
+			rapidServlet.writeMessage(writer, "Under maintenance", "This application is currently under maintenance. Please try again in a few minutes.");
 
 		} else {
 
@@ -2044,8 +2032,18 @@ public class Page {
 					// check if this page has role control html
 					if (_roleControlHtml == null) {
 
-						// set this to the whole html body
-						bodyHtml = _htmlBody;
+						// check for _htmlBody
+						if (_htmlBody == null) {
+
+							// if _htmlBody is null, which happens for new pages which have not been saved yet, set to empty string to avoid no permission later
+							bodyHtml = "";
+
+						} else {
+
+							// set this to the whole html body
+							bodyHtml = _htmlBody;
+
+						}
 
 					} else {
 
@@ -2079,7 +2077,7 @@ public class Page {
 				if (bodyHtml == null) {
 
 					// didn't get any body html, show no permission
-					writeMessage(rapidServlet, writer, "Rapid - No permission", "You do not have permssion to view this page");
+					rapidServlet.writeMessage(writer, "No permission", "You do not have permssion to view this page");
 
 				} else {
 
@@ -2103,7 +2101,7 @@ public class Page {
 			} else {
 
 				// no page permission
-				writeMessage(rapidServlet, writer, "Rapid - No permission", "You do not have permssion to view this page");
+				rapidServlet.writeMessage(writer, "No permission", "You do not have permssion to view this page");
 
 			} // page permission check
 
