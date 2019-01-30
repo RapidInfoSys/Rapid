@@ -64,8 +64,8 @@ import com.rapid.core.Theme;
 import com.rapid.core.Workflows;
 import com.rapid.server.filter.RapidAuthenticationAdapter;
 import com.rapid.utils.Bytes;
-import com.rapid.utils.Exceptions;
 import com.rapid.utils.Encryption.EncryptionProvider;
+import com.rapid.utils.Exceptions;
 import com.rapid.utils.JAXB.EncryptedXmlAdapter;
 
 @SuppressWarnings({"serial", "unchecked", "rawtypes"})
@@ -84,15 +84,17 @@ public class RapidHttpServlet extends HttpServlet {
 
 	// enterprise monitor
 	protected Monitor _monitor = new Monitor();
-	
+
 	// properties
 
 	public static JAXBContext getJAXBContext() { return _jaxbContext; }
 	public static void setJAXBContext(JAXBContext jaxbContext) { _jaxbContext = jaxbContext; }
 
+	public static EncryptionProvider getEncryptionProvider() { return _encryptionProvider; }
+	public static void setEncryptionProvider(EncryptionProvider encryptionProvider) { _encryptionProvider = encryptionProvider; }
+
 	public static EncryptedXmlAdapter getEncryptedXmlAdapter() { return _encryptedXmlAdapter; }
 	public static void setEncryptedXmlAdapter(EncryptedXmlAdapter encryptedXmlAdapter) { _encryptedXmlAdapter = encryptedXmlAdapter; }
-	public static void setEncryptionProvider(EncryptionProvider encryptionProvider) { _encryptionProvider = encryptionProvider; }
 
 	// public methods
 
@@ -219,7 +221,7 @@ public class RapidHttpServlet extends HttpServlet {
 		}
 		return value;
 	}
-	
+
 	// this is used to format between Java Date and XML date - not threadsafe so new instance each time
 	public SimpleDateFormat getXMLDateFormatter() {
 		return new SimpleDateFormat("yyyy-MM-dd");
@@ -307,7 +309,7 @@ public class RapidHttpServlet extends HttpServlet {
 			for (int i = 0; i < signatureBytes.length; i++ ) {
 				// get the ith mimetype from the list
 				String mimeType = _uploadMimeTypes.get(i);
-				// get the mimetypebytes array the list - returns null if its byte array doesnt exist
+				// get the mimetypebytes array the list - returns null if its byte array doesn't exist
 				List<byte[]> bytesList = _uploadMimeTypeBytes.get(mimeType);
 				// initialise an array list if it doesnt exist
 				if (bytesList == null) bytesList = new ArrayList<byte[]>();
@@ -332,10 +334,19 @@ public class RapidHttpServlet extends HttpServlet {
 		return (ActionCache) getServletContext().getAttribute("actionCache");
 	}
 
-	public void sendException(HttpServletResponse response, Exception ex) throws IOException {
-		sendException(null, response, ex);
+	// encrypt a value with the encryption adapter, if there is one
+	public String encryptValue(String value) throws GeneralSecurityException, IOException {
+		if (value != null && _encryptionProvider != null) return _encryptionProvider.encrypt(value);
+		return value;
 	}
 
+	// decrypt a value  with the encryption adapter, if there is one
+	public String decryptValue(String value) throws GeneralSecurityException, IOException {
+		if (value != null && _encryptionProvider != null) return _encryptionProvider.decrypt(value);
+		return value;
+	}
+
+	// send the user an exception in a formatted page
 	public void sendException(RapidRequest rapidRequest, HttpServletResponse response, Exception ex) throws IOException {
 
 		// set the status
@@ -371,6 +382,12 @@ public class RapidHttpServlet extends HttpServlet {
 
 	}
 
+	// override to the above
+	public void sendException(HttpServletResponse response, Exception ex) throws IOException {
+		sendException(null, response, ex);
+	}
+
+	// send the user a general message in a formatted page
 	public void sendMessage(HttpServletResponse response, int status, String title, String message ) throws IOException {
 
 		// set the status
