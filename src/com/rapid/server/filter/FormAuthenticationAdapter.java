@@ -47,11 +47,13 @@ import com.rapid.core.Application;
 import com.rapid.core.Applications;
 import com.rapid.core.Email;
 import com.rapid.security.SecurityAdapter;
-import com.rapid.security.SecurityAdapter.SecurityAdapaterException;
 import com.rapid.server.RapidHttpServlet;
 import com.rapid.server.RapidRequest;
 
 public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
+	
+	public static final String SESSION_VARIABLE_LOGIN_PATH = "login";
+	public static final String SESSION_VARIABLE_PASSWORDRESET_PATH = "passwordreset";
 
 	public static final String LOGIN_PATH = "login.jsp";
 	public static final String INDEX_PATH = "index.jsp";
@@ -202,7 +204,7 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 			if (sessionIndexPath != null) indexPath = sessionIndexPath;
 
 			// look in the session for the password reset path
-			String sessionResetPath = (String) session.getAttribute(RapidFilter.SESSION_VARIABLE_PASSWORDRESET_PATH);
+			String sessionResetPath = (String) session.getAttribute(SESSION_VARIABLE_PASSWORDRESET_PATH);
 			// if we got one use it
 			if (sessionResetPath != null) resetPath = sessionResetPath;
 
@@ -240,9 +242,14 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 						// log the error
 						_logger.error("FormAuthenticationAdapter error resetting password", ex);
 					}
+					
+					// Get the stored login path from session
+					loginPath = (String) session.getAttribute(SESSION_VARIABLE_LOGIN_PATH);
+					// if null set to default
+					if (loginPath == null) loginPath = LOGIN_PATH;
 
 					// send a message to display
-					request.getSession().setAttribute("message", "A new password has been emailed - click <a href='" + loginPath + "'>here</a> to log in");
+					session.setAttribute("message", "A new password has been emailed - click <a href='" + loginPath + "'>here</a> to log in");
 
 				}
 
@@ -299,12 +306,14 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 
 						// if the request is for a custom login page, or the full request includes the custom index app
 						if (requestPath.endsWith(customLoginPath) || (requestPath + queryString).contains(customIndexApp)) {
+							// remember this custom login
+							loginPath = customLoginPath;
+							// put the login path in the session
+							session.setAttribute(SESSION_VARIABLE_LOGIN_PATH, customLoginPath);
 							// put the index path in the session
 							session.setAttribute(RapidFilter.SESSION_VARIABLE_INDEX_PATH, customIndexPath);
 							// put the password reset page in the session if there is one
-							if (customPasswordReset != null) session.setAttribute(RapidFilter.SESSION_VARIABLE_PASSWORDRESET_PATH, customPasswordReset.trim());
-							// remember this custom login
-							loginPath = customLoginPath;
+							if (customPasswordReset != null) session.setAttribute(SESSION_VARIABLE_PASSWORDRESET_PATH, customPasswordReset.trim());
 							// add cache defeating to try and stop the 302 from custom login .jsp pages to index.jsp
 							RapidFilter.noCache(response);
 							// we're done

@@ -57,7 +57,6 @@ public class RapidFilter implements Filter {
 	public static final String SESSION_VARIABLE_USER_NAME = "user";
 	public static final String SESSION_VARIABLE_USER_PASSWORD = "password";
 	public static final String SESSION_VARIABLE_USER_DEVICE = "device";
-	public static final String SESSION_VARIABLE_PASSWORDRESET_PATH = "passwordreset";
 
 	private static Logger _logger = LogManager.getLogger(RapidFilter.class);
 
