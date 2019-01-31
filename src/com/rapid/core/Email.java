@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -178,7 +178,7 @@ public class Email {
 	public void save(ServletContext servletContext) throws JAXBException, IOException {
 
 		// get the file in which the control xml files are stored
-		File file = new File(servletContext.getRealPath("/") + "WEB-INF/email/email.xml");
+		File file = new File(servletContext.getRealPath("/") + "/WEB-INF/email/email.xml");
 		// make dirs if need be
 		if (!file.exists()) file.getParentFile().mkdirs();
 
