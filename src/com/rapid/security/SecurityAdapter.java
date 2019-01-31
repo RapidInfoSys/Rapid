@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -532,6 +532,10 @@ public abstract class SecurityAdapter {
 							String password = getPasswordReset(rapidRequest);
 							// set the password
 							user.setPassword(password);
+							// unlock the user
+							user.setIsLocked(false);
+							// update the user (saves password and lock state)
+							updateUser(rapidRequest, user);
 							// send the email
 							sendPasswordReset(rapidRequest, email, password);
 							// we're done
