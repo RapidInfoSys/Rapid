@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -275,15 +275,30 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 
 					// loop the login pages
 					for (JSONObject jsonLogin : _jsonLogins) {
+						
 						// get the custom login path
 						String customLoginPath = jsonLogin.optString("path").trim();
 						// get the custom index
 						String customIndexPath = jsonLogin.optString("index").trim();
 						// get any password reset
 						String customPasswordReset = jsonLogin.optString("passwordreset",null);
+						
+						// assume the custom index is pretty url direct for app
+						String customIndexApp = customIndexPath;
+						// if the index path is non pretty
+						if (customIndexPath.contains("a=")) {
+							// find the start
+							int startPos = customIndexPath.indexOf("a=") + 2;
+							// find next &
+							int endPos = customIndexPath.indexOf("&", startPos);
+							// if there wasn't one, it's the end of the string
+							if (endPos < startPos) endPos = customIndexPath.length() - 1;
+							// get the app
+							customIndexApp = customIndexPath.substring(startPos, endPos);
+						}
 
-						// if the request is for a custom login page
-						if (requestPath.endsWith(customLoginPath) || (queryString != null && customLoginPath.endsWith(queryString))) {
+						// if the request is for a custom login page, or the full request includes the custom index app
+						if (requestPath.endsWith(customLoginPath) || (requestPath + queryString).contains(customIndexApp)) {
 							// put the index path in the session
 							session.setAttribute(RapidFilter.SESSION_VARIABLE_INDEX_PATH, customIndexPath);
 							// put the password reset page in the session if there is one
@@ -474,6 +489,7 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 
 							// if any app has password reset
 							if (SecurityAdapter.hasPasswordReset(getServletContext())) message += " - click <a href='" + resetPath + "'>here</a> to reset your password";
+							
 						}
 
 						// retain the authorisation attempt in the session
