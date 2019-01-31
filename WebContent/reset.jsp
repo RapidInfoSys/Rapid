@@ -6,7 +6,7 @@
 
 /*
 
-Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -53,9 +53,9 @@ if (Email.getEmailSettings() != null) {
 	<script type="text/javascript" src="scripts/jquery-1.10.2.js"></script>
 	
 	<script type="text/javascript">
+	
 		function validateEmail() {
 			
-				
 			var emailString = $("input[name='email']").val();
 			var regex = new RegExp("^[_a-zA-Z0-9-]+(\\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*(\\.[a-zA-Z]{2,4})$");
 			var isValid = regex.test(emailString);
