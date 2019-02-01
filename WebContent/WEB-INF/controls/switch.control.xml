@@ -32,7 +32,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    <name>Switch</name>
 	    <image>images/checkbox_24x24.png</image>
 	    <category>Form controls</category>
-	    <helpHtml>A simple control that generates a single checkbox. Very useful for forms and questions with multiple answers, the checkbox can have it's values logged and used in a variety of differeny ways.</helpHtml>
+	    <helpHtml>A stylish switch control which animates when toggled on or off.</helpHtml>
 	         
 	    <canUserAdd>true</canUserAdd>
 	    <canUserMove>true</canUserMove>

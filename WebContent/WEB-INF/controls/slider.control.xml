@@ -31,7 +31,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    <type>slider</type>
 	    <name>Slider</name>
 	    <image>images/radiobutton_24x24.png</image>
-	    <helpHtml>A simple control that places a drop down list on the page. These can be especially helpful for allowing users of your app to select from a multitude of options.</helpHtml>
+	    <helpHtml>A bar with a marker that can be slid along it between a minimum and maximum value.</helpHtml>
     
 	    <canUserAdd>true</canUserAdd>
 	    <canUserMove>true</canUserMove>
@@ -168,7 +168,6 @@ return $("#" + id).slider("value");
 			]]>
 	    </getDataFunction>
 	    
-	    <!-- 
 	    <setDataJavaScript>
 	        <![CDATA[
 var	data = makeDataObject(data, field);        
@@ -178,20 +177,19 @@ if (data && data.rows && data.rows.length > 0) {
 	if (field && data.fields && data.fields.length > 0) {
 		for (var i in data.fields) {
 			if (data.fields[i] && field.toLowerCase() == data.fields[i].toLowerCase()) {
-				control.val(data.rows[0][i]);
+				control.slider("value",data.rows[0][i]);
 				foundField = true;
 				break;
 			}
 		}
 	}
-	if (!foundField) control.val(data.rows[0][0]);
+	if (!foundField) control.slider("value",data.rows[0][0]);
 } else {
-	control.val("");
+	control.slider("value",0);
 }	                
 if (changeEvents) control.trigger("change");
 	        ]]>
 	    </setDataJavaScript>
-	     -->
 	    
 	    <events>
 	        <event>
@@ -237,7 +235,7 @@ if (details.value) settings.value = details.value*1;
 // add orientation, if vertical
 if (details.orientation == "v") settings.orientation = "vertical";
 // apply
-$( "#" + id).slider(settings);   
+$("#" + id).slider(settings);   
 	    	]]>
 	    </initJavaScript>
   	    
