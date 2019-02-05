@@ -260,7 +260,7 @@ try {
 					// check the type
 					if (tabs.details && tabs.details.tabType == "V") {
 						// vertical if there are details that say so
-						tabs.object.children("div.selected").css("display","inline-block");
+						tabs.object.children("div.selected").css("display","table-cell");
 					} else {
 						// default to horizontal
 						tabs.object.children("div.selected").css("display","block");
@@ -328,7 +328,7 @@ return "#" + this.id + " div.tabsPanel";
 	    	    	    	    	    
 	    <initJavaScript>
 	        <![CDATA[
-	        
+
 // get a reference to the tabs group
 var tabs = $("#" + id);
 // assume horizontal
@@ -347,7 +347,7 @@ var tabOpeners = $("#" + id).children("ul");
 
 // for each tab opener
 tabOpeners.children("li").each( function(idx) {
-
+	
 	// get the tab opener
 	var tabOpener = $(this);
 	// get it's id
@@ -357,7 +357,8 @@ tabOpeners.children("li").each( function(idx) {
 	// if there is a tab body - there might not be as role permissions may mean it's not in the page
 	if (tabBody[0]) {
 		// add a listener for the opener
-		tabOpener.click( function(ev, index) {		
+		tabOpener.click( function(ev, index) {
+
 			// remove selected from all tab header items
 			tabs.children("ul").children("li").removeClass("selected");
 			// remove selected from all tab body items and hide
