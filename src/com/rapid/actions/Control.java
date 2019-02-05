@@ -110,6 +110,8 @@ public class Control extends Action {
 			} else if ("removeChildClasses".equals(actionType)) {
 				String styleClass = getProperty("styleClass");
 				js += "find('." + styleClass + "').removeClass('" + styleClass + "');";
+			} else if ("removeValidation".equals(actionType)) {
+				js = "hideControlValidation('" + controlId + "');";
 			} else if ("showError".equals(actionType)) {
 				js += "showError(server, status, message);";
 			} else if ("scrollTo".equals(actionType)) {

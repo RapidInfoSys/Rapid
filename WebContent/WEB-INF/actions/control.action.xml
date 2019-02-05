@@ -61,7 +61,7 @@ This action runs JQuery functions against specific controls
 	            <key>actionType</key>
 	            <name>Action</name>
 	            <changeValueJavaScript>controlActionType</changeValueJavaScript>
-	            <getValuesFunction>return ["hide","show","toggle","slideUp","slideDown","slideToggle","fadeOut","fadeIn","fadeToggle","focus","enable","disable","addClass","removeClass","toggleClass","removeChildClasses","scrollTo", "hideDialogue","hideAllDialogues","showError","clearQueue","custom"];</getValuesFunction>
+	            <getValuesFunction>return ["hide","show","toggle","slideUp","slideDown","slideToggle","fadeOut","fadeIn","fadeToggle","focus","enable","disable","addClass","removeClass","toggleClass","removeChildClasses","removeValidation","scrollTo", "hideDialogue","hideAllDialogues","showError","clearQueue","custom"];</getValuesFunction>
 	            <refreshProperties>true</refreshProperties>
 	            <helpHtml>Sets a specified action to be carried out. Useful for validation and page load events.</helpHtml>
 	        </property>
