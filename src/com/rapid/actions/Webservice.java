@@ -196,7 +196,7 @@ public class Webservice extends Action {
 		// check
 		if (jsonParameters != null) {
 			// instantiate collection
-			parameters = new ArrayList<Parameter>();
+			parameters = new ArrayList<>();
 			// loop
 			for (int i = 0; i < jsonParameters.length(); i++) {
 				// instaniate member
@@ -245,7 +245,7 @@ public class Webservice extends Action {
 		// initialise and populate on first get
 		if (_childActions == null) {
 			// our list of all child actions
-			_childActions = new ArrayList<Action>();
+			_childActions = new ArrayList<>();
 			// add child success actions
 			if (_successActions != null) {
 				for (Action action : _successActions) _childActions.add(action);
@@ -793,7 +793,7 @@ public class Webservice extends Action {
 								SOAJSONReader jsonReader = new SOAJSONReader();
 								// read the data
 								soaData = jsonReader.read(jsonResponse);
-							} else if ("JSON".equals(_request.getType())) {
+							} else {
 								SOAXMLReader xmlReader = new SOAXMLReader(_request.getRoot());
 								String transform = _request.getTransform();
 								if (transform != null) {

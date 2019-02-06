@@ -319,7 +319,7 @@ public abstract class SOADataWriter {
 
 		public SOARapidWriter(SOAData soaData) {
 			super(soaData);
-			_fieldsMap = new HashMap<String,List<String>>();
+			_fieldsMap = new HashMap<>();
 		}
 
 		private void parse(SOAElement element) {
@@ -338,7 +338,7 @@ public abstract class SOADataWriter {
 				// if there wasn't one
 				if (fields == null) {
 					// make a new one
-					fields = new ArrayList<String>();
+					fields = new ArrayList<>();
 					// add this elements field map to fields map
 					_fieldsMap.put(elementName, fields);
 				}
@@ -368,8 +368,86 @@ public abstract class SOADataWriter {
 								// get its name
 								String arrayElementName = arrayElement.getName();
 
-								// look for it in the fieldMap, add if not
-								if (!fields.contains(arrayElementName)) fields.add(arrayElementName);
+								// if fields has been populated
+								if (fields.size() == 0) {
+
+									// add straight away
+									fields.add(arrayElementName);
+
+								} else {
+
+									// if not in the fields already
+									if (!fields.contains(arrayElementName)) {
+
+										// assume we should add it
+										boolean add = true;
+
+										// need at least one before this one
+										if (j > 0) {
+
+											// work backwards form the one before
+											for (int k = j - 1; k > 1; k--) {
+
+												// get the name to check
+												String checkName = arrayElements.get(k).getName();
+
+												// get pos
+												int pos = fields.indexOf(checkName);
+
+												// if we got one
+												if (pos >= 0) {
+
+													// insert after this position
+													fields.add(k + 1, arrayElementName);
+
+													// remember not to add
+													add = false;
+
+													// we're done
+													break;
+
+												}
+
+											}
+
+										}
+
+										// if we're still needing to add and there are other fields left to check
+										if (add && j < arrayElements.size()) {
+
+											// work forwards from the one after
+											for (int k = j + 1; k < arrayElements.size(); k++) {
+
+												// get the name to check
+												String checkName = arrayElements.get(k).getName();
+
+												// get pos
+												int pos = fields.indexOf(checkName);
+
+												// if we got one
+												if (pos >= 0) {
+
+													// insert before this position
+													fields.add(k, arrayElementName);
+
+													// remember not to add
+													add = false;
+
+													// we're done
+													break;
+
+												}
+
+											}
+
+										}
+
+										// add if we need to
+										if (add) fields.add(arrayElementName);
+
+									}
+
+								}
 
 							}
 

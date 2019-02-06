@@ -37,6 +37,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -105,6 +107,8 @@ public interface SOADataReader {
 
 		// Not sure this class is threadsafe useful guide: http://stackoverflow.com/questions/3439485/java-and-xml-jaxp-what-about-caching-and-thread-safety
 
+		private static Logger _logger = LogManager.getLogger();
+
 		private SAXParserFactory _spf;
 		private SAXParser _saxParser;
 		private XMLReader _xmlReader;
@@ -118,10 +122,10 @@ public interface SOADataReader {
 			private String _root, _authentication, _currentElementId;
 			private boolean _rootFound, _ignoreHeader;
 
-			private List<String> _columnElementIds = new ArrayList<String>();
-			private List<Integer> _columnRows = new ArrayList<Integer>();
-			private List<SOAElement> _columnParents = new ArrayList<SOAElement>();
-			private Map<Integer,String> _columnArrays = new HashMap<Integer,String>();
+			private List<String> _columnElementIds = new ArrayList<>();
+			private List<Integer> _columnRows = new ArrayList<>();
+			private List<SOAElement> _columnParents = new ArrayList<>();
+			private Map<Integer,String> _columnArrays = new HashMap<>();
 
 			//private Logger _logger = LogManager.getLogger(this.getClass());
 
@@ -220,7 +224,7 @@ public interface SOADataReader {
 			public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
 
 				// start
-				//_logger.debug("startElement called for " + localName + "/" + qName);
+				_logger.trace("startElement called for " + localName + "/" + qName);
 
 				// ignore all elements pertaining to the envelope
 				if ("http://schemas.xmlsoap.org/soap/envelope/".equals(uri)) {
@@ -273,7 +277,7 @@ public interface SOADataReader {
 							_currentColumn ++;
 
 							// log
-							//_logger.debug("Starting element " + localName + " at column " + _currentColumn);
+							_logger.trace("Starting element " + localName + " at column " + _currentColumn);
 
 							// make a new branch for this element
 							_currentElement = new SOAElement(localName);
@@ -296,6 +300,14 @@ public interface SOADataReader {
 								_currentElement.setParentElement(parentElement);
 								// add this child node to its parent for cross reference - this also adds it to _columnParents
 								parentElement.addChildElement(_currentElement);
+
+								// get the child elements
+								List<SOAElement> childElements = parentElement.getChildElements();
+								// if there are now 2 child elements
+								if (parentElement.getChildElements().size() == 2) {
+									// if they have the same name, make the parent an array
+									if (childElements.get(0).getName().equals(childElements.get(1).getName())) parentElement.setIsArray(true);
+								}
 
 							}
 
@@ -340,58 +352,62 @@ public interface SOADataReader {
 								}
 							}
 
-							// get the schema element for this id
-							SOASchemaElement schemaElement = _soaSchema.getElementById(newId);
+							// if there is a schema
+							if (_soaSchema != null) {
+
+								// get the schema element for this id
+								SOASchemaElement schemaElement = _soaSchema.getElementById(newId);
+
+								// log
+								_logger.trace("Checking element " + localName + " " + newId);
+
+								// if we got one
+								if (schemaElement != null) {
+
+									// choice is a bit tricky
+									boolean isParentChoice = false;
+
+									// check not root
+									if (_currentColumn > 0) {
+										// get previous id
+										String previousId = _columnElementIds.get(_currentColumn - 1);
+										// get previous schema element
+										SOASchemaElement previousSchemaElement = _soaSchema.getElementById(previousId);
+										// if we got one set parent choice
+										if (previousSchemaElement != null) isParentChoice = previousSchemaElement.getIsChoice();
+									}
+
+									// keep incrementing row and checking if names are different and isoptional, until we get nothing or match name
+									while (
+											schemaElement != null &&
+											!schemaElement.getNameArrayCheck().equals(localName) &&
+											!schemaElement.getNameArrayCheck().equals(localName + "Array") &&
+											(
+												schemaElement.getIsOptional() ||
+												schemaElement.getIsArray() ||
+												isParentChoice
+											)
+										){
+
+										_logger.trace("Didn't find " + localName + " at " + newId);
+
+										// increase the current row
+										_currentRow ++;
+
+										// get the newId
+										newId = _columnElementIds.get(_currentColumn - 1) + "." + _currentRow;
+
+										// get this element
+										schemaElement = _soaSchema.getElementById(newId);
+
+									}
+
+								} // schema element check
+
+							} // schema check
 
 							// log
-							//_logger.debug("Checking element " + localName + " " + newId);
-
-							// if we got one
-							if (schemaElement != null) {
-
-								// choice is a bit tricky
-								boolean isParentChoice = false;
-
-								// check not root
-								if (_currentColumn > 0) {
-									// get previous id
-									String previousId = _columnElementIds.get(_currentColumn - 1);
-									// get previous schema element
-									SOASchemaElement previousSchemaElement = _soaSchema.getElementById(previousId);
-									// if we got one set parent choice
-									if (previousSchemaElement != null) isParentChoice = previousSchemaElement.getIsChoice();
-								}
-
-								//if ("structuredAddress".equals(localName) || "freeFormAddress".equals(localName)) isParentChoice = true;
-
-								// keep incrementing row and checking if names are different and isoptional, until we get nothing or match name
-								while (
-										schemaElement != null &&
-										!schemaElement.getNameArrayCheck().equals(localName) &&
-										!schemaElement.getNameArrayCheck().equals(localName + "Array") &&
-										(
-											schemaElement.getIsOptional() ||
-											schemaElement.getIsArray() ||
-											isParentChoice
-										)
-									){
-
-									//_logger.debug("Didn't find " + localName + " at " + newId);
-
-									// increase the current row
-									_currentRow ++;
-
-									// get the newId
-									newId = _columnElementIds.get(_currentColumn - 1) + "." + _currentRow;
-
-									// get this element
-									schemaElement = _soaSchema.getElementById(newId);
-								}
-
-							}
-
-							// log
-							//_logger.debug("Found element " + localName + " " + newId);
+							_logger.trace("Found element " + localName + " " + newId);
 
 							// set current id to new id
 							_currentElementId = newId;
@@ -431,7 +447,7 @@ public interface SOADataReader {
 			public void endElement(String uri, String localName, String qName) throws SAXException {
 
 				// log
-				//_logger.debug("endElement called for " + localName + "/" + qName);
+				_logger.trace("endElement called for " + localName + "/" + qName);
 
 				// ignore all elements pertaining to the envelope
 
@@ -440,17 +456,14 @@ public interface SOADataReader {
 					// if this is the end of the header element we can now stop ignoring it
 					if ("Header".equals(localName)) _ignoreHeader = false;
 
-				} else if (!_ignoreHeader && _soaSchema != null && _currentColumn >= 0) {
+				} else if (!_ignoreHeader && _currentColumn >= 0) {
 					// validate this element if this column is the root or above and there is a schema
 
 					// retrieve the last branch id for this column
 					String currentElementId = _columnElementIds.get(_currentColumn);
 
-					// get it's schema element
-					SOASchemaElement schemaElement = _soaSchema.getElementById(currentElementId);
-
 					// log
-					//_logger.debug("Ending element " + localName + " " + currentElementId);
+					_logger.trace("Ending element " + localName + " " + currentElementId);
 
 					// if this is an array
 					if (localName.endsWith("Array") || qName.endsWith("Array")) {
@@ -463,39 +476,47 @@ public interface SOADataReader {
 
 					} else {
 
-						// check we found one
-						if (schemaElement != null) {
+						// retrieve the element
+						SOAElement element = _columnParents.get(_currentColumn);
 
-							// retrieve the element
-							SOAElement element = _columnParents.get(_currentColumn);
+						// check schema
+						if (_soaSchema != null) {
 
-							// validate against last branch in this column
-							try {
-								// try and validate it
-								schemaElement.validate(element);
-							} catch (SOASchemaException e) {
-								throw new SAXException(e);
-							}
+							// get it's schema element
+							SOASchemaElement schemaElement = _soaSchema.getElementById(currentElementId);
 
-							// close the array if required
-							if (schemaElement.getIsArray()) element.closeArray();
+							// check we found one
+							if (schemaElement != null) {
 
-							// if there are grandchildren, set their row id to -1
-							if (_columnRows.size() > _currentColumn + 2) _columnRows.set(_currentColumn + 2, -1);
+								// validate against last branch in this column
+								try {
+									// try and validate it
+									schemaElement.validate(element);
+								} catch (SOASchemaException e) {
+									throw new SAXException(e);
+								}
 
-							// go back one column
-							_currentColumn --;
+								// close the array if required
+								if (schemaElement.getIsArray()) element.closeArray();
 
-						} else {
+							} else {
 
-							// throw exception
-							throw new SAXException("Element \"" + localName + "\" not recognised at column " + (_currentColumn + 1) + ", row " + (_currentRow + 1));
+								// throw exception
+								throw new SAXException("Element \"" + localName + "\" not recognised at column " + (_currentColumn + 1) + ", row " + (_currentRow + 1));
 
-						}
+							} // schema element check
 
-					}
+						} // schema check
 
-				}
+						// if there are grandchildren, set their row id to -1
+						if (_columnRows.size() > _currentColumn + 2) _columnRows.set(_currentColumn + 2, -1);
+
+						// go back one column
+						_currentColumn --;
+
+					} // array check
+
+				} // envelope check
 
 			}
 
@@ -636,9 +657,9 @@ public interface SOADataReader {
 		private String _currentKey;
 		private String _authentication;
 
-		private ArrayList<String> _columnElementIds = new ArrayList<String>();
-		private ArrayList<Integer> _columnRows = new ArrayList<Integer>();
-		private ArrayList<SOAElement> _columnParents = new ArrayList<SOAElement>();
+		private ArrayList<String> _columnElementIds = new ArrayList<>();
+		private ArrayList<Integer> _columnRows = new ArrayList<>();
+		private ArrayList<SOAElement> _columnParents = new ArrayList<>();
 
 		protected static String incId(String id) {
 
@@ -985,9 +1006,9 @@ public interface SOADataReader {
 			            } else if (o instanceof String) {
 				            	_currentElement.setValue(o.toString());
 			            }
-			            
-		            }		            
-		            
+
+		            }
+
 		            // dec the column
 					_currentColumn --;
 
