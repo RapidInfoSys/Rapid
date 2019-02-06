@@ -25,7 +25,10 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 
 package com.rapid.soa;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.rapid.soa.SOASchema.SOASchemaElement;
 
@@ -307,16 +310,94 @@ public abstract class SOADataWriter {
 
 	}
 
+	// writes soa data in the standard Rapid front end format: {fields:[],rows:[][]}
+
 	public static class SOARapidWriter extends SOADataWriter {
 
-		StringBuilder _stringBuilder;
+		protected Map<String,List<String>> _fieldsMap;
+		protected StringBuilder _stringBuilder;
 
 		public SOARapidWriter(SOAData soaData) {
 			super(soaData);
+			_fieldsMap = new HashMap<String,List<String>>();
+		}
+
+		private void parse(SOAElement element) {
+
+			List<SOAElement> childElements = element.getChildElements();
+
+			// if this element has children
+			if (childElements != null) {
+
+				// get this elements name
+				String elementName = element.getName();
+
+				// get any previous field map for the element
+				List<String> fields = _fieldsMap.get(elementName);
+
+				// if there wasn't one
+				if (fields == null) {
+					// make a new one
+					fields = new ArrayList<String>();
+					// add this elements field map to fields map
+					_fieldsMap.put(elementName, fields);
+				}
+
+
+				// loop the children
+				for (int i = 0; i < childElements.size(); i++) {
+
+					// get the child element
+					SOAElement childElement = childElements.get(i);
+
+					// check is array
+					if (element.getIsArray()) {
+
+						// get the array element
+						List<SOAElement> arrayElements = childElement.getChildElements();
+
+						// check we got some
+						if (arrayElements != null && arrayElements.size() > 0) {
+
+							// loop it's children too!
+							for (int j = 0; j < arrayElements.size(); j++) {
+
+								// get the array element
+								SOAElement arrayElement = arrayElements.get(j);
+
+								// get its name
+								String arrayElementName = arrayElement.getName();
+
+								// look for it in the fieldMap, add if not
+								if (!fields.contains(arrayElementName)) fields.add(arrayElementName);
+
+							}
+
+						}
+
+					} else {
+
+						// get its name
+						String childElementName = childElement.getName();
+
+						// look for it in the fieldMap, add if not
+						if (!fields.contains(childElementName)) fields.add(childElementName);
+
+					}
+
+					// if it has children, parse it too
+					if (childElement.getChildElements() != null && childElement.getChildElements().size() > 0) parse(childElement);
+
+				} // array check
+
+			}
+
 		}
 
 
 		private void append(SOAElement element) {
+
+			String elementName = element.getName();
 
 			if (element.getIsArray()) {
 
@@ -326,50 +407,83 @@ public abstract class SOADataWriter {
 
 				if (collectionElements != null) {
 
+					_stringBuilder.append("'fields':[");
+
+					List<String> fields = _fieldsMap.get(elementName);
+
+					for (int i = 0; i < fields.size(); i++) {
+
+						_stringBuilder.append("'" + jsonEscape(fields.get(i)) + "'");
+
+						if (i < fields.size() - 1) _stringBuilder.append(",");
+
+					}
+
+					_stringBuilder.append("],rows:[");
+
 					for (int i = 0; i < collectionElements.size(); i ++) {
 
 						SOAElement collectionElement = collectionElements.get(i);
 
 						List<SOAElement> childElements = collectionElement.getChildElements();
 
-						if (i == 0) {
+						_stringBuilder.append("[");
 
-							_stringBuilder.append("'fields':[");
+						int j = 0; // element pos
+						int o = 0; // offset
 
-							for (int j = 0; j < childElements.size(); j++) {
+						if (childElements != null && childElements.size() > 0) {
+
+							for (j = 0; j < childElements.size(); j++) {
 
 								SOAElement childElement = childElements.get(j);
 
-								_stringBuilder.append("'" + jsonEscape(childElement.getName()) + "'");
+								// get the name of the child element
+								String childElementName = childElement.getName();
+
+								// get the position of the child element
+								int childElementPos = fields.indexOf(childElementName);
+
+								// if there are elements before us, that we haven't printed yet
+								if (childElementPos > j + o) {
+									int k;
+									// add missing elements
+									for (k = 0; k < childElementPos - j - o; k++) _stringBuilder.append("null,");
+									// increment offset
+									o += k;
+								}
+
+								if (childElement.getChildElements() == null || childElement.getChildElements().size() == 0) {
+
+									_stringBuilder.append("'" + jsonEscape(childElement.getValue()) + "'");
+
+								} else {
+
+									append(childElement);
+
+								}
 
 								if (j < childElements.size() - 1) _stringBuilder.append(",");
 
 							}
 
-							_stringBuilder.append("],rows:[");
-
 						}
 
-						_stringBuilder.append("[");
-
-						for (int j = 0; j < childElements.size(); j++) {
-
-							SOAElement childElement = childElements.get(j);
-
-							if (childElement.getChildElements() == null || childElement.getChildElements().size() == 0) {
-
-								_stringBuilder.append("'" + jsonEscape(childElement.getValue()) + "'");
-
-							} else {
-
-								append(childElement);
-
+						// if there are elements after us that we haven't printed yet
+						if (j + o < fields.size()) {
+							// if we had no elements
+							if (j == 0) {
+								// add a null without a leading comma
+								_stringBuilder.append("null");
+								// move j on 1
+								j++;
 							}
-
-							if (j < childElements.size() - 1) _stringBuilder.append(",");
-
+							// add missing elements
+							for (int k = j + o; k < fields.size(); k++) {
+								// add null with leading comma
+								_stringBuilder.append(",null");
+							}
 						}
-
 						_stringBuilder.append("]");
 
 						if (i < collectionElements.size() - 1) _stringBuilder.append(",");
@@ -392,18 +506,17 @@ public abstract class SOADataWriter {
 
 					_stringBuilder.append("'fields':[");
 
-					for (int i = 0; i < childElements.size(); i++) {
+					List<String> fields = _fieldsMap.get(elementName);
 
-						SOAElement childElement = childElements.get(i);
+					for (int i = 0; i < fields.size(); i++) {
 
-						_stringBuilder.append("'" + childElement.getName() + "'");
+						_stringBuilder.append("'" + jsonEscape(fields.get(i)) + "'");
 
-						if (i < childElements.size() - 1) _stringBuilder.append(",");
+						if (i < fields.size() - 1) _stringBuilder.append(",");
 
 					}
 
 					_stringBuilder.append("],rows:[[");
-
 
 					for (int i = 0; i < childElements.size(); i++) {
 
@@ -439,8 +552,13 @@ public abstract class SOADataWriter {
 			if (rootElement == null) {
 				return "{}";
 			} else {
+				// make a new string builder which we will print to
 				_stringBuilder = new StringBuilder();
+				// parse the elements to build the fields lists
+				parse(rootElement);
+				// append the elements
 				append(rootElement);
+				// return the string
 				return _stringBuilder.toString();
 			}
 		}
