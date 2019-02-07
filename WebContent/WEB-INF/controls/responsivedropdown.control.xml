@@ -406,6 +406,16 @@ if (details && details.filter) {
             delay: 0,
             minLength: 0,
             source: $.proxy( this, "_source" )
+          }).on( "click", function() {
+          	var input = $(this);
+            input.trigger( "focus" );
+            // Close if already visible
+            if ( input.autocomplete( "widget" ).is( ":visible" ) ) {
+              input.autocomplete( "widget" ).hide();
+              return;
+            }
+            // Pass empty string as value to search for, displaying all results
+            input.autocomplete( "search", "" );
           });
  
         this._on( this.input, {
@@ -454,7 +464,6 @@ if (details && details.filter) {
       },
  
       _removeIfInvalid: function( event, ui ) {
-      	return;
         // Selected an item, nothing to do
         if ( ui.item ) {
           return;
