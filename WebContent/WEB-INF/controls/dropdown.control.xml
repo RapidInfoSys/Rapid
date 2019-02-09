@@ -173,9 +173,13 @@ if (data !== undefined) {
 							}
 						}
 					}
-					if (!text) text = row[0];
-					if (value == null && row[1]) value = row[1];
-					if (value != null) value = "value='" + value + "'";					
+					if (!text && row[0] != null) text = row[0];
+					if (value == null && row[1] != null) value = row[1];
+					if (value == null) {
+						value = "";
+					} else {
+						value = "value='" + value + "'";
+					}
 					// check for group and/or change
 					if (group != lastGroup) {
 						// close last group if need be
