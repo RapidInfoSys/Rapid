@@ -75,53 +75,57 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	                <![CDATA[       
 function addControlHint(id, style, type, text) {
 
-	if (!$("#" + id + "hint")[0]) {
-	
-		if (style) {
-			style = " style='" + style + "'";
-		} else {
-			style = "";
+	if (id) {
+
+		if (!$("#" + id + "hint")[0]) {
+		
+			if (style) {
+				style = " style='" + style + "'";
+			} else {
+				style = "";
+			}
+			
+			$("body").append("<span class='hint' id='" + id + "hint'" + style + ">" + text + "</span>");
+			
+			$("#" + id + "hint").hide();
+			
+		}
+			
+		$("#" + id).mouseout(id, function(ev) {
+			$("#" + ev.data + "hint").hide();
+		});
+			
+		switch (type) {		
+			case "click" :
+				$("#" + id).click(id, function(ev) { 
+					var hint = $("#" + ev.data + "hint");
+					hint.show();
+					var left = ev.pageX + 5;
+					var top = ev.pageY + 5;
+					if (ev.pageX + 5 + hint.outerWidth(true) > $(window).width()) left = ev.pageX - hint.outerWidth(true) - 5;
+					if (ev.pageY + 5 + hint.outerHeight(true) > $(window).height()) top = ev.pageY - hint.outerHeight(true) - 5;
+					hint.css({
+						left: left,
+						top: top
+					}); 
+				});
+				break;
+			case "hover" :
+				$("#" + id).mouseover(id, function(ev) { 
+					var hint = $("#" + ev.data + "hint");
+					hint.show();
+					var left = ev.pageX + 5;
+					var top = ev.pageY + 5;
+					if (ev.pageX + 5 + hint.outerWidth(true) > $(window).width()) left = ev.pageX - hint.outerWidth(true) - 5;
+					if (ev.pageY + 5 + hint.outerHeight(true) > $(window).height()) top = ev.pageY - hint.outerHeight(true) - 5;
+					hint.css({
+						left: left,
+						top: top
+					});  
+				});
+			break;
 		}
 		
-		$("body").append("<span class='hint' id='" + id + "hint'" + style + ">" + text + "</span>");
-		
-		$("#" + id + "hint").hide();
-		
-	}
-		
-	$("#" + id).mouseout(id, function(ev) {
-		$("#" + ev.data + "hint").hide();
-	});
-		
-	switch (type) {		
-		case "click" :
-			$("#" + id).click(id, function(ev) { 
-				var hint = $("#" + ev.data + "hint");
-				hint.show();
-				var left = ev.pageX + 5;
-				var top = ev.pageY + 5;
-				if (ev.pageX + 5 + hint.outerWidth(true) > $(window).width()) left = ev.pageX - hint.outerWidth(true) - 5;
-				if (ev.pageY + 5 + hint.outerHeight(true) > $(window).height()) top = ev.pageY - hint.outerHeight(true) - 5;
-				hint.css({
-					left: left,
-					top: top
-				}); 
-			});
-			break;
-		case "hover" :
-			$("#" + id).mouseover(id, function(ev) { 
-				var hint = $("#" + ev.data + "hint");
-				hint.show();
-				var left = ev.pageX + 5;
-				var top = ev.pageY + 5;
-				if (ev.pageX + 5 + hint.outerWidth(true) > $(window).width()) left = ev.pageX - hint.outerWidth(true) - 5;
-				if (ev.pageY + 5 + hint.outerHeight(true) > $(window).height()) top = ev.pageY - hint.outerHeight(true) - 5;
-				hint.css({
-					left: left,
-					top: top
-				});  
-			});
-		break;
 	}
 	
 }           
