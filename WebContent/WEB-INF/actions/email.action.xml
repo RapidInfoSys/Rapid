@@ -85,7 +85,7 @@ return "<option value=''>Please select...</option>" + getInputOptions(this.to);
 			<property>
 	            <key>attachments</key>
 	            <name>Attachments</name>
-	            <changeValueJavaScript>uploadControls</changeValueJavaScript>
+	            <changeValueJavaScript>datacopyDestinations</changeValueJavaScript>
 	            <helpHtml>Upload controls that will have any files added as attachments.</helpHtml>
 	        </property>
 	    	<property>
