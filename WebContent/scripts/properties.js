@@ -33,7 +33,7 @@ Functions related to control properties
 var _dialogueListeners = {};
 // a global for ensuring more recently shown dialogues are on top of later shown ones
 var _dialogueZindex = 10012;
-// this holds the cell, propertyObject, property, and details by dialogue id for refeshing child actions
+// this holds the cell, propertyObject, property, and details by dialogue id for refreshing child actions
 var _dialogueRefeshProperties = {};
 // the control name is important for checking conflicts and the change event is not picked up if a new control is selected so we track it specially
 var _controlName;
@@ -1937,7 +1937,7 @@ function Property_childActions(cell, propertyObject, property, details) {
 					
 }
 
-//generic inputs to a server-side action
+// generic inputs to a server-side action
 function Property_inputs(cell, propertyObject, property, details) {
 	
 	// retrieve or create the dialogue
@@ -2049,8 +2049,15 @@ function Property_inputs(cell, propertyObject, property, details) {
 //generic outputs to a server-side action
 function Property_outputs(cell, propertyObject, property, details) {
 	
+	// assume datacopy destinations
+	var title = "Outputs";
+	// change if email attachment source
+	if (propertyObject.type == "email") title = "Attachment source";
+	// change if pdf filename output
+	if (propertyObject.type == "pdf") title = "Filename outputs";
+	
 	// retrieve or create the dialogue
-	var dialogue = getDialogue(cell, propertyObject, property, details, 400, "Ouputs", {sizeX: true});		
+	var dialogue = getDialogue(cell, propertyObject, property, details, 400, title, {sizeX: true});		
 	// grab a reference to the table
 	var table = dialogue.find("table").first();
 	// make sure table is empty
@@ -4416,6 +4423,7 @@ function Property_datacopyDestinations(cell, propertyObject, property, details) 
 		// remove this row
 		cell.closest("tr").remove();
 	} else {
+				
 		// retrieve or create the dialogue
 		var dialogue = getDialogue(cell, propertyObject, property, details, 300, "Destinations", {sizeX: true});		
 		// grab a reference to the table
@@ -5744,7 +5752,7 @@ function Property_emailContent(cell, propertyObject, property, details) {
 	cell.text(text);
 	
 	// add inputs table, subject, and body
-	table.append("<tr><td colspan='2' style='padding:0px;vertical-align: top;'><table class='dialogueTable inputs'><tr><td><b>Input</b></td><td><b>Field</b></td></tr></table></td><td style='width:65%;padding:2px 10px 0 10px;'><b>Subject</b><br/><input class='subject' style='padding:2px;width:100%;box-sizing:border-box;border:1px solid #aaa;' /><br/><b>Body</b><br/><textarea style='width:100%;min-height:180px;height:80%;box-sizing:border-box;'></textarea></td></tr>");
+	table.append("<tr><td colspan='2' style='padding:0px;vertical-align: top;'><table class='dialogueTable inputs'><tr><td><b>Input</b></td><td><b>Field</b></td></tr></table></td><td style='width:65%;padding:2px 10px 0 10px;'><b>Subject</b><br/><input type='text' class='subject' style='padding:2px;width:100%;box-sizing:border-box;border:none;' /><br/><b>Body</b><br/><textarea style='width:100%;min-height:180px;box-sizing:border-box;'></textarea></td></tr>");
 	
 	// find the inputs table
 	var inputsTable = table.find("table.inputs");
@@ -6194,3 +6202,113 @@ function Property_datacopyTimeFormat(cell, propertyObject, property, details) {
 		cell.closest("tr").remove();
 	}
 }
+
+// inputs to a the pdf action
+function Property_pdfInputs(cell, propertyObject, property, details) {
+	
+	// retrieve or create the dialogue
+	var dialogue = getDialogue(cell, propertyObject, property, details, 400, "PDF inputs", {sizeX: true});		
+	// grab a reference to the table
+	var table = dialogue.find("table").first();
+	// make sure table is empty
+	table.children().remove();
+	
+	// build what we show in the parent cell
+	var inputs = [];
+	// get the value if it exists
+	if (propertyObject[property.key]) inputs = propertyObject[property.key];	
+	// make some text for our cell (we're going to build in in the loop)
+	var text = "";
+	
+	// add a header
+	table.append("<tr><td><b>Control</b></td><td><b>Field</b></td><td colspan='2'><b>Label</b></td></tr>");
+		
+	// show current choices (with delete and move)
+	for (var i = 0; i < inputs.length; i++) {
+		// get a single reference
+		var input = inputs[i];	
+		// if we got one
+		if (input) {
+			// get a data item object for this
+			var dataItem = getDataItemDetails(input.itemId);
+			// apend to the text
+			text += dataItem.name + ",";
+			// add a row
+			table.append("<tr><td>" + dataItem.name + "</td><td><input value='" + input.field + "' /></td><td><input value='" + input.label + "' /></td><td style='width:45px'>" +
+					"<div class='iconsPanel'>" +
+					"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
+					"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div>" +
+					"</div></td></tr>");
+			// get the field
+			var editField = table.find("tr").last().children("td:nth(1)").children("input");
+			// add a listener
+			addListener( editField.keyup( {inputs: inputs}, function(ev) {
+				// get the input
+				var input = $(ev.target);
+				// update the field
+				ev.data.inputs[input.parent().parent().index()-1].field = input.val();
+			}));
+			// get the label
+			var editLabel = table.find("tr").last().children("td:nth(2)").children("input");
+			// add a listener
+			addListener( editLabel.keyup( {inputs: inputs}, function(ev) {
+				// get the input
+				var input = $(ev.target);
+				// update the field
+				ev.data.inputs[input.parent().parent().index()-1].label = input.val();				
+			}));			
+		} else {
+			// remove this entry from the collection
+			inputs.splice(i,1);
+			// set i back 1 position
+			i--;
+		}			
+	}
+			
+	// add reorder listeners
+	addReorder(inputs, table.find("div.reorder"), function() { 
+		Property_pdfInputs(cell, propertyObject, property, details); 
+	});
+	
+	// add a listener
+	addListener( table.find("div.delete").click( {inputs: inputs}, function(ev) {
+		// get the input
+		var imgDelete = $(ev.target);
+		// remove from parameters
+		ev.data.inputs.splice(imgDelete.closest("tr").index()-1,1);
+		// remove row
+		imgDelete.closest("tr").remove();
+		// refresh dialogue
+		Property_pdfInputs(cell, propertyObject, property, details); 
+	}));
+	
+	// add the add
+	table.append("<tr><td colspan='4' style='padding:0px;'><select style='margin:0px'><option value=''>Add input...</option>" + getInputOptions() + "</select></td></tr>");
+	// find the add
+	var inputAdd = table.find("tr").last().children().last().children().last();
+	// listener to add output
+	addListener( inputAdd.change( {cell: cell, propertyObject: propertyObject, property: property, details: details}, function(ev) {
+		
+		// initialise array if need be
+		if (!ev.data.propertyObject[ev.data.property.key]) ev.data.propertyObject[ev.data.property.key] = [];
+		// get the parameters (inputs or outputs)
+		var inputs = ev.data.propertyObject[ev.data.property.key];
+		// add a new one
+		inputs.push({itemId: $(ev.target).val(), field: "", label: ""});
+		// rebuild the dialogue
+		Property_pdfInputs(ev.data.cell, ev.data.propertyObject, ev.data.property, ev.data.details);
+		
+	}));
+	
+	// if we got text 
+	if (text) {
+		// remove the trailing comma
+		text = text.substring(0,text.length - 1);
+	} else {
+		// add friendly message
+		text = "Click to add...";
+	}
+	// put the text into the cell
+		cell.text(text);
+			
+	}
