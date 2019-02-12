@@ -942,7 +942,6 @@ select {
   color: white;
   font-family: 'Open Sans', Arial , sans-serif;
   max-width: 100%;
-  transition: background 0.3s ease;
 }
 
 select:focus {

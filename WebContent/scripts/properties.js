@@ -3842,7 +3842,7 @@ function Property_options(cell, control, property, details) {
 		// check we don't have a checkbox already
 		if (!dialogue.find("div.useCodes")[0]) {
 			// add checkbox
-			table.after("<div class='useCodes' style='padding:5px 0;'>Use codes <input type='checkbox' " + (control.codes ? "checked='checked'" : "") + " /></div>");
+			table.after("<div class='useCodes' style='padding:5px 0;'><label><input type='checkbox' " + (control.codes ? "checked='checked'" : "") + " /> Use codes</label></div>");
 			// get a reference
 			var optionsCodes = dialogue.find("input[type=checkbox]");
 			// add a listener
