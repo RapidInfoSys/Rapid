@@ -305,11 +305,12 @@ if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRe
 		<div id="selectionBorderBottom" class="selectionBorderInner"></div>
 	</div>
 	
-	<div id="selectionCover" style="display:none;position:absolute;left:0px;top:0px;z-index:10000;">
-		<div style="background-color:white;width:100%;height:100%;opacity:0.5;" ></div>
+	<div id="selectionCover">
+		<div></div>
 	</div>
 	
-	<div id="selectionInsertCover" class="selectionInsertCover" style="display:none;position:absolute;left:0px;top:0px;z-index:10000;">
+	<div id="selectionInsertCover">
+		<div></div>
 	</div>
 					
 	<img id="selectionMoveLeft" class="selectionCursor" src="images/moveLeft_32x32.png" />

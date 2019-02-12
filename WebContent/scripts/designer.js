@@ -3469,8 +3469,8 @@ $(document).on("mousemove", function(ev) {
 					_movedoverControl = c;
 					// position the insert cover
 					_selectionInsertCover.css({
-						"width": _movedoverControl.object.outerWidth() * _scale, 
-						"height": _movedoverControl.object.outerHeight() * _scale, 
+						"width": (_movedoverControl.object.outerWidth() - 10) * _scale, 
+						"height": (_movedoverControl.object.outerHeight() - 10) * _scale, 
 						"left": _movedoverControl.object.offset().left + _panelPinnedOffset, 	
 						"top": _movedoverControl.object.offset().top - _pageIframeWindow.scrollTop()
 					});

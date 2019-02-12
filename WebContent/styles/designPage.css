@@ -1,25 +1,25 @@
 html {
-		height: 100%;
-	}
-	
-	body {
-		transform-origin: 0 0;
-	}
-	
-	.pageLoading {
-		text-align: center;	
-		margin: 100px auto;
-		font-size: 20px;		
-		padding: 20px;
-		border: 4px solid black;
-		border-radius: 10px;
-		width: 300px;
-		background: white;
-		box-shadow: 5px 5px 5px #888;
-		font-family: Arial;
-		color: black;
-	}
-	
-	.pageLoading p {	
-		margin: 5px;
-	}
+	height: 100%;
+}
+
+body {
+	transform-origin: 0 0;
+}
+
+.pageLoading {
+	text-align: center;	
+	margin: 100px auto;
+	font-size: 20px;		
+	padding: 20px;
+	border: 4px solid black;
+	border-radius: 10px;
+	width: 300px;
+	background: white;
+	box-shadow: 5px 5px 5px #888;
+	font-family: Arial;
+	color: black;
+}
+
+.pageLoading p {	
+	margin: 5px;
+}
