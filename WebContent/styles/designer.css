@@ -731,7 +731,6 @@ Selection Styles
 .selectionInsertCover {
 	background-size: 30px 30px;
 	border: 1px solid rgba(106,148,220,0.1);
-	border-radius: 5px;
 }
 
 .selectionCursor {

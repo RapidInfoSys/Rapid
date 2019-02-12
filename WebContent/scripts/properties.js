@@ -2429,7 +2429,7 @@ function Property_childActionsForType(cell, propertyObject, property, details) {
 function Property_databaseQuery(cell, propertyObject, property, details) {
 	
 	// retrieve or create the dialogue
-	var dialogue = getDialogue(cell, propertyObject, property, details, 650, "Query", {sizeX: true});		
+	var dialogue = getDialogue(cell, propertyObject, property, details, 800, "Query", {sizeX: true});		
 	// grab a reference to the table
 	var table = dialogue.children().last().children().last();
 	// make sure its empty
@@ -2462,7 +2462,6 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 				 "<table  class='dialogueTable outputs outputTable'><tr><td><b>Field</b></td><td><b>Output</b></td><td></td></tr></table></div>" +
 				 "</td></tr>");
 	
-	
 	//Get the textAreaCell and append it
 	var queryCell = document.getElementById(dialogue.attr("id") + "_dbTextAreaCell");
 	var sqlEditor = CodeMirror(queryCell, {
@@ -2477,7 +2476,6 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 		  readOnly: false,
 		  autoRefresh: true
 		});
-	
 	
 	// find the inputs table
 	var inputsTable = table.find("table.inputs");

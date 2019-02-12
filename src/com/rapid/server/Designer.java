@@ -1670,191 +1670,202 @@ public class Designer extends RapidHttpServlet {
 
 								} else {
 
-									DatabaseConnection databaseConnection = application.getDatabaseConnections().get(index);
+									// get the sql
+									String sql = jsonQuery.optString("SQL",null);
 
-									ConnectionAdapter ca = databaseConnection.getConnectionAdapter(getServletContext(), application);
+									if (sql == null || sql.isEmpty()) {
 
-									DataFactory df = new DataFactory(ca);
-
-									int outputs = 0;
-
-									// if got some outputs reduce the check count for any duplicates
-									if (jsonOutputs != null) {
-										// start with full number of outputs
-										outputs = jsonOutputs.length();
-										// retain fields
-										List<String> fieldList = new ArrayList<>();
-										// loop outputs
-										for (int i = 0; i < jsonOutputs.length(); i++) {
-											// look for a field
-											String field = jsonOutputs.getJSONObject(i).optString("field", null);
-											// if we got one
-											if (field != null) {
-												// check if we have it already
-												if (fieldList.contains(field)) {
-													// we do so reduce the control count by one
-													outputs --;
-												} else {
-													// we don't have this field yet so remember
-													fieldList.add(field);
-												}
-											}
-										}
-									}
-
-									// get and trim the sql
-									String sql = jsonQuery.getString("SQL").trim();
-
-									// merge in any parameters
-									sql = application.insertParameters(getServletContext(), sql);
-
-									// some jdbc drivers need the line breaks removing before they'll work properly - here's looking at you MS SQL Server!
-									sql = sql.replace("\n", " ");
-
-									// placeholder for parameters we may need
-									Parameters parameters = null;
-
-									// if the query has inputs
-									if (jsonInputs != null) {
-
-										// make a parameters object to send
-										parameters = new Parameters();
-										// populate it with nulls
-										for (int i = 0; i < jsonInputs.length(); i++) parameters.addNull();
-
-									}
-
-									// check outputs
-									if (outputs == 0) {
-
-										// check verb
-										if (sql.toLowerCase().startsWith("select")) {
-											// select should have outputs
-											throw new Exception("Select statement should have at least one output");
-										} else {
-											// not a select so just prepare the statement by way of testing it
-											df.getPreparedStatement(rapidRequest,sql , parameters);
-										}
+										throw new Exception("SQL must be provided");
 
 									} else {
 
-										// check the verb
-										if (sql.toLowerCase().startsWith("select") || sql.toLowerCase().startsWith("with")) {
+										DatabaseConnection databaseConnection = application.getDatabaseConnections().get(index);
 
-											// get the prepared statement
-											PreparedStatement ps = df.getPreparedStatement(rapidRequest, sql, parameters);
+										ConnectionAdapter ca = databaseConnection.getConnectionAdapter(getServletContext(), application);
 
-											// execute the statement - required by Oracle, but not MS SQL
-											ps.execute();
+										DataFactory df = new DataFactory(ca);
 
-											// get the meta data
-											ResultSetMetaData rsmd = ps.getMetaData();
+										int outputs = 0;
 
-											// get the result columns
-											int cols = rsmd.getColumnCount();
+										// if got some outputs reduce the check count for any duplicates
+										if (jsonOutputs != null) {
+											// start with full number of outputs
+											outputs = jsonOutputs.length();
+											// retain fields
+											List<String> fieldList = new ArrayList<>();
+											// loop outputs
+											for (int i = 0; i < jsonOutputs.length(); i++) {
+												// look for a field
+												String field = jsonOutputs.getJSONObject(i).optString("field", null);
+												// if we got one
+												if (field != null) {
+													// check if we have it already
+													if (fieldList.contains(field)) {
+														// we do so reduce the control count by one
+														outputs --;
+													} else {
+														// we don't have this field yet so remember
+														fieldList.add(field);
+													}
+												}
+											}
+										}
 
-											// check there are enough columns for the outputs
-											if (outputs > cols) throw new Exception(outputs + " outputs, but only " + cols + " column" + (cols > 1 ? "s" : "") + " selected");
+										// trim the sql
+										sql = sql.trim();
 
-											// check the outputs
-											for (int i = 0; i < outputs; i++) {
+										// merge in any parameters
+										sql = application.insertParameters(getServletContext(), sql);
 
-												// get this output
-												JSONObject jsonOutput = jsonOutputs.getJSONObject(i);
+										// some jdbc drivers need the line breaks removing before they'll work properly - here's looking at you MS SQL Server!
+										sql = sql.replace("\n", " ");
 
-												// get the output field - it can be null or a blank space so this way we standardise on the blank
-												String field = jsonOutput.optString("field","");
+										// placeholder for parameters we may need
+										Parameters parameters = null;
 
-												// if there was one
-												if (!"".equals(field)) {
+										// if the query has inputs
+										if (jsonInputs != null) {
 
-													// lower case it
-													field = field.toLowerCase();
+											// make a parameters object to send
+											parameters = new Parameters();
+											// populate it with nulls
+											for (int i = 0; i < jsonInputs.length(); i++) parameters.addNull();
 
-													// assume we can't find a column for this output field
-													boolean gotOutput = false;
+										}
 
-													// loop the columns
-													for (int j = 0; j < cols; j++) {
+										// check outputs
+										if (outputs == 0) {
 
-														// look for a query column with the same name as the field
-														String sqlField = rsmd.getColumnLabel(j + 1).toLowerCase();
+											// check verb
+											if (sql.toLowerCase().startsWith("select")) {
+												// select should have outputs
+												throw new Exception("Select statement should have at least one output");
+											} else {
+												// not a select so just prepare the statement by way of testing it
+												df.getPreparedStatement(rapidRequest,sql , parameters);
+											}
 
-														// if we got one
-														if (field.equals(sqlField)) {
-															// remember
-															gotOutput = true;
-															// we're done
-															break;
+										} else {
+
+											// check the verb
+											if (sql.toLowerCase().startsWith("select") || sql.toLowerCase().startsWith("with")) {
+
+												// get the prepared statement
+												PreparedStatement ps = df.getPreparedStatement(rapidRequest, sql, parameters);
+
+												// execute the statement - required by Oracle, but not MS SQL
+												ps.execute();
+
+												// get the meta data
+												ResultSetMetaData rsmd = ps.getMetaData();
+
+												// get the result columns
+												int cols = rsmd.getColumnCount();
+
+												// check there are enough columns for the outputs
+												if (outputs > cols) throw new Exception(outputs + " outputs, but only " + cols + " column" + (cols > 1 ? "s" : "") + " selected");
+
+												// check the outputs
+												for (int i = 0; i < outputs; i++) {
+
+													// get this output
+													JSONObject jsonOutput = jsonOutputs.getJSONObject(i);
+
+													// get the output field - it can be null or a blank space so this way we standardise on the blank
+													String field = jsonOutput.optString("field","");
+
+													// if there was one
+													if (!"".equals(field)) {
+
+														// lower case it
+														field = field.toLowerCase();
+
+														// assume we can't find a column for this output field
+														boolean gotOutput = false;
+
+														// loop the columns
+														for (int j = 0; j < cols; j++) {
+
+															// look for a query column with the same name as the field
+															String sqlField = rsmd.getColumnLabel(j + 1).toLowerCase();
+
+															// if we got one
+															if (field.equals(sqlField)) {
+																// remember
+																gotOutput = true;
+																// we're done
+																break;
+															}
+
+														}
+
+														// if we didn't get this output
+														if (!gotOutput) {
+															ps.close();
+															df.close();
+															throw new Exception("Field \"" + field + "\" from output " + (i + 1) + " is not present in selected columns");
 														}
 
 													}
 
-													// if we didn't get this output
-													if (!gotOutput) {
-														ps.close();
-														df.close();
-														throw new Exception("Field \"" + field + "\" from output " + (i + 1) + " is not present in selected columns");
-													}
-
 												}
 
-											}
+												// close the recordset
+												ps.close();
+												// close the data factory
+												df.close();
 
-											// close the recordset
-											ps.close();
-											// close the data factory
-											df.close();
+											} else if (sql.toLowerCase().startsWith("exec")) {
 
-										} else if (sql.toLowerCase().startsWith("exec")) {
-
-											//  get the prepared statement to check the parameters
-											df.getPreparedStatement(rapidRequest, sql, parameters);
-
-										} else {
-
-											// get the prepared statement to check the parameters
-											df.getPreparedStatement(rapidRequest, sql, parameters);
-
-											// check the verb
-											if (sql.toLowerCase().startsWith("insert") || sql.toLowerCase().startsWith("update")) {
-
-												// loop the outputs
-												for (int i = 0; i < outputs; i++) {
-
-													// get the output
-													JSONObject jsonOutput = jsonOutputs.getJSONObject(i);
-
-													// get it's field, if present
-													String field = jsonOutput.optString("field","");
-
-													// if we got a field
-													if (!"".equals(field)) {
-
-														field = field.toLowerCase();
-
-														if (!"rows".equals(field)) throw new Exception("Field \"" + field + "\" from output " + (i + 1) + " can only be \"rows\"");
-
-													}
-
-												}
+												//  get the prepared statement to check the parameters
+												df.getPreparedStatement(rapidRequest, sql, parameters);
 
 											} else {
 
-												throw new Exception("SQL statement not recognised");
+												// get the prepared statement to check the parameters
+												df.getPreparedStatement(rapidRequest, sql, parameters);
 
+												// check the verb
+												if (sql.toLowerCase().startsWith("insert") || sql.toLowerCase().startsWith("update")) {
+
+													// loop the outputs
+													for (int i = 0; i < outputs; i++) {
+
+														// get the output
+														JSONObject jsonOutput = jsonOutputs.getJSONObject(i);
+
+														// get it's field, if present
+														String field = jsonOutput.optString("field","");
+
+														// if we got a field
+														if (!"".equals(field)) {
+
+															field = field.toLowerCase();
+
+															if (!"rows".equals(field)) throw new Exception("Field \"" + field + "\" from output " + (i + 1) + " can only be \"rows\"");
+
+														}
+
+													}
+
+												} else {
+
+													throw new Exception("SQL statement not recognised");
+
+												}
 											}
+
 										}
 
-									}
+										// send a positive message
+										output = "{\"message\":\"OK\"}";
 
-									// send a positive message
-									output = "{\"message\":\"OK\"}";
+										// set the response type to json
+										response.setContentType("application/json");
 
-									// set the response type to json
-									response.setContentType("application/json");
+									} // sql check
 
-								}
+								} // connection check
 
 							} else if ("uploadImage".equals(rapidRequest.getActionName()) || "import".equals(rapidRequest.getActionName())) {
 
