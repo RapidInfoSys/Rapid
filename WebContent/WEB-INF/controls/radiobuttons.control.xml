@@ -32,7 +32,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    <name>Radio buttons</name>
 	    <image>images/radiobutton_24x24.png</image>
 	    <category>Form controls</category>
-	    <helpHtml>An essential control for forms, the radio button control will place a set of buttons on the page, where users can select one of the available options. It is possible to have more than 2 options available, and different radio button controls can be linking together by giving them the same group.</helpHtml>
+	    <helpHtml>A list of options in which only one can be selected.</helpHtml>
 	    
 	    <addToNewApplications>true</addToNewApplications>
 	    <addToNewResponsiveApplications>false</addToNewResponsiveApplications>

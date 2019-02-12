@@ -31,7 +31,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
         <type>navigate</type>
         <name>Navigate</name>
 	    <class>com.rapid.actions.Navigate</class>
-	    <helpHtml>This action allows you to traverse to different pages on your application. Pages can also be shown as a dialogue box, meaning they can display over your current page. This is particularly useful for displaying pages where you do not want to navigate away from your current page whilst wishing to take data from another.</helpHtml>
+	    <helpHtml>Takes the user to another page, or url, in the same tab or as a dialogue box.</helpHtml>
 	    
 	    <addToNewApplications>true</addToNewApplications>
 	    <addToNewFormApplications>false</addToNewFormApplications>

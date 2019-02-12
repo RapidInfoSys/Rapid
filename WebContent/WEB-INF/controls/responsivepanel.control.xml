@@ -32,7 +32,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    <name>Responsive panel</name>
 	    <image>images/responsivepanel_24x24.png</image>
 	    <category>Responsive controls</category>
-	    <helpHtml>A version of the panel control that offers responsive design through the use of a set of dropdowns. The different values will alter the width of the panel, along with all of the controls within, depending on the page size. Pages are broken into grids 12 columns wide.</helpHtml>
+	    <helpHtml>A control that groups other controls together into a box. It resizes with screen-width and moves down if it gets too small.</helpHtml>
 	    
 	    <addToNewResponsiveApplications>true</addToNewResponsiveApplications>
 	    

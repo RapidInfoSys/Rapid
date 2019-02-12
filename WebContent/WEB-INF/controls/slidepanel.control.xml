@@ -30,7 +30,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    <type>slidePanel</type>
 	    <name>Slide panel</name>
 	    <image>images/slidepanel_24x24.png</image>
-	    <helpHtml>The slide panel control displays a small bar menu that can have other controls placed inside of it. A common way to use it is to place styled panels inside of it, and place text controls and glyph controls within the panels that lead to other pages. The slide panel pane is contained within a parent slide panel object. When open, the slide panel pane is what holds other controls. Remember to close the slide panel pane before saving the page, otherwise it will remain open on any page it is present on.</helpHtml>
+	    <helpHtml>A button that displays a customisable panel when clicked.</helpHtml>
 	    
 	    <dependentTypes>
 	        <dependentType>slidePanelPane</dependentType>

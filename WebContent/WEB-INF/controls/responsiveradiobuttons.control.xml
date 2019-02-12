@@ -32,7 +32,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    <name>Responsive radio buttons</name>
 	    <image>images/responsiveradiobutton_24x24.png</image>
 	    <category>Responsive controls</category>
-	    <helpHtml>A version of the radio button control that offers responsive design. This control will alter its size based on the parent control it is in, as well as alter to suit the screen size it is viewed on.</helpHtml>
+	    <helpHtml>A list of options in which only one can be selected. It resizes with screen-width and moves down if it gets too small.</helpHtml>
 	    
 	   <addToNewResponsiveApplications>true</addToNewResponsiveApplications>
 	     

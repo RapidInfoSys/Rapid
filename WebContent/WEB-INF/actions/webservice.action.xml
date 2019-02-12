@@ -32,7 +32,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
         <name>Webservice</name>
 	    <class>com.rapid.actions.Webservice</class>
 	    <image>images/webservice_24x24.png</image>
-	    <helpHtml>Used for computer to computer communication, the webservice action allows you to set the request type to SOAP, restful XML or JSON. SOAP follows a strict set of rules which must be met in order for a request to go through, restful XML is less strict, and JSON has no set of rules but will block the request if it is unsuccessful..</helpHtml>
+	    <helpHtml>Makes SOAP, restful XML or JSON requests to a webservice and outputs the result to controls.</helpHtml>
 	    
 	    <addToNewApplications>true</addToNewApplications>
 	    <canUseWorkflow>true</canUseWorkflow>

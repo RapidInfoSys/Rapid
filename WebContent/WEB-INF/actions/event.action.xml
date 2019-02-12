@@ -31,7 +31,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
         <type>event</type>
         <name>Event</name>
 	    <class>com.rapid.actions.Event</class>
-	    <helpHtml>This action offers a complete list of all available events on the page. Selecting any event from this action will trigger all of the associated actions on that particular event.</helpHtml>
+	    <helpHtml>Fires an event on a control, triggering all its actions.</helpHtml>
 	    
 	    <addToNewApplications>false</addToNewApplications>
 	    	    	    	    

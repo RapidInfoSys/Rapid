@@ -32,7 +32,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    <name>Responsive input box</name>
 	    <image>images/responsiveinput_24x24.png</image>
 	    <category>Responsive controls</category>
-	    <helpHtml>A version of the input control that offers responsive design. This control will alter its size based on the parent control it is in, as well as alter to suit the screen size it is viewed on.</helpHtml>
+	    <helpHtml>A single-line text box that accepts text, numbers, etc. It resizes with screen-width and moves down if it gets too small.</helpHtml>
 	    
 	    <addToNewResponsiveApplications>true</addToNewResponsiveApplications>
 	          

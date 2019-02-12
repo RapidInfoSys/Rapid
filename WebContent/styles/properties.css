@@ -36,8 +36,8 @@ table.propertiesPanelTable  {
 .propertiesPanelTable td:first-child:not(.propertyHeader) {
 	padding-left: 5px;
 	padding-right: 19px;
-	padding-top: 2px;
-    padding-bottom: 0;
+	padding-top: 4px;
+    padding-bottom: 2px;
     width:45%;
 }
 
@@ -119,6 +119,15 @@ table.propertiesPanelTable  {
 
 .propertiesPanelTable td.propertyAdd {
 	padding: 0;
+}
+
+.propertiesPanelTable.propertiesDialogueTable tr:hover td {
+	background: #D5D6D2;
+	font-weight: bold;
+}
+
+.propertiesPanelTable.propertiesDialogueTable tr:hover input:hover, .propertiesPanelTable.propertiesDialogueTable tr:hover select:hover {
+	background: #e9eae6;
 }
 
 .propertyAdd select {
@@ -243,7 +252,7 @@ div.propertyDialogue {
   	-moz-user-select: -moz-none;
   	-ms-user-select: none;
   	user-select: none;
-	box-shadow: -1px 0px 5px 1px #9D9D9D;
+	box-shadow: 0 0 6px 1px rgba(0, 0, 0, 0.4);
 }
 
 .propertyDialogue span {
@@ -308,7 +317,7 @@ td.propertySubHeader {
 	font-size: 11px;
 }
 
-.dialogueTable tr:not(:first-child):not(:last-child) td:not(:last-child) {
+.dialogueTable tr:not(:first-child) td:not(:last-child) {
 	border: 1px solid silver;
 }
 
@@ -320,12 +329,33 @@ td.propertySubHeader {
 	vertical-align:top;
 	box-sizing: border-box;
 	transition: background 0.3s ease;
-	max-width: 50px;
 	padding: 0;
 }
 
 .dialogueTable td:last-child {
 	width: 45px;
+	overflow: visible;
+}
+
+.dialogueTable.dialogueTableNoDelete td:last-child {
+	width: auto;
+	overflow: visible;
+}
+
+
+table.inputTable.dialogueTable td:not(:last-child),
+table.outputTable.dialogueTable td:not(:last-child) {
+	width: 50%;
+}
+
+table.inputTable.dialogueTable td:first-child {
+	width: 25px;
+}
+
+table.inputTable.dialogueTable td:last-child,
+table.outputTable.dialogueTable td:last-child {
+	width: 45px;
+	padding-left: 8px;
 }
 
 .dialogueTable select:hover, .dialogueTable input:hover{
@@ -333,6 +363,7 @@ td.propertySubHeader {
 }
 
 .dialogueTable input:not([type]) {
+	box-sizing: border-box;
 	width: 100%;
 	height: 100%;
 	border: none;
@@ -396,6 +427,11 @@ table.inputs tr td:last-child, table.outputs tr td:last-child  {
 	border: 0;
 }
 
+.dialogueTableWhiteBackgroundText tr:not(:first-child) td:not(:last-child) {
+	background: white;
+	padding: 0 3px;
+}
+
 .inputTableWithTitles tr:first-child td:not(:last-child) {
 	text-align:center;
 }
@@ -408,17 +444,23 @@ table.inputs tr td:last-child, table.outputs tr td:last-child  {
 	max-width: unset;
 }
 
-.inputTableWithTitles tr td:nth-child(6) {
-	width: 130px;	
+.inputTableWithTitles tr td:nth-child(6) span {
+	padding-left: 8px;
+	padding-right: 3px;
 }
 
-.inputTableWithTitles tr td:nth-child(7), .inputTableWithTitles tr td:last-child {
-	width: 50px;
-	max-width: 50px;
+.inputTableWithTitles tr:not(:nth-child(1)) td:nth-child(7) {
+	padding-right: 6px;
+	padding-top: 4px;
 }
 
-.inputTableWithTitles tr td:nth-child(7):hover {
+.inputTableWithTitles tr td:nth-child(6):hover, .inputTableWithTitles tr td:nth-child(7):hover {
 	background: #e6e6e6;
+}
+
+/* distribute the remaining width over the first 4 non-sized columns */
+.inputTableWithTitles td:not(:first-child):not(:last-child) {
+	width: 25%;
 }
 
 td.center {

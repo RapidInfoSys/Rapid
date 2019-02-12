@@ -31,7 +31,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    <type>pagePanel</type>
 	    <name>Page panel</name>
 	    <image>images/page_24x24.png</image>
-	    <helpHtml>This control gives you the capability of displaying a whole page onto another. This is especially useful for displaying pages that are supposed to be re-used on multiple pages, such as menus, headers and footers.</helpHtml>
+	    <helpHtml>Displays another page within the current one.</helpHtml>
 	    
 	    <addToNewApplications>false</addToNewApplications>
 	    

@@ -31,7 +31,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
         <type>maths</type>
         <name>Maths</name>
 	    <class>com.rapid.actions.Maths</class>
-	    <helpHtml>This action performs basic maths operations on given control values.</helpHtml>
+	    <helpHtml>Reads data from two controls, performs a mathematical operation, and writes the result to another control.</helpHtml>
 	    
 	    <addToNewApplications>true</addToNewApplications>
 	    <canUseWorkflow>true</canUseWorkflow>

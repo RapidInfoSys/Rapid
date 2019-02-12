@@ -19,7 +19,7 @@
 		<type>downloadCSV</type>
 		<name>Download CSV</name>
 		<class>com.rapid.actions.DownloadCSV</class>
-		<helpHtml>Downloads the data in a grid control to a .csv file</helpHtml>
+		<helpHtml>Downloads a grid as a .csv file.</helpHtml>
 
 		<properties>
 		

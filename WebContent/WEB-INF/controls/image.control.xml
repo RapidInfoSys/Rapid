@@ -31,7 +31,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    <type>image</type>
 	    <name>Image</name>
 	    <image>images/image_24x24.png</image>
-	    <helpHtml>A simple control that adds an image onto your app. This image can be uploaded from your file directories and can have alt text for screen readers.</helpHtml>
+	    <helpHtml>An image with Alt text for screen readers.</helpHtml>
 	    
 	    <addToNewApplications>true</addToNewApplications>
 	    <noDefaultName>true</noDefaultName>

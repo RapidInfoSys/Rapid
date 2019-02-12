@@ -31,7 +31,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
         <type>glyph</type>
         <name>Glyph</name>
         <image>images/glyph_24x24.png</image>
-        <helpHtml>A simple control that adds a small image onto your app. Due to the extensive amount of glyphs available it is very easy to find a glyph that can illustrate a point. Works well in conjunctions with the flow layout control and the slide panel control.</helpHtml>
+        <helpHtml>Displays an icon or symbol.</helpHtml>
         
         <addToNewApplications>true</addToNewApplications>
         <noDefaultName>true</noDefaultName>

@@ -31,7 +31,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    <type>map</type>
 	    <name>Map</name>
 	    <image>images/map_24x24.png</image>
-	    <helpHtml>A control that hooks into Google's map system, the map control works just as you'd expect. This control has access to setting a longitude and a latitude, a zoom level, and restricting what attributes are available on the map, such as toggling street view and the map type.</helpHtml>
+	    <helpHtml>An interactive map that displays a location.</helpHtml>
 	    
 	    <addToNewApplications>false</addToNewApplications>
 	         

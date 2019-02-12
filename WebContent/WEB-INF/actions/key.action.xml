@@ -31,7 +31,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
         <type>key</type>        
         <name>Key</name>	        
 	    <class>com.rapid.actions.Key</class>
-	    <helpHtml>This action checks key events and runs child actions accordingly. If added to the page it will listen to all page key down events.</helpHtml>
+	    <helpHtml>Runs actions when the user presses a specified key.</helpHtml>
 	    
 	    <addToNewApplications>true</addToNewApplications>
 	     	    	

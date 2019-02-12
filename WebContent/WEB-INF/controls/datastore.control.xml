@@ -31,7 +31,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    <type>dataStore</type>
 	    <name>Data store</name>
 	    <image>images/datastore_24x24.png</image>
-	    <helpHtml>A very powerful control that can store a multitude of information. Date within the datastore control can be accessed from all pages, and it is especially useful for populating controls with data that has been logged and stored previously, or taken from a database.</helpHtml>
+	    <helpHtml>An invisible control that actions can read from and write data to.</helpHtml>
 	    
 	    <addToNewApplications>true</addToNewApplications>
 	    

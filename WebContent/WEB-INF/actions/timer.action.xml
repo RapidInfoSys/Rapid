@@ -31,7 +31,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
         <type>timer</type>
         <name>Timer</name>
 	    <class>com.rapid.actions.Timer</class>
-	    <helpHtml>This action adds a delay to other actions, making them occur after a pre-determined period of time, defaulting to 1 second. This can also be set to repeat. This can be useful for making users wait whilst a back-end change takes place.</helpHtml>
+	    <helpHtml>Runs an action after a specified delay or interval.</helpHtml>
 	    
 	    <properties>
 	        

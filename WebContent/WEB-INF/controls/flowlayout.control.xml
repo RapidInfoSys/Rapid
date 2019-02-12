@@ -30,7 +30,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    <type>flowLayout</type>
 	    <name>Flow layout</name>
 		<image>images/flow_24x24.png</image>
-		<helpHtml>Most effective for mobile and tablet devices, the flow layout control excels at displaying multiple controls side by side with responsive design. Each cell can be copied in order to gain more and place a variety of controls inside of them, and all cells can be stylised using CSS. Each flow layout cell is contained within a single parent flow layout object.</helpHtml>
+		<helpHtml>A group of cells that resize with screen-width and reflow if they get too small.</helpHtml>
 	    
 	    <dependentTypes>
 	        <dependentType>flowLayoutCell</dependentType>

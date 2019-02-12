@@ -31,7 +31,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
         <type>existing</type>
         <name>Existing</name>
 	    <class>com.rapid.actions.Existing</class>
-	    <helpHtml>Enables you to call an existing event on that specific page. If the event being referenced here is removed then it will display as a blank event, meaning you are free to delete or change the event target as the previous one is no longer present.</helpHtml>
+	    <helpHtml>Triggers an action defined on another control.</helpHtml>
 	    
 	    <addToNewApplications>true</addToNewApplications>
 

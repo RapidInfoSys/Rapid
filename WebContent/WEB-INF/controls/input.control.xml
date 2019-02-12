@@ -32,7 +32,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    <name>Input box</name>
 	    <image>images/input_24x24.png</image>
 	    <category>Form controls</category>
-	    <helpHtml>A vital control that enables users of your app to enter data. The input control can have it's data stored and can also be data copied into to display previously stored information. An initial value and placeholder can also be set, giving users and idea of what is supposed to go in the input. The type of input can also be specified, such as numbers, emails and passwords.</helpHtml>
+	    <helpHtml>A single-line text box that accepts text, numbers, email addresses, or passwords.</helpHtml>
 	    
 	    <addToNewApplications>true</addToNewApplications>
 	    <addToNewResponsiveApplications>false</addToNewResponsiveApplications>

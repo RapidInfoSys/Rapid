@@ -31,7 +31,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
         <type>validation</type>
         <name>Validation</name>
 	    <class>com.rapid.actions.Validation</class>
-	    <helpHtml>This action lets you set benchmarks for carrying out operations. Similar to the Logic action, this action will actively stop further actions from executing until an action is met. A pass action will resume the given action if it is met, such as moving to the next page of a form, and a fail action will keep the user on the same page and trigger some kind of change, such as displaying a validation error.</helpHtml>
+	    <helpHtml>Checks the validation of controls and runs different actions whether the controls all pass or not.</helpHtml>
 	    
 	    <addToNewApplications>true</addToNewApplications>
 	    

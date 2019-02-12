@@ -31,7 +31,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
         <type>form</type>
         <name>Form</name>
 	    <class>com.rapid.actions.Form</class>
-	    <helpHtml>Only available for Rapid forms, this action will allow you to carry out a specific form action, such as logically progressing from one page to the next on your form.</helpHtml>
+	    <helpHtml>Runs specialised actions for Rapid forms (next page, show summary, download .pdf, etc.).</helpHtml>
 	    
 	    <addToNewApplications>false</addToNewApplications>
 	    <addToNewFormApplications>true</addToNewFormApplications>

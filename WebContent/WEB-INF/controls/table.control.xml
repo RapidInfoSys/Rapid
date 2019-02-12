@@ -30,7 +30,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    <type>table</type>
 	    <name>Table</name>
 	    <image>images/table_24x24.png</image>
-	    <helpHtml>The table control allows you to enter data or controls into each cell. Options for setting the cell column span and row span are also available. The table control is split into rows and cells, contained within a parent table object. Each one can have a name given to it, however only the cell has text, and spans for columns and rows..</helpHtml>
+	    <helpHtml>Displays grid of cells for tabular data.</helpHtml>
 	    
 	    <dependentTypes>
 	        <dependentType>tableCell</dependentType>

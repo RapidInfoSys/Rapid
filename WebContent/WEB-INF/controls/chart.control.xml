@@ -31,7 +31,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    <type>chart</type>
 	    <name>Chart</name>
 	    <image>images/chart_24x24.png</image>
-	    <helpHtml>A control that incorporates Google's Javascript charts, this control is very useful for displaying data in a number of different styles. With plenty of options to get you started, you can create very detailed, personalised charts easily. Works best when data is copied into it.</helpHtml>
+	    <helpHtml>Displays tabular data as a Line graph, Bar graph, or Pie chart.</helpHtml>
 	    
 	    <addToNewApplications>false</addToNewApplications>
 	         

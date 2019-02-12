@@ -31,7 +31,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    <type>score</type>
 	    <name>Score</name>
 	    <image>images/score_24x24.png</image>
-	    <helpHtml>The score control is useful for letting users select from a range of values to vote on a given point. This control is best used for displaying single characters, such as a letter or a number. This control can also be stylised using CSS, and appears differently depending on the theme chosen.</helpHtml>
+	    <helpHtml>A horizontal list of letters or numbers that the user can select.</helpHtml>
 	   	
 	    <addToNewMobileApplications>true</addToNewMobileApplications>
 	    

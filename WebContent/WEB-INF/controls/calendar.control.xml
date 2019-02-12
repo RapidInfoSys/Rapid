@@ -31,7 +31,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    <type>calendar</type>
 	    <name>Calendar</name>
 	    <image>images/calendar_24x24.png</image>
-	    <helpHtml>This control will generate a calendar on your app. The calendar control is handy for selecting a single point in time, with the capability to register itself as today's date by default.</helpHtml>
+	    <helpHtml>Displays and lets the users select a date from a month view.</helpHtml>
 	    
 	    <addToNewApplications>false</addToNewApplications>
 	         

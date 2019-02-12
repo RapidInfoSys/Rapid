@@ -32,7 +32,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    <name>Date</name>
 	    <image>images/date_24x24.png</image>
 	    <category>Form controls</category>
-	    <helpHtml>Similar to the calendar control, the date control excels at allowing users to enter a more personalised date, in a more stylised way over the calendar control. The date control can have a variety of different formats, have a pre-set value, can block manual data entry, and more.</helpHtml>
+	    <helpHtml>Lets the user type or select a date from a calendar.</helpHtml>
 	    
 	    <addToNewApplications>true</addToNewApplications>
 	    <addToNewResponsiveApplications>false</addToNewResponsiveApplications>

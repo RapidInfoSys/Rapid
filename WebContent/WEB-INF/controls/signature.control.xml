@@ -31,7 +31,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    <type>signature</type>
 	    <name>Signature</name>
 	    <image>images/signature_24x24.png</image>
-	    <helpHtml>Most useful for mobile and tablet devices, the signature control places a small canvas on the app that can be drawn on by users. There are also options to set the pen thickness and colour.</helpHtml>
+	    <helpHtml>A panel the user can draw on with a range of pen types.</helpHtml>
 	    
 	    <addToNewMobileApplications>true</addToNewMobileApplications>
 	    

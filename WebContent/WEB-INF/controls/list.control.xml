@@ -31,7 +31,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    <type>list</type>
 	    <name>List</name>
 	    <image>images/list_24x24.png</image>
-	    <helpHtml>A control that is useful for mobile apps, the list control acts as an open drop down list, with the capability of selecting more than one option.</helpHtml>
+	    <helpHtml>A verticle list of options that can be selected with a click.</helpHtml>
 	    
 	    <addToNewApplications>false</addToNewApplications>
 	        

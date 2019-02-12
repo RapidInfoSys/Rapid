@@ -31,7 +31,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    <type>panel</type>
 	    <name>Panel</name>
 	    <image>images/panel_24x24.png</image>
-	    <helpHtml>The panel control is used to display controls inside of it. Panels can have text within them and can also have user roles set so only certain users can see them. Panels can be completely stylised, and the themes in Rapid offer a variety of different panel options to suit your app.</helpHtml>
+	    <helpHtml>A control that groups other controls together for layout and logic rules.</helpHtml>
 	    
 	    <addToNewApplications>true</addToNewApplications>
 	    <addToNewResponsiveApplications>false</addToNewResponsiveApplications>

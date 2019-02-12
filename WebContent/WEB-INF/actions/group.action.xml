@@ -31,7 +31,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
         <type>group</type>
         <name>Group</name>
 	    <class>com.rapid.actions.Group</class>
-	    <helpHtml>Enables multiple action calls in a single event. This is useful for when you want to trigger many events without taking up a lot of space. Related actions can be recalled, be formed in logical groups and can be reused in a single step. Grouped actions are also useful for page reuse events.</helpHtml>
+	    <helpHtml>Combines a list of actions into a group. Often used by an Existing action.</helpHtml>
 	      
 	    <properties>
 	        	        
