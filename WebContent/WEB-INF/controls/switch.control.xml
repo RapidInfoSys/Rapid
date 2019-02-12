@@ -32,7 +32,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    <name>Switch</name>
 	    <image>images/checkbox_24x24.png</image>
 	    <category>Form controls</category>
-	    <helpHtml>A stylish switch control which animates when toggled on or off.</helpHtml>
+	    <helpHtml>A labelled control that toggles on and off when clicked.</helpHtml>
 	         
 	    <canUserAdd>true</canUserAdd>
 	    <canUserMove>true</canUserMove>

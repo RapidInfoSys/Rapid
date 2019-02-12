@@ -30,7 +30,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    <type>tabGroup</type>	    
 	    <name>Tabs</name>	    
 	    <image>images/tabs_24x24.png</image>
-	    <helpHtml>The tabs control provides a number of panels arranged on top of each other. The user selects which is visible by selecting from a tab at the top, or side.</helpHtml>
+	    <helpHtml>A stack of panels the user can select from.</helpHtml>
 	    
 	    <dependentTypes>
 	        <dependentType>tabPanel</dependentType>

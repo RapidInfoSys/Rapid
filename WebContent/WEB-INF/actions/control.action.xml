@@ -31,7 +31,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
         <type>control</type>        
         <name>Control</name>	        
 	    <class>com.rapid.actions.Control</class>
-	    <helpHtml>This action runs common jQuery methods against specific controls. There is a wide variety of actions to choose from, such as toggling whether the control is visible or not, sliding things into view and creating your own custom action using jQuery.</helpHtml>
+	    <helpHtml>Changes a property of a control or the page.</helpHtml>
 	    
 	    <addToNewApplications>true</addToNewApplications>
 	     

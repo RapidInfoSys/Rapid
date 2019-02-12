@@ -32,7 +32,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    <name>Drop down</name>
 	    <image>images/dropdown_24x24.png</image>
 	    <category>Form controls</category>
-	    <helpHtml>A simple control that places a drop down list on the page. These can be especially helpful for allowing users of your app to select from a multitude of options.</helpHtml>
+	    <helpHtml>Lets the user select from a list of options when clicked.</helpHtml>
 	    
 	    <addToNewApplications>true</addToNewApplications>
 	    <addToNewResponsiveApplications>false</addToNewResponsiveApplications>

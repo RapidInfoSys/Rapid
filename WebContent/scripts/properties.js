@@ -1430,7 +1430,7 @@ function Property_galleryImages(cell, gallery, property, details) {
 	}
 	
 	// append the drop down for existing images
-	table.append("<tr><td  style='text-align:center;'>Url</td>" + (gallery.gotCaptions ? "<td  style='text-align:center;'>Caption</td>" : "") + "</tr>");
+	table.append("<tr><td  style='text-align:center;'>Url</td>" + (gallery.gotCaptions ? "<td  style='text-align:center;'>Caption</td>" : "") + "<td></td></tr>");
 	
 	// loop the images
 	for (var i in images) {
@@ -1439,7 +1439,7 @@ function Property_galleryImages(cell, gallery, property, details) {
 		// set caption to empty string if not set
 		if (!image.caption) image.caption = "";
 		// append
-		table.append("<tr><td><input class='url' value='" + escapeApos(image.url) + "' style='max-width:none;width:100%;' /></td>" + (gallery.gotCaptions ? "<td><input class='caption' value='" + escapeApos(image.caption) + "' /></td>" : "") + "<td style='width:45px'>" +
+		table.append("<tr><td><input class='url' value='" + escapeApos(image.url) + "' /></td>" + (gallery.gotCaptions ? "<td><input class='caption' value='" + escapeApos(image.caption) + "' /></td>" : "") + "<td>" +
 				"<div class='iconsPanel'>" +
 				"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
 				"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div>" +
@@ -1489,32 +1489,37 @@ function Property_galleryImages(cell, gallery, property, details) {
 	addListener( table.find("div.delete").click( function (ev) {
 		// add undo
 		addUndo();
-		// get the image
-		var img = $(ev.target);
-		// remove the image at this location
-		images.splice(img.index() - 1);
-		// update html 
-		rebuildHtml(gallery);
+		// get the row
+		var row = $(this).closest("tr");
+		// remove the image at this position
+		images.splice(row.index() - 1, 1);
+		// remove the row
+		row.remove();
+		// rebuild the gallery html
+		rebuildHtml(gallery); 
 		// update the dialogue;
 		Property_galleryImages(cell, gallery, property, details);
 	}));
 	
-	// append add
-	table.append("<tr><td colspan='3'><span class='propertyAction'>add...</span></td></tr>");
-	
-	// add listener
-	addListener( table.find("span.propertyAction").click( function (ev) {
-		// add an image
-		images.push({url:""});
-		// refresh dialogue
-		Property_galleryImages(cell, gallery, property, details);
-	}));
+	// check we don't have a checkbox already
+	if (!dialogue.find("input[type=checkbox]")[0]) {
+		// append add
+		table.after("<span class='propertyAction'>add...</span>");
+		
+		// add listener
+		addListener( dialogue.find("span.propertyAction").click( function (ev) {
+			// add an image
+			images.push({url:""});
+			// refresh dialogue
+			Property_galleryImages(cell, gallery, property, details);
+		}));
+	}
 			
 	// check we don't have a checkbox already
 	if (!dialogue.find("input[type=checkbox]")[0]) {
 		
 		// append caption check box
-		dialogue.append("<tr><td colspan='3'><input type='checkbox' " + (gallery.gotCaptions ? "checked='checked'" : "") + " /> captions</td></tr>");
+		table.after("<div style='padding: 5px 0;'><label><input type='checkbox' " + (gallery.gotCaptions ? "checked='checked'" : "") + "/>captions</label></div>");
 		
 		// captions listener
 		addListener( dialogue.find("input[type=checkbox]").click( function (ev) {
@@ -1722,6 +1727,8 @@ function Property_validationControls(cell, propertyObject, property, details) {
 	
 	// add listeners to the delete image
 	addListener( table.find("div.delete").click( function(ev) {
+		// add undo
+		addUndo();
 		// get the row
 		var row = $(this).closest("tr");
 		// remove the control
@@ -2418,7 +2425,7 @@ function Property_childActionsForType(cell, propertyObject, property, details) {
 						
 }
 
-// this is a dialogue to specify the inputs, sql, and outputs for the database action
+//this is a dialogue to specify the inputs, sql, and outputs for the database action
 function Property_databaseQuery(cell, propertyObject, property, details) {
 	
 	// retrieve or create the dialogue
@@ -2427,6 +2434,8 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 	var table = dialogue.children().last().children().last();
 	// make sure its empty
 	table.children().remove();
+	// remove the class for the master table
+	table.parent().removeClass("dialogueTable");
 		
 	// initialise the query object if need be
 	if (!propertyObject.query) propertyObject.query = {inputs:[], sql:"select field1, field2\nfrom table\nwhere field3 = ?", databaseConnectionIndex: 0, outputs:[]};
@@ -2441,14 +2450,16 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 	
 	// add inputs table, sql, and outputs table
 	table.append("<tr>" +
-				 "<td colspan='2' style='padding:0px;vertical-align: top;'>" +
-				 "<div class='overflowDiv'><table class='dialogueTable inputs'><tr><td style='width: 20px;'></td><td><b>Input</b></td><td colspan='2'><b>Field</b></td></tr></table></div>" +
+				 "<td style='padding:0px;vertical-align:top;width:30%;'>" +
+				 "<div class='overflowDiv'>" + 
+				 "<table class='dialogueTable inputs inputTable'><tr><td></td><td><b>Input</b></td><td><b>Field</b></td><td></td></tr></table></div>" +
 				 "</td>" +
-				 "<td id='" + dialogue.attr("id") + "_dbTextAreaCell' colspan='3' style='width:50%;padding:2px 10px 0 10px;'>" +
+				 "<td id='" + dialogue.attr("id") + "_dbTextAreaCell' style=';padding:2px 10px 0 10px;'>" +
 				 "<b>SQL</b><br/>" +
 				 "</td>" +
-				 "<td colspan='2' rowspan='3' style='padding:0px;vertical-align: top;'>" +
-				 "<div class='overflowDiv'><table  class='dialogueTable outputs'><tr><td><b>Field</b></td><td colspan='2'><b>Output</b></td></tr></table></div>" +
+				 "<td style='padding:0px;vertical-align:top;width:30%;'>" +
+				 "<div class='overflowDiv'>" + 
+				 "<table  class='dialogueTable outputs outputTable'><tr><td><b>Field</b></td><td><b>Output</b></td><td></td></tr></table></div>" +
 				 "</td></tr>");
 	
 	
@@ -2534,7 +2545,7 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 		}));
 	} else {
 		// add the add input select
-		inputsTable.append("<tr><td style='padding:0px;' colspan='3'><select style='margin:0px'><option value=''>add input...</option>" + getInputOptions() + "</select></td><td>&nbsp;</td></tr>");
+		inputsTable.append("<tr><td style='padding:0px;' colspan='3'><select style='margin:0px'><option value=''>add input...</option>" + getInputOptions() + "</select></td><td></td></tr>");
 		// find the input add
 		var inputAdd = inputsTable.find("tr").last().children().first().children("select");
 		// listener to add input
@@ -2605,7 +2616,7 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 		Property_databaseQuery(cell, propertyObject, property); 
 	}));
 	// add the add
-	outputsTable.append("<tr><td style='padding:0px;' colspan='2'><select class='addOutput' style='margin:0px'><option value=''>add output...</option>" + getOutputOptions() + "</select></td><td>&nbsp;</td></tr>");
+	outputsTable.append("<tr><td style='padding:0px;' colspan='2'><select class='addOutput' style='margin:0px'><option value=''>add output...</option>" + getOutputOptions() + "</select></td><td></td></tr>");
 	// find the output add
 	var outputAdd = outputsTable.find("select.addOutput");
 	// listener to add output
@@ -2620,8 +2631,8 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 		Property_databaseQuery(ev.data.cell, ev.data.propertyObject, ev.data.property, ev.data.details);	
 	}));
 	
-	table.append("<tr><td colspan='2'>Multi-row input data?&nbsp;<input class='multi' type='checkbox'" + (query.multiRow ? "checked='checked'" : "" ) + " style='vertical-align: middle;margin-top: -3px;'/></td>" +
-			"<td style='text-align: left;overflow:inherit;padding:0 10px;' colspan='2'>Database connection <select style='width:auto;'>" + getDatabaseConnectionOptions(query.databaseConnectionIndex) + "</select><button style='float:right;'>Test SQL</button></td></tr>");
+	table.append("<tr><td>Multi-row input data?&nbsp;<input class='multi' type='checkbox'" + (query.multiRow ? "checked='checked'" : "" ) + " style='vertical-align: middle;margin-top: -3px;'/></td>" +
+			"<td style='text-align: left;overflow:inherit;padding:0 10px;'>Database connection <select style='width:auto;'>" + getDatabaseConnectionOptions(query.databaseConnectionIndex) + "</select><button style='float:right;'>Test SQL</button></td></tr>");
 	
 	// get a reference to the multi-data check box
 	var multiRow = table.find("tr").last().find("input");
@@ -2711,11 +2722,13 @@ function Property_databaseNotChildActions(cell, propertyObject, property, detail
 function Property_webserviceRequest(cell, propertyObject, property, details) {
 	
 	// retrieve or create the dialogue
-	var dialogue = getDialogue(cell, propertyObject, property, details, 1000, "Webservice request", {sizeX: true, minWidth: 600});		
+	var dialogue = getDialogue(cell, propertyObject, property, details, 1000, "Webservice request", {sizeX: true, minWidth: 750});		
 	// grab a reference to the table
 	var table = dialogue.children().last().children().last();
 	// make sure its empty
 	table.children().remove();
+	// remove the class for the master table
+	table.parent().removeClass("dialogueTable");
 	
 	// initialise the request object if need be
 	if (!propertyObject.request) propertyObject.request = {inputs:[], type:"SOAP", url: '', action: 'demo/Sample SQL webservice', body: '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soa="http://soa.rapid-is.co.uk">\n  <soapenv:Body>\n    <soa:personSearchRequest>\n      <soa:surname>A</soa:surname>\n    </soa:personSearchRequest>\n  </soapenv:Body>\n</soapenv:Envelope>', outputs:[]};
@@ -2734,16 +2747,20 @@ function Property_webserviceRequest(cell, propertyObject, property, details) {
 	var dialogueId = propertyObject.id + property.key;
 	// add inputs table, body, and outputs table
 	table.append("<tr>" +
-			     "<td colspan='2' rowspan='3' style='padding:0px;vertical-align: top;'><table class='dialogueTable'>" +
-			     "<tr><td style='width: 20px;'></td><td><b>Input</b></td><td><b>Field</b></td></tr></table></td>" +
-			     "<td class='normalInputs' colspan='2' style='width:500px;padding:0 6px;'><b style='display:block;'>Request type</b>" + 
+			     "<td style='padding:0px;vertical-align:top;width:35%;'>" + 
+			     "<table class='dialogueTable inputTable'><tr><td></td><td><b>Input</b></td><td><b>Field</b></td><td></td></tr></table>" +
+			     "</td>" +
+			     "<td class='normalInputs' style='padding:0 6px;'><b style='display:block;'>Request type</b>" + 
 			     "<input type='radio' name='WSType" + propertyObject.id + "' id='WSTypeSOAP" + propertyObject.id + "' value='SOAP'/><label for='WSTypeSOAP" + propertyObject.id + "'>SOAP</label>" + 
 			     "<input type='radio' name='WSType" + propertyObject.id + "' id='WSTypeJSON" + propertyObject.id + "' value='JSON'/><label for='WSTypeJSON" + propertyObject.id + "'>JSON</label>" + 
 			     "<input type='radio' name='WSType" + propertyObject.id + "' id='WSTypeXML" + propertyObject.id + "' value='XML'/><label for='WSTypeXML" + propertyObject.id + "'>XML</label>" + 
 			     "<input type='radio' name='WSType" + propertyObject.id + "' id='WSTypeTEXT" + propertyObject.id + "' value='TEXT'/><label for='WSTypeTEXT" + propertyObject.id + "'>Text</label>" + 
 			     "<b style='display:block;margin-top:5px;margin-bottom:5px;'>URL</b><input class='WSUrl' /></br><b style='display:block;margin-top:5px;margin-bottom:5px;'>Action</b><input class='WSAction' /></br><b style='display:block;margin-top:5px;margin-bottom:5px;'>Headers</b><input class='WSHeaders' />" +
 			     "<b style='display:block;margin-top:5px;margin-bottom:2px;'>Body</b>" +
-			     "<div id='bodySOA_" + dialogueId + "' style='width:100%;min-height:200px;' class='WSBody'></div><b style='display:block;'>Response transform</b><textarea style='width:100%;' class='WSTransform'></textarea><b style='display:block;;margin-bottom:5px;'>Response root element</b><input class='WSRoot' style='margin-bottom:5px;' /></td><td colspan='2' rowspan='3' style='padding:0px;vertical-align: top;'><table class='dialogueTable'><tr><td><b>Field</b></td><td colspan='2'><b>Output</b></td></tr></table></td></tr>");
+			     "<div id='bodySOA_" + dialogueId + "' style='width:100%;min-height:200px;' class='WSBody'></div><b style='display:block;'>Response transform</b><textarea style='width:100%;' class='WSTransform'></textarea><b style='display:block;;margin-bottom:5px;'>Response root element</b><input class='WSRoot' style='margin-bottom:5px;' /></td>"  + 
+			     "<td style='padding:0px;vertical-align:top;width:35%;'>" + 
+			     "<table class='dialogueTable outputTable'><tr><td><b>Field</b></td><td><b>Output</b></td><td></td></tr></table>"
+			     +"</td></tr>");
 	
 	//append the 
 	var bodySOA = document.getElementById('bodySOA_' + dialogueId);
@@ -2815,7 +2832,7 @@ function Property_webserviceRequest(cell, propertyObject, property, details) {
 		Property_webserviceRequest(cell, propertyObject, property); 
 	}));
 	// add the add input
-	inputsTable.append("<tr><td colspan='2' style='padding:0px;'><select style='margin:0;'><option value=''>Add input...</option>" + getInputOptions() + "</select></td></tr>");
+	inputsTable.append("<tr><td style='padding:0px;' colspan=3><select style='margin:0;'><option value=''>Add input...</option>" + getInputOptions() + "</select></td><td></td></tr>");
 	// find the input add
 	var inputAdd = inputsTable.find("tr").last().children().first().children().first();
 	// listener to add input
@@ -2932,7 +2949,7 @@ function Property_webserviceRequest(cell, propertyObject, property, details) {
 		Property_webserviceRequest(cell, propertyObject, property, details);
 	}));
 	// add the add
-	outputsTable.append("<tr><td>&nbsp;</td><td style='padding:0px;'><select style='margin:0px'><option value=''>Add output...</option>" + getOutputOptions() + "</select></td><td>&nbsp;</td></tr>");
+	outputsTable.append("<tr><td style='padding:0px;' colspan=2><select style='margin:0px'><option value=''>Add output...</option>" + getOutputOptions() + "</select></td><td>&nbsp;</td></tr>");
 	// find the output add
 	var outputAdd = outputsTable.find("tr").last().children(":nth(1)").last().children().last();
 	// listener to add output
@@ -3093,7 +3110,7 @@ function Property_roles(cell, control, property, details) {
 	// show roles
 	for (var i in roles) {
 		// add the line
-		table.append("<tr><td>" + roles[i] + "</td><td style='width:16px; text-align:right;'>" +
+		table.append("<tr><td>" + roles[i] + "</td><td style='width:25px; text-align:right;'>" +
 				"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div></td></tr>");
 						
 		// find the delete
@@ -3111,21 +3128,29 @@ function Property_roles(cell, control, property, details) {
 		}));
 	}
 		
-	// have an add dropdown
-	table.append("<tr><td colspan='2'><select><option value=''>add...</option>" + getRolesOptions(null, roles) + "</td></tr>");
-	// get a reference to the add
-	var add = table.find("tr").last().children().last().children().last();
-	// add a listener
-	addListener( add.change( {cell: cell, control: control, property: property, details: details}, function(ev) {
-		// initialise if required
-		if (!ev.data.control.roles) ev.data.control.roles = [];
-		// get the role
-		var role = ev.target.value;
-		// add the selected role if one was chosen
-		if (role) ev.data.control.roles.push(role);
-		// refresh
-		Property_roles(ev.data.cell, ev.data.control, ev.data.property, ev.data.details);		
-	}));
+	// get roles options html
+	var rolesOptions = getRolesOptions(null, roles);
+	// only if there are some to add
+	if (rolesOptions) {
+		
+		// have an add dropdown
+		table.append("<tr><td colspan='2'><select><option value=''>add...</option>" + rolesOptions + "</td></tr>");
+		// get a reference to the add
+		var add = table.find("tr").last().find("select");
+		// if there are value
+		// add a listener
+		addListener( add.change( {cell: cell, control: control, property: property, details: details}, function(ev) {
+			// initialise if required
+			if (!ev.data.control.roles) ev.data.control.roles = [];
+			// get the role
+			var role = ev.target.value;
+			// add the selected role if one was chosen
+			if (role) ev.data.control.roles.push(role);
+			// refresh
+			Property_roles(ev.data.cell, ev.data.control, ev.data.property, ev.data.details);		
+		}));
+		
+	}
 
 }
 
@@ -3171,6 +3196,8 @@ function Property_navigationSessionVariables(cell, navigation, property, details
 	var table = dialogue.find("table").first();
 	// add dialogueTableBorders
 	table.addClass("dialogueTableBorders");
+	// add dialogueTableNoDelete
+	table.addClass("dialogueTableNoDelete");
 	// make sure table is empty
 	table.children().remove();
 	
@@ -3326,7 +3353,7 @@ function Property_radiobuttons(cell, control, property, details) {
 		cell.text(text);
 		
 		// add a heading
-		table.append("<tr>" + (control.codes ? "<td><b>Text</b></td><td colspan='2'><b>Code</b></td>" : "<td colspan='2'><b>Text</b></td>") + "</tr>");
+		table.append("<tr>" + (control.codes ? "<td><b>Text</b></td><td><b>Code</b></td>" : "<td><b>Text</b></td>") + "<td></td></tr>");
 		
 		// show options
 		for (var i in buttons) {
@@ -3364,16 +3391,19 @@ function Property_radiobuttons(cell, control, property, details) {
 		}
 			
 		// have an add row
-		table.append("<tr><td colspan='" + (control.codes ? "3" : "2") + "'><span class='propertyAction'>add...</span></td></tr>");
-		// get a reference to the add
-		var add = table.find("span.propertyAction").last();
-		// add a listener
-		addListener( add.click( {cell: cell, control: control, property: property, details: details}, function(ev) {
-			// add a blank option
-			ev.data.control.buttons.push({value: "", label: ""});
-			// refresh
-			Property_radiobuttons(ev.data.cell, ev.data.control, ev.data.property, ev.data.details);		
-		}));
+		if (!dialogue.find("span.propertyAction").last()[0]) {
+			// have an add
+			table.after("<span class='propertyAction'>add...</span>");
+			// get a reference to the add
+			var add = dialogue.find("span.propertyAction").last();
+			// add a listener
+			addListener( add.click( {cell: cell, control: control, property: property, details: details}, function(ev) {
+				// add a blank option
+				ev.data.control.buttons.push({value: "", label: ""});
+				// refresh
+				Property_radiobuttons(ev.data.cell, ev.data.control, ev.data.property, ev.data.details);		
+			}));
+		}
 
 		// add reorder listeners
 		addReorder(buttons, table.find("div.reorder"), function() { 
@@ -3402,9 +3432,9 @@ function Property_radiobuttons(cell, control, property, details) {
 		// check we don't have a checkbox already
 		if (!dialogue.find("div.useCodes")[0]) {
 			// add checkbox
-			table.after("<div class='useCodes'>Use codes <input type='checkbox' " + (control.codes ? "checked='checked'" : "") + " /></span>");
+			table.after("<div class='useCodes' style='padding: 5px 0;'><label><input type='checkbox' " + (control.codes ? "checked='checked'" : "") + " /> Use codes</label></div>");
 			// get a reference
-			var optionsCodes = dialogue.children().last();
+			var optionsCodes = dialogue.find("div.useCodes").first();
 			// add a listener
 			addListener( optionsCodes.change( {cell: cell, control: control, buttons: buttons, property: property, details: details}, function(ev) {
 				// get the value
@@ -3573,6 +3603,8 @@ function Property_logicConditions(cell, action, property, details) {
 	table.removeClass("dialogueTable");
 	// add the dialogueTable class
 	table.addClass("propertiesPanelTable");
+	// add the dialogueTable class
+	table.addClass("propertiesDialogueTable");
 	// get the conditions
 	var conditions = action[property.key];
 	// instantiate if required
@@ -3654,28 +3686,37 @@ function Property_logicConditions(cell, action, property, details) {
 	}));
 	
 	// only if there are 2 or more conditions
-	if (conditions.length > 1) {		
-		// add type
-		table.append("<tr><td colspan='4' style='padding-left:12px;'><label><input type='radio' name='" + action.id + "type' value='and'" + (action.conditionsType == "and" ? " checked='checked'" : "") + "/>all conditions must be true (And)</label><label><input type='radio' name='" + action.id + "type' value='or'" + (action.conditionsType == "or" ? " checked='checked'" : "") + "/>any condition can be true (Or)</label></td></tr>");
-		// add change listeners
-		table.find("input[name=" + action.id + "type]").change( function(ev){
-			// set the condition type to the new val
-			action.conditionsType = $(ev.target).val();
+	if (conditions.length > 1) {
+		// only if the condition type div is not already there
+		if (!dialogue.find("div.logicType")[0]) {
+			// add type
+			table.after("<div class='logicType' style='padding: 5px 0;'><label><input type='radio' name='" + action.id + "type' value='and'" + (action.conditionsType == "and" ? " checked='checked'" : "") + "/>all conditions must be true (And)</label><label><input type='radio' name='" + action.id + "type' value='or'" + (action.conditionsType == "or" ? " checked='checked'" : "") + "/>any condition can be true (Or)</div>");
+			// add change listeners
+			dialogue.find("input[name=" + action.id + "type]").change( function(ev){
+				// set the condition type to the new val
+				action.conditionsType = $(ev.target).val();
+			});
+		}
+	} else {
+		// remove any type
+		dialogue.find("div.logicType").remove();
+	}
+	
+	// if add is not there already
+	if (!dialogue.find("span.propertyAction")[0]) {
+		// add add
+		dialogue.append("<span class='propertyAction'>add...</span>");
+		// add listener
+		dialogue.find("span.propertyAction").last().click( function(ev) {
+			// instatiate if need be
+			if (!action[property.key]) action[property.key] = [];
+			// add new condition
+			action[property.key].push({value1:{type:"CTL"}, operation: "==", value2: {type:"CTL"}});
+			// update this table
+			Property_logicConditions(cell, action, property, details);
 		});
 	}
-				
-	// add add
-	table.append("<tr><td colspan='4'><span class='propertyAction'>add...</span></td></tr>");
-	// add listener
-	table.find("span.propertyAction").last().click( function(ev) {
-		// instatiate if need be
-		if (!action[property.key]) action[property.key] = [];
-		// add new condition
-		action[property.key].push({value1:{type:"CTL"}, operation: "==", value2: {type:"CTL"}});
-		// update this table
-		Property_logicConditions(cell, action, property, details);
-	});
-		
+	
 }
 
 // this very similar to the above but hidden if no form adapter
@@ -3726,7 +3767,7 @@ function Property_options(cell, control, property, details) {
 		cell.text(text);
 					
 		// add a heading
-		table.append("<tr><td><b>Text</b></td>" + (control.codes ? "<td colspan='2'><b>Code</b></td>" : "") + "</tr>");
+		table.append("<tr><td><b>Text</b></td>" + (control.codes ? "<td><b>Code</b></td>" : "") + "<td></td></tr>");
 		
 		// show options
 		for (var i in options) {
@@ -3786,21 +3827,24 @@ function Property_options(cell, control, property, details) {
 		}));		
 
 		// have an add row
-		table.append("<tr><td colspan='" + (control.codes ? "3" : "2") + "'><span class='propertyAction'>add...</span></td></tr>");
-		// get a reference to the add
-		var add = table.find("span.propertyAction").last();
-		// add a listener
-		addListener( add.click( {cell: cell, control: control, property: property, details: details}, function(ev) {
-			// add a blank option
-			ev.data.control.options.push({value: "", text: ""});
-			// refresh
-			Property_options(ev.data.cell, ev.data.control, ev.data.property, ev.data.details);		
-		}));
+		if (!dialogue.find("span.propertyAction")[0]) {
+			// have an add
+			table.after("<span class='propertyAction'>add...</span>");
+			// get a reference to the add
+			var add = dialogue.find("span.propertyAction").last();
+			// add a listener
+			addListener( add.click( {cell: cell, control: control, property: property, details: details}, function(ev) {
+				// add a blank option
+				ev.data.control.options.push({value: "", text: ""});
+				// refresh
+				Property_options(ev.data.cell, ev.data.control, ev.data.property, ev.data.details);		
+			}));
+		}
 		
 		// check we don't have a checkbox already
 		if (!dialogue.find("div.useCodes")[0]) {
 			// add checkbox
-			table.after("<div class='useCodes'>Use codes <input type='checkbox' " + (control.codes ? "checked='checked'" : "") + " /></div>");
+			table.after("<div class='useCodes' style='padding:5px 0;'>Use codes <input type='checkbox' " + (control.codes ? "checked='checked'" : "") + " /></div>");
 			// get a reference
 			var optionsCodes = dialogue.find("input[type=checkbox]");
 			// add a listener
@@ -4164,6 +4208,8 @@ function Property_controlHints(cell, hints, property, details) {
 	var dialogue = getDialogue(cell, hints, property, details, 500, "Control hints", {sizeX: true});		
 	// grab a reference to the table
 	var table = dialogue.find("table").first();
+	// add class for hint text cell cleanup
+	table.addClass("dialogueTableWhiteBackgroundText");
 	// make sure table is empty
 	table.children().remove();
 	
@@ -4174,7 +4220,7 @@ function Property_controlHints(cell, hints, property, details) {
 	if (!controlHints || controlHints == "[]") controlHints = [];
 	
 	// add a header
-	table.append("<tr><td><b>Control</b></td><td><b>Action</b></td><td style='min-width:150px;max-width:150px;'><b>Hint text</b></td><td colspan='2'><b>Style</b></td></td></tr>");
+	table.append("<tr><td><b>Control</b></td><td><b>Action</b></td><td style='min-width:150px;max-width:150px;'><b>Hint text</b></td><td><b>Style</b></td><td></td></td></tr>");
 		
 	// loop the controls
 	for (var i in controlHints) {
@@ -4272,19 +4318,21 @@ function Property_controlHints(cell, hints, property, details) {
 		Property_controlHints(cell, hints, property, details);
 	}));
 		
-	// have an add row
-	table.append("<tr><td colspan='4'><span class='propertyAction'>add...</span></td></tr>");
-	// get a reference to the add
-	var add = table.find("span.propertyAction").last();
-	// add a listener
-	addListener( add.click( {cell: cell, hints: hints, property: property, details: details}, function(ev) {
-		// instantiate array if need be
-		if (!ev.data.hints.controlHints) ev.data.hints.controlHints = [];
-		// add a blank hint
-		ev.data.hints.controlHints.push({controlId: "", type: "hover", text: "", style: ""});
-		// refresh
-		Property_controlHints(ev.data.cell, ev.data.hints, ev.data.property, ev.data.details);		
-	}));
+	// have an add link
+	if (!dialogue.find("span.propertyAction")[0]) {
+		table.after("<span class='propertyAction'>add...</span>");
+		// get a reference to the add
+		var add = dialogue.find("span.propertyAction").last();
+		// add a listener
+		addListener( add.click( {cell: cell, hints: hints, property: property, details: details}, function(ev) {
+			// instantiate array if need be
+			if (!ev.data.hints.controlHints) ev.data.hints.controlHints = [];
+			// add a blank hint
+			ev.data.hints.controlHints.push({controlId: "", type: "hover", text: "", style: ""});
+			// refresh
+			Property_controlHints(ev.data.cell, ev.data.hints, ev.data.property, ev.data.details);		
+		}));
+	}
 
 }
 
@@ -5752,7 +5800,7 @@ function Property_emailContent(cell, propertyObject, property, details) {
 	cell.text(text);
 	
 	// add inputs table, subject, and body
-	table.append("<tr><td colspan='2' style='padding:0px;vertical-align: top;'><table class='dialogueTable inputs'><tr><td><b>Input</b></td><td><b>Field</b></td></tr></table></td><td style='width:65%;padding:2px 10px 0 10px;'><b>Subject</b><br/><input type='text' class='subject' style='padding:2px;width:100%;box-sizing:border-box;border:none;' /><br/><b>Body</b><br/><textarea style='width:100%;min-height:180px;box-sizing:border-box;'></textarea></td></tr>");
+	table.append("<tr><td colspan='2' style='padding:0px;vertical-align: top;'><table class='dialogueTable inputs'><tr><td><b>Input</b></td><td><b>Field</b></td></tr></table></td><td style='width:65%;padding:2px 10px 0 10px;'><b>Subject</b><br/><input class='subject' style='padding:2px;width:100%;box-sizing:border-box;border:1px solid #aaa;' /><br/><b>Body</b><br/><textarea style='width:100%;min-height:180px;height:80%;box-sizing:border-box;'></textarea></td></tr>");	
 	
 	// find the inputs table
 	var inputsTable = table.find("table.inputs");

@@ -20,7 +20,7 @@
 		<name>Email</name>
 		<class>com.rapid.actions.Email</class>
 		<image>images/email_24x24.png</image>
-		<helpHtml>Emails can only be sent with a valid from and to address.</helpHtml>
+		<helpHtml>Sends an email to a given address, with optional attachments.</helpHtml>
 
 		<addToNewApplications>true</addToNewApplications>
 		<canUseWorkflow>true</canUseWorkflow>
