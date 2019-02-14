@@ -366,5 +366,36 @@ window["dropzones"] = dzs;
 	        ]]>
 	    </initJavaScript>
 	    
+	    	    	    <runtimeProperties>		
+		  	
+	        <runtimeProperty>		
+	            <type>details</type>		
+	            <name>File details</name>		
+	            <getPropertyFunction>		
+	                <![CDATA[		
+	var data = {fields:["name","type","size"],rows:[]};		
+			
+	// Get a reference of this dropzone		
+	var dropZone = $('#' + id)[0].dropzone;		
+			
+	// Get all the accepted files only		
+	var acceptedFiles = dropZone.getAcceptedFiles();		
+			
+	// Loop over the files in this upload control		
+	for (var i = 0; i < acceptedFiles.length; i++) {		
+				
+		var file = acceptedFiles[i];		
+				
+		data.rows.push(new Array(file.name, file.type, file.size));		
+				
+	}		
+			
+	return data;		
+					]]>		
+	            </getPropertyFunction>		
+	        </runtimeProperty>		
+	        		
+		</runtimeProperties>
+	    
 	</control>
 </controls>
