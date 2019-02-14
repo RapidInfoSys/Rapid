@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="24"
+   height="24"
+   viewBox="0 0 6.3500002 6.3500002"
+   version="1.1"
+   id="svg8"
+   sodipodi:docname="slide_panel.svg"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   style="enable-background:new">
+  <defs
+     id="defs2">
+    <linearGradient
+       id="linearGradient1112"
+       inkscape:collect="always">
+      <stop
+         id="stop1108"
+         offset="0"
+         style="stop-color:#a0a0a0;stop-opacity:1" />
+      <stop
+         id="stop1110"
+         offset="1"
+         style="stop-color:#d2d2d2;stop-opacity:0.97647059" />
+    </linearGradient>
+    <linearGradient
+       gradientTransform="translate(-5.7646469e-8,0.26460889)"
+       inkscape:collect="always"
+       xlink:href="#linearGradient1112"
+       id="linearGradient1083-9"
+       x1="4.2333336"
+       y1="294.88333"
+       x2="4.2333336"
+       y2="290.64999"
+       gradientUnits="userSpaceOnUse" />
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter1185">
+      <feBlend
+         inkscape:collect="always"
+         mode="normal"
+         in2="BackgroundImage"
+         id="feBlend1187" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter1185-8-7-1">
+      <feBlend
+         inkscape:collect="always"
+         mode="normal"
+         in2="BackgroundImage"
+         id="feBlend1187-9-7-1" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter1185-1">
+      <feBlend
+         inkscape:collect="always"
+         mode="normal"
+         in2="BackgroundImage"
+         id="feBlend1187-7" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter1185-9">
+      <feBlend
+         inkscape:collect="always"
+         mode="normal"
+         in2="BackgroundImage"
+         id="feBlend1187-6" />
+    </filter>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#494949"
+     bordercolor="#887f82"
+     borderopacity="1"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="36.291667"
+     inkscape:cx="12"
+     inkscape:cy="12"
+     inkscape:document-units="pt"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     showguides="true"
+     units="px"
+     inkscape:pagecheckerboard="false"
+     showborder="true"
+     inkscape:showpageshadow="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1052"
+     inkscape:window-x="1920"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid815"
+       originx="0.52916668"
+       color="#00ff00"
+       opacity="0.07843137"
+       spacingx="0.26458334"
+       originy="0.52916668"
+       visible="false"
+       empspacing="5"
+       empcolor="#00ff00"
+       empopacity="0.23529412" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-290.65)"
+     style="filter:url(#filter1185)">
+    <rect
+       style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:0.25456494;stroke-miterlimit:4;stroke-dasharray:none"
+       id="rect1106"
+       width="5.8208337"
+       height="4.2333226"
+       x="0.26458335"
+       y="291.70834" />
+    <rect
+       style="fill:#666666;fill-opacity:1;stroke:none;stroke-width:1.12686253;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-8-7-1);enable-background:new"
+       id="rect840-1-6-9-2"
+       width="4.9999995"
+       height="4.9999132"
+       x="0"
+       y="0"
+       ry="0"
+       transform="matrix(1.0583335,0,0,0.74084556,0.52916668,291.97292)" />
+    <rect
+       style="fill:#e6e6e6;fill-opacity:1;stroke:none;stroke-width:1.25081134;stroke-miterlimit:4;stroke-dasharray:none"
+       id="rect1540"
+       width="2.9104168"
+       height="4.2332997"
+       x="0.26458335"
+       y="291.70837"
+       ry="0" />
+    <rect
+       style="fill:#1a1a1a;fill-opacity:1;stroke:none;stroke-width:3.52765465;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185);enable-background:new"
+       id="rect1540-3"
+       width="6.9999995"
+       height="13.999892"
+       x="0"
+       y="0"
+       ry="0"
+       transform="matrix(0.1889881,0,0,0.01889896,0.79375011,292.2375)" />
+    <rect
+       style="fill:#1a1a1a;fill-opacity:1;stroke:none;stroke-width:3.52765465;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-1);enable-background:new"
+       id="rect1540-3-5"
+       width="6.9999995"
+       height="13.999892"
+       x="0"
+       y="0"
+       ry="0"
+       transform="matrix(0.1889881,0,0,0.01889896,0.79375011,292.76667)" />
+    <rect
+       style="fill:#1a1a1a;fill-opacity:1;stroke:none;stroke-width:3.52765465;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-9);enable-background:new"
+       id="rect1540-3-2"
+       width="6.9999995"
+       height="13.999892"
+       x="0"
+       y="0"
+       ry="0"
+       transform="matrix(0.1889881,0,0,0.01889896,0.79375011,293.29583)" />
+  </g>
+</svg>

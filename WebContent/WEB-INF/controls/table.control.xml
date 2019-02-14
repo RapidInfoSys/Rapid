@@ -29,7 +29,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    
 	    <type>table</type>
 	    <name>Table</name>
-	    <image>images/table_24x24.png</image>
+	    <image>images/table.svg</image>
 	    <helpHtml>Displays grid of cells for tabular data.</helpHtml>
 	    
 	    <dependentTypes>

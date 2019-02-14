@@ -29,7 +29,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    
 	    <type>slidePanel</type>
 	    <name>Slide panel</name>
-	    <image>images/slidepanel_24x24.png</image>
+	    <image>images/slide_panel.svg</image>
 	    <helpHtml>A button that displays a customisable panel when clicked.</helpHtml>
 	    
 	    <dependentTypes>

@@ -30,7 +30,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    
 	    <type>gallery</type>
 	    <name>Gallery</name>
-	    <image>images/gallery_24x24.png</image>
+	    <image>images/gallery.svg</image>
 	    <helpHtml>Lets the user select a set of images and displays them.</helpHtml>
 	    
 	    <addToNewMobileApplications>true</addToNewMobileApplications>

@@ -30,7 +30,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    
 	    <type>calendar</type>
 	    <name>Calendar</name>
-	    <image>images/calendar_24x24.png</image>
+	    <image>images/calendar.svg</image>
 	    <helpHtml>Displays and lets the users select a date from a month view.</helpHtml>
 	    
 	    <addToNewApplications>false</addToNewApplications>

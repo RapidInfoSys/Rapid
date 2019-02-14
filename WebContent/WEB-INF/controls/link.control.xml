@@ -30,7 +30,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    
 	    <type>link</type>
 	    <name>Link</name>
-	    <image>images/link_24x24.png</image>
+	    <image>images/link.svg</image>
 	    <helpHtml>Text that takes the user to another page or website when clicked.</helpHtml>
 	    
 	    <addToNewApplications>true</addToNewApplications>

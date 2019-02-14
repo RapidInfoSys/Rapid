@@ -30,7 +30,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    
 	    <type>score</type>
 	    <name>Score</name>
-	    <image>images/score_24x24.png</image>
+	    <image>images/score.svg</image>
 	    <helpHtml>A horizontal list of letters or numbers that the user can select.</helpHtml>
 	   	
 	    <addToNewMobileApplications>true</addToNewMobileApplications>

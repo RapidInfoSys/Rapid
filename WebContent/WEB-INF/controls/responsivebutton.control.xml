@@ -30,7 +30,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    
 	    <type>responsivebutton</type>
 	    <name>Responsive button</name>
-	    <image>images/responsivebutton_24x24.png</image>
+	    <image>images/button.svg</image>
 	    <category>Responsive controls</category>
 	    <helpHtml>A labelled control that can trigger actions when clicked. It resizes with screen-width and moves down if it gets too small.</helpHtml>
 	    

@@ -29,7 +29,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    
 	    <type>flowLayout</type>
 	    <name>Flow layout</name>
-		<image>images/flow_24x24.png</image>
+		<image>images/flow_layout.svg</image>
 		<helpHtml>A group of cells that resize with screen-width and reflow if they get too small.</helpHtml>
 	    
 	    <dependentTypes>

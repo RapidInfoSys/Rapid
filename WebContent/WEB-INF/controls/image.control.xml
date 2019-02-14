@@ -30,7 +30,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    
 	    <type>image</type>
 	    <name>Image</name>
-	    <image>images/image_24x24.png</image>
+	    <image>images/image.svg</image>
 	    <helpHtml>An image with Alt text for screen readers.</helpHtml>
 	    
 	    <addToNewApplications>true</addToNewApplications>

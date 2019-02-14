@@ -30,7 +30,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    
 	    <type>responsivecheckbox</type>
 	    <name>Responsive checkbox</name>
-	    <image>images/responsivecheckbox_24x24.png</image>
+	    <image>images/checkbox.svg</image>
 	    <category>Responsive controls</category>
 	    <helpHtml>A labelled control that toggles the presence of a tick when clicked. It resizes with screen-width and moves down if it gets too small.</helpHtml>
 	    

@@ -30,7 +30,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
         
         <type>glyph</type>
         <name>Glyph</name>
-        <image>images/glyph_24x24.png</image>
+        <image>images/glyph.svg</image>
         <helpHtml>Displays an icon or symbol.</helpHtml>
         
         <addToNewApplications>true</addToNewApplications>
