@@ -426,6 +426,17 @@ table.inputs tr td:last-child, table.outputs tr td:last-child  {
 	border: 0;
 }
 
+.dialogueTextClip td:first-child {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 1px;
+}
+
+.dialogueTextClip td:last-child {
+	width: 25px;
+}
+
 .dialogueTableWhiteBackgroundText tr:not(:first-child) td:not(:last-child) {
 	background: white;
 	padding: 0 3px;

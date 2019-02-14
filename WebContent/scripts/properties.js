@@ -3088,6 +3088,8 @@ function Property_roles(cell, control, property, details) {
 	var table = dialogue.find("table").first();
 	// add the allgrid class
 	table.addClass("dialogueTableAllBorders");
+	// add the text clip class
+	table.addClass("dialogueTextClip");
 	// make sure table is empty
 	table.children().remove();
 	
@@ -5563,6 +5565,8 @@ function Property_pageOrder(cell, propertyObject, property, details) {
 	var table = dialogue.find("table").first();
 	// add the all border class
 	table.addClass("dialogueTableAllBorders");
+	// add the text clip class
+	table.addClass("dialogueTextClip");
 	// make sure table is empty
 	table.children().remove();
 	
@@ -5602,7 +5606,7 @@ function Property_pageOrder(cell, propertyObject, property, details) {
 		if (i < _pages.length - 1) text += ", ";
 			
 		// add a page name row
-		table.append("<tr><td>" + page.name + " - " + page.title + "</td><td style='width:45px; text-align:right;'>" +
+		table.append("<tr><td>" + page.name + " - " + page.title + "</td><td style='text-align:right;'>" +
 				"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div></td></tr>");
 		
 	}
