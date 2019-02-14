@@ -69,7 +69,7 @@
      showguides="true"
      units="px"
      inkscape:pagecheckerboard="false"
-     showborder="true"
+     showborder="false"
      inkscape:showpageshadow="false"
      inkscape:window-width="1920"
      inkscape:window-height="1052"
@@ -97,7 +97,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -108,28 +108,19 @@
      transform="translate(0,-290.65)"
      style="filter:url(#filter1185)">
     <rect
-       style="fill:#808080;fill-opacity:0.98627002;stroke:none;stroke-width:0.35277781;stroke-miterlimit:4;stroke-dasharray:none"
-       id="rect881"
-       width="6.3500004"
-       height="0.5291667"
-       x="-5.8749305e-17"
-       y="293.56042"
-       rx="0.26458356"
-       ry="0.2645753" />
-    <rect
-       style="fill:#b3b3b3;fill-opacity:0.98627002;stroke:none;stroke-width:1.33333337;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185);enable-background:new"
+       style="fill:#999999;fill-opacity:0.99542332;stroke:none;stroke-width:1.33333337;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185);enable-background:new"
        id="rect881-9"
        width="24"
        height="2"
        x="0"
        y="0"
-       rx="1.8461554"
-       ry="0.9999696"
-       transform="matrix(0.14331598,0,0,0.26458334,-1e-7,293.56042)" />
+       rx="0"
+       ry="0"
+       transform="matrix(0.26458334,0,0,0.26458334,-1e-7,293.56042)" />
     <circle
-       style="fill:#ffffff;fill-opacity:0.98627002;stroke:none;stroke-width:0.35277781;stroke-miterlimit:4;stroke-dasharray:none"
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.35277781;stroke-miterlimit:4;stroke-dasharray:none"
        id="path898"
-       cx="3.1750002"
+       cx="3.7041669"
        cy="293.82501"
        r="0.79375005" />
   </g>

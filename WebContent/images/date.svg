@@ -307,7 +307,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -532,15 +532,5 @@
        y="291.17917"
        ry="0.26458538"
        rx="0.26458538" />
-    <rect
-       style="fill:#e6e6e6;fill-opacity:1;stroke:none;stroke-width:1.33333337;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185);enable-background:new"
-       id="rect884-6"
-       width="12.999999"
-       height="5"
-       x="0"
-       y="0"
-       ry="2.4450674e-07"
-       rx="1.7930458e-07"
-       transform="matrix(0.20352566,0,0,0.10583267,1.3229167,291.44375)" />
   </g>
 </svg>

@@ -61,7 +61,7 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="36.291667"
-     inkscape:cx="12"
+     inkscape:cx="3.857635"
      inkscape:cy="12"
      inkscape:document-units="pt"
      inkscape:current-layer="layer1"
@@ -109,16 +109,6 @@
      transform="translate(0,-290.65)"
      style="filter:url(#filter1185)">
     <rect
-       style="opacity:1;fill:#000000;fill-opacity:0.25098039;stroke:none;stroke-width:0.2645832;stroke-miterlimit:4;stroke-dasharray:none"
-       id="rect817-0"
-       width="6.3500004"
-       height="3.1750038"
-       x="1.7553775e-08"
-       y="292.50208"
-       ry="0.26459154"
-       inkscape:label="rect817-0"
-       rx="0.26458359" />
-    <rect
        style="fill:#cccccc;fill-opacity:1;stroke:none;stroke-width:0.26458278;stroke-miterlimit:4;stroke-dasharray:none"
        id="rect817"
        width="6.3500004"
@@ -126,14 +116,6 @@
        x="5.0135089e-08"
        y="292.23749"
        ry="0.2645874" />
-    <rect
-       style="fill:#b3b3b3;fill-opacity:1;stroke:none;stroke-width:0.25532147;stroke-miterlimit:4;stroke-dasharray:none"
-       id="rect1085"
-       width="5.8208332"
-       height="2.6458266"
-       x="0.26458341"
-       y="292.50208"
-       ry="8.1996877e-06" />
     <g
        aria-label="B t n"
        style="font-style:normal;font-weight:normal;font-size:10.58333397px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458335"

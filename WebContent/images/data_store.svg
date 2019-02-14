@@ -62,7 +62,7 @@
       <stop
          id="stop1043"
          offset="0"
-         style="stop-color:#f2f2f2;stop-opacity:1" />
+         style="stop-color:#ffffff;stop-opacity:1" />
       <stop
          id="stop1045"
          offset="1"
@@ -74,7 +74,7 @@
       <stop
          id="stop1037"
          offset="0"
-         style="stop-color:#f2f2f2;stop-opacity:1" />
+         style="stop-color:#ffffff;stop-opacity:1" />
       <stop
          id="stop1039"
          offset="1"
@@ -86,7 +86,7 @@
       <stop
          id="stop1031"
          offset="0"
-         style="stop-color:#f2f2f2;stop-opacity:1" />
+         style="stop-color:#ffffff;stop-opacity:1" />
       <stop
          id="stop1033"
          offset="1"
@@ -181,7 +181,7 @@
        xlink:href="#linearGradient1047"
        id="linearGradient1023"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.26458334,0,0,0.26458334,4.0000001e-8,288.79791)"
+       gradientTransform="matrix(0.30868057,0,0,0.26458334,-0.52916665,288.53333)"
        x1="6"
        y1="16.5"
        x2="18"
@@ -212,7 +212,8 @@
        y1="291.70834"
        x2="3.1750002"
        y2="293.29584"
-       gradientUnits="userSpaceOnUse" />
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.1666667,0,0,1,-0.5291667,-0.26457995)" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -221,9 +222,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="45.364892"
+     inkscape:zoom="36.291667"
      inkscape:cx="12"
-     inkscape:cy="11.99997"
+     inkscape:cy="12"
      inkscape:document-units="pt"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -276,37 +277,41 @@
        style="fill:url(#linearGradient984);fill-opacity:1;stroke:none;stroke-width:0.35277781;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185)"
        d="m 1.5875,294.61875 v 0.52916 a 1.5875001,0.79375005 0 0 0 1.5875001,0.79375 1.5875001,0.79375005 0 0 0 1.5875,-0.79375 v -0.52916 z"
        id="path852-1"
-       inkscape:connector-curvature="0" />
+       inkscape:connector-curvature="0"
+       transform="matrix(1.1666667,0,0,1,-0.52916682,0.26458347)" />
     <ellipse
        style="fill:url(#linearGradient1055);fill-opacity:1;stroke:none;stroke-width:0.35277781;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185)"
        id="path831-8"
        cx="3.1750002"
        cy="294.61874"
        rx="1.5875001"
-       ry="0.79375005" />
+       ry="0.79375005"
+       transform="matrix(1.1666667,0,0,1,-0.52916682,0.26458347)" />
     <path
        style="fill:url(#linearGradient1021);fill-opacity:1;stroke:none;stroke-width:0.35277781;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-5)"
        d="m 1.5875,293.56042 v 0.52916 a 1.5875001,0.79375005 0 0 0 1.5875001,0.79375 1.5875001,0.79375005 0 0 0 1.5875,-0.79375 v -0.52916 z"
        id="path852-1-8"
-       inkscape:connector-curvature="0" />
+       inkscape:connector-curvature="0"
+       transform="matrix(1.1666667,0,0,1,-0.5291668,0)" />
     <ellipse
        style="fill:url(#linearGradient1057);fill-opacity:1;stroke:none;stroke-width:0.35277781;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-5)"
        id="path831-8-8"
        cx="3.1750002"
        cy="293.56042"
        rx="1.5875001"
-       ry="0.79375005" />
+       ry="0.79375005"
+       transform="matrix(1.1666667,0,0,1,-0.5291668,0)" />
     <path
-       style="fill:url(#linearGradient1023);fill-opacity:1;stroke:none;stroke-width:0.35277781;stroke-miterlimit:4;stroke-dasharray:none"
-       d="m 1.5875,292.50208 v 0.52916 a 1.5875001,0.79375005 0 0 0 1.5875001,0.79375 1.5875001,0.79375005 0 0 0 1.5875,-0.79375 v -0.52916 z"
+       style="fill:url(#linearGradient1023);fill-opacity:1;stroke:none;stroke-width:0.38104358;stroke-miterlimit:4;stroke-dasharray:none"
+       d="m 1.3229167,292.2375 v 0.52916 a 1.8520835,0.79375005 0 0 0 1.8520835,0.79375 1.8520835,0.79375005 0 0 0 1.8520834,-0.79375 v -0.52916 z"
        id="path852"
        inkscape:connector-curvature="0" />
     <ellipse
-       style="fill:url(#linearGradient1059);fill-opacity:1;stroke:none;stroke-width:0.35277781;stroke-miterlimit:4;stroke-dasharray:none"
+       style="fill:url(#linearGradient1059);fill-opacity:1;stroke:none;stroke-width:0.38104358;stroke-miterlimit:4;stroke-dasharray:none"
        id="path831"
        cx="3.1750002"
-       cy="292.50211"
-       rx="1.5875001"
+       cy="292.23752"
+       rx="1.8520834"
        ry="0.79375005" />
   </g>
 </svg>

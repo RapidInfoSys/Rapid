@@ -15,7 +15,7 @@
    viewBox="0 0 6.3500002 6.3500002"
    version="1.1"
    id="svg8"
-   sodipodi:docname="drop_down.svg"
+   sodipodi:docname="dropdown.svg"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
    style="enable-background:new">
   <defs
@@ -28,7 +28,7 @@
          offset="0"
          id="stop1189" />
       <stop
-         style="stop-color:#f2f2f2;stop-opacity:1"
+         style="stop-color:#ffffff;stop-opacity:1"
          offset="1"
          id="stop1191" />
     </linearGradient>
@@ -105,7 +105,7 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="36.291667"
-     inkscape:cx="12"
+     inkscape:cx="-4.28473"
      inkscape:cy="12"
      inkscape:document-units="pt"
      inkscape:current-layer="layer1"
@@ -152,16 +152,6 @@
      id="layer1"
      transform="translate(0,-290.65)"
      style="filter:url(#filter1185)">
-    <rect
-       style="opacity:1;fill:#000000;fill-opacity:0.25098039;stroke:none;stroke-width:0.2645832;stroke-miterlimit:4;stroke-dasharray:none"
-       id="rect817-0"
-       width="6.3500004"
-       height="3.1750038"
-       x="1.7553775e-08"
-       y="292.50208"
-       ry="0.79375821"
-       inkscape:label="rect817-0"
-       rx="0.79375023" />
     <rect
        style="fill:url(#linearGradient1083);fill-opacity:1;stroke:none;stroke-width:0.26458278;stroke-miterlimit:4;stroke-dasharray:none"
        id="rect817"
