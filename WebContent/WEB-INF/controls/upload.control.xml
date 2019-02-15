@@ -3,7 +3,7 @@
 
 <!-- 
 
-Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -366,31 +366,41 @@ window["dropzones"] = dzs;
 	        ]]>
 	    </initJavaScript>
 	    
-	    	    	    <runtimeProperties>		
+	    <runtimeProperties>		
 		  	
 	        <runtimeProperty>		
 	            <type>details</type>		
 	            <name>File details</name>		
 	            <getPropertyFunction>		
-	                <![CDATA[		
-	var data = {fields:["name","type","size"],rows:[]};		
-			
-	// Get a reference of this dropzone		
-	var dropZone = $('#' + id)[0].dropzone;		
-			
-	// Get all the accepted files only		
-	var acceptedFiles = dropZone.getAcceptedFiles();		
-			
-	// Loop over the files in this upload control		
-	for (var i = 0; i < acceptedFiles.length; i++) {		
+	                <![CDATA[
+// start a data object
+var data = {fields:["name","type","size"],rows:[]};
+
+// get the dropzones map
+var dzs = window["dropzones"];
+// if it's there
+if (dzs) {
+	// get this dropzone object
+	var dz = dzs[id];
+	// if it's there
+	if (dz) {
+		
+		// Get all the accepted files only		
+		var acceptedFiles = dz.getAcceptedFiles();		
 				
-		var file = acceptedFiles[i];		
-				
-		data.rows.push(new Array(file.name, file.type, file.size));		
-				
-	}		
-			
-	return data;		
+		// Loop over the files in this upload control		
+		for (var i = 0; i < acceptedFiles.length; i++) {		
+			// get this file
+			var file = acceptedFiles[i];		
+			// add values to fields in data object
+			data.rows.push([file.name, file.type, file.size]);
+		}
+
+	}
+
+}
+		
+return data;		
 					]]>		
 	            </getPropertyFunction>		
 	        </runtimeProperty>		
