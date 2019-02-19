@@ -30,7 +30,8 @@ div#designLinks {
 	position: fixed;
 	bottom: 5px;
 	padding: 5px;
-	border: 1px solid black;
+	border: 1px solid gray;
+	box-shadow: 0 1px 10px 0 rgba(0, 0, 0, 0.4);
 	background-color: white;
 	font-family: arial;
 	font-size: 12px;
