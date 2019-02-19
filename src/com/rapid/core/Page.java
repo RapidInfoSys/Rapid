@@ -2170,10 +2170,10 @@ public class Page {
 				    	+ "	 var _onDesignLink = false;\n"
 				    	+ "	 var _onDesignTable = false;\n"
 				    	+ "$(document).ready( function() {\n"
-				    	+ "	 var _onDesignLink = false;\n"
-				    	+ "	 var _onDesignTable = false;\n"
 				    	+ "  $('#designShow').mouseover ( function(ev) {\n     $('#designLink').attr('href','design.jsp?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + _id + "'); $('#designLinkNewTab').attr('target','_blank').attr('href','design.jsp?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + _id + "'); $('#designLinks').show(); _onDesignLink = true;\n  });\n"
 				    	+ "  $('#designLinks').mouseleave ( function(ev) {\n   $('#designLinks').hide(); _onDesignLink = false;\n  });\n"
+				    	+ "  $('.designData').mouseover( function(ev) { _onDesignTable = true;});\n"
+				    	+ "  $('.designData').mouseleave( function(ev) { _onDesignTable = false;});\n"
 				    	+ "	 $('html').click(function(){\n if(!_onDesignLink && !_onDesignTable) 	$('div.designData').hide();\n });"
 				    	+ designLinkJQueryStringBuilder.toString()
 				    	+ "});\n"

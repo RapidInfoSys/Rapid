@@ -40,6 +40,7 @@ div#designLinks {
 	overflow-y: scroll;	
 	color: black;
 	z-index:10000;
+    bottom: 50px;
 }
 
 .designData table {

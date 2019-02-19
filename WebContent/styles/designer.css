@@ -327,11 +327,11 @@ img.conflictimgage {
 }
 
 .mapMoveLeft {
-	cursor: url(../images/moveLeft_32x32.png) 16 16,w-resize !important
+	cursor: url(../images/move_left.svg) 16 16,w-resize !important
 }
 
 .mapMoveRight {
-	cursor: url(../images/moveRight_32x32.png) 16 16,w-resize !important
+	cursor: url(../images/move_right.svg) 16 16,w-resize !important
 }
 
 .mapInsert {
