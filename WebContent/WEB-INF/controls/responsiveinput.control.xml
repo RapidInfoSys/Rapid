@@ -220,7 +220,7 @@ switch (this.controlType) {
 }
 
 if (this.responsiveLabel) {
-	return "<div id='" + this.id + "' class='r-inputbox" + classes + "'><label for='" + inputId + "'>" + this.responsiveLabel + "</label>" + html + "</div>";
+	return "<div id='" + this.id + "' class='r-inputbox" + classes + "'><label for='" + this.id + "input'>" + this.responsiveLabel + "</label>" + html + "</div>";
 } else {
 	return "<div id='" + this.id + "' class='r-inputbox" + classes + "'>" + html + "</div>";
 }
