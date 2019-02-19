@@ -313,9 +313,9 @@ if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRe
 		<div></div>
 	</div>
 					
-	<img id="selectionMoveLeft" class="selectionCursor" src="images/moveLeft_32x32.png" />
-	<img id="selectionMoveRight" class="selectionCursor" src="images/moveRight_32x32.png" />
-	<img id="selectionInsert" class="selectionCursor" src="images/insert_32x32.png" />
+	<img id="selectionMoveLeft" class="selectionCursor" src="images/move_left.svg" />
+	<img id="selectionMoveRight" class="selectionCursor" src="images/move_right.svg" />
+	<img id="selectionInsert" class="selectionCursor" src="images/insert.svg" />
 	
 	<iframe id="uploadIFrame" name="uploadIFrame" width="0" height="0" style="width:0;height:0;border:0px hidden #fff;" onload="fileuploaded(this);"></iframe>
 	

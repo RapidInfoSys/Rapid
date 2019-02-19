@@ -30,7 +30,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    
 	    <type>hints</type>
 	    <name>Hints</name>
-	    <image>images/hint.svg</image>
+	    <image>images/hints.svg</image>
 	    <helpHtml>An invisible control that stores the text to be shown when the user hovers over other controls.</helpHtml>
 	      
 	    <noDefaultName>true</noDefaultName>
@@ -137,7 +137,7 @@ function addControlHint(id, style, type, text) {
 	    <getHtmlFunction>
 	        <![CDATA[	  
 // return our html 
-return "<img id='" + this.id + "' class='nonVisibleControl' src='images/hint_24x24.png'></img>"
+return "<img id='" + this.id + "' class='nonVisibleControl' src='images/hints.svg'></img>"
 	        ]]>
 	    </getHtmlFunction> 
 	    	   	    

@@ -25,7 +25,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 
 function showDesignData(link) {
 	
-	//var myTest = _onDesignTable;
+	$(".designData").hide();
 	
 	var id = link.attr("data-id");
 	var name = link.find("img").attr("title");

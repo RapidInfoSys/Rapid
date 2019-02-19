@@ -37,7 +37,7 @@ div#designLinks {
 	max-width: 500px;
 	max-height: 600px;
 	overflow-x: auto;
-	overflow-y: scroll;	
+	overflow-y: auto;	
 	color: black;
 	z-index:10000;
     bottom: 50px;
@@ -54,7 +54,7 @@ div#designLinks {
 }
 
 div.designData table th, div.designData table td {
-    padding: 12px;
+    padding: 5px;
     line-height: 20px;
     text-align: left;
     vertical-align: top;
