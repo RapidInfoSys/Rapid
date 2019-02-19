@@ -42,86 +42,6 @@
        x2="4.2333336"
        y2="290.64999"
        gradientUnits="userSpaceOnUse" />
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-6">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-7">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-2" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-6-9">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9-9" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-6-9-0">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9-9-2" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-6-9-0-4">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9-9-2-4" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-6-9-6">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9-9-3" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-6-9-0-8">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9-9-2-5" />
-    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -175,8 +95,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-290.65)"
-     style="filter:url(#filter1185)">
+     transform="translate(0,-290.65)">
     <path
        style="fill:#f2f2f2;fill-opacity:1;stroke:none;stroke-width:0.91736758;stroke-miterlimit:4;stroke-dasharray:none"
        d="M 2,4 V 20 H 22 V 10 L 16,4 Z"
@@ -190,7 +109,7 @@
        id="rect1540"
        inkscape:connector-curvature="0" />
     <rect
-       style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:4.98887587;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185);enable-background:new"
+       style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:4.98887587;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
        id="rect1540-5"
        width="13.999998"
        height="13.999998"
@@ -199,7 +118,7 @@
        ry="0"
        transform="matrix(0.11339288,0,0,0.07559525,2.38125,292.2375)" />
     <rect
-       style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:4.98887587;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-6);enable-background:new"
+       style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:4.98887587;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
        id="rect1540-5-8"
        width="13.999998"
        height="13.999998"
@@ -208,7 +127,7 @@
        ry="0"
        transform="matrix(0.07559525,0,0,0.13229191,1.0583333,293.56042)" />
     <rect
-       style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:4.98887587;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-7);enable-background:new"
+       style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:4.98887587;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
        id="rect1540-5-82"
        width="13.999998"
        height="13.999998"
@@ -217,7 +136,7 @@
        ry="0"
        transform="matrix(0.07559526,0,0,0.07559525,1.0583332,292.2375)" />
     <rect
-       style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:4.98887587;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-6-9);enable-background:new"
+       style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:4.98887587;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
        id="rect1540-5-8-6"
        width="13.999998"
        height="13.999998"
@@ -226,7 +145,7 @@
        ry="0"
        transform="matrix(0.13229169,0,0,0.07559474,2.3812501,293.56042)" />
     <rect
-       style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:4.98887587;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-6-9-0);enable-background:new"
+       style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:4.98887587;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
        id="rect1540-5-8-6-7"
        width="13.999998"
        height="13.999998"
@@ -235,7 +154,7 @@
        ry="0"
        transform="matrix(0.05669644,0,0,0.03779739,2.38125,294.88333)" />
     <rect
-       style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:4.98887587;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-6-9-0-4);enable-background:new"
+       style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:4.98887587;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
        id="rect1540-5-8-6-7-7"
        width="13.999998"
        height="13.999998"
@@ -244,7 +163,7 @@
        ry="0"
        transform="matrix(0.05669644,0,0,0.03779739,3.4395834,294.88334)" />
     <rect
-       style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:4.98887587;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-6-9-6);enable-background:new"
+       style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:4.98887587;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
        id="rect1540-5-8-6-1"
        width="13.999998"
        height="13.999998"
@@ -264,7 +183,7 @@
        id="path949"
        inkscape:connector-curvature="0" />
     <rect
-       style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:4.98887587;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-6-9-0-8);enable-background:new"
+       style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:4.98887587;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
        id="rect1540-5-8-6-7-74"
        width="13.999998"
        height="13.999998"

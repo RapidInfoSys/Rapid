@@ -127,7 +127,7 @@ function saveDataStoreData(id, details, data) {
 	    <getHtmlFunction>
 	        <![CDATA[	  
 // return our html 
-return "<img id='" + this.id + "' class='nonVisibleControl' src='images/datastore_24x24.png'></img>"
+return "<img id='" + this.id + "' class='nonVisibleControl' src='images/data_store.svg'></img>"
 	        ]]>
 	    </getHtmlFunction>
 	    

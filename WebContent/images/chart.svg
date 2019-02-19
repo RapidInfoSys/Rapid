@@ -42,46 +42,6 @@
        x2="4.2333336"
        y2="290.64999"
        gradientUnits="userSpaceOnUse" />
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-7">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-6" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-1-5">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9-6" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-74">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-0" />
-    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -136,8 +96,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-290.65)"
-     style="filter:url(#filter1185)">
+     transform="translate(0,-290.65)">
     <rect
        style="fill:#e6e6e6;fill-opacity:1;stroke:none;stroke-width:0.25532219;stroke-miterlimit:4;stroke-dasharray:none"
        id="rect881"
@@ -149,7 +108,7 @@
        rx="7.3823244e-08" />
     <rect
        rx="0"
-       style="fill:#e6e6e6;fill-opacity:1;stroke:none;stroke-width:1.23442698;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185);enable-background:new"
+       style="fill:#e6e6e6;fill-opacity:1;stroke:none;stroke-width:1.23442698;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
        id="rect881-2"
        width="6"
        height="12"
@@ -159,7 +118,7 @@
        transform="matrix(0.17638891,0,0,0.35277751,2.9104167,291.70834)" />
     <rect
        rx="2.6229987e-05"
-       style="fill:#e6e6e6;fill-opacity:1;stroke:none;stroke-width:1.23442698;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-7);enable-background:new"
+       style="fill:#e6e6e6;fill-opacity:1;stroke:none;stroke-width:1.23442698;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
        id="rect881-2-1"
        width="6"
        height="12"
@@ -168,7 +127,7 @@
        ry="3.1475822e-05"
        transform="matrix(0.17638888,0,0,0.11024335,4.4979169,294.61875)" />
     <rect
-       style="fill:#999999;fill-opacity:1;stroke:none;stroke-width:1.23442698;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185);enable-background:new"
+       style="fill:#999999;fill-opacity:1;stroke:none;stroke-width:1.23442698;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
        id="rect881-3"
        width="6"
        height="12"
@@ -178,7 +137,7 @@
        rx="5.9999094"
        transform="matrix(0.04409722,0,0,0.50711835,0.5291667,290.91458)" />
     <rect
-       style="fill:#999999;fill-opacity:1;stroke:none;stroke-width:1.23442698;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185);enable-background:new"
+       style="fill:#999999;fill-opacity:1;stroke:none;stroke-width:1.23442698;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
        id="rect881-4"
        width="6"
        height="12"
@@ -197,7 +156,7 @@
        ry="3.7599555e-15"
        rx="3.7599555e-15" />
     <rect
-       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1.00790548;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185);enable-background:new"
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1.00790548;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
        id="rect881-31"
        width="4.0000005"
        height="12"
@@ -207,7 +166,7 @@
        rx="2.79017e-07"
        transform="matrix(0.26458332,0,0,0.02204862,1.3229167,293.03125)" />
     <rect
-       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1.00790548;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-1-5);enable-background:new"
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1.00790548;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
        id="rect881-31-0-7"
        width="4.0000005"
        height="12"
@@ -217,7 +176,7 @@
        rx="2.7901703e-07"
        transform="matrix(0.26458331,0,0,0.02204832,4.4979168,294.61875)" />
     <rect
-       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1.00790548;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-74);enable-background:new"
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1.00790548;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
        id="rect881-31-6"
        width="4.0000005"
        height="12"

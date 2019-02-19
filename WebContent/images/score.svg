@@ -42,36 +42,6 @@
        x2="4.2333336"
        y2="290.64999"
        gradientUnits="userSpaceOnUse" />
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-8">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-3" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-9">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-6" />
-    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -80,9 +50,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="36.1634"
-     inkscape:cx="13.185918"
-     inkscape:cy="13.019723"
+     inkscape:zoom="36.291667"
+     inkscape:cx="12"
+     inkscape:cy="12"
      inkscape:document-units="pt"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -125,10 +95,9 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-290.65)"
-     style="filter:url(#filter1185)">
+     transform="translate(0,-290.65)">
     <circle
-       style="fill:#ffffff;fill-opacity:1;stroke:#fffffa;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter1185);enable-background:new"
+       style="fill:#ffffff;fill-opacity:1;stroke:#fffffa;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;enable-background:new"
        id="path837"
        cx="5.0000019"
        cy="5.0000019"
@@ -147,33 +116,33 @@
     <g
        aria-label="A"
        transform="matrix(0.26458334,0,0,0.26458334,1.112164,291.31626)"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;filter:url(#filter1185);enable-background:new"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#e6e6e6;fill-opacity:1;stroke:none;stroke-width:1;enable-background:new"
        id="text841-3">
       <path
          d="M 2.2740884,0.90690092 1.0253906,4.2929685 h 2.501953 z M 1.7545572,-8.6147338e-8 H 2.798177 L 5.3912758,6.8040361 H 4.4342446 L 3.814453,5.0585935 H 0.74739578 L 0.12760413,6.8040361 h -0.97070309 z"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.33333302px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;stroke-width:1"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.33333302px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#e6e6e6;stroke-width:1"
          id="path912"
          inkscape:connector-curvature="0" />
     </g>
     <g
        aria-label="C"
        transform="matrix(0.26458334,0,0,0.26458334,0.76484802,294.19519)"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;filter:url(#filter1185-8);enable-background:new"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#e6e6e6;fill-opacity:1;stroke:none;stroke-width:1;enable-background:new"
        id="text841-3-1">
       <path
          d="M 6.5615883,1.2044921 V 2.1751952 Q 6.0967445,1.7422525 5.5680987,1.5280598 5.0440102,1.3138671 4.4515623,1.3138671 q -1.1666666,0 -1.7864583,0.7154948 -0.6197916,0.7109375 -0.6197916,2.0598958 0,1.344401 0.6197916,2.0598957 0.6197917,0.7109375 1.7864583,0.7109375 0.5924479,0 1.1165364,-0.2141927 Q 6.0967445,6.4317055 6.5615883,5.9987628 V 6.9603513 Q 6.0785154,7.2884763 5.5361977,7.4525388 4.9984373,7.6166013 4.3968748,7.6166013 2.851953,7.6166013 1.9632811,6.673242 1.0746093,5.7253253 1.0746093,4.0892577 q 0,-1.640625 0.8886718,-2.5839843 0.8886719,-0.94791665 2.4335937,-0.94791665 0.6106771,0 1.1484375,0.1640625 0.5423177,0.1595052 1.016276,0.48307285 z"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.33333302px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;stroke-width:1"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.33333302px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#e6e6e6;stroke-width:1"
          id="path918"
          inkscape:connector-curvature="0" />
     </g>
     <g
        aria-label="D"
        transform="matrix(0.26458334,0,0,0.26458334,3.6145109,294.19854)"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;filter:url(#filter1185-9);enable-background:new"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#e6e6e6;fill-opacity:1;stroke:none;stroke-width:1;enable-background:new"
        id="text841-3-4">
       <path
          d="m 2.3871093,1.436914 v 5.2910155 h 1.1119791 q 1.4082031,0 2.0598957,-0.6380209 0.65625,-0.6380208 0.65625,-2.0143228 0,-1.3671875 -0.65625,-2.000651 Q 4.9072915,1.436914 3.4990884,1.436914 Z M 1.4665364,0.68040362 h 1.8912759 q 1.9778646,0 2.9029947,0.82486978 0.9251302,0.8203125 0.9251302,2.5703124 0,1.7591145 -0.9296874,2.5839843 Q 5.3265623,7.4844398 3.3578123,7.4844398 H 1.4665364 Z"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.33333302px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;stroke-width:1"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.33333302px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#e6e6e6;stroke-width:1"
          id="path921"
          inkscape:connector-curvature="0" />
     </g>

@@ -30,7 +30,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    
 	    <type>hiddenvalue</type>
 	    <name>Hidden value</name>
-	    <image>images/magicwand_24x24.png</image>
+	    <image>images/wand.svg</image>
 	    <helpHtml>An invisible control that stores a single piece of data.</helpHtml>
 	      
 	    <canUserAdd>true</canUserAdd>

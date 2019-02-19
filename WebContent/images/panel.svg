@@ -42,56 +42,6 @@
        x2="4.2333336"
        y2="290.64999"
        gradientUnits="userSpaceOnUse" />
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-6">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-7">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-2" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-6-9">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9-9" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-6-9-0">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9-9-2" />
-    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -145,8 +95,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-290.65)"
-     style="filter:url(#filter1185)">
+     transform="translate(0,-290.65)">
     <rect
        style="fill:#f2f2f2;fill-opacity:1;stroke:none;stroke-width:0.21709554;stroke-miterlimit:4;stroke-dasharray:none"
        id="rect1106"
@@ -163,7 +112,7 @@
        y="291.97293"
        ry="0" />
     <rect
-       style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:4.98887587;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185);enable-background:new"
+       style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:4.98887587;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
        id="rect1540-5"
        width="13.999998"
        height="13.999998"
@@ -172,7 +121,7 @@
        ry="0"
        transform="matrix(0.13229169,0,0,0.07559525,2.9104167,292.2375)" />
     <rect
-       style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:4.98887587;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-6);enable-background:new"
+       style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:4.98887587;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
        id="rect1540-5-8"
        width="13.999998"
        height="13.999998"
@@ -181,7 +130,7 @@
        ry="0"
        transform="matrix(0.07559525,0,0,0.13229191,1.5875,293.56042)" />
     <rect
-       style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:4.98887587;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-7);enable-background:new"
+       style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:4.98887587;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
        id="rect1540-5-82"
        width="13.999998"
        height="13.999998"
@@ -190,7 +139,7 @@
        ry="0"
        transform="matrix(0.07559526,0,0,0.07559525,1.5874999,292.2375)" />
     <rect
-       style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:4.98887587;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-6-9);enable-background:new"
+       style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:4.98887587;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
        id="rect1540-5-8-6"
        width="13.999998"
        height="13.999998"
@@ -199,7 +148,7 @@
        ry="0"
        transform="matrix(0.13229169,0,0,0.07559474,2.9104166,294.35417)" />
     <rect
-       style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:4.98887587;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-6-9-0);enable-background:new"
+       style="fill:#808080;fill-opacity:1;stroke:none;stroke-width:4.98887587;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
        id="rect1540-5-8-6-7"
        width="13.999998"
        height="13.999998"

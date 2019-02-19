@@ -42,16 +42,6 @@
        x2="4.2333336"
        y2="290.64999"
        gradientUnits="userSpaceOnUse" />
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187" />
-    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -105,8 +95,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-290.65)"
-     style="filter:url(#filter1185)">
+     transform="translate(0,-290.65)">
     <rect
        style="fill:#f2f2f2;fill-opacity:1;stroke:none;stroke-width:0.36847156;stroke-miterlimit:4;stroke-dasharray:none"
        id="rect4548"
@@ -117,7 +106,7 @@
        ry="2.0461712e-06"
        rx="2.0461712e-06" />
     <rect
-       style="fill:#f2f2f2;fill-opacity:1;stroke:none;stroke-width:1.33333337;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185);enable-background:new"
+       style="fill:#f2f2f2;fill-opacity:1;stroke:none;stroke-width:1.33333337;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
        id="rect4548-3"
        width="11"
        height="2"
@@ -127,7 +116,7 @@
        rx="7.0890965e-06"
        transform="matrix(0.28863637,0,0,0.26458172,2.1166667,293.56042)" />
     <rect
-       style="fill:#f2f2f2;fill-opacity:1;stroke:none;stroke-width:1.33333337;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185);enable-background:new"
+       style="fill:#f2f2f2;fill-opacity:1;stroke:none;stroke-width:1.33333337;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
        id="rect4548-1"
        width="11"
        height="2"

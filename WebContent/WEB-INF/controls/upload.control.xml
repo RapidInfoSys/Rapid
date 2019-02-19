@@ -30,7 +30,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    
 	    <type>upload</type>
 	    <name>Upload</name>
-	    <image>images/penknife_24x24.png</image>
+	    <image>images/upload.svg</image>
 	    <helpHtml>A button that lets the user select a file from their computer.</helpHtml>
 	    	            
 	    <canUserAdd>true</canUserAdd>

@@ -2161,18 +2161,20 @@ public class Page {
 						+ " <script type='text/javascript' src='scripts/designlinks.js'></script>"
 						+	"<div id='designShow'></div>\n"
 						+ "<div id='designLinks' style='display:none;'>"
-				    	+ "<a id='designLink' href='#'><img src='images/gear_24x24.png' title='Open Rapid Design'/></a>\n"
-				    	+ "<a id='designLinkNewTab' style='margin-left:-3px;' href='#'><img src='images/triangleRight_8x8.png' title='Open Rapid Design in a new tab'/></a>\n"
+				    	+ "<a id='designLink' href='#'><img src='images/tool.svg' title='Open Rapid Design'/></a>\n"
+				    	+ "<a id='designLinkNewTab' style='padding:5px;' href='#'><img src='images/right.svg' title='Open Rapid Design in a new tab'/></a>\n"
 						+ designLinkStringBuilder.toString()
 						+ "</div>"
 				    	+ "<script type='text/javascript'>\n"
 				    	+ "/* designLink */\n"
+				    	+ "	 var _onDesignLink = false;\n"
 				    	+ "	 var _onDesignTable = false;\n"
 				    	+ "$(document).ready( function() {\n"
 				    	+ "	 var _onDesignLink = false;\n"
+				    	+ "	 var _onDesignTable = false;\n"
 				    	+ "  $('#designShow').mouseover ( function(ev) {\n     $('#designLink').attr('href','design.jsp?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + _id + "'); $('#designLinkNewTab').attr('target','_blank').attr('href','design.jsp?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + _id + "'); $('#designLinks').show(); _onDesignLink = true;\n  });\n"
 				    	+ "  $('#designLinks').mouseleave ( function(ev) {\n   $('#designLinks').hide(); _onDesignLink = false;\n  });\n"
-				    	+ "	 $('body').click(function(){\n if(!_onDesignLink && !_onDesignTable) 	$('div.designData').hide();\n });"
+				    	+ "	 $('html').click(function(){\n if(!_onDesignLink && !_onDesignTable) 	$('div.designData').hide();\n });"
 				    	+ designLinkJQueryStringBuilder.toString()
 				    	+ "});\n"
 				    	+ "</script>\n");

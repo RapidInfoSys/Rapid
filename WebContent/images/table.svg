@@ -15,11 +15,23 @@
    viewBox="0 0 6.3500002 6.3500002"
    version="1.1"
    id="svg8"
-   sodipodi:docname="table.svg"
+   sodipodi:docname="grid.svg"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
    style="enable-background:new">
   <defs
      id="defs2">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient947">
+      <stop
+         style="stop-color:#e6e6e5;stop-opacity:1"
+         offset="0"
+         id="stop943" />
+      <stop
+         style="stop-color:#808080;stop-opacity:1"
+         offset="1"
+         id="stop945" />
+    </linearGradient>
     <linearGradient
        id="linearGradient1112"
        inkscape:collect="always">
@@ -42,220 +54,10 @@
        x2="4.2333336"
        y2="290.64999"
        gradientUnits="userSpaceOnUse" />
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-8-7">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9-7" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-8-7-3">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9-7-3" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-8-7-3-0">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9-7-3-5" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-8-7-3-0-6">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9-7-3-5-4" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-8-7-3-0-69">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9-7-3-5-8" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-8-7-3-7">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9-7-3-2" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-8-7-8">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9-7-2" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-8-7-3-0-6-7-1">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9-7-3-5-4-5-3" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-8-7-3-0-69-2">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9-7-3-5-8-1" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-8-7-3-7-5">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9-7-3-2-9" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-8-7-8-9">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9-7-2-1" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-8-7-3-0-6-1">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9-7-3-5-4-0" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-8-7-3-0-7">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9-7-3-5-5" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-8-7-3-8">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9-7-3-7" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-8-7-0">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9-7-4" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-8-7-1">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9-7-1" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-8-7-3-0-6-5">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9-7-3-5-4-06" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-8-7-3-0-4">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9-7-3-5-6" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-8-7-3-2">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9-7-3-58" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-8-7-3-0-6-6">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9-7-3-5-4-6" />
-    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
-     pagecolor="#494949"
+     pagecolor="#404040"
      bordercolor="#666666"
      borderopacity="1.0"
      inkscape:pageopacity="0"
@@ -275,7 +77,9 @@
      inkscape:window-height="1052"
      inkscape:window-x="1920"
      inkscape:window-y="0"
-     inkscape:window-maximized="1">
+     inkscape:window-maximized="1"
+     objecttolerance="10000"
+     guidetolerance="10000">
     <inkscape:grid
        type="xygrid"
        id="grid815"
@@ -287,7 +91,9 @@
        visible="false"
        empspacing="5"
        empcolor="#3f80ff"
-       empopacity="0.19607843" />
+       empopacity="0.19607843"
+       snapvisiblegridlinesonly="true"
+       dotted="false" />
   </sodipodi:namedview>
   <metadata
      id="metadata5">
@@ -305,202 +111,105 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-290.65)"
-     style="filter:url(#filter1185)">
+     transform="translate(0,-290.65)">
     <rect
-       style="fill:#f2f2f2;fill-opacity:1;stroke:none;stroke-width:0.21709554;stroke-miterlimit:4;stroke-dasharray:none"
-       id="rect1106"
-       width="4.2333336"
-       height="4.2333918"
-       x="1.0583333"
-       y="291.70834" />
-    <rect
-       style="fill:#cccccc;fill-opacity:1;stroke:none;stroke-width:1.31997347;stroke-miterlimit:4;stroke-dasharray:none"
-       id="rect1540"
-       width="3.7041664"
-       height="3.7041664"
-       x="1.3229167"
-       y="291.97293"
-       ry="0" />
-    <rect
-       style="fill:#4d4d4d;fill-opacity:1;stroke:none;stroke-width:1.12686253;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-8-7-3)"
-       id="rect840-1-6-9-8"
-       width="4.9999995"
-       height="4.9999132"
+       style="fill:#e6e6e6;fill-opacity:1;stroke:none;stroke-width:1.72129941;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
+       id="rect858-43"
+       width="6.0000005"
+       height="4.999845"
        x="0"
        y="0"
        ry="0"
-       transform="matrix(0.15875,0,0,0.10583585,2.1166668,292.76667)" />
+       rx="0"
+       transform="matrix(0.97013886,0,0,1.0054392,0.26458321,291.17921)" />
     <rect
-       style="fill:#4d4d4d;fill-opacity:1;stroke:none;stroke-width:1.12686253;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-8-7-3-0)"
-       id="rect840-1-6-9-8-6"
-       width="4.9999995"
-       height="4.9999132"
+       style="fill:#666666;fill-opacity:1;stroke:none;stroke-width:0.45542714;stroke-miterlimit:4;stroke-dasharray:none"
+       id="rect858"
+       width="1.5875002"
+       height="1.3228757"
+       x="0.52916664"
+       y="291.44376"
+       ry="0"
+       rx="0" />
+    <rect
+       style="fill:#666666;fill-opacity:1;stroke:none;stroke-width:1.88560247;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
+       id="rect858-7"
+       width="5"
+       height="5.0000253"
        x="0"
        y="0"
        ry="0"
-       transform="matrix(0.15875001,0,0,0.10583585,3.1750003,292.76666)" />
+       rx="0"
+       transform="matrix(0.3175,0,0,0.26458138,2.3812501,291.44375)" />
     <rect
-       style="fill:#4d4d4d;fill-opacity:1;stroke:none;stroke-width:1.12686253;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-8-7-3-0-6)"
-       id="rect840-1-6-9-8-6-0"
-       width="4.9999995"
-       height="4.9999132"
+       style="fill:#666666;fill-opacity:1;stroke:none;stroke-width:1.88560247;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
+       id="rect858-4"
+       width="5"
+       height="5.0000253"
        x="0"
        y="0"
        ry="0"
-       transform="matrix(0.15874992,0,0,0.10583585,4.2333336,292.76667)" />
+       rx="0"
+       transform="matrix(0.31750001,0,0,0.26457972,4.2333334,291.44376)" />
     <rect
-       style="fill:#999999;fill-opacity:1;stroke:none;stroke-width:1.12686253;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-8-7-8)"
-       id="rect840-1-6-9-9"
-       width="4.9999995"
-       height="4.9999132"
-       x="0"
-       y="0"
+       style="fill:#666666;fill-opacity:1;stroke:none;stroke-width:0.49889901;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
+       id="rect858-5"
+       width="1.5875001"
+       height="1.5874738"
+       x="0.52916658"
+       y="293.03122"
        ry="0"
-       transform="matrix(0.10583339,0,0,0.10583585,1.3229165,293.56042)" />
+       rx="0"
+       transform="matrix(0.99999988,0,0,0.83335993,1.650017e-7,48.830769)" />
     <rect
-       style="fill:#4d4d4d;fill-opacity:1;stroke:none;stroke-width:1.12686253;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-8-7-3-7)"
-       id="rect840-1-6-9-8-9"
-       width="4.9999995"
-       height="4.9999132"
-       x="0"
-       y="0"
+       style="fill:#666666;fill-opacity:1;stroke:none;stroke-width:1.88560247;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
+       id="rect858-7-9"
+       width="5.0000005"
+       height="5.0000162"
+       x="7.5999999"
+       y="0.60009742"
        ry="0"
-       transform="matrix(0.15875,0,0,0.10583585,2.1166668,293.56042)" />
+       rx="0"
+       transform="matrix(0.31750001,0,0,0.26458608,-0.03175015,292.87245)" />
     <rect
-       style="fill:#4d4d4d;fill-opacity:1;stroke:none;stroke-width:1.12686253;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-8-7-3-0-69)"
-       id="rect840-1-6-9-8-6-6"
-       width="4.9999995"
-       height="4.9999132"
-       x="0"
-       y="0"
+       style="fill:#666666;fill-opacity:1;stroke:none;stroke-width:0.49889901;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
+       id="rect858-5-6"
+       width="1.5875001"
+       height="1.5874738"
+       x="0.52916664"
+       y="294.88336"
        ry="0"
-       transform="matrix(0.15875001,0,0,0.10583585,3.1750001,293.56041)" />
+       rx="0"
+       transform="matrix(0.99999991,0,0,0.83335347,1.1667677e-7,48.876676)" />
     <rect
-       style="fill:#999999;fill-opacity:1;stroke:none;stroke-width:1.12686253;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-8-7-0)"
-       id="rect840-1-6-9-80"
+       style="fill:#666666;fill-opacity:1;stroke:none;stroke-width:1.88560247;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
+       id="rect858-7-9-6"
        width="4.9999995"
-       height="4.9999132"
-       x="0"
-       y="0"
+       height="5.00001"
+       x="0.60000002"
+       y="0.59999007"
        ry="0"
-       transform="matrix(0.10583339,0,0,0.10583585,1.3229168,294.35417)" />
+       rx="0"
+       transform="matrix(0.31750002,0,0,0.26458616,4.0428334,292.8725)" />
     <rect
-       style="fill:#4d4d4d;fill-opacity:1;stroke:none;stroke-width:1.12686253;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-8-7-3-8)"
-       id="rect840-1-6-9-8-4"
-       width="4.9999995"
-       height="4.9999132"
-       x="0"
-       y="0"
+       style="fill:#666666;fill-opacity:1;stroke:none;stroke-width:1.88560247;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
+       id="rect858-7-9-5"
+       width="5.0000005"
+       height="5.0000162"
+       x="7.5999999"
+       y="0.60009742"
        ry="0"
-       transform="matrix(0.15875,0,0,0.10583585,2.1166673,294.35417)" />
+       rx="0"
+       transform="matrix(0.31750001,0,0,0.26458607,-0.03174999,294.45995)" />
     <rect
-       style="fill:#4d4d4d;fill-opacity:1;stroke:none;stroke-width:1.12686253;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-8-7-3-0-7)"
-       id="rect840-1-6-9-8-6-2"
+       style="fill:#666666;fill-opacity:1;stroke:none;stroke-width:1.88560247;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
+       id="rect858-7-9-6-9"
        width="4.9999995"
-       height="4.9999132"
-       x="0"
-       y="0"
+       height="5.00001"
+       x="0.60000002"
+       y="0.59999007"
        ry="0"
-       transform="matrix(0.15875001,0,0,0.10583585,3.1750006,294.35416)" />
-    <rect
-       style="fill:#4d4d4d;fill-opacity:1;stroke:none;stroke-width:1.12686253;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-8-7-3-0-6-1)"
-       id="rect840-1-6-9-8-6-0-9"
-       width="4.9999995"
-       height="4.9999132"
-       x="0"
-       y="0"
-       ry="0"
-       transform="matrix(0.15874992,0,0,0.10583585,4.2333339,294.35417)" />
-    <rect
-       style="fill:#999999;fill-opacity:1;stroke:none;stroke-width:1.12686253;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-8-7-8-9)"
-       id="rect840-1-6-9-9-1"
-       width="4.9999995"
-       height="4.9999132"
-       x="0"
-       y="0"
-       ry="0"
-       transform="matrix(0.10583339,0,0,0.10583585,1.3229168,295.14792)" />
-    <rect
-       style="fill:#4d4d4d;fill-opacity:1;stroke:none;stroke-width:1.12686253;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-8-7-3-7-5)"
-       id="rect840-1-6-9-8-9-0"
-       width="4.9999995"
-       height="4.9999132"
-       x="0"
-       y="0"
-       ry="0"
-       transform="matrix(0.15875,0,0,0.10583585,2.1166673,295.14792)" />
-    <rect
-       style="fill:#4d4d4d;fill-opacity:1;stroke:none;stroke-width:1.12686253;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-8-7-3-0-69-2)"
-       id="rect840-1-6-9-8-6-6-4"
-       width="4.9999995"
-       height="4.9999132"
-       x="0"
-       y="0"
-       ry="0"
-       transform="matrix(0.15875001,0,0,0.10583585,3.1750006,295.14791)" />
-    <rect
-       style="fill:#4d4d4d;fill-opacity:1;stroke:none;stroke-width:1.12686253;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-8-7-3-0-6-7-1)"
-       id="rect840-1-6-9-8-6-0-0-2"
-       width="4.9999995"
-       height="4.9999132"
-       x="0"
-       y="0"
-       ry="0"
-       transform="matrix(0.15874992,0,0,0.10583585,4.2333339,295.14792)" />
-    <rect
-       style="fill:#999999;fill-opacity:1;stroke:none;stroke-width:1.12686253;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-8-7)"
-       id="rect840-1-6-9"
-       width="4.9999995"
-       height="4.9999132"
-       x="0"
-       y="0"
-       ry="0"
-       transform="matrix(0.10583339,0,0,0.10583585,1.3229165,292.76667)" />
-    <rect
-       style="fill:#999999;fill-opacity:1;stroke:none;stroke-width:1.12686253;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-8-7-3-2);enable-background:new"
-       id="rect840-1-6-9-8-62"
-       width="4.9999995"
-       height="4.9999132"
-       x="0"
-       y="0"
-       ry="0"
-       transform="matrix(0.15875,0,0,0.10583585,2.1166668,291.97292)" />
-    <rect
-       style="fill:#999999;fill-opacity:1;stroke:none;stroke-width:1.12686253;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-8-7-3-0-4);enable-background:new"
-       id="rect840-1-6-9-8-6-8"
-       width="4.9999995"
-       height="4.9999132"
-       x="0"
-       y="0"
-       ry="0"
-       transform="matrix(0.15875001,0,0,0.10583585,3.1750006,291.97291)" />
-    <rect
-       style="fill:#999999;fill-opacity:1;stroke:none;stroke-width:1.12686253;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-8-7-3-0-6-5);enable-background:new"
-       id="rect840-1-6-9-8-6-0-4"
-       width="4.9999995"
-       height="4.9999132"
-       x="0"
-       y="0"
-       ry="0"
-       transform="matrix(0.15874992,0,0,0.10583585,4.2333334,291.97292)" />
-    <rect
-       style="fill:#999999;fill-opacity:1;stroke:none;stroke-width:1.12686253;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-8-7-1);enable-background:new"
-       id="rect840-1-6-9-2"
-       width="4.9999995"
-       height="4.9999132"
-       x="0"
-       y="0"
-       ry="0"
-       transform="matrix(0.10583339,0,0,0.10583585,1.3229165,291.97292)" />
-    <rect
-       style="fill:#4d4d4d;fill-opacity:1;stroke:none;stroke-width:1.12686253;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-8-7-3-0-6-6);enable-background:new"
-       id="rect840-1-6-9-8-6-0-40"
-       width="4.9999995"
-       height="4.9999132"
-       x="0"
-       y="0"
-       ry="0"
-       transform="matrix(0.15874992,0,0,0.10583585,4.2333339,293.56041)" />
+       rx="0"
+       transform="matrix(0.31750001,0,0,0.26458617,4.0428336,294.46)" />
   </g>
 </svg>

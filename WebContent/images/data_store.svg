@@ -126,16 +126,6 @@
        x2="4.2333336"
        y2="290.64999"
        gradientUnits="userSpaceOnUse" />
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187" />
-    </filter>
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient947"
@@ -156,16 +146,6 @@
        y1="16.5"
        x2="18"
        y2="16.5" />
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185-5">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187-9" />
-    </filter>
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient1041"
@@ -271,16 +251,15 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-290.65)"
-     style="filter:url(#filter1185)">
+     transform="translate(0,-290.65)">
     <path
-       style="fill:url(#linearGradient984);fill-opacity:1;stroke:none;stroke-width:0.35277781;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185)"
+       style="fill:url(#linearGradient984);fill-opacity:1;stroke:none;stroke-width:0.35277781;stroke-miterlimit:4;stroke-dasharray:none;"
        d="m 1.5875,294.61875 v 0.52916 a 1.5875001,0.79375005 0 0 0 1.5875001,0.79375 1.5875001,0.79375005 0 0 0 1.5875,-0.79375 v -0.52916 z"
        id="path852-1"
        inkscape:connector-curvature="0"
        transform="matrix(1.1666667,0,0,1,-0.52916682,0.26458347)" />
     <ellipse
-       style="fill:url(#linearGradient1055);fill-opacity:1;stroke:none;stroke-width:0.35277781;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185)"
+       style="fill:url(#linearGradient1055);fill-opacity:1;stroke:none;stroke-width:0.35277781;stroke-miterlimit:4;stroke-dasharray:none;"
        id="path831-8"
        cx="3.1750002"
        cy="294.61874"
@@ -288,13 +267,13 @@
        ry="0.79375005"
        transform="matrix(1.1666667,0,0,1,-0.52916682,0.26458347)" />
     <path
-       style="fill:url(#linearGradient1021);fill-opacity:1;stroke:none;stroke-width:0.35277781;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-5)"
+       style="fill:url(#linearGradient1021);fill-opacity:1;stroke:none;stroke-width:0.35277781;stroke-miterlimit:4;stroke-dasharray:none;"
        d="m 1.5875,293.56042 v 0.52916 a 1.5875001,0.79375005 0 0 0 1.5875001,0.79375 1.5875001,0.79375005 0 0 0 1.5875,-0.79375 v -0.52916 z"
        id="path852-1-8"
        inkscape:connector-curvature="0"
        transform="matrix(1.1666667,0,0,1,-0.5291668,0)" />
     <ellipse
-       style="fill:url(#linearGradient1057);fill-opacity:1;stroke:none;stroke-width:0.35277781;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter1185-5)"
+       style="fill:url(#linearGradient1057);fill-opacity:1;stroke:none;stroke-width:0.35277781;stroke-miterlimit:4;stroke-dasharray:none;"
        id="path831-8-8"
        cx="3.1750002"
        cy="293.56042"
