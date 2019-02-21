@@ -238,7 +238,9 @@ return [{value:"", text:"Please select..."}, {value:"lg-1", text:"1/12"}, {value
 	    	    <contents>
 input.date {
 	background: url("../../../images/controls/date/date_17x15.gif") 100% 50% no-repeat;
-	background-color: #FFF;
+}
+.r-date input[readonly] {
+  cursor: pointer;
 }
 	    	    </contents>
 	    	</resource>

@@ -269,8 +269,14 @@ public class Rapid extends RapidHttpServlet {
 							// get the mime type
 							response.setContentType(URLConnection.guessContentTypeFromName(fileName));
 
+							// assume inline content disposition which will attempt to display the file in a tab as a web document
+							String contentDisposition = "inline";
+
+							// if there was a "d" parameter switch to attachment which will force a download
+							if ("Y".equalsIgnoreCase(request.getParameter("d")) || "true".equalsIgnoreCase(request.getParameter("d"))) contentDisposition = "attachment";
+
 							// set for streaming (then download)
-							response.setHeader("Content-disposition", "inline; filename=" + fileName);
+							response.setHeader("Content-disposition", contentDisposition + "; filename=" + fileName);
 
 							// download the file to the response
 							long fileLength = downloadFile(filePath, response);
