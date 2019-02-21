@@ -1018,17 +1018,19 @@ if (data !== undefined) {
 			if (control.find("tr.rowStyle1,tr.rowStyle2").not("[data-ignore]").not(".rowSelect").length > 0) $("#" + id).find("input.gridMultiSelectHeader").prop("checked",false);
 		});
 	
-	} else {
-		// if we click on a row that isn't the first one
-		control.children().last().children("tr:not(:first)").click( function() {
-			// get the row 
-			var row = $(this);
-			// remove rowSelect class from all rows in the table
-			row.parent().find("tr.rowSelect").removeClass("rowSelect");
-			// add rowSelect to this row
-			row.addClass("rowSelect"); 
-		});
 	}
+	 
+	// if we click on a row that isn't the first one
+	control.children().last().children("tr:not(:first)").click( function(ev) {
+		// get the row 
+		var row = $(this);
+		// remove rowSelect class from all rows in the table
+		row.parent().find("tr.rowSelect").removeClass("rowSelect");
+		// add rowSelect to this row
+		row.addClass("rowSelect");
+		// if multiselect is being used and the target is not a multiselect box, untick all multiselect boxes
+		if (details.multiSelect && !$(ev.target).is("input.gridMultiSelect")) $("#" + id).find("input.gridMultiSelectHeader, input.gridMultiSelect").prop("checked",false);
+	});
 	
 	// apply the resizing	
 	$(window).resize(); 
@@ -1046,6 +1048,8 @@ if (data !== undefined) {
 var target = $(ev.target);
 // don't fire if the target is the top row or tbody, but allow the multi select
 if ((target.closest("tr").index() == 0 || target.is("tbody")) && !target.is("input.gridMultiSelectHeader")) return true;
+// don't fire if the target is the cell around the multiselect
+if (target.is("td:first-child") && target.children("input.gridMultiSelect")[0]) return true;
 ]]>	                
 	            </filterFunction>
 	        </event>
