@@ -1017,19 +1017,31 @@ if (data !== undefined) {
 			// check whether any rows without rowSelect, if not uncheck header checkboxs (includes if fixed header)
 			if (control.find("tr.rowStyle1,tr.rowStyle2").not("[data-ignore]").not(".rowSelect").length > 0) $("#" + id).find("input.gridMultiSelectHeader").prop("checked",false);
 		});
-	
 	}
 	 
 	// if we click on a row that isn't the first one
 	control.children().last().children("tr:not(:first)").click( function(ev) {
 		// get the row 
 		var row = $(this);
-		// remove rowSelect class from all rows in the table
-		row.parent().find("tr.rowSelect").removeClass("rowSelect");
-		// add rowSelect to this row
-		row.addClass("rowSelect");
-		// if multiselect is being used and the target is not a multiselect box, untick all multiselect boxes
-		if (details.multiSelect && !$(ev.target).is("input.gridMultiSelect")) $("#" + id).find("input.gridMultiSelectHeader, input.gridMultiSelect").prop("checked",false);
+		// if this grid has multiselect thhings are more confusing
+		if (details.multiSelect) {
+			// get the target
+			var target = $(ev.target);
+			// if we're here because we clicked the gridMultiSelect checkbox - in this case row selection is done in the input click listener, above, also do nothing is cell around the multiselect clicked
+			if (!target.is("input.gridMultiSelect") && !target.children("input.gridMultiSelect")[0]) {
+				// remove rowSelect class from all rows in the table
+				row.parent().find("tr.rowSelect").removeClass("rowSelect");
+				// add rowSelect to this row
+				row.addClass("rowSelect");
+				// uncheck all inputs
+				$("#" + id).find("input.gridMultiSelectHeader, input.gridMultiSelect").prop("checked",false);
+			}
+		} else {
+			// remove rowSelect class from all rows in the table
+			row.parent().find("tr.rowSelect").removeClass("rowSelect");
+			// add rowSelect to this row
+			row.addClass("rowSelect");
+		}
 	});
 	
 	// apply the resizing	
