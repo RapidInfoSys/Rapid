@@ -1753,8 +1753,11 @@ public class Designer extends RapidHttpServlet {
 												// get the prepared statement
 												PreparedStatement ps = df.getPreparedStatement(rapidRequest, sql, parameters);
 
-												// execute the statement - required by Oracle, but not MS SQL
-												ps.execute();
+												// get the jdbc connection string
+												String connString = databaseConnection.getConnectionString();
+
+												// execute the statement - required by Oracle, but not MS SQL, causes "JDBC: inconsistent internal state" for SQLite
+												if (!connString.toLowerCase().contains("jdbc:sqlite:")) ps.execute();
 
 												// get the meta data
 												ResultSetMetaData rsmd = ps.getMetaData();
