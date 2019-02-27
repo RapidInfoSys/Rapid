@@ -949,6 +949,9 @@ select {
   max-width: 100%;
   -moz-appearance: none;
   -webkit-appearance: none;
+  background-image: url("../images/down.light.svg");
+  background-repeat: no-repeat;
+  background-position: right 4px center;
 }
 
 select:focus {
@@ -1110,6 +1113,9 @@ button:disabled:hover {
 select:hover {
 	color: #000;
 	background: #b2b2b2;
+    background-image: url("../images/down.light.svg");
+    background-repeat: no-repeat;
+    background-position: right 4px center;
 }
 
 #flowCanvas {
