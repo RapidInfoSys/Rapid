@@ -159,11 +159,11 @@ if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRe
 															
 			<div id="controlPanelInner">
 			
-				<div id="controlPanelPin"><i class="fa fa-caret-left" title="unpin panel" style="color:white;"></i></div>
+				<div id="controlPanelPin"></div>
 																
 				<div class="buttons">					
 					<button id="appAdmin" class="buttonLeft" title="Open the Rapid Admin screen">Rapid Admin</button>
-					<button id="appAdminNewTab" class="buttonRight buttonImage" title="Open the Rapid Admin screen in a new tab"><i class="fa fa-caret-right"></i></button>
+					<button id="appAdminNewTab" class="buttonRight buttonImage" title="Open the Rapid Admin screen in a new tab"></button>
 					
 				</div>
 				
@@ -193,7 +193,8 @@ if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRe
 				<div class="buttons">
 					<button id="pageNew" class="buttonLeft" title="Create a new page for this application">new</button>
 					<button id="pageSave" class="" title="Save this page">save</button>
-					<button id="pageView" class="" title="View this page in the application">view</button><button id="pageViewNewTab" class="buttonRight buttonImage"  title="View this page in a new tab"><i class="fa fa-caret-right"></i></button>
+					<button id="pageView" class="" title="View this page in the application">view</button>
+					<button id="pageViewNewTab" class="buttonRight buttonImage"  title="View this page in a new tab"></button>
 				</div>	
 						
 				<div class="buttons">
@@ -203,7 +204,7 @@ if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRe
 								
 				<div id="controlControls" style="margin-top:0;margin-bottom:-3px;">
 					<h2 id="controlsHeader">Controls
-						<i class="headerToggle fa fa-caret-up" title="Hide controls" style="color:white;"></i>
+						<i class="headerToggle fa" title="Hide controls" style="color:white;"></i>
 					</h2>
 					
 					<div id="controlsList">
@@ -212,7 +213,7 @@ if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRe
 				</div>	
 				
 				<h2 id="controlsMap" style="margin-top:5px; border:none;">Page controls
-					<i class="headerToggle fa fa-caret-up" title="Hide page controls" style="color:white;"></i>
+					<i class="headerToggle fa" title="Hide page controls" style="color:white;"></i>
 					<i id="helpMap" class="headerHelp glyph fa hintIcon"></i>
 				</h2>
 				
@@ -237,7 +238,7 @@ if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRe
 																					
 			<div id="propertiesPanelInner">
 			
-				<div id="propertiesPanelPin"><i class="fa fa-caret-right" title="hide panel" style="color:white;"></i></div>
+				<div id="propertiesPanelPin"></div>
 										
 				<div class="untilsPanelDiv">
 							
@@ -280,7 +281,7 @@ if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRe
 					</div>								
 				</div>		
 								
-				<h2 id="propertiesHeader">Properties  <i id="helpProperties" class="headerHelp glyph fa hintIcon"></i><i class="headerToggle fa fa-caret-up"></i></h2>
+				<h2 id="propertiesHeader">Properties  <i id="helpProperties" class="headerHelp glyph fa hintIcon"></i><i class="headerToggle fa"></i></h2>
 				<div>
 					<div class="propertiesPanelDiv" data-dialogueId="propertiesPanel"></div>			
 					<div class="validationPanelDiv" data-dialogueId="validationPanel"></div>

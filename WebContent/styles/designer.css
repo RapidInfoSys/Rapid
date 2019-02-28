@@ -90,6 +90,9 @@ hr {
 	width: 14px;
 	height: 14px;
 	z-index: 1;
+ 	background-image: url("../images/left.light.svg");
+ 	background-repeat: no-repeat;
+ 	background-position: left -2px center;
 }
 
 #controlPanel {
@@ -141,18 +144,32 @@ hr {
 
 #controlPanel select {
 	width: 100%;
-    padding: 2px 30px 2px 5px;
+    padding: 2px 26px 2px 5px;
     -moz-appearance: none;
     -webkit-appearance: none;
  	background-image: url("../images/down.light.svg");
  	background-repeat: no-repeat;
- 	background-position: right 4px center;
+ 	background-position: right 2px center;
 }
 
 #controlPanel select:active {
     background-image: url("../images/up.light.svg");
     background-repeat: no-repeat;
-    background-position: right 4px center;
+    background-position: right 2px center;
+}
+
+table.stylesPanelTable select.propertiesPanelTable {
+    -moz-appearance: none;
+    -webkit-appearance: none;
+ 	background-image: url("../images/down.light.svg");
+ 	background-repeat: no-repeat;
+ 	background-position: right 2px center;
+ }
+ 
+table.stylesPanelTable select.propertiesPanelTable:active {
+    background-image: url("../images/up.light.svg");
+    background-repeat: no-repeat;
+    background-position: right 2px center;
 }
 
 #pageLock, #flowLock {
@@ -183,6 +200,11 @@ hr {
 	vertical-align: middle;
 	padding-bottom: 4px;
 	margin-right: -10px;
+ 	background-image: url("../images/up.light.svg");
+ 	background-repeat: no-repeat;
+ 	background-position: right 0 center;
+ 	height: 12px;
+    width: 16px;
 }
 
 .headerHelp {
@@ -424,6 +446,9 @@ div#propertiesPanelInner {
 	width: 14px;
 	height: 14px;
 	z-index: 1;
+ 	background-image: url("../images/right.light.svg");
+ 	background-repeat: no-repeat;
+ 	background-position: left -2px center;
 }
 
 div#propertiesPanel h2 {
@@ -625,6 +650,9 @@ div.button {
 #appAdminNewTab {
 	margin-top: 0;
 	height:30px;
+ 	background-image: url("../images/right.light.svg");
+ 	background-repeat: no-repeat;
+ 	background-position: left -5px center;
 }
 
 #pageNew {
@@ -647,6 +675,9 @@ div.button {
 #pageViewNewTab {
 	width: 20px;
 	height: 25px;
+ 	background-image: url("../images/right.light.svg");
+ 	background-repeat: no-repeat;
+ 	background-position: right -1px center;
 }
 
 #redo, #undo, #pageEdit {

@@ -765,7 +765,7 @@ function showStyles(control) {
 		// check there are styles
 		if (controlClass.styles && controlClass.styles.style) {				
 			// add a heading and table
-			_stylesPanelDiv.append("<h2 id='stylesHeader' style='margin-top:5px;'>Styles  <i id='helpStyles' class='headerHelp glyph fa hintIcon'></i><img class='headerToggle' src='images/triangle" + (_stylesHidden ? "Down" : "Up") + "White_8x8.png' /></h2><div" + (_stylesHidden ? " style='display:none;'" : "") + "></div>");
+			_stylesPanelDiv.append("<h2 id='stylesHeader' style='margin-top:5px;'>Styles  <i class='headerToggle fa' title='Hide controls' style='color:white;'></i><i id='helpStyles' class='headerHelp glyph fa hintIcon'></i></h2><div" + (_stylesHidden ? " style='display:none;'" : "") + "></div>");
 			// add the help hint															
 			addHelp("helpStyles",true);
 			// add the header toggle hint
@@ -841,7 +841,7 @@ function showStyles(control) {
 			}
 			
 			// add a heading and table
-			_stylesPanelDiv.append("<h2  id='styleClasssesHeader' style='margin-top:5px;'>Style classes  <i id='helpStyleClasses' class='headerHelp glyph fa hintIcon'></i><img class='headerToggle' src='images/triangle" + (_stylesHidden ? "Down" : "Up") + "White_8x8.png' /></h2><div" + (_styleClassesHidden ? " style='display:none;'" : "") + "></div>");
+			_stylesPanelDiv.append("<h2  id='styleClasssesHeader' style='margin-top:5px;'>Style classes  <i class='headerToggle fa' title='Hide controls' style='color:white;'></i><i id='helpStyleClasses' class='headerHelp glyph fa hintIcon'></i></h2><div" + (_styleClassesHidden ? " style='display:none;'" : "") + "></div>");
 			// add the help hint																			
 			addHelp("helpStyleClasses",true);
 			// add the header toggle
