@@ -394,13 +394,29 @@ table.outputTable.dialogueTable td:last-child {
 	margin-left: -1px;
 }
 
-.dialogueTable select {
-  width: 100%; 
-  font-size: 11px;
-  border-radius: 0;
-  background: white;
-  color: black;
-  outline: 0;
+.dialogueTable select,
+.dialogueTable select:hover {
+    width: 100%;
+    height: 100%;
+    padding: 2px 30px 2px 5px;
+    font-size: 11px;
+    border-radius: 0;
+    background: white;
+    color: black;
+    outline: 0;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    background-image: url("../images/down.dark.svg");
+    background-repeat: no-repeat;
+    background-position: right 4px center;
+}
+
+.dialogueTable select:hover {
+	background-color: #f2f2f2;
+}
+
+.dialogueTable select:active {
+	background-image: url("../images/up.dark.svg");
 }
 
 .dialogueTable tr:not(:first-child):not(:last-child) td:not(:last-child) select {
