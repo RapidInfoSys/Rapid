@@ -101,15 +101,26 @@ table.propertiesPanelTable  {
 	font-size: 11px;
 }
 
-.propertiesPanelTable select {
+.propertiesPanelTable select,
+.propertiesPanelTable tr:hover td:nth-child(2) select {
 	width: 100%;
 	padding: 0;
 	height: 19px;
-	background: white;
+	background: inherit;
 	color: black;
 	font-size: 12px;
+	-moz-appearance: none;
+	-webkit-appearance: none;
+	background-image: url("../images/down.dark.svg");
+	background-repeat: no-repeat;
+	background-position: right 4px center;
 }
-	
+
+.propertiesPanelTable select:active,
+.propertiesPanelTable tr:hover td:nth-child(2) select:active {
+	background-image: url("../images/up.dark.svg");
+}
+
 .propertiesPanelTable b {
 	padding-left: 5px;
 }
