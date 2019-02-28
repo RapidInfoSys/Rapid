@@ -14,21 +14,20 @@
    viewBox="0 0 6.3500002 6.3500002"
    version="1.1"
    id="svg8"
-   sodipodi:docname="down.light.svg"
+   sodipodi:docname="right.light .svg"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
    style="enable-background:new">
   <defs
-     id="defs2">
-  </defs>
+     id="defs2" />
   <sodipodi:namedview
      id="base"
-     pagecolor="#ffffff"
+     pagecolor="#736e5b"
      bordercolor="#82907b"
      borderopacity="1"
-     inkscape:pageopacity="0"
+     inkscape:pageopacity="0.36862745"
      inkscape:pageshadow="2"
-     inkscape:zoom="35.166667"
-     inkscape:cx="12"
+     inkscape:zoom="36.291667"
+     inkscape:cx="3.857635"
      inkscape:cy="12"
      inkscape:document-units="pt"
      inkscape:current-layer="layer1"
@@ -38,10 +37,10 @@
      inkscape:pagecheckerboard="false"
      showborder="true"
      inkscape:showpageshadow="false"
-     inkscape:window-width="1877"
-     inkscape:window-height="1025"
-     inkscape:window-x="43"
-     inkscape:window-y="27"
+     inkscape:window-width="1920"
+     inkscape:window-height="1052"
+     inkscape:window-x="0"
+     inkscape:window-y="1080"
      inkscape:window-maximized="1">
     <inkscape:grid
        type="xygrid"
@@ -75,7 +74,7 @@
      transform="translate(0,-290.65)">
     <path
        style="fill:#ffffff;stroke:#4d4d4d;stroke-width:0;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:3.40000057;stroke-dasharray:none;stroke-opacity:1"
-       d="M 3.1750001,293.29583 H 1.8520834 l 1.3229167,1.32292 1.3229167,-1.32292 z"
+       d="m 2.6458334,293.825 v -1.32292 l 1.32292,1.32292 -1.32292,1.32292 z"
        id="path820"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccccc" />

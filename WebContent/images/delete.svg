@@ -14,20 +14,19 @@
    viewBox="0 0 6.3500002 6.3500002"
    version="1.1"
    id="svg8"
-   sodipodi:docname="down.light.svg"
+   sodipodi:docname="delete.svg"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
    style="enable-background:new">
   <defs
-     id="defs2">
-  </defs>
+     id="defs2" />
   <sodipodi:namedview
      id="base"
-     pagecolor="#ffffff"
+     pagecolor="#494949"
      bordercolor="#82907b"
      borderopacity="1"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="35.166667"
+     inkscape:zoom="1"
      inkscape:cx="12"
      inkscape:cy="12"
      inkscape:document-units="pt"
@@ -38,11 +37,13 @@
      inkscape:pagecheckerboard="false"
      showborder="true"
      inkscape:showpageshadow="false"
-     inkscape:window-width="1877"
-     inkscape:window-height="1025"
-     inkscape:window-x="43"
-     inkscape:window-y="27"
-     inkscape:window-maximized="1">
+     inkscape:window-width="1920"
+     inkscape:window-height="1052"
+     inkscape:window-x="0"
+     inkscape:window-y="1080"
+     inkscape:window-maximized="1"
+     gridtolerance="10000"
+     objecttolerance="20">
     <inkscape:grid
        type="xygrid"
        id="grid815"
@@ -54,7 +55,8 @@
        visible="true"
        empspacing="5"
        empcolor="#00ffff"
-       empopacity="0.14901961" />
+       empopacity="0.14901961"
+       snapvisiblegridlinesonly="false" />
   </sodipodi:namedview>
   <metadata
      id="metadata5">
@@ -74,10 +76,11 @@
      id="layer1"
      transform="translate(0,-290.65)">
     <path
-       style="fill:#ffffff;stroke:#4d4d4d;stroke-width:0;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:3.40000057;stroke-dasharray:none;stroke-opacity:1"
-       d="M 3.1750001,293.29583 H 1.8520834 l 1.3229167,1.32292 1.3229167,-1.32292 z"
-       id="path820"
+       style="fill:#ffffff;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 11,3 C 11,3 9,2.9999875 9,5 H 5 V 5.9414062 H 6 L 7,20 H 17 L 18,5.9414062 h 1 V 5 H 15 C 15,2.9999875 13,3 13,3 Z m 0,1 h 2 c 0,0 1,-2.52e-5 1,1 h -4 c 0,-1.0000252 1,-1 1,-1 z"
+       transform="matrix(0.26458334,0,0,0.26458334,0,290.65)"
+       id="path819"
        inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccc" />
+       sodipodi:nodetypes="cccccccccccccccccc" />
   </g>
 </svg>

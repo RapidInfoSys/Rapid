@@ -14,20 +14,19 @@
    viewBox="0 0 6.3500002 6.3500002"
    version="1.1"
    id="svg8"
-   sodipodi:docname="down.light.svg"
+   sodipodi:docname="add_left.svg"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
    style="enable-background:new">
   <defs
-     id="defs2">
-  </defs>
+     id="defs2" />
   <sodipodi:namedview
      id="base"
-     pagecolor="#ffffff"
+     pagecolor="#494949"
      bordercolor="#82907b"
      borderopacity="1"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="35.166667"
+     inkscape:zoom="36.291667"
      inkscape:cx="12"
      inkscape:cy="12"
      inkscape:document-units="pt"
@@ -38,10 +37,10 @@
      inkscape:pagecheckerboard="false"
      showborder="true"
      inkscape:showpageshadow="false"
-     inkscape:window-width="1877"
-     inkscape:window-height="1025"
-     inkscape:window-x="43"
-     inkscape:window-y="27"
+     inkscape:window-width="1920"
+     inkscape:window-height="1052"
+     inkscape:window-x="0"
+     inkscape:window-y="1080"
      inkscape:window-maximized="1">
     <inkscape:grid
        type="xygrid"
@@ -73,11 +72,32 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-290.65)">
-    <path
-       style="fill:#ffffff;stroke:#4d4d4d;stroke-width:0;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:3.40000057;stroke-dasharray:none;stroke-opacity:1"
-       d="M 3.1750001,293.29583 H 1.8520834 l 1.3229167,1.32292 1.3229167,-1.32292 z"
-       id="path820"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccc" />
+    <ellipse
+       style="fill:#ffffff;fill-opacity:1;stroke:#e6e6e6;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path823"
+       cx="-5.0176444"
+       cy="293.82501"
+       rx="0.7935589"
+       ry="0.79375005"
+       transform="scale(-1,1)" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.98177676;stroke:#f2f2f2;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect818"
+       width="2.6458335"
+       height="0.52915055"
+       x="0.52916658"
+       y="293.56042"
+       rx="3.6493187e-08"
+       ry="3.6493187e-08" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.98177676;stroke:#f2f2f2;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;enable-background:new"
+       id="rect818-0"
+       width="2.6458311"
+       height="0.52915055"
+       x="292.50211"
+       y="-2.1166666"
+       rx="3.6493187e-08"
+       ry="3.6493187e-08"
+       transform="rotate(90)" />
   </g>
 </svg>

@@ -243,28 +243,37 @@ if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRe
 							
 					<i id="helpPropertiesPanel" class="headerHelp glyph fa hintIcon" style="color:white; font-size:15px;"></i>
 					<div class="buttons">		
-						<button id="selectPeerLeft" class="buttonLeft"><i class="fa fa-caret-left" title="Select the control before this one"></i></button>
-						<button id="selectParent"><i class="fa fa-caret-up" title="Select the parent of this control"></i></button>
-						<button id="selectChild"><i class="fa fa-caret-down" title="Select the first child of this control"></i></button>
-						<button id="selectPeerRight" class="buttonRight"><i class="fa fa-caret-right" title="Select the control after this one"></i></button>
-					</div>							
+						<button id="selectPeerLeft" class="buttonLeft">
+							<i class="fa" title="Select the control before this one"></i>
+						</button>
+						<button id="selectParent">
+							<i class="fa" title="Select the parent of this control"></i>
+						</button>
+						<button id="selectChild">
+							<i class="fa" title="Select the first child of this control"></i>
+						</button>
+						<button id="selectPeerRight" class="buttonRight">
+							<i class="fa" title="Select the control after this one"></i>
+						</button>
+					</div>					
 											
 					<div class="buttons">
-						<button id="swapPeerLeft" class="buttonLeft" style="line-height:20px;"><i class="fa fa-backward" aria-hidden="true" title="Swap position with control before this one" style="font-size:15px; vertical-align:middle;"></i></button>
+						<button id="swapPeerLeft" class="buttonLeft" style="line-height:20px;">
+							<i class="fa" aria-hidden="true" title="Swap position with control before this one" style="font-size:15px; vertical-align:middle;"></i>
+						</button>
 						<button id="addPeerLeft">
-							<div class="fa-stack fa-lg" title="Add a new control before this one" style="height:20px;">
-								<i class="fa fa-plus fa-stack-1x" style="font-size:15px; top:4px;"></i>
-								<i class="fa fa-caret-left fa-stack-1x" style="left:9px; top:-2px; font-size:25px;"></i>
-							</div>
+							<div class="fa fa-lg" title="Add a new control before this one" style="height:20px;"></div>
 						</button>
-						<button id="deleteControl" style="line-height:20px;">&nbsp;<i class="delete fa fa-trash" title="Delete this control"></i>&nbsp;</button>
+						<button id="deleteControl">
+							<i class="delete fa" title="Delete this control"></i>
+						</button>
 						<button id="addPeerRight">
-						<div class="fa-stack fa-lg" title="Add a new control after this one" style="height:20px;">
-								<i class="fa fa-caret-right fa-stack-1x" style="top:-2px; font-size:25px;"></i>
-								<i class="fa fa-plus fa-stack-1x" style="font-size:15px; top:4px; left:9px;"></i>
-							</div>
+						<div class="fa fa-lg" title="Add a new control after this one" style="height:20px;">
+						</div>
 						</button>
-						<button id="swapPeerRight" class="buttonRight" style="line-height:20px;"><i class="fa fa-forward" aria-hidden="true" title="Swap position with control after this one" style="font-size:15px; vertical-align:middle;"></i></button>
+						<button id="swapPeerRight" class="buttonRight" style="line-height:20px;">
+							<i class="fa" aria-hidden="true" title="Swap position with control after this one" style="font-size:15px; vertical-align:middle;"></i>
+						</button>
 					</div>						
 					
 					<div class="buttons">

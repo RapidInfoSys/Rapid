@@ -141,6 +141,18 @@ hr {
 
 #controlPanel select {
 	width: 100%;
+    padding: 2px 30px 2px 5px;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+ 	background-image: url("../images/down.light.svg");
+ 	background-repeat: no-repeat;
+ 	background-position: right 4px center;
+}
+
+#controlPanel select:active {
+    background-image: url("../images/up.light.svg");
+    background-repeat: no-repeat;
+    background-position: right 4px center;
 }
 
 #pageLock, #flowLock {
@@ -947,11 +959,6 @@ select {
   color: white;
   font-family: 'Open Sans', Arial , sans-serif;
   max-width: 100%;
-  -moz-appearance: none;
-  -webkit-appearance: none;
-  background-image: url("../images/down.light.svg");
-  background-repeat: no-repeat;
-  background-position: right 4px center;
 }
 
 select:focus {
@@ -975,7 +982,8 @@ select option {
 }
 
 #propertiesPanel #propertiesPanelInner .untilsPanelDiv .buttons button {
-  padding: 2px 10px;
+    padding: 0 6px;
+    height: 24px;
 }
 
 .untilsPanelDiv {
@@ -1016,6 +1024,7 @@ button:hover {
 
 button:disabled {
   color: #6a6a6a;
+  cursor: default;
 }
 
 .normalInputs input:not([type]) {
@@ -1101,7 +1110,7 @@ table.propertiesPanelTable, table.stylesPanelTable {
 }
 
 .buttons button:disabled:hover {
-  cursor: auto;
+  cursor: default;
   background: linear-gradient(to bottom,  #cccccc 0%,#bbbbbb 20%,#a9a9a9 100%);
 }
 
@@ -1113,9 +1122,6 @@ button:disabled:hover {
 select:hover {
 	color: #000;
 	background: #b2b2b2;
-    background-image: url("../images/down.light.svg");
-    background-repeat: no-repeat;
-    background-position: right 4px center;
 }
 
 #flowCanvas {
@@ -1252,6 +1258,56 @@ span.fr {
   	box-shadow: -1px 0px 5px 1px #9D9D9D;
 }
 
+#selectPeerLeft > i,
+#selectParent > i,
+#selectChild > i,
+#selectPeerRight > i,
+#swapPeerLeft > i,
+#addPeerLeft > div,
+#deleteControl > i,
+#addPeerRight > div,
+#swapPeerRight > i {
+    background-repeat: no-repeat;
+    background-position: center center;
+	min-height: 24px;
+	min-width: 24px;
+}
+
+#selectPeerLeft > i {
+    background-image: url("../images/left.light.svg");
+}
+
+#selectParent > i {
+    background-image: url("../images/up.light.svg");
+}
+
+#selectChild > i {
+    background-image: url("../images/down.light.svg");
+}
+
+#selectPeerRight > i {
+    background-image: url("../images/right.light.svg");
+}
+
+#swapPeerLeft > i {
+    background-image: url("../images/swap_left.svg");
+}
+
+#addPeerLeft > div {
+    background-image: url("../images/add_left.svg");
+}
+
+#deleteControl > i {
+    background-image: url("../images/delete.svg");
+}
+
+#addPeerRight > div {
+    background-image: url("../images/add_right.svg");
+}
+
+#swapPeerRight > i {
+    background-image: url("../images/swap_right.svg");
+}
 
 /*IE10+ CSS overrides*/
 @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
