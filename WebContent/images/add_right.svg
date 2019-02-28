@@ -14,7 +14,7 @@
    viewBox="0 0 6.3500002 6.3500002"
    version="1.1"
    id="svg8"
-   sodipodi:docname="add_right.svg"
+   sodipodi:docname="add_left.svg"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
    style="enable-background:new">
   <defs
@@ -72,32 +72,39 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-290.65)">
-    <ellipse
-       style="fill:#ffffff;fill-opacity:1;stroke:#e6e6e6;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       id="path823"
-       cx="1.3323721"
-       cy="293.82498"
-       rx="0.7935589"
-       ry="0.79375005" />
     <rect
        style="fill:#ffffff;fill-opacity:0.98177676;stroke:#f2f2f2;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect818"
-       width="2.6458335"
+       width="2.1166666"
        height="0.52915055"
-       x="-5.8208504"
-       y="293.56039"
+       x="2.1166668"
+       y="294.35419"
        rx="3.6493187e-08"
-       ry="3.6493187e-08"
-       transform="scale(-1,1)" />
+       ry="3.6493187e-08" />
     <rect
        style="fill:#ffffff;fill-opacity:0.98177676;stroke:#f2f2f2;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;enable-background:new"
        id="rect818-0"
-       width="2.6458311"
+       width="2.1166549"
        height="0.52915055"
-       x="292.50208"
-       y="4.2333498"
+       x="293.56042"
+       y="-3.4395833"
        rx="3.6493187e-08"
        ry="3.6493187e-08"
-       transform="matrix(0,1,1,0,0,0)" />
+       transform="rotate(90)" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0.98177676;stroke:#f2f2f2;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;enable-background:new"
+       id="rect818-9"
+       width="4.2333331"
+       height="0.52915055"
+       x="-5.0270839"
+       y="292.23752"
+       rx="3.6493187e-08"
+       ry="3.6493187e-08"
+       transform="scale(-1,1)" />
+    <path
+       style="fill:#ffffff;stroke:none;stroke-width:0.29581368px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 4.7625001,292.50208 v 1.32291 l 1.3229166,-1.32291 -1.3229166,-1.32292 z"
+       id="path834"
+       inkscape:connector-curvature="0" />
   </g>
 </svg>

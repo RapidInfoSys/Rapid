@@ -1264,7 +1264,6 @@ span.fr {
 #selectPeerRight > i,
 #swapPeerLeft > i,
 #addPeerLeft > div,
-#deleteControl > i,
 #addPeerRight > div,
 #swapPeerRight > i {
     background-repeat: no-repeat;
@@ -1295,10 +1294,6 @@ span.fr {
 
 #addPeerLeft > div {
     background-image: url("../images/add_left.svg");
-}
-
-#deleteControl > i {
-    background-image: url("../images/delete.svg");
 }
 
 #addPeerRight > div {

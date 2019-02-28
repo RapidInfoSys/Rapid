@@ -264,9 +264,7 @@ if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRe
 						<button id="addPeerLeft">
 							<div class="fa fa-lg" title="Add a new control before this one" style="height:20px;"></div>
 						</button>
-						<button id="deleteControl">
-							<i class="delete fa" title="Delete this control"></i>
-						</button>
+						<button id="deleteControl" style="line-height:20px;">&nbsp;<i class="delete fa fa-trash" title="Delete this control"></i>&nbsp;</button>
 						<button id="addPeerRight">
 						<div class="fa fa-lg" title="Add a new control after this one" style="height:20px;">
 						</div>

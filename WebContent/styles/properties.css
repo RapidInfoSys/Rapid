@@ -116,6 +116,10 @@ table.propertiesPanelTable  {
 	background-position: right 4px center;
 }
 
+td.propertySubHeader select:hover {
+	background-color: #f2f2f2;
+}
+
 .propertiesPanelTable select:active,
 .propertiesPanelTable tr:hover td:nth-child(2) select:active {
 	background-image: url("../images/up.dark.svg");
@@ -308,14 +312,6 @@ td.propertySubHeader {
 
 .propertySubHeader i.actionHelp {
 	font-size: 17px;
-}
-
-.propertiesPanelTable .propertySubHeader select {
-	background: #d5d6d2;
-}
-
-.propertiesPanelTable .propertySubHeader select:hover {
-	background: #f2f2f2 !important;
 }
 
 .dialogueTable {
