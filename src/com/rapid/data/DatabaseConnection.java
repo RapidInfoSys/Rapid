@@ -69,7 +69,7 @@ public class DatabaseConnection {
 	public DatabaseConnection(ServletContext servletContext, Application application, String name, String driverClass, String connectionString, String connectionAdapterClass, String userName, String password) {
 		_name = name;
 		_driverClass = driverClass;
-		_connectionString = application.insertParameters(servletContext, connectionString);
+		_connectionString = connectionString;
 		_connectionAdapterClass = connectionAdapterClass;
 		_userName = userName;
 		_password = password;
