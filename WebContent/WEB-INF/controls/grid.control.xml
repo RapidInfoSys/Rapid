@@ -967,12 +967,16 @@ if (data !== undefined) {
 					var span = $(ev.target);
 					// drill down if need be
 					if (!span.is("span")) span = span.find("span");
+					// get the column
+					var column = ev.data.index;
+					// if this is multiselect subtract 1 column
+					if (details.multiSelect) column--;
 					// if ascending or not set (note the unicode escape)
 					if (span.html() == "\uf0de") {
-						sortGridByColumn(ev, id, details, ev.data.index, false);
+						sortGridByColumn(ev, id, details, column, false);
 						span.html("&#xf0dd;");
 					} else {
-						sortGridByColumn(ev, id, details, ev.data.index, true);
+						sortGridByColumn(ev, id, details, column, true);
 						span.html("&#xf0de;");
 					}
 				});
