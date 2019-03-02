@@ -3,7 +3,7 @@
 
 <!-- 
 
-Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -94,10 +94,10 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	        
 	         <property>
 	            <key>filter</key>
-	            <name>Filtering</name>
+	            <name>Searching</name>
 	            <changeValueJavaScript>checkbox</changeValueJavaScript>
 	            <refreshHtml>true</refreshHtml>
-	            <helpHtml>Allows the user to filter the available options as they type.</helpHtml>
+	            <helpHtml>Allows the user to search through the available options as they type.</helpHtml>
 	        </property>
 	        
 	        <property>
@@ -210,7 +210,11 @@ return [{value:"", text:"Please select..."}, {value:"lg-1", text:"1/12"}, {value
 
 .ui-helper-hidden-accessible {
   display:none;
-}				
+}
+
+.ui-menu-item-wrapper {
+  min-height: 1.5em;
+}			
 				</contents>
 			</resource>
 			
@@ -281,13 +285,7 @@ return {filter:this.filter};
 	    
 	    <getDataFunction>
 	        <![CDATA[
-
-if(details && details.filter){
-	return $("#" + id).find("input").val();
-} else {
-	return $("#" + id).find("select").val();
-}
-
+return $("#" + id).find("select").val();
 			]]>
 	    </getDataFunction>
 	    
@@ -390,6 +388,18 @@ return "#" + this.id + " select:focus";
 	    	<![CDATA[
 if (details && details.filter) {
 
+	// jQuery UI overrides to suport blank entries
+
+	$.ui.autocomplete.prototype._renderItem = function(e, i) {
+    	return $("<li>").append($("<div>").html(i.label)).appendTo(e);
+    };
+    
+	$.ui.menu.prototype._isDivider = function(t) {
+		return false;
+	};
+    
+    // custom combo box
+
 	$.widget( "custom.combobox", {
 
       _create: function() {
@@ -429,7 +439,7 @@ if (details && details.filter) {
               item: ui.item.option
             });
           },
-          autocompletechange: "_removeIfInvalid"
+          autocompletechange: "_changed"
         });
       },
       
@@ -454,40 +464,46 @@ if (details && details.filter) {
           });
       },
       
-      _source: function( request, response ) {
+      _source: function(request,response) {
         var matcher = new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
-        response( this.element.children( "option" ).map(function() {
-          var text = $( this ).text();
-          if ( this.value && ( !request.term || matcher.test(text) ) )
+        response(this.element.children("option").map(function() {
+          var text = $(this).text();
+          var value = text;
+          if (!text) {
+            text = " ";
+            value = "";
+          }
+          if (!request.term || matcher.test(text)) {
             return {
               label: text,
               value: text,
               option: this
             };
-        }) );
-      },
- 
-      _removeIfInvalid: function( event, ui ) {
-        // Selected an item, nothing to do
-        if ( ui.item ) {
-          return;
-        }
-        // Search for a match (case-insensitive)
-        var value = this.input.val(), valueLowerCase = value.toLowerCase(), valid = false;
-        this.element.children( "option" ).each(function() {
-          if ( $( this ).text().toLowerCase() === valueLowerCase ) {
-            this.selected = valid = true;
-            return false;
           }
-        });
-        // Found a match, nothing to do
-        if ( valid ) {
-          return;
-        }
-        // Remove invalid value
-        this.input.val( "" )
-        this.element.val( "" );
-        this.input.autocomplete( "instance" ).term = "";
+        }));
+      },
+      
+      _changed: function( event, ui ) {
+        // if there is no item selected
+        if (!ui.item) {
+	        // Search for a match (case-insensitive)
+	        var value = this.input.val(), valueLowerCase = value.toLowerCase(), valid = false;
+	        this.element.children( "option" ).each( function() {
+	          if ( $(this).text().toLowerCase() === valueLowerCase ) {
+	            this.selected = valid = true;
+	            return false;
+	          }
+	        });
+	        // if not valid
+	        if (!valid) {
+	          // Remove invalid value
+	          this.input.val( "" )
+	          this.element.val( "" );
+	          this.input.autocomplete( "instance" ).term = "";
+	        }
+	     }
+	     // fire the change event
+         $( "#" + id).trigger("change");
       },
  
       _destroy: function() {

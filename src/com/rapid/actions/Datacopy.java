@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2015 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -25,9 +25,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 
 package com.rapid.actions;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -260,7 +258,7 @@ public class Datacopy extends Action {
 
 			// get the data source
 			String dataSourceId = getProperty("dataSource");
-			
+
 			// check there is a datasource
 			if (dataSourceId == null) {
 
@@ -269,18 +267,9 @@ public class Datacopy extends Action {
 
 			} else {
 
+				// get the data source field
 				String dataSourceField = getProperty("dataSourceField");
-				
-				// if the dataSourceId is a date
-				/*if("System.current date".equalsIgnoreCase(dataSourceId)){
-					Date dateObj = new Date();
-					SimpleDateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy");
-					String date = dateFormat.format(dateObj);
-				}*/
-				 
-				
-				// Check if the dataSource
-				
+
 				// split by escaped .
 				String[] idParts = dataSourceId.split("\\.");
 
@@ -294,27 +283,25 @@ public class Datacopy extends Action {
 					if("current date".equals(type)){
 						// get its, format
 						format = getProperty("dateFormat");
-						
+
 					} else if ("current time".equals(type)){
 						// get its, format
 						format = getProperty("timeFormat");
-						
+
 					} else { // if the date and time format is selected
 						// get its, format
 						format = getProperty("dateFormat") + " " + getProperty("timeFormat");
 					}
-					
+
 					// make the js!
 					js = "var data = formatDatetime('" + format + "', new Date());\n";
-					
+
 				} else {
-					
+
 					js = "var data = "  + Control.getDataJavaScript(rapidServlet.getServletContext(), application, page, dataSourceId, dataSourceField) + ";\n";
-					
+
 				}
-					
-				
-				
+
 				// we're going to work with the data destinations in a json array
 				JSONArray jsonDataDestinations = null;
 

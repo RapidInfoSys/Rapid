@@ -113,16 +113,16 @@ public class Control {
 	public String getLabel() {
 		//get default label
 		String label = getProperty("label");
-		
+
 		// try getting the responsive label, if label is null or empty
 		if(label == null || label.trim().isEmpty()) label = getProperty("responsiveLabel");
-		
+
 		// label is null or empty, set label as null
 		if (label == null || label.trim().isEmpty()) label = null;
-		
+
 		return label;
 	}
-	
+
 	// the details used by the getData and setData method to map the data to the control
 	public String getDetails() { return getProperty("details"); }
 	// whether this control can be used from other pages
@@ -596,14 +596,8 @@ public class Control {
 						// get the runtime property
 						return "getProperty_" + control.getType() + "_" + idParts[1] + "(ev,'" + control.getId() + "'," + fieldJS + detailsJS + ")";
 					} else {
-						
+						// get the control type
 						String controlType = control.getType();
-						// Special check for responsive dropdown
-						// If type is 'responsivedropdown' check whether the filtering option is set
-						if("true".equals(control.getProperty("filter"))) {
-							// consider this as a responsiveinput 
-							controlType = "responsiveinput";
-						}
 						// no other parts return getData call
 						return "getData_" + controlType + "(ev,'" + control.getId() + "'," + fieldJS + detailsJS + ")";
 					}
