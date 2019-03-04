@@ -1120,6 +1120,10 @@ input[type=checkbox]:checked:after {
   transform: rotate(45deg);
 }
 
+input {
+    font-family: 'Open Sans';	
+}
+
 h2, #controlPanelVersion, #controlsList h3 {
   color: white;
 }

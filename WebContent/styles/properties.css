@@ -36,7 +36,7 @@ table.propertiesPanelTable  {
 .propertiesPanelTable td:first-child:not(.propertyHeader) {
 	padding-left: 5px;
 	padding-right: 19px;
-	padding-top: 4px;
+	padding-top: 2px;
     padding-bottom: 2px;
 }
 
@@ -82,7 +82,7 @@ table.propertiesPanelTable  {
 
 .propertiesPanelTable input[type=checkbox] {
 	width: auto;
-	margin-top: 0;
+	margin-top: 2px;
   	margin-left: 2px;
   	vertical-align: top;
 }
@@ -131,6 +131,7 @@ td.propertySubHeader select:hover {
 
 .propertiesPanelTable td.propertyAdd {
 	padding: 0;
+	background: #D5D6D2;
 }
 
 .propertiesPanelTable.propertiesDialogueTable tr:hover td {
@@ -295,13 +296,13 @@ div.propertyDialogue td>select {
 	padding: 2px 26px 2px 5px;
 	-moz-appearance: none;
 	-webkit-appearance: none;
-	background-image: url("../images/down.light.svg");
+	background-image: url("../images/down.dark.svg");
 	background-repeat: no-repeat;
 	background-position: right 2px center;
 }
 
 div.propertyDialogue td>select:active {
-	background-image: url("../images/up.light.svg");
+	background-image: url("../images/up.dark.svg");
 }
 
 .propertyAction{
@@ -391,8 +392,7 @@ table.outputTable.dialogueTable td:last-child {
 }
 
 .dialogueTable input[type=checkbox] {	
-	margin-top: 2px;
-	margin-left: -2px;
+	margin-top: 7px;
 }
 
 .dialogueTable input[type=file] {
