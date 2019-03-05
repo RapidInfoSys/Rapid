@@ -29,6 +29,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.sqlite.SQLiteConnection;
 
@@ -38,24 +40,31 @@ import com.rapid.server.RapidRequest;
 // this class extends the data factory for SQLite providing a static connection for updates and synchronisation to avoid file locks
 public class SQLiteDataFactory extends DataFactory {
 
-	// the static connection used by all overrides
-	protected static SQLiteConnection _staticConnection;
+	// a map of static connections used by all overrides
+	protected static Map<String,SQLiteConnection> _appStaticConnections;
 	// a lock object for synchronising the update calls which we make in the constructor
-	protected static Object _lock;
+	protected static Map<String,Object> _appLocks;
+
+	// the static connection key for this app/version
+	protected String _key;
 
 	// constructors
 	public SQLiteDataFactory(ConnectionAdapter connectionAdapter) {
 		// call the super
 		super(connectionAdapter);
+		// create the static connections map
+		if (_appStaticConnections == null) _appStaticConnections = new HashMap<>();
 		// create the object we will use for locking
-		if (_lock == null) _lock = new Object();
+		if (_appLocks == null) _appLocks = new HashMap<>();
 	}
 
 	public SQLiteDataFactory(ConnectionAdapter connectionAdapter, boolean autoCommit) {
 		// call the super
 		super(connectionAdapter, autoCommit);
+		// create the static connections map
+		if (_appStaticConnections == null) _appStaticConnections = new HashMap<>();
 		// create the object we will use for locking
-		if (_lock == null) _lock = new Object();
+		if (_appLocks == null) _appLocks = new HashMap<>();
 	}
 
 
@@ -78,19 +87,39 @@ public class SQLiteDataFactory extends DataFactory {
 		// close any previous statement
 		if (_preparedStatement != null) _preparedStatement.close();
 
-		// synchronise the execution of prepared statements on the static connection to avoid file lock errors
-		synchronized(_lock) {
+		// make a _key if we need one
+		if (_key == null) _key = rapidRequest.getApplication().getId() + "-" + rapidRequest.getApplication().getVersion();
 
-			// make a new static connection if we need one
-			if (_staticConnection == null) {
-				_staticConnection = (SQLiteConnection) _connectionAdapter.getConnection(rapidRequest);
-				_staticConnection.setAutoCommit(true);
-				_staticConnection.setReadOnly(false);
-				_staticConnection.setBusyTimeout(1000);
+		// get the lock
+		Object lock = _appLocks.get(_key);
+
+		// if lock doesn not exist yet
+		if (lock == null) {
+			// make a new one
+			lock = new Object();
+			// retain it
+			_appLocks.put(_key,lock);
+		}
+
+		// synchronise the execution of prepared statements on the static connection to avoid file lock errors
+		synchronized(lock) {
+
+			// try and get a static connection
+			SQLiteConnection connection = _appStaticConnections.get(_key);
+
+			// if we don't have a static connection yet for this key, or the one we have is closed
+			if (connection == null || connection.isClosed()) {
+				// make a new static connection if we need one
+				connection = (SQLiteConnection) _connectionAdapter.getConnection(rapidRequest);
+				connection.setAutoCommit(true);
+				connection.setReadOnly(false);
+				connection.setBusyTimeout(1000);
+				// store it
+				_appStaticConnections.put(_key, connection);
 			}
 
 			// get our prepared statement
-			_preparedStatement = _staticConnection.prepareStatement(_sql);
+			_preparedStatement = connection.prepareStatement(_sql);
 
 		}
 
@@ -111,8 +140,19 @@ public class SQLiteDataFactory extends DataFactory {
 		// assume an issue with the rows updated
 		int rows = -1;
 
+		// get the lock
+		Object lock = _appLocks.get(_key);
+
+		// if lock doesn not exist yet
+		if (lock == null) {
+			// make a new one
+			lock = new Object();
+			// retain it
+			_appLocks.put(_key,lock);
+		}
+
 		// synchronise the execution of prepared statements on the static connection to avoid file lock errors
-		synchronized(_lock) {
+		synchronized(lock) {
 
 			// get the updated rows
 			rows = ps.executeUpdate();
@@ -140,19 +180,27 @@ public class SQLiteDataFactory extends DataFactory {
 		// if (_staticConnection != null) _staticConnection.rollback();
 	}
 
-	// a close all method which also closes the static connection and should be used for cleanup/shutdown - disable for now as autocommit is true
+	// a close all method which also closes the static connection and should be used for cleanup/shutdown - disabled for now as autocommit is true
 	public void closeAll() throws SQLException {
 
 		// close the non-static connection
 		close();
 
-		// if we have a connection adapter and a static connection
-		if (_connectionAdapter != null && _staticConnection != null) {
-			// have the adapter close the connection
-			_connectionAdapter.closeConnection(_staticConnection);
-		} else if (_staticConnection != null) {
-			// just close the static connection if that's all we have
-			_staticConnection.close();
+		// if we have _staticConnections
+		if (_appStaticConnections != null) {
+
+			// get the connection
+			SQLiteConnection connection = _appStaticConnections.get(_key);
+
+			// if we have a connection adapter and a static connection
+			if (_connectionAdapter != null && connection != null) {
+				// have the adapter close the connection
+				_connectionAdapter.closeConnection(connection);
+			} else if (connection != null) {
+				// just close the static connection if that's all we have
+				connection.close();
+			}
+
 		}
 
 	}
