@@ -500,7 +500,8 @@ table.inputs tr td:last-child, table.outputs tr td:last-child  {
 	padding-top: 4px;
 }
 
-.inputTableWithTitles tr td:nth-child(6):hover, .inputTableWithTitles tr td:nth-child(7):hover {
+.inputTableWithTitles tr:not(:first-child) td:nth-child(6):hover,
+.inputTableWithTitles tr:not(:first-child) td:nth-child(7):hover {
 	background: #e6e6e6;
 }
 
