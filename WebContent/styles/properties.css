@@ -487,7 +487,7 @@ table.inputs tr td:last-child, table.outputs tr td:last-child  {
 }
 
 .inputTableWithTitles tr td {
-	max-width: unset;
+	max-width: 300px;
 }
 
 .inputTableWithTitles tr td:nth-child(6) span {
