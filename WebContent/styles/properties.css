@@ -104,7 +104,7 @@ table.propertiesPanelTable  {
 .propertiesPanelTable select,
 .propertiesPanelTable tr:hover td:nth-child(2) select {
 	width: 100%;
-	padding: 0;
+	padding: 0 24px 0 0;
 	height: 19px;
 	background: inherit;
 	color: black;
@@ -114,6 +114,7 @@ table.propertiesPanelTable  {
 	background-image: url("../images/down.dark.svg");
 	background-repeat: no-repeat;
 	background-position: right 2px center;
+	text-overflow: ellipsis;
 }
 
 td.propertySubHeader select:hover {
