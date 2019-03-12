@@ -2550,7 +2550,7 @@ $(document).ready( function() {
 		// check pinned
 		if (_panelPinned) {
 			_panelPinned = false;			
-			$("#controlPanelPin").html("<img src='images/triangleDownWhite_8x8.png' title='pin panel'>");
+			$("#controlPanelPin").html("<img src='images/down.light.svg' title='pin panel'>");
 			// set the panel pin offset
 			_panelPinnedOffset = 0;			
 			// arrange the non visible controls due to the shift in the panel
@@ -2562,7 +2562,7 @@ $(document).ready( function() {
 		} else {
 			_panelPinned = true;
 			_panelPinnedOffset = $("#controlPanel").width() + 21; // add the padding and border
-			$("#controlPanelPin").html("<img src='images/triangleLeftWhite_8x8.png' title='unpin panel'>");
+			$("#controlPanelPin").html("<img src='images/left.light.svg' title='unpin panel'>");
 			// resize the window
 			windowResize("unpin");
 			// arrange the non visible controls due to the shift in the panel

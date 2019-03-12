@@ -90,9 +90,6 @@ hr {
 	width: 14px;
 	height: 14px;
 	z-index: 1;
- 	background-image: url("../images/left.light.svg");
- 	background-repeat: no-repeat;
- 	background-position: left -2px center;
 }
 
 #controlPanel {
