@@ -179,7 +179,7 @@ if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRe
 					<!-- Application versions are added here as options the designer loads -->
 				</select>					
 				
-				<h2 style="border:none;"><img id="pagePrev" class="pageNav pageNavDisabled" src="images/triangleLeftWhite_8x8.png" title="previous page" />Page<img id="pageNext" class="pageNav pageNavDisabled" src="images/triangleRightWhite_8x8.png" title="next page" /><i id="helpPage" class="headerHelp glyph fa hintIcon"></i></h2>
+				<h2 style="border:none;"><img id="pagePrev" class="pageNav pageNavDisabled" src="images/left.light.svg" title="previous page" />Page<img id="pageNext" class="pageNav pageNavDisabled" src="images/right.light.svg" title="next page" /><i id="helpPage" class="headerHelp glyph fa hintIcon"></i></h2>
 				<select id="pageSelect">
 					<!-- Pages are added here as options the designer loads -->
 				</select>

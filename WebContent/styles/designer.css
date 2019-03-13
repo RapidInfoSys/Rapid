@@ -213,7 +213,7 @@ table.stylesPanelTable select.propertiesPanelTable:active {
 .pageNav {
 	margin-left: 5px;
 	margin-right: 5px;
-	margin-bottom: 1px;
+	vertical-align: bottom;
 	cursor: pointer;
 }
 
