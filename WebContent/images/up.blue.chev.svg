@@ -14,13 +14,12 @@
    viewBox="0 0 6.3500002 6.3500002"
    version="1.1"
    id="svg8"
-   sodipodi:docname="up.white.chev.svg"
+   sodipodi:docname="up.blue.chev.svg"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
    style="enable-background:new"
    enable-background="new">
   <defs
-     id="defs2">
-  </defs>
+     id="defs2" />
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -75,32 +74,32 @@
      id="layer1"
      transform="translate(0,-290.65)">
     <rect
-       style="opacity:0.97999998;fill:#ffffff;fill-opacity:1;stroke:#fcffff;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;"
+       style="opacity:0.97999998;fill:#0080ff;fill-opacity:1;stroke:#fcffff;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect814"
        width="0.79375005"
        height="2.9104373"
-       x="204.35266"
-       y="-211.75317"
+       x="204.58514"
+       y="-211.94026"
        rx="0.39687502"
        ry="0.39998341"
        transform="rotate(135)" />
     <rect
-       style="opacity:0.97999998;fill:#ffffff;fill-opacity:1;stroke:#fcffff;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;enable-background:new"
+       style="opacity:0.97999998;fill:#0080ff;fill-opacity:1;stroke:#fcffff;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;enable-background:new"
        id="rect814-8"
        width="2.9104168"
        height="0.79376018"
-       x="204.35266"
-       y="-209.63654"
+       x="204.58514"
+       y="-209.82362"
        rx="0.40753397"
        ry="0.39688009"
        transform="rotate(135)" />
     <rect
-       style="opacity:0.97999998;fill:#ffffff;fill-opacity:1;stroke:#fcffff;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;enable-background:new"
+       style="opacity:0.97999998;fill:#0080ff;fill-opacity:1;stroke:#fcffff;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;enable-background:new"
        id="rect814-0"
        width="0.79375005"
        height="0.79377049"
-       x="204.35266"
-       y="-209.63654"
+       x="204.58514"
+       y="-209.82362"
        rx="0.26458344"
        ry="0.26459768"
        transform="rotate(135)" />

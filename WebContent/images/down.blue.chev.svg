@@ -63,7 +63,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -71,35 +71,34 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-290.65)"
-     style="filter:url(#filter1185)">
+     transform="translate(0,-290.65)">
     <rect
        style="fill:#0080ff;fill-opacity:1;stroke:#fcffff;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect814"
        width="0.79375005"
        height="2.9104373"
-       x="-206.68851"
-       y="208.26825"
+       x="-206.50142"
+       y="208.03574"
        rx="0.39687502"
        ry="0.39998341"
        transform="rotate(-45)" />
     <rect
-       style="fill:#0080ff;fill-opacity:1;stroke:#fcffff;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter1185);enable-background:new"
+       style="fill:#0080ff;fill-opacity:1;stroke:#fcffff;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;enable-background:new"
        id="rect814-8"
        width="2.9104168"
        height="0.79376018"
-       x="-206.68851"
-       y="210.38489"
+       x="-206.50142"
+       y="210.15237"
        rx="0.40753397"
        ry="0.39688009"
        transform="rotate(-45)" />
     <rect
-       style="fill:#0080ff;fill-opacity:1;stroke:#fcffff;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter1185);enable-background:new"
+       style="fill:#0080ff;fill-opacity:1;stroke:#fcffff;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;enable-background:new"
        id="rect814-0"
        width="0.79375005"
        height="0.79377049"
-       x="-206.68851"
-       y="210.38489"
+       x="-206.50142"
+       y="210.15237"
        rx="0.26458344"
        ry="0.26459768"
        transform="rotate(-45)" />
