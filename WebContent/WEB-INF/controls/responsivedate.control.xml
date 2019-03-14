@@ -224,6 +224,11 @@ return [{value:"", text:"Please select..."}, {value:"lg-1", text:"1/12"}, {value
 	    	</resource>
 	    	
 	    	<resource>
+	    		<type>file</type>
+	    		<contents>styles/controls/images/icons_16.png</contents>
+	    	</resource>
+	    	
+	    	<resource>
 				<type>cssLink</type>
 				<contents>styles/bootstrap.css</contents>
 			</resource>
