@@ -1,289 +1,284 @@
 @font-face {
-	  font-family: 'Open Sans';
-	  font-style: normal;
-	  font-weight: 400;
-	  src: local('Open Sans'), local('OpenSans'), url(https://fonts.gstatic.com/s/opensans/v13/cJZKeOuBrn4kERxqtaUH3VtXRa8TVwTICgirnJhmVJw.woff2) format('woff2');
-	  src: local('Open Sans'), local('OpenSans'), url(https://fonts.gstatic.com/s/opensans/v13/cJZKeOuBrn4kERxqtaUH3T8E0i7KZn-EPnyo3HZu7kw.woff) format('woff');
-	  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
-	}
-
-	html {		
-		height: 100%;	
-	}
-	
-	body {
-		height: 100%; 
-		background:#f1f1f1; 
-		font-family: 'Open Sans', Arial, sans-serif;
-		margin:0;
-	}
-	
-	div.midTitle {
-		background: #202326; 
-		text-align:center; 
-		color: white; 
-	}
-	
-	.midTitle span {
-		font-size:40px; 
-		line-height:80px;
-		font-weight:bold;
-	}
-	
-	.image img {
-		width: 70px;
-		height: 60px;
-		background: white;
-		padding: 10px;
-		padding-right: 15px;
-		position: absolute;
-		top: 0;
-		right: 0;
-		border-bottom: 2px solid #f4091b;
-	}
-	
-	.subBar {
-		background: #f4091b; 
-		height:30px; 
-		margin:0;
-	}
-	
-	.versionColumn{
-		float:right; 
-		width:95px; 
-		text-align:center;
-		padding:5px 0; 
-		font-size:12px; 
-		font-weight:bold; 
-		color: white;
-	}
-	
-	.body {
-		padding:0; 
-		height:calc(100% - 110px);
-	}
-	
-	.columnMiddle {
-		background:white; 
-		width:75%; 
-		min-height: 100%;
-		margin:auto;
-		text-align: center;
-	}
-	
-	form{
-		width:45%;
-		background: #202326;
-		padding:40px; 
-		margin: 40px 0; 
-		max-width:500px;
-		display:inline-block;
-	}
-
-	
-	/* Clear floats after the columns */
-	.row:after {
-	    content: "";
-	    display: table;
-	    clear: both;
-	}
-	
-	.columnUserIcon {
-		width:45px; 
-		background:#e6e6e6;; 
-		position:absolute; 
-		padding: 10px 0; 
-		height:30px;
-		border-right: 1px solid #ccc;
-	}
-	
-	.columnUserIcon span {
-		font-size: 18px; 
-		font-weight: bold;
-		vertical-align: middle;
-	}
-	
-	.columnUserInput {
-		width: 100%;
-		margin-bottom:20px;
-	}
-
-	input[type=text], input[type=password] {
-		width: 100%;
-		padding: 12px 20px;
-		display: inline-block;
-		border: 1px solid #ccc;
-		box-sizing: border-box;
-		text-indent: 40px;	
-		transition: background 0.5s ease;
-		font-family: inherit;
-		font-size: 18px;
-	}
-	
-	input[type="text"]:hover, input[type="password"]:hover {
-		background: #e6e6e6;
-	}
-
-	button {
-		background: #f4091b;
-		color: white;
-		padding: 14px 20px;
-		border: none;
-		cursor: pointer;
-		font-size: 18px;
-		box-shadow: none;
-		text-transform: uppercase;
-		transition: background 0.5s ease;
-	}
-	
-	button:hover {
-		background: #ff3336;
-	}
-		
-	/*div {
-	    box-sizing:border-box;
-	    -moz-box-sizing:border-box;
-	    -webkit-box-sizing:border-box;
-	}*/
-	
-	section {
-			width: 245px;
-			margin-top: 40px;
-			display:inline-block;
-			background: #101820 /*#202326;*/;
-			padding: 20px 0;
-			margin: 40px 20px;
-			margin-bottom: 0;
-			transition: background 0.5s ease;
-	}
-		
-	section:last-child {
-		margin-bottom:40px;
-	}
-		
-	section:hover {
-		background:#23262a;
-	}
-	
-	/*************************************************/
-.body img {  
-	    width: 150px;
-	    height: 130px;
-	}
-	
-	.body a { 
-		font-size: 36px;
-		font-weight: bold;
-		color: white;
-		text-decoration: none;
-	}
-	
-	.body a:hover { 
-		text-decoration: underline;
-	}
-	
-	.body a span { 
-		padding: 20px;
-	}
-	
-	p.message {
-		font-size:18px;
-		margin:0 40px;
-	}
-	
-	p.message a{
-		color:black;
-		font-size:18px;
-	}
-	
-	.link {
-		vertical-align: middle;
-		padding: 0 10px;
-	}
-	
-	.link a {
-		font-weight: bold;
-		text-decoration: none;
-		color: white;
-		vertical-align: middle;
-	}
-	
-	.link a:hover {
-		text-decoration: underline;
-	}
-	
-	.info {
-		margin:40px; 
-		display:inline-block;
-	}
-	
-	.info p {
-		font-size:18px; 
-		margin-top:0; 
-		margin-bottom:40px;
-	}
-	
-	.apps {
-		float: right;
-		width:100%;
-	}
-	
-	.apps ul {
-		list-style-type: none;
-		padding:0;
-		margin-bottom: 0;	
-	}
-	
-	.apps li {
-		padding: 5px;
-		background: #2c3035;
-		margin-bottom: 10px;
-	}
-	
-	.apps li:hover {
-		background-color: #2a2d32;
-	}
-	
-	div.title {
-		background-color:#ccc;
-		margin: 0px 0px 20px 0px;
-		padding: 5px 15px 35px;
-		color: white;
-		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#666', endColorstr='#494949',GradientType=0 );
-		background: linear-gradient(#666, #494949);
-	}
-	
-	.title span {
-    	display: block;
-	}
-	
-		td {
-		font-size: 16px;
-		padding-left: 5px;
-		padding-bottom:3px;
-	}
-	
-	div.fa-stack {
-		font-size:55px;
-	}
-	
-	div.fa-stack i.fa-stack-2x {
-		color:#f4091b;
-	}
-	
-	div.fa-stack i.fa-stack-1x {
-		color:white;
-	}
-   	
-   	.midTitle {
-   		padding: 0;
-   	}
-	
-	/*********************************************/
-/*For small screens (landscape)*/
-@media (max-width: 739px) {
-
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Open Sans'), local('OpenSans'), url(https://fonts.gstatic.com/s/opensans/v13/cJZKeOuBrn4kERxqtaUH3VtXRa8TVwTICgirnJhmVJw.woff2) format('woff2');
+  src: local('Open Sans'), local('OpenSans'), url(https://fonts.gstatic.com/s/opensans/v13/cJZKeOuBrn4kERxqtaUH3T8E0i7KZn-EPnyo3HZu7kw.woff) format('woff');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
+
+html {		
+	height: 100%;	
+}
+
+body {
+	height: 100%; 
+	background:#f1f1f1; 
+	font-family: 'Open Sans', Arial, sans-serif;
+	margin:0;
+}
+
+div.midTitle {
+	background: #202326; 
+	text-align:center; 
+	color: white; 
+}
+
+.midTitle span {
+	font-size:40px; 
+	line-height:80px;
+	font-weight:bold;
+}
+
+.image img {
+	width: 70px;
+	height: 60px;
+	background: white;
+	padding: 10px;
+	padding-right: 15px;
+	position: absolute;
+	top: 0;
+	right: 0;
+	border-bottom: 2px solid #f4091b;
+}
+
+.subBar {
+	background: #f4091b; 
+	height:30px; 
+	margin:0;
+}
+
+.versionColumn{
+	float:right; 
+	width:95px; 
+	text-align:center;
+	padding:5px 0; 
+	font-size:12px; 
+	font-weight:bold; 
+	color: white;
+}
+
+.body {
+	padding:0; 
+	height:calc(100% - 110px);
+}
+
+.columnMiddle {
+	background:white; 
+	width:75%; 
+	min-height: 100%;
+	margin:auto;
+	text-align: center;
+}
+
+form{
+	width:45%;
+	background: #202326;
+	padding:40px; 
+	margin: 40px 0; 
+	max-width:500px;
+	display:inline-block;
+}
+
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.columnUserIcon {
+	width:45px; 
+	background:#e6e6e6;; 
+	position:absolute; 
+	padding: 10px 0; 
+	height:30px;
+	border-right: 1px solid #ccc;
+}
+
+.columnUserIcon span {
+	font-size: 18px; 
+	font-weight: bold;
+	vertical-align: middle;
+}
+
+.columnUserInput {
+	width: 100%;
+	margin-bottom:20px;
+}
+
+input[type=text], input[type=password] {
+	width: 100%;
+	padding: 12px 20px;
+	display: inline-block;
+	border: 1px solid #ccc;
+	box-sizing: border-box;
+	text-indent: 40px;	
+	transition: background 0.5s ease;
+	font-family: inherit;
+	font-size: 18px;
+}
+
+input[type="text"]:hover, input[type="password"]:hover {
+	background: #e6e6e6;
+}
+
+button {
+	background: #f4091b;
+	color: white;
+	padding: 14px 20px;
+	border: none;
+	cursor: pointer;
+	font-size: 18px;
+	box-shadow: none;
+	text-transform: uppercase;
+	transition: background 0.5s ease;
+}
+
+button:hover {
+	background: #ff3336;
+}
+	
+section {
+	width: 245px;
+	margin-top: 40px;
+	display:inline-block;
+	background: #101820 /*#202326;*/;
+	padding: 20px 0;
+	margin: 40px 20px;
+	margin-bottom: 0;
+	transition: background 0.5s ease;
+}
+	
+section:last-child {
+	margin-bottom:40px;
+}
+	
+section:hover {
+	background:#23262a;
+}
+
+/*************************************************/
+.body img {  
+    width: 150px;
+    height: 130px;
+}
+
+.body a { 
+	font-size: 36px;
+	font-weight: bold;
+	color: white;
+	text-decoration: none;
+}
+
+.body a:hover { 
+	text-decoration: underline;
+}
+
+.body a span { 
+	padding: 20px;
+}
+
+p.message {
+	font-size:18px;
+	margin:0 40px;
+}
+
+p.message a{
+	color:black;
+	font-size:18px;
+}
+
+.link {
+	vertical-align: middle;
+	padding: 0 10px;
+}
+
+.link a {
+	font-weight: bold;
+	text-decoration: none;
+	color: white;
+	vertical-align: middle;
+}
+
+.link a:hover {
+	text-decoration: underline;
+}
+
+.info {
+	margin:40px; 
+	display:inline-block;
+}
+
+.info p {
+	font-size:18px; 
+	margin-top:0; 
+	margin-bottom:40px;
+}
+
+.apps {
+	float: right;
+	width:100%;
+}
+
+.apps b {
+	color: white;
+	display: block;
+	padding: 10px;
+}
+
+.apps ul {
+	list-style-type: none;
+	padding:0;
+	margin-bottom: 0;	
+}
+
+.apps li {
+	padding: 5px;
+	background: #2c3035;
+	margin-bottom: 10px;
+}
+
+.apps li:hover {
+	background-color: #2a2d32;
+}
+
+div.title {
+	background-color:#ccc;
+	margin: 0px 0px 20px 0px;
+	padding: 5px 15px 35px;
+	color: white;
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#666', endColorstr='#494949',GradientType=0 );
+	background: linear-gradient(#666, #494949);
+}
+
+.title span {
+   	display: block;
+}
+
+td {
+	font-size: 16px;
+	padding-left: 5px;
+	padding-bottom:3px;
+}
+
+div.fa-stack {
+	font-size:55px;
+}
+
+div.fa-stack i.fa-stack-2x {
+	color:#f4091b;
+}
+
+div.fa-stack i.fa-stack-1x {
+	color:white;
+}
+  	
+.midTitle {
+	padding: 0;
+}
+	
 
 /*For small screens*/
 @media (max-width: 519px) {	
