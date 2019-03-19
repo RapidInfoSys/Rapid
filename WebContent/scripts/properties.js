@@ -6241,7 +6241,7 @@ function Property_datacopyDateFormat(cell, propertyObject, property, details) {
 	}
 }
 
-//presents different time formats for the data copy datetime options
+// presents different time formats for the data copy datetime options
 function Property_datacopyTimeFormat(cell, propertyObject, property, details) {
 	// only if the data copy dataSource property starts with "time"
 	if (propertyObject.dataSource && propertyObject.dataSource.indexOf("Datetime.") == 0 && propertyObject.dataSource.lastIndexOf("time") > 10) {
@@ -6359,6 +6359,18 @@ function Property_pdfInputs(cell, propertyObject, property, details) {
 		text = "Click to add...";
 	}
 	// put the text into the cell
-		cell.text(text);
+	cell.text(text);
 			
+}
+
+// allows users to enter their own custom value into the drop down if searching is on, and codes are off
+function Property_dropdownCustomValue(cell, propertyObject, property, details) {
+	// only if searching is on, and codes are off
+	if (propertyObject.filter && !propertyObject.codes) {
+		// create the drop down, function for values is above.
+		Property_checkbox(cell, propertyObject, property, details);
+	} else {
+		// remove this row
+		cell.closest("tr").remove();
 	}
+}

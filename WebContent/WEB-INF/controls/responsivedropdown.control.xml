@@ -92,12 +92,21 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <helpHtml>Selects one of the options from the dropdown as its initial value.</helpHtml>
 	        </property>
 	        
-	         <property>
+	        <property>
 	            <key>filter</key>
 	            <name>Searching</name>
 	            <changeValueJavaScript>checkbox</changeValueJavaScript>
 	            <refreshHtml>true</refreshHtml>
+	            <refreshProperties>true</refreshProperties>
 	            <helpHtml>Allows the user to search through the available options as they type.</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>customValue</key>
+	            <name>Custom value</name>
+	            <changeValueJavaScript>dropdownCustomValue</changeValueJavaScript>
+	            <refreshHtml>true</refreshHtml>
+	            <helpHtml>Allows the user to provide their own value if searching is enabled and codes are not being used.</helpHtml>
 	        </property>
 	        
 	        <property>
@@ -279,7 +288,7 @@ if (this.responsiveLabel) {
 	    
 	    <getDetailsFunction>
 	    	<![CDATA[
-return {filter:this.filter};
+return {filter:this.filter,customValue:this.customValue};
 			]]>
 	    </getDetailsFunction>
 	    
@@ -494,8 +503,8 @@ if (details && details.filter) {
 	            return false;
 	          }
 	        });
-	        // if not valid
-	        if (!valid) {
+	        // if not valid, and custom values are off
+	        if (!valid && !details.customValue) {
 	          // Remove invalid value
 	          this.input.val( "" )
 	          this.element.val( "" );
@@ -544,14 +553,17 @@ if (data && data.rows) {
 	var input = $("#" + id).find("input");
 	// if we there was one
 	if (input.length > 0) {
-		// read the value back again which uses the select controls ability to check it has an option for the value
-		value = control.val();
-		// if there is a value
-		if (value) {
-			// find option with value
-			var option = control.find("option[value='" + value + "']");
-			// if we got one update value to text
-			if (option.length > 0) value = option.text();
+		// if customValue are not in use
+		if (!details.customValue) {
+			// read the value back again which uses the select controls ability to check it has an option for the value
+			value = control.val();
+			// if there is a value
+			if (value) {
+				// find option with value
+				var option = control.find("option[value='" + value + "']");
+				// if we got one update value to text
+				if (option.length > 0) value = option.text();
+			}
 		}
 		// update the jquery input
 		$("#" + id).find("input").val(value);
