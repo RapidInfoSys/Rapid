@@ -121,8 +121,8 @@ td.propertySubHeader select:hover {
 	background-color: #f2f2f2;
 }
 
-.propertiesPanelTable select:active,
-.propertiesPanelTable tr:hover td:nth-child(2) select:active {
+.propertiesPanelTable select:focus,
+.propertiesPanelTable tr:hover td:nth-child(2) select:focus {
 	background-image: url("../images/up.dark.svg");
 }
 
@@ -302,7 +302,7 @@ div.propertyDialogue td>select {
 	background-position: right 2px center;
 }
 
-div.propertyDialogue td>select:active {
+div.propertyDialogue td>select:focus {
 	background-image: url("../images/up.dark.svg");
 }
 
@@ -427,7 +427,7 @@ table.outputTable.dialogueTable td:last-child {
 	background-color: #f2f2f2;
 }
 
-.dialogueTable select:active {
+.dialogueTable select:focus {
 	background-image: url("../images/up.dark.svg");
 }
 

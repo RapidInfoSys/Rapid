@@ -149,7 +149,7 @@ hr {
  	background-position: right 2px center;
 }
 
-#controlPanel select:active {
+#controlPanel select:focus {
     background-image: url("../images/up.light.svg");
     background-repeat: no-repeat;
     background-position: right 2px center;
@@ -163,7 +163,7 @@ table.stylesPanelTable select.propertiesPanelTable {
  	background-position: right 2px center;
  }
  
-table.stylesPanelTable select.propertiesPanelTable:active {
+table.stylesPanelTable select.propertiesPanelTable:focus {
     background-image: url("../images/up.light.svg");
     background-repeat: no-repeat;
     background-position: right 2px center;
