@@ -980,7 +980,7 @@ Tip styles
 }
 
 select {
-  padding: 2px 10px 2px 2px;
+  padding: 0 24px 0 5px;
   border: none;
   background: #494949;
   display: inline-block;

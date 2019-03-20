@@ -104,7 +104,6 @@ table.propertiesPanelTable  {
 .propertiesPanelTable select,
 .propertiesPanelTable tr:hover td:nth-child(2) select {
 	width: 100%;
-	padding: 0 24px 0 0;
 	height: 19px;
 	background: inherit;
 	color: black;
@@ -138,10 +137,6 @@ td.propertySubHeader select:hover {
 .propertiesPanelTable.propertiesDialogueTable tr:hover td {
 	background: #D5D6D2;
 	font-weight: bold;
-}
-
-.propertiesPanelTable.propertiesDialogueTable tr:hover input:hover, .propertiesPanelTable.propertiesDialogueTable tr:hover select:hover {
-	background: #e9eae6;
 }
 
 .propertyAdd select {
@@ -292,18 +287,19 @@ div.propertyDialogue {
 }
 
 div.propertyDialogue td>select {
-	margin-bottom: 8px;
-	margin-right: 5px;
-	padding: 2px 26px 2px 5px;
-	-moz-appearance: none;
-	-webkit-appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
 	background-image: url("../images/down.dark.svg");
 	background-repeat: no-repeat;
-	background-position: right 2px center;
+    background-position: right 2px center;
 }
 
 div.propertyDialogue td>select:focus {
+    -moz-appearance: none;
+    -webkit-appearance: none;
 	background-image: url("../images/up.dark.svg");
+	background-repeat: no-repeat;
+    background-position: right 2px center;
 }
 
 .propertyAction{
