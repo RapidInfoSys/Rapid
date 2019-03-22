@@ -34,7 +34,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    <helpHtml>Runs specialised actions for mobile devices (start a phone call, take a photo, scan a barcode, etc.).</helpHtml>
 	    
 	    <addToNewMobileApplications>true</addToNewMobileApplications>
-	    	
+
 		<properties>
 		    
 	        <property>
@@ -389,6 +389,31 @@ return "<option value=''>Please select...</option><option value ='html'" + (this
 	            <type>javascriptLink</type>
 	            <contents>scripts_min/jquery-touchSwipe-1.6.18.min.js</contents>
 	        </resource>
+	        
+	        <resource>
+	        	<type>css</type>
+	        	<contents>
+.cameraControlBasic {
+	padding: 0;
+	border: none;
+	background: transparent;
+	outline:none;
+}
+.cameraControl {
+	padding:14px; 
+	border-radius:50%; 
+	background:black; 
+	border-color:white;
+	outline:none;
+}
+
+.cameraIcon {
+	font-size: 38px;
+	color: white;
+}
+
+	        	</contents>
+	        </resource>
             
 		</resources>
 	    
@@ -414,6 +439,333 @@ function handleSwipe(event, direction, distance, duration, fingers, fingerData, 
 		// if the directions match and either the fingers match too, or are all/any, run the function!
 		if (handler.direction == direction && (handler.fingers == fingers || handler.fingers == 0)) handler.function(ev);
 	}
+}
+
+var _cameraPlayer;
+var _availableCameras = [];
+var _currentFacingMode = "user";
+var _totalUploaded = 0;
+var _totalUploads = 0;
+var _galleryControlId;
+var _size;
+var _quality;
+
+function hasGetUserMedia() {
+
+	// Return the value's truthy boolean value (e.g. if its null, will return false)
+	return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)
+	
+}
+
+function getAvailableCameras() {
+	
+	if (hasGetUserMedia()) {
+		
+		navigator.mediaDevices.enumerateDevices()
+		.then(function(devices){
+			
+			devices.forEach(function(device){
+			
+				if (device.kind === "videoinput") {
+					console.log(device.kind + ": " + device.label + " id = " + device.deviceId);
+					_availableCameras.push(device.deviceId);
+
+				}
+				
+			});
+		
+		})
+		.catch(function(err){
+			
+			console.log(err.name + ": " + err.message);
+			
+		});
+		
+	}
+	
+}
+
+function turnOnCamera(galleryControlId, size, quality) {
+	
+	if (hasGetUserMedia()) {
+		
+		_galleryControlId = galleryControlId;
+		_size = size;
+		_quality = quality;
+		_cameraPlayer = document.getElementById("cameraPlayer");
+		
+		if (!_cameraPlayer) {
+		
+			// Add the divs
+			var cameraPreviewHtml = "<div id='cameraDiv' style='display:none;position:fixed;left:0;right:0;top:0;bottom:0;'>"
+								  + "<div id='video_container' style='position:fixed; left:0; right:0; top:0; bottom:0; width:100%; height:100%;'>"
+								  + "<video id='cameraPlayer' autoplay style='width:100%; height:100%; object-fit:cover;'></video></div>"
+								  + "<button id='btnToggleCamera' class='cameraControlBasic' style='position:absolute; left:0; margin:20px;'><i class='fa fa-retweet cameraIcon' style='color:black;'></i></button>"
+								  + "<button id ='btnCloseCamera' class='cameraControlBasic' style='position:absolute; right:0; margin:20px; border:none; background:transparent;'><i class='fa fa-times cameraIcon' style='color:black;'></i></button>"
+								  + "<button id ='btnTakePicture' class='cameraControl' style='position:absolute; left:50%; right:0; bottom:0; transform:translateX(-50%); margin:20px auto;'><i class='fa fa-camera cameraIcon'></i></button>"
+								  + "</div>"
+								  + "<canvas id='mobileaction_canvas' style='display:none;'></canvas>";
+								 
+			$("body").append(cameraPreviewHtml);
+			
+			$("#btnTakePicture").click(takePicture);
+			
+			$("#btnToggleCamera").click(toggleCameraFacing);
+			
+			$("#btnCloseCamera").click(turnOffCamera);
+				
+			_cameraPlayer = document.getElementById("cameraPlayer");
+		
+		}
+		
+		_cameraPlayer.setAttribute("data-galleryId",galleryControlId);
+		
+		// Specify the types of media to request, along with any requirements for each type
+		var constraints = {
+		   video: {facingMode: _currentFacingMode}
+		};
+
+		// Obtain the user media object
+		navigator.mediaDevices.getUserMedia(constraints)
+		.then(function(stream) {
+			// Use the stream
+			// Now attach the video stream to the video element and auto play
+			_cameraPlayer.srcObject = stream;
+			
+			// Get all the available cameras into global array
+			getAvailableCameras();
+			
+		})	// Wait for the loadedmetadata event, before displaying the cameraDiv
+		.then(() => new Promise(resolve => _cameraPlayer.onloadedmetadata = resolve))
+		.then(function(){
+			// Display the cameraPlayer
+			$("#cameraDiv").show();
+		})
+		.catch(function(err) {
+			// Handle the error
+			console.log(err.name + ": " + err.message);
+			alert("Not allowed: " + err);
+		});
+		
+	} else {
+		
+		alert("getUserMedia() is not supported by your browser");
+		
+	}
+	
+}
+
+function turnOffCamera () {
+
+	if (hasGetUserMedia()) {
+		// Stop all video streams attached to the video element
+		_cameraPlayer.srcObject.getVideoTracks().forEach(function(track){
+			// Close the preview
+			$("#cameraDiv").hide();
+			track.stop();
+		});
+	}
+	
+}
+
+function stopCameraStream () {
+
+	if (hasGetUserMedia()) {
+		// Stop all video streams attached to the video element
+		_cameraPlayer.srcObject.getVideoTracks().forEach(function(track){
+			// Close the preview
+			track.stop();
+		});
+	}
+	
+}
+
+
+function takePicture (ev) {
+	
+	if (hasGetUserMedia()) {
+		
+		var galleryControlId = _cameraPlayer.getAttribute("data-galleryId");
+		var galleryDetails = window[galleryControlId + "details"];
+		
+		var canvas = document.getElementById("mobileaction_canvas");
+		var canvasContext = canvas.getContext("2d");
+		
+		// Set the width and height of the canvas, before drawing
+		// Get the intrinsic width and height of the videoplayer
+		let vWidth = _cameraPlayer.videoWidth;
+		let vHeight = _cameraPlayer.videoHeight;	
+		
+		// Find the longest side of the videoplayer
+		if (vHeight > vWidth) {
+			
+			canvas.height = _size;
+			canvas.width = (vWidth / vHeight) * _size;
+			
+		} else {
+		
+			canvas.height = (vHeight / vWidth) * _size;
+			canvas.width = _size;
+			
+		}
+		
+		// Draw a single video frame in the player to the canvas
+		canvasContext.drawImage(_cameraPlayer, 0, 0, canvas.width, canvas.height);
+		
+		// Turn-off the camera
+		turnOffCamera();
+		
+		// Get a data url of the canvas, containing a representation of the image
+		// Default format type is image/png
+		var dataURL = canvas.toDataURL();
+		
+		setData_gallery(ev, galleryControlId, "url", galleryDetails, dataURL);
+		
+	}
+	
+}
+
+function toggleCameraFacing () {
+	
+	if (_availableCameras.length > 1) {
+		
+		if (_currentFacingMode === "environment") {
+			_currentFacingMode = "user";
+		} else {
+			_currentFacingMode = "environment";
+		}
+		
+		stopCameraStream ();
+		turnOnCamera(_galleryControlId, _size, _quality);
+		
+	}
+
+}
+
+function base64toBlob(base64Data, contentType) {
+    contentType = contentType || '';
+    var sliceSize = 1024;
+    // The atob function will decode a base64-encoded string into a new string with a character for each byte of the binary data.
+    var byteCharacters = atob(base64Data);
+    var bytesLength = byteCharacters.length;
+    var slicesCount = Math.ceil(bytesLength / sliceSize);
+    var byteArrays = new Array(slicesCount);
+    for (var sliceIndex = 0; sliceIndex < slicesCount; ++sliceIndex) {
+        var begin = sliceIndex * sliceSize;
+        var end = Math.min(begin + sliceSize, bytesLength);
+
+        var bytes = new Array(end - begin);
+        for (var offset = begin, i = 0; offset < end; ++i, ++offset) {
+            bytes[i] = byteCharacters[offset].charCodeAt(0);
+        }
+        // Convert this array of byte values into a real typed byte array by passing it to the Uint8Array constructor.
+        byteArrays[sliceIndex] = new Uint8Array(bytes);
+    }
+    // Convert byte array to a Blob
+    return new Blob(byteArrays, { type: contentType });
+}
+
+function uploadImages(controlIds, successCallBack, errorCallBack) {
+
+	// If we have one
+	if (controlIds && controlIds.length > 0) {
+		
+		// Loop the control ids, will be gallery or a signature, for gallery get all images, upload use data-filename attribute as file name, on success
+		
+		_totalUploaded = 0;
+		var errored = false;
+		
+		for (var idx in controlIds) {
+		
+			let controlId = controlIds[idx];
+		
+			let control = $("#" + controlId);
+			var url;
+			// Check if this is a gallery control or signature
+			if (control.hasClass("gallery")) {
+			
+				// Get all the images from the control
+				control.find("img").each(function(){
+					
+					_totalUploads ++;
+					
+					let img = $(this);
+					url = "~?a=" + _appId + "&action=uploadImage&name=" + img.attr("data-filename");
+					var dataURL = img.attr("src");
+					
+					ajaxPostData(url, dataURL, successCallBack, errorCallBack);
+					
+				});
+			
+			} else {
+				
+				_totalUploads ++;
+				
+				// Its a signature control - get the dataUrl from the signature
+				// Get a data url of the canvas, containing a representation of the image
+				// Default format type is image/png
+				
+				var signature = _signatureControls[controlId];
+				
+				var dataURL =  signature.toDataURL();
+				
+				// Get the current date
+				var date = new Date();
+				var dateString = date.getFullYear() + "" + (date.getMonth() + 1) + "" + date.getDate() + "_" + date.getHours() + "" + date.getMinutes() + "" + date.getSeconds() + "" + date.getMilliseconds();
+				let fileName = 	dateString + ".png";
+				
+				url = "~?a=" + _appId + "&action=uploadImage&name=" + fileName;
+				
+				ajaxPostData(url, dataURL, successCallBack, errorCallBack);
+			
+			}
+			
+			
+		}
+		
+		
+		
+	}
+	
+}
+
+function ajaxPostData (url, dataSource, successCallBack, errorCallBack) {
+
+	var sourceParts = dataSource.split(",");
+	var dataString = "data:";
+	var contentType = "";
+	
+	if(sourceParts && sourceParts.length && sourceParts[0].indexOf(dataString) > -1) {
+	
+		// If dataSource starts with data: dig out contentType
+		let dataParts = sourceParts[0].split(";");
+		
+		contentType = dataParts[0].substring(dataString.length);
+		
+		dataSource = sourceParts[1];
+	}
+	
+	var data = base64toBlob(dataSource, contentType);
+
+	// POST
+	$.ajax({
+		url:url,
+		type:"POST",
+		processData: false,  	// tell jQuery not to process the data
+   		contentType: false,  	// tell jQuery not to set contentType
+		data: data,
+		success: function(ev) {
+			_totalUploaded ++;
+			if (_totalUploaded == _totalUploads && successCallBack) window[successCallBack](ev);
+		},
+		error: function(ev) {
+			if (!errored) {
+				errored = true;
+				if (errorCallBack) window[errorCallBack](ev);
+			}
+		}
+	});
+
 }
 
 			]]>

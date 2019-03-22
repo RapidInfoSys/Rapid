@@ -500,10 +500,12 @@ public class Mobile extends Action {
 				if (galleryControl == null) {
 					js += "  //gallery control " + galleryControlId + " not found\n";
 				} else {
-					// mobile check with alert
-					js += getMobileCheck(true);
 					int maxSize = Integer.parseInt(getProperty("imageMaxSize"));
 					int quality = Integer.parseInt(getProperty("imageQuality"));
+					// mobile check, use 
+					js += "if (typeof _rapidmobile == 'undefined') {\n"
+						+ "  turnOnCamera('" + galleryControlId + "'," + maxSize + "," + quality + ");\n"
+						+ "} else {\n";
 					js += "  _rapidmobile.addImage('" + galleryControlId + "'," + maxSize + "," + quality + ");\n";
 					// close mobile check
 					js += "}\n";
@@ -562,22 +564,22 @@ public class Mobile extends Action {
 						//Check whether this control is a signature
 						if ("signature".equals(imageControl.getType())) {
 							js += "urls += getData_signature(ev, '" + id + "');\n";
-							//System.out.println("Its a signature");
 						} else {
 							js += "$('#" + id + "').find('img').each( function() { urls += $(this).attr('src') + ',' });\n";
 						}
 
 					}
+					
 					// if we got any urls
-					js += "if (urls) { \n";
-					// mobile check with alert
-					js += "  " + getMobileCheck(true).replace("\n", "\n  ");
-					// upload the images
-					js += "  _rapidmobile.uploadImages('" + getId() + "', urls, " + successCallback + ", " + errorCallback + ");\n";
-					// close rapid mobile check
-					js += "  }\n";
-					// close urls check and proceed straight to success call back if none
-					js += "}";
+					// check whether request is from a mobile - upload the images
+					js += "if (urls) { \n"
+						+ "   if (typeof _rapidmobile == 'undefined') {\n"
+						+ "      uploadImages(" + new JSONArray(controlIds) + ", " + successCallback + ", " + errorCallback + ");\n"
+						+ "   } else {\n"
+						+ "      _rapidmobile.uploadImages('" + getId() + "', urls, " + successCallback + ", " + errorCallback + ");\n"
+						+ "   }\n"
+						+ "}\n";
+					
 					// if there is a successCallback call it now
 					if (!"null".equals(successCallback) && successCallback.length() > 0) js += " else {\n  " + successCallback.replace("'", "") + "(ev);\n}\n";
 
