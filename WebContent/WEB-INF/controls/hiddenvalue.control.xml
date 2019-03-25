@@ -80,7 +80,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    <getHtmlFunction>
 	        <![CDATA[	     	        
 // return our html 
-return "<img id='" + this.id + "' class='nonVisibleControl' src='images/magicwand_24x24.png'></img>"
+return "<img id='" + this.id + "' class='nonVisibleControl' src='images/wand.svg'></img>"
 	        ]]>
 	    </getHtmlFunction>
 	    
