@@ -2630,7 +2630,7 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 	}));
 	
 	table.append("<tr><td>Multi-row input data?&nbsp;<input class='multi' type='checkbox'" + (query.multiRow ? "checked='checked'" : "" ) + " style='vertical-align: middle;margin-top: -3px;'/></td>" +
-			"<td style='text-align: left;overflow:inherit;padding:0 10px;'>Database connection <select style='width:auto;'>" + getDatabaseConnectionOptions(query.databaseConnectionIndex) + "</select><button style='float:right;'>Test SQL</button></td></tr>");
+			"<td style='text-align: left;overflow:inherit;padding:0 10px;'>Database connection <select style='width:auto;margin:0 10px 5px 0'>" + getDatabaseConnectionOptions(query.databaseConnectionIndex) + "</select><button style='float:right;'>Test SQL</button></td></tr>");
 	
 	// get a reference to the multi-data check box
 	var multiRow = table.find("tr").last().find("input");

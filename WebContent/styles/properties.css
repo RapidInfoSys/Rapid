@@ -292,6 +292,8 @@ div.propertyDialogue td>select {
 	background-image: url("../images/down.dark.svg");
 	background-repeat: no-repeat;
     background-position: right 2px center;
+    padding-bottom: 2px;
+    
 }
 
 div.propertyDialogue td>select:focus {
@@ -386,6 +388,7 @@ table.outputTable.dialogueTable td:last-child {
 	border: none;
 	outline: none;
 	padding: 0px 10px;
+	font-size: 11px;
 }
 
 .dialogueTable input[type=checkbox] {	
