@@ -69,7 +69,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	        <property>
 	            <key>onImageClick</key>
 	            <name>On image click</name>
-	            <setConstructValueFunction>return "";</setConstructValueFunction>
+	            <setConstructValueFunction>return "preview";</setConstructValueFunction>
 	            <changeValueJavaScript>select</changeValueJavaScript>
 	            <getValuesFunction>
 	                <![CDATA[
