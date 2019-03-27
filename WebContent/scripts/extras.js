@@ -103,10 +103,10 @@ function positionLoadingCovers() {
 // extend JQuery object methods
 $.fn.extend({
   enable: function() {
-	return this.removeAttr("disabled").find("input,select,textarea").removeAttr("disabled");  
+	return this.removeAttr("disabled").find("button,input,select,textarea").removeAttr("disabled");  
   },
   disable: function() {
-	return this.attr("disabled","disabled").find("input,select,textarea").attr("disabled","disabled");
+	return this.attr("disabled","disabled").find("button,input,select,textarea").attr("disabled","disabled");
   },
   showLoading: function() {
 	 var id = this.attr("id");
