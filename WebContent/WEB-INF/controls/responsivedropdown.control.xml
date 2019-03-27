@@ -535,7 +535,7 @@ if (details && details.filter) {
 	                <![CDATA[
 var	data = makeDataObject(data, field);
 var control = $("#" + id).find("select");
-if (data && data.rows) {
+if (data && data.rows && data.rows.length > 0) {
 	// assume first value
 	var value = data.rows[0][0];
 	// if a field was provided
