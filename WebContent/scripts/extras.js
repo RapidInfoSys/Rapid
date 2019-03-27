@@ -108,6 +108,15 @@ $.fn.extend({
   disable: function() {
 	return this.attr("disabled","disabled").find("button,input,select,textarea").attr("disabled","disabled");
   },
+  focus: function() {
+	var e = this[0];
+	if (e) {
+		e.focus();
+		var c = this.find("button:visible,input:visible,select:visible,textarea:visible")[0];
+		if (c) c.focus();
+	}	
+	return this;
+  },
   showLoading: function() {
 	 var id = this.attr("id");
 	 var loadingCover = $("div.loadingCover[data-id=" + id + "]");
@@ -197,7 +206,7 @@ $.fn.extend({
 // this overrides the focus so that if focus is fired when the page is invisible, focus can be set once the page is made visible by Rapid
 (function($) {
 	// a reference to the original focus method
-    var focus_orignal = $.fn.focus; // maintain a to the existing function
+    var focus_orignal = $.fn.focus; // maintain a reference to the existing function
     // override the focus method
     $.fn.focus = function(type) {
     	// if there was an event of type DOMContentLoaded
