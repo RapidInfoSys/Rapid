@@ -56,6 +56,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -214,7 +215,11 @@ public class Designer extends RapidHttpServlet {
 		// fake a delay for testing slow servers
 		// try { Thread.sleep(3000); } catch (InterruptedException e) {}
 
+		// get request as Rapid request
 		RapidRequest rapidRequest = new RapidRequest(this, request);
+		
+		// get a reference to our logger
+		Logger logger = getLogger();
 
 		// if monitor is alive then log the event
 		if(_monitor!=null && _monitor.isAlive(rapidRequest.getRapidServlet().getServletContext()) && _monitor.isLoggingAll())
@@ -225,7 +230,7 @@ public class Designer extends RapidHttpServlet {
 
 		try {
 
-			getLogger().debug("Designer GET request : " + request.getQueryString());
+			logger.debug("Designer GET request : " + request.getQueryString());
 
 			String actionName = rapidRequest.getActionName();
 
@@ -1392,8 +1397,12 @@ public class Designer extends RapidHttpServlet {
 			} // rapidApplication != null
 
 			// log the response
-			getLogger().debug("Designer GET response : " + output);
-
+			if (logger.isTraceEnabled()) {
+				logger.trace("Designer GET response : " + output);
+			} else {
+				logger.debug("Designer GET response : " + output.length() + " bytes");
+			}
+			
 			// add up the accumulated response data with the output
 			responseLength += output.length();
 
@@ -1407,7 +1416,7 @@ public class Designer extends RapidHttpServlet {
 			if(_monitor!=null && _monitor.isAlive(rapidRequest.getRapidServlet().getServletContext()) && _monitor.isLoggingExceptions())
 				_monitor.commitEntry(rapidRequest, response, responseLength, ex.getMessage());
 
-			getLogger().debug("Designer GET error : " + ex.getMessage(), ex);
+			logger.debug("Designer GET error : " + ex.getMessage(), ex);
 
 			sendException(rapidRequest, response, ex);
 
@@ -1453,6 +1462,9 @@ public class Designer extends RapidHttpServlet {
 
 		// get the rapid request
 		RapidRequest rapidRequest = new RapidRequest(this, request);
+		
+		// get a reference to our logger
+		Logger logger = getLogger();
 
 		// if monitor is alive then log the event
 		if(_monitor!=null && _monitor.isAlive(rapidRequest.getRapidServlet().getServletContext()) && _monitor.isLoggingAll())
@@ -1499,7 +1511,11 @@ public class Designer extends RapidHttpServlet {
 
 								String bodyString = new String(bodyBytes, "UTF-8");
 
-								getLogger().debug("Designer POST request : " + request.getQueryString() + " body : " + bodyString);
+								if (logger.isTraceEnabled()) {
+									logger.trace("Designer POST request : " + request.getQueryString() + " body : " + bodyString);
+								} else {
+									logger.debug("Designer POST request : " + request.getQueryString() + " body : " + bodyString.length() + " bytes");
+								}
 
 								JSONObject jsonPage = new JSONObject(bodyString);
 
@@ -1908,7 +1924,7 @@ public class Designer extends RapidHttpServlet {
 									fos.close();
 
 									// log the file creation
-									getLogger().debug("Saved image file " + path + filename);
+									logger.debug("Saved image file " + path + filename);
 
 									// create the response with the file name and upload type
 									output = "{\"file\":\"" + filename + "\",\"type\":\"" + rapidRequest.getActionName() + "\"}";
@@ -1964,7 +1980,7 @@ public class Designer extends RapidHttpServlet {
 									fos.close();
 
 									// log the file creation
-									getLogger().debug("Saved import file " + path);
+									logger.debug("Saved import file " + path);
 
 									// get a file object for the zip file
 									File zipFile = new File(path);
@@ -2253,7 +2269,11 @@ public class Designer extends RapidHttpServlet {
 
 							}
 
-							getLogger().debug("Designer POST response : " + output);
+							if (logger.isTraceEnabled()) {
+								logger.trace("Designer POST response : " + output);
+							} else {
+								logger.debug("Designer POST response : " + output.length() + " bytes");
+							}
 
 							PrintWriter out = response.getWriter();
 							out.print(output);
