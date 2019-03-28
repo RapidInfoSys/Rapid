@@ -288,7 +288,7 @@ if (this.responsiveLabel) {
 	    
 	    <getDetailsFunction>
 	    	<![CDATA[
-return {filter:this.filter,customValue:this.customValue};
+return {codes:this.codes,filter:this.filter,customValue:this.customValue};
 			]]>
 	    </getDetailsFunction>
 	    
@@ -311,16 +311,35 @@ if (data !== undefined) {
 		data = makeDataObject(data, field);
 		if (data.rows && data.fields) {
 			if (field && data.rows[0]) {
-				var foundField = false;
+				var value = data.rows[0][0];
 				for (var i in data.fields) {
 					if (data.fields[i] && field.toLowerCase() == data.fields[i].toLowerCase()) {
-						control.val(data.rows[0][i]);
-						if (changeEvents) control.trigger("change");
-						foundField = true;
+						value = data.rows[0][i];
 						break;
 					}
 				}
-				if (!foundField) control.val(data.rows[0][0]);
+				// set control value
+				control.val(value);
+				// look for jquery ui input
+				var input = $("#" + id).find("input");
+				// if we there was one
+				if (input.length > 0) {
+					// if codes, or customValues are not in use
+					if (details.codes || !details.customValue) {
+						// read the value back again which uses the select controls ability to check it has an option for the value
+						value = control.val();
+						// if there is a value
+						if (value) {
+							// find option with value
+							var option = control.find("option[value='" + value + "']");
+							// if we got one update value to text
+							if (option.length > 0) value = option.text();
+						}
+					}
+					// update the jquery input
+					input.val(value);
+				}
+				if (changeEvents) control.trigger("change");
 			} else {
 				for (var i in data.rows) {
 					var row = data.rows[i];
@@ -504,7 +523,7 @@ if (details && details.filter) {
 	          }
 	        });
 	        // if not valid, and custom values are off
-	        if (!valid && !details.customValue) {
+	        if (!valid && (details.codes || !details.customValue)) {
 	          // Remove invalid value
 	          this.input.val( "" )
 	          this.element.val( "" );
@@ -533,7 +552,7 @@ if (details && details.filter) {
 	            <name>Value</name>
 	            <setPropertyJavaScript>
 	                <![CDATA[
-var	data = makeDataObject(data, field);
+var data = makeDataObject(data, field);
 var control = $("#" + id).find("select");
 if (data && data.rows && data.rows.length > 0) {
 	// assume first value
@@ -547,14 +566,15 @@ if (data && data.rows && data.rows.length > 0) {
 			}
 		}
 	}
+	
 	// update the control value
 	control.val(value);
 	// look for jquery ui input
 	var input = $("#" + id).find("input");
 	// if we there was one
 	if (input.length > 0) {
-		// if customValue are not in use
-		if (!details.customValue) {
+		// if codes, or customValues are not in use
+		if (details.codes || !details.customValue) {
 			// read the value back again which uses the select controls ability to check it has an option for the value
 			value = control.val();
 			// if there is a value
@@ -566,7 +586,7 @@ if (data && data.rows && data.rows.length > 0) {
 			}
 		}
 		// update the jquery input
-		$("#" + id).find("input").val(value);
+		input.val(value);
 	}
 } else {
 	// empty select value
