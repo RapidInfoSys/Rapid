@@ -234,6 +234,8 @@ i.delete.fa.fa-trash {
 .iconsPanel {
 	display:inline-block;
 	float: right;
+	min-width: 45px;
+	text-align: right;
 }
 
 div.resizeX {
@@ -262,6 +264,7 @@ div.propertyDialogue {
   	-ms-user-select: none;
   	user-select: none;
 	box-shadow: 0 0 6px 1px rgba(0, 0, 0, 0.4);
+	min-width: 881px !important; /* for grid Columns table with cell function */
 }
 
 .propertyDialogue span {

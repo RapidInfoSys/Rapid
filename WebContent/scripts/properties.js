@@ -3924,7 +3924,7 @@ function Property_gridColumns(cell, grid, property, details) {
 	cell.text(text);
 	
 	// add a header
-	table.append("<tr><td style='width:20px;'><b>Visible</b></td><td><b>Title</b></td><td><b>Title style</b></td><td><b>Field</b></td><td><b>Field style</b></td><td><b>Sort</b></td><td colspan='2'><b>Cell function</b></td></tr>");
+	table.append("<tr><td style='width:20px;'><b>Visible</b></td><td><b>Title</b></td><td><b>Title style</b></td><td><b>Field</b></td><td><b>Field style</b></td><td><b>Sort</b></td><td><b>Cell function</b></td><td></td></tr>");
 		
 	// show columns
 	for (var i in columns) {
