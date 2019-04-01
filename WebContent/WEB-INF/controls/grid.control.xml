@@ -3,7 +3,7 @@
 
 <!-- 
 
-Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -205,7 +205,7 @@ div.gridScrollHeader table.grid tr:not(:first-child) {
 }
 
 div.gridScrollBody table.grid tr:first-child {
-	visibility: hidden;
+	display: none;
 }
 	                ]]>
 				</contents>
@@ -781,17 +781,25 @@ return data;
 var control = $("#" + id);
 // make sure it's a table
 if (!control.is("table")) control = control.find("table").last();
-// remove all rows except for the first one
+// remove all rows except for the first one (the header)
 control.find("tr:not(:first-child)").remove();	        
 // reset any sort indicators if not being used for sorting
 control.find("span.sort").html("&#xf0dc");
 // if we have data
 if (data !== undefined) {
-
+	// make a data object
 	data = makeDataObject(data, field);
-	if (data && data.rows) {	        		
+	// if we have some rows to load
+	if (data && data.rows) {
+		// assume the grid has no row html 
+		var rowsHtml = "";
+		// check we have details and columns
 		if (details && details.columns && data.fields) {
+			// assume no columns (we're about to check)
 			var columnMap = [];
+			// assume no cell functions
+			var cellFunctions = false;
+			// loop the columns
 			for (var i in details.columns) {				
 				for (var j in data.fields) {
 					var found = false;
@@ -808,51 +816,106 @@ if (data !== undefined) {
 				// added the column to the map
 				if (columnMap.length == i) columnMap.push("");
 				// if we have cellFunction JavaScript, and it hasn't been turned into a function object yet
-				if (details.columns[i].cellFunction && !details.columns[i].f) details.columns[i].f = new Function(["id", "data", "field", "details", "value"],details.columns[i].cellFunction);
+				if (details.columns[i].cellFunction) {
+					// remember that we have at least one cell function
+					cellFunctions = true;
+					// if the cell function has not been added to the details object, do so now
+					if (!details.columns[i].f) details.columns[i].f = new Function(["id", "data", "field", "details", "value"], details.columns[i].cellFunction);
+				}
 			}
+			
+			// loop the rows in the data object
 			for (var i in data.rows) {
+			
+				// get a reference to the current row
 				var row = data.rows[i];
-				var rowObject = control.append("<tr class='rowStyle" + (i % 2 + 1) + "'></tr>").find("tr:last");
+				
+				///var rowObject = control.append("<tr class='rowStyle" + (i % 2 + 1) + (data.rowValidation && i < data.rowValidation.length && !data.rowValidation[i] ? " validation" : "") + "'></tr>").find("tr:last");
+				rowsHtml += "<tr class='rowStyle" + (i % 2 + 1) + "'>";
+				
 				// add multiselect
-				if (details.multiSelect) rowObject.append("<td><input type='checkbox' class='gridMultiSelect' /></td>");
+				if (details.multiSelect) rowsHtml += "<td><input type='checkbox' class='gridMultiSelect' /></td>";
+				
 				// loop colummns
 				for (var j in details.columns) {
+					
+					// assume the cell has no style rules from the grid details
 					var style = "";
+					// if column is not visable add display:none
 					if (!details.columns[j].visible) style += "display:none;";
+					// if column has a style add it
 					if (details.columns[j].style) style += details.columns[j].style;
+					// if there is a style rule make html attribute for it
 					if (style) style = " style='" + style + "'";
+					
 					// assume the cell has no value
 					var value = "";				
 					// get the position of this column in the data object
 					var mappedCol = columnMap[j];
 					// if we can find the column and it has data use it as the value
 					if (mappedCol && row[mappedCol] !== null) value = row[columnMap[j]];
-					// add the cell with the value and return a reference
-					var cellObject = rowObject.append("<td" + style + ">" + value + "</td>").children("td:last");
-					// apply any cell function
-					if (details.columns[j].f) {
-						details.columns[j].f.apply(cellObject,[id, data, field, details, value]);
-					}
+					
+					// add the cell with the value
+					rowsHtml += "<td" + style + ">" + value + "</td>";
+
 				}		
-				// if there is a rowValidation collection
-				if (data.rowValidation && i < data.rowValidation.length) {
-					if (!data.rowValidation[i]) rowObject.addClass("validation");
-				}		
+				
+				// close the row
+				rowsHtml += "</tr>";
+				
 			}
+			
+			// append all of the new rows in bulk - much faster!
+			control.append(rowsHtml);
+			
 			// if there is a selected row
 			if (data.selectedRowNumber) control.find("tr:nth(" + data.selectedRowNumber + ")").addClass("rowSelect");
+			
+			// if there are cell functions to apply to the rows
+			if (cellFunctions) {
+			
+				// loop all rows with jquery
+				control.find("tr:not(:first-child)").each(function(i){
+				
+					// get a jquery reference to the row
+					var rowObject = $(this);
+				
+					// loop columns looking for cell functions
+					for (var i in details.columns) {
+						// if this column has a cell function
+						if (details.columns[i].f) {
+							// get a reference to the cell (add 1 if multiSelect to account for this column)
+							var cellObject = rowObject.children(":nth-child(" + ((details.multiSelect ? 2 : 1) + i*1) + ")");
+							// get it's value
+							var value = cellObject.html();
+							// apply the function to the cellObject!
+							details.columns[i].f.apply(cellObject,[id, data, details.columns[i].field, details, value]);
+						}
+					}
+				
+				});
+			
+			}
+				
 		} else {
+		
 			for (var i in data.rows) {
-				// add a row object with the styling
-				var rowObject = control.append("<tr class='rowStyle" + (i % 2 + 1) + "'></tr>").find("tr:last");
+				// start the row object with the styling
+				rowsHtml += "<tr class='rowStyle" + (i % 2 + 1) + "'>";
 				// get the row
 				var row = data.rows[i];
 				// loop the row cells				
 				for (var j in row) {
 					// add cell with value to row
-					rowObject.append("<td" + style + ">" + row[j] + "</td>");
+					rowsHtml += "<td" + style + ">" + row[j] + "</td>";
 				}
+				// close the row
+				rowsHtml += "</tr>";
 			}
+			
+			// append all of the new rows in bulk - much faster!
+			control.append(rowsHtml);
+			
 		} // got details and columns and data fields							
 	} // got data
 	if (details && details.dataStorageType) saveGridDataStoreData(id, details, data);
