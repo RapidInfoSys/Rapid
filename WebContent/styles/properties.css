@@ -221,6 +221,10 @@ i.bottomFile.fa.fa-file.fa-stack-1x {
 	color:white;
 }
 
+.edit.fa-stack {
+	font-size: 15px;
+}
+
 .delete.fa-stack {
 	bottom: 1px;
 }
@@ -264,7 +268,6 @@ div.propertyDialogue {
   	-ms-user-select: none;
   	user-select: none;
 	box-shadow: 0 0 6px 1px rgba(0, 0, 0, 0.4);
-	min-width: 881px !important; /* for grid Columns table with cell function */
 }
 
 .propertyDialogue span {
@@ -450,7 +453,7 @@ table.inputs tr td:last-child, table.outputs tr td:last-child  {
 }
 
 .dialogueTableBorders tr:not(:first-child) td {
-	border: 1px solid grey;
+	border: 1px solid silver;
 }
 
 .dialogueTableBorders select {
@@ -483,14 +486,23 @@ table.inputs tr td:last-child, table.outputs tr td:last-child  {
 
 .inputTableWithTitles tr:first-child td:not(:last-child) {
 	text-align:center;
+	overflow: visible;
 }
 
 .inputTableWithTitles tr td:not(:first-child):not(:nth-child(7)):not(:last-child) {
 	min-width: 100px;
 }
 
-.inputTableWithTitles tr td {
-	max-width: 300px;
+.inputTableWithTitles tr td:not(:last-child) {
+	max-width: 25px;
+}
+
+.inputTableWithTitles tr td:last-child i {
+	margin-top: 2px;
+}
+
+.inputTableWithTitles tr td:last-child i.delete.fa.fa-trash {
+	margin-top: 1px;
 }
 
 .inputTableWithTitles tr td:nth-child(6) span {

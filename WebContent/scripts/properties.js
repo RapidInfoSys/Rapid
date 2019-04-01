@@ -3947,7 +3947,7 @@ function Property_gridColumns(cell, grid, property, details) {
 		table.append("<tr><td class='center'><input type='checkbox' " + (columns[i].visible ? "checked='checked'" : "")  + " /></td><td><input value='" + escapeApos(columns[i].title) + "' /></td><td><input value='" + escapeApos(columns[i].titleStyle) + "' /></td><td><input value='" + escapeApos(columns[i].field) + "' /></td><td><input value='" + escapeApos(columns[i].fieldStyle) + "' /></td><td>" + sortSelect + "<span>...</span></td><td class='paddingLeft5'>" + cellFunctionText.replaceAll("<","&lt;") + "</td><td>" +
 				"<div class='iconsPanel'>" +
 				"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
-				"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div>" +
+				"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this column'></i></div>" +
 				"</div></td></tr>");
 		
 		// find the checkbox
