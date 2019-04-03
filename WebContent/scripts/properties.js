@@ -4773,7 +4773,7 @@ function Property_datacopyCopies(cell, datacopyAction, property, details) {
 	if (datacopyAction.copyType == "bulk") {	
 		
 		// retrieve or create the dialogue
-		var dialogue = getDialogue(cell, datacopyAction, property, details, 700, "Bulk data copies", {sizeX: true});		
+		var dialogue = getDialogue(cell, datacopyAction, property, details, 710, "Bulk data copies", {sizeX: true});		
 		// grab a reference to the table
 		var table = dialogue.find("table").first();
 		// make sure table is empty
@@ -4787,7 +4787,7 @@ function Property_datacopyCopies(cell, datacopyAction, property, details) {
 		var text = "";
 		
 		// add a header
-		table.append("<tr><td><b>Source</b><button class='titleButton setSources' title='Set all sources to the same as the top one'><span>&#xf063;</span></button><button class='titleButton sources' title='Add all page controls as sources'><span>&#xf055;</span></button></td><td><b>Source field</b><button class='titleButton sourceFields' title='Derive source field from destination control name'><span>&#xf021;</span></button></td><td><b>Destination</b><button class='titleButton setDestinations' title='Set all destinations to the same as the top one'><span>&#xf063;</span></button><button class='titleButton destinations' title='Add all page controls as destinations'><span>&#xf055;</span></button></td><td><b>Destination field</b><button class='titleButton destinationFields' title='Derive destination field from source control name'><span>&#xf021;</span></button></td><td colspan='2'><b>Copy type</b><button class='titleButton swap' title='Swap all source and destinations'><span>&#xf0ec;</span></button></td></tr>");
+		table.append("<tr><td><b>Source</b><button class='titleButton setSources' title='Set all sources to the same as the top one'><span>&#xf063;</span></button><button class='titleButton sources' title='Add all page controls as sources'><span>&#xf055;</span></button></td><td><b>Source field</b><button class='titleButton sourceFields' title='Derive source field from destination control name'><span>&#xf021;</span></button></td><td><b>Destination</b><button class='titleButton setDestinations' title='Set all destinations to the same as the top one'><span>&#xf063;</span></button><button class='titleButton destinations' title='Add all page controls as destinations'><span>&#xf055;</span></button></td><td><b>Destination field</b><button class='titleButton destinationFields' title='Derive destination field from source control name'><span>&#xf021;</span></button></td><td><b>Copy type</b><button class='titleButton setCopyTypes' title='Set all copy types to the same as the top one'><span>&#xf063;</span></button></td><td><button class='titleButton swap' title='Swap all source and destinations'><span>&#xf0ec;</span></button></td></tr>");
 			
 		// add sources listener
 		addListener( table.find("button.sources").click( {cell:cell, datacopyAction:datacopyAction, property:property}, function(ev) {
@@ -4864,6 +4864,21 @@ function Property_datacopyCopies(cell, datacopyAction, property, details) {
 				addUndo();
 				// loop all copies sources and set
 				for (var i = 0; i < dataCopies.length; i++) dataCopies[i].destinationField = getDataCopyFieldFromControl(dataCopies[i].source);
+				// refresh
+				Property_datacopyCopies(ev.data.cell, ev.data.datacopyAction, ev.data.property); 
+			}						
+		}));
+		
+		// set copy types listener
+		addListener( table.find("button.setCopyTypes").click( {cell:cell, datacopyAction:datacopyAction, property:property}, function(ev) {			
+			// get the data copies
+			var dataCopies = ev.data.datacopyAction[ev.data.property.key];
+			// if there are 2 or more copies
+			if (dataCopies && dataCopies.length > 1) {
+				// add an undo snapshot
+				addUndo();
+				// loop all other sources and set
+				for (var i = 1; i < dataCopies.length; i++) dataCopies[i].type = dataCopies[0].type;
 				// refresh
 				Property_datacopyCopies(ev.data.cell, ev.data.datacopyAction, ev.data.property); 
 			}						
