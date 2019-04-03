@@ -722,7 +722,7 @@ if (details) {
 				var row = [];
 				$(this).children().each(function(i) {
 					if (details.multiSelect) i--;
-					if (i >= 0 && details.columns[i].field) row.push($(this).html());
+					if (i >= 0 && details.columns[i] && details.columns[i].field) row.push($(this).html());
 				});
 				data.rows.push(row);
 			});
