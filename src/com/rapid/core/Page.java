@@ -152,12 +152,12 @@ public class Page {
 			_endHtml = jsonRoleControlHtml.optString("endHtml", null);
 			JSONArray jsonRoles = jsonRoleControlHtml.optJSONArray("roles");
 			if (jsonRoles != null) {
-				_roles = new ArrayList<String>();
+				_roles = new ArrayList<>();
 				for (int i = 0; i < jsonRoles.length(); i++) _roles.add(jsonRoles.getString(i));
 			}
 			JSONArray jsonChildren = jsonRoleControlHtml.optJSONArray("children");
 			if (jsonChildren != null) {
-				_children = new ArrayList<RoleControlHtml>();
+				_children = new ArrayList<>();
 				for (int i = 0; i < jsonChildren.length(); i++) _children.add( new RoleControlHtml(jsonChildren.getJSONObject(i)));
 			}
 		}
@@ -333,7 +333,7 @@ public class Page {
 	}
 
 	public void addControl(Control control) {
-		if (_controls == null) _controls = new ArrayList<Control>();
+		if (_controls == null) _controls = new ArrayList<>();
 		_controls.add(control);
 	}
 
@@ -374,7 +374,7 @@ public class Page {
 	}
 
 	public List<Control> getAllControls() {
-		ArrayList<Control> controls = new ArrayList<Control>();
+		ArrayList<Control> controls = new ArrayList<>();
 		getChildControls(_controls, controls);
 		return controls;
 	}
@@ -522,7 +522,7 @@ public class Page {
 	// get all actions in the page of a specified type
 	public List<Action> getAllActions(String type) {
 		// instantiate the list we're going to return
-		List<Action> actions = new ArrayList<Action>();
+		List<Action> actions = new ArrayList<>();
 		// check the page events first
 		if (_events != null) {
 			for (Event event : _events) {
@@ -658,7 +658,7 @@ public class Page {
 		// if the internal variable has not been initialised yet
 		if (_dialoguePageIds == null) {
 			// initialise
-			_dialoguePageIds = new ArrayList<String>();
+			_dialoguePageIds = new ArrayList<>();
 			// get all navigation actions on this page
 			List<Action> actions = getAllActions("navigate");
 			// loop them
@@ -890,7 +890,7 @@ public class Page {
 	}
 
 	public List<String> getAllActionTypes() {
-		List<String> actionTypes = new ArrayList<String>();
+		List<String> actionTypes = new ArrayList<>();
 		List<Action> actions = getAllActions();
 		if (actions != null) {
 			for (Action action : actions) {
@@ -902,7 +902,7 @@ public class Page {
 	}
 
 	public List<String> getAllControlTypes() {
-		List<String> controlTypes = new ArrayList<String>();
+		List<String> controlTypes = new ArrayList<>();
 		controlTypes.add("page");
 		List<Control> controls = getAllControls();
 		if (controls != null) {
@@ -1149,7 +1149,7 @@ public class Page {
     	if (_controlTypes == null) _controlTypes = getAllControlTypes();
 
     	// manage the resources links added already so we don't add twice
-    	ArrayList<String> addedResources = new ArrayList<String>();
+    	ArrayList<String> addedResources = new ArrayList<>();
 
 		// if this application has resources add during initialisation
 		if (application.getResources() != null) {
@@ -1446,7 +1446,7 @@ public class Page {
 		}
 
 		// initialise the form controls that need their values added in the dynamic part of the page script
-		_formControlValues = new ArrayList<String>();
+		_formControlValues = new ArrayList<>();
 		// get all actions
 		List<Action> actions = getAllActions();
 		// loop them
@@ -1475,7 +1475,7 @@ public class Page {
 		}
 
 		// initialise our pageload lines collections
-		_pageloadLines = new ArrayList<String>();
+		_pageloadLines = new ArrayList<>();
 
 		// get any control initJavaScript event listeners into he pageloadLine (goes into $(document).ready function)
 		getPageLoadLines(_pageloadLines, _controls);
@@ -1484,7 +1484,7 @@ public class Page {
 		List<String> pageLoadLines = Collections.synchronizedList(_pageloadLines);
 
 		// synchronised block for sorting in thread-safe manner
-		synchronized (pageLoadLines) {
+		synchronized (this) {
 			// sort the page load lines
 			Collections.sort(pageLoadLines, new Comparator<String>() {
 				@Override
@@ -2421,7 +2421,7 @@ public class Page {
 	public List<Control> getRecaptchaControls() {
 		if (_reCaptchaControls == null) {
 			// make a new list
-			_reCaptchaControls = new ArrayList<Control>();
+			_reCaptchaControls = new ArrayList<>();
 			// loop page controls
 			for (Control control : getAllControls()) {
 				// if this is a recapthca add it
