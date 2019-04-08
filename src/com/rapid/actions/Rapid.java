@@ -221,7 +221,7 @@ public class Rapid extends Action {
 		newApp.initialise(servletContext, true);
 
 		// initialise the list of actions
-		List<String> actionTypes = new ArrayList<String>();
+		List<String> actionTypes = new ArrayList<>();
 
 		// get the JSONArray of actions
 		JSONArray jsonActionTypes = rapidServlet.getJsonActions();
@@ -252,7 +252,7 @@ public class Rapid extends Action {
 		newApp.setActionTypes(actionTypes);
 
 		// initialise the list of controls
-		List<String> controlTypes = new ArrayList<String>();
+		List<String> controlTypes = new ArrayList<>();
 
 		// get the JSONArray of controls
 		JSONArray jsonControlTypes = rapidServlet.getJsonControls();
@@ -343,7 +343,7 @@ public class Rapid extends Action {
 		newWorkflow.setCreatedDate(new Date());
 
 		// initialise the list of actions
-		List<String> actionTypes = new ArrayList<String>();
+		List<String> actionTypes = new ArrayList<>();
 
 		// get the JSONArray of actions
 		JSONArray jsonActionTypes = rapidServlet.getJsonActions();
@@ -411,7 +411,7 @@ public class Rapid extends Action {
 			return null;
 		} else {
 			// instantiate the list we're making
-			List<SOAElementRestriction> restrictions = new ArrayList<SOAElementRestriction>();
+			List<SOAElementRestriction> restrictions = new ArrayList<>();
 			// loop what we got
 			for (int i = 0; i < jsonRestrictions.length(); i++) {
 				// fetch this item
@@ -440,7 +440,7 @@ public class Rapid extends Action {
 		// initialise and populate on first get
 		if (_childActions == null) {
 			// our list of all child actions
-			_childActions = new ArrayList<Action>();
+			_childActions = new ArrayList<>();
 			// add child success actions
 			if (_successActions != null) {
 				for (Action action : _successActions) _childActions.add(action);
@@ -1114,7 +1114,7 @@ public class Rapid extends Action {
 							// get a synchronised list for multithreaded sorting
 							List<Webservice> webservices = Collections.synchronizedList(app.getWebservices());
 							// synchronise this block for thread-safety
-							synchronized (webservices) {
+							synchronized (this) {
 								// sort them by their name
 								Collections.sort(webservices, new Comparator<Webservice>() {
 									@Override
@@ -1145,7 +1145,7 @@ public class Rapid extends Action {
 							// get a synchronised list for multithreaded sorting
 							List<Parameter> parameters = Collections.synchronizedList(app.getParameters());
 							// synchronize this block
-							synchronized (parameters) {
+							synchronized (this) {
 								// sort them by their name
 								Collections.sort(parameters, new Comparator<Parameter>() {
 									@Override
@@ -1176,7 +1176,7 @@ public class Rapid extends Action {
 							// get a synchronised list for multithreaded sorting
 							List<Resource> resources = Collections.synchronizedList(app.getAppResources());
 							// synchronize this block
-							synchronized (resources) {
+							synchronized (this) {
 								// sort them by their name
 								Collections.sort(resources, new Comparator<Resource>() {
 									@Override
@@ -1498,7 +1498,7 @@ public class Rapid extends Action {
 						// if we had some roles
 						if (roles != null) {
 							// prepapre a list of just the role names (not descriptions) - these go in the drop down for new roles that can be added
-							List<String> roleNames = new ArrayList<String>();
+							List<String> roleNames = new ArrayList<>();
 							// loop the roles
 							for (Role role : roles) {
 								// we need the RapidAdmin role to add RapidAdmin or RapidDesign
@@ -2136,7 +2136,7 @@ public class Rapid extends Action {
 
 				JSONArray jsonActionTypes = jsonAction.getJSONArray("actionTypes");
 
-				ArrayList<String> actionTypes = new ArrayList<String>();
+				ArrayList<String> actionTypes = new ArrayList<>();
 
 				for (int i = 0; i < jsonActionTypes.length(); i++) {
 					actionTypes.add(jsonActionTypes.getString(i).trim());
@@ -2166,7 +2166,7 @@ public class Rapid extends Action {
 
 				JSONArray jsonControlTypes = jsonAction.getJSONArray("controlTypes");
 
-				ArrayList<String> controlTypes = new ArrayList<String>();
+				ArrayList<String> controlTypes = new ArrayList<>();
 
 				// loop the controls
 				for (int i = 0; i < jsonControlTypes.length(); i++) {
@@ -2263,7 +2263,7 @@ public class Rapid extends Action {
 					// get the number of version
 					int versionCount = versions.size();
 					// make a list of versions
-					ArrayList<String> versionNumbers = new ArrayList<String>();
+					ArrayList<String> versionNumbers = new ArrayList<>();
 					// loop the versions
 					for (String version : versions.keySet()) {
 						versionNumbers.add(version);
@@ -2411,7 +2411,7 @@ public class Rapid extends Action {
 				// get the database connections
 				List<DatabaseConnection> dbConns = app.getDatabaseConnections();
 				// instantiate if null
-				if (dbConns == null) dbConns = new ArrayList<DatabaseConnection>();
+				if (dbConns == null) dbConns = new ArrayList<>();
 
 				// make the new database connection
 				DatabaseConnection dbConn = new DatabaseConnection(
@@ -3180,7 +3180,7 @@ public class Rapid extends Action {
 					// create a file object for restoring the config folder
 				 	File configRestoreFolder = new File(Application.getConfigFolder(servletContext, app.getId(), "_restore"));
 
-				 	List<String> ignoreList = new ArrayList<String>();
+				 	List<String> ignoreList = new ArrayList<>();
 				 	ignoreList.add("WebContent");
 
 				 	// copy the backup into the application restore folder

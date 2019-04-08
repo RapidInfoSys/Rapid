@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -2463,7 +2463,7 @@ $(document).ready( function() {
 			        	buildPageMap();
 			        	
 			        	// resize to set correct scroll bars - after a short delay
-			        	window.setTimeout(windowResize("page loaded"), 500);
+			        	window.setTimeout(function() { windowResize("page loaded") }, 100);
 			        	
 			        	// update the url
 			        	if (window.history && window.history.replaceState) window.history.replaceState("page", _page.title, "design.jsp?a=" + _version.id + "&v=" + _version.version + "&p=" + _page.id );

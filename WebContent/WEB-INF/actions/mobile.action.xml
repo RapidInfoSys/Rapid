@@ -415,6 +415,25 @@ return "<option value=''>Please select...</option><option value ='html'" + (this
 	font-size: 38px;
 	color: white;
 }
+
+#cameraVideoContainer {
+	position:fixed; 
+	left:0; 
+	right:0; 
+	top:0; 
+	bottom:0; 
+	width:100%; 
+	height:100%;
+	background: #111;
+	display: none;
+}
+
+#cameraPlayer {
+	width:100%; 
+	height:100%; 
+	object-fit:contain;
+}
+
 	        	</contents>
 	        </resource>
             
@@ -500,9 +519,8 @@ function turnOnCamera(galleryControlId, size, quality) {
 		if (!_cameraPlayer) {
 		
 			// Add the divs
-			var cameraPreviewHtml = "<div id='cameraDiv' style='display:none;position:fixed;left:0;right:0;top:0;bottom:0;'>"
-								  + "<div id='video_container' style='position:fixed; left:0; right:0; top:0; bottom:0; width:100%; height:100%;'>"
-								  + "<video id='cameraPlayer' autoplay style='width:100%; height:100%; object-fit:cover;'></video></div>"
+			var cameraPreviewHtml = "<div id='cameraVideoContainer'>"
+								  + "<video id='cameraPlayer' autoplay></video>"
 								  + "<button id='btnToggleCamera' class='cameraControlBasic' style='position:absolute; left:0;'><i class='fa fa-retweet cameraIcon' style='margin-left:-2px;'></i></button>"
 								  + "<button id ='btnCloseCamera' class='cameraControlBasic' style='position:absolute; right:0;'><i class='fa fa-times cameraIcon'></i></button>"
 								  + "<button id ='btnTakePicture' class='cameraControl' style='position:absolute; left:50%; right:0; bottom:0; transform:translateX(-50%); margin:20px auto;'><i class='fa fa-camera cameraIcon'></i></button>"
@@ -542,7 +560,7 @@ function turnOnCamera(galleryControlId, size, quality) {
 		.then(() => new Promise(resolve => _cameraPlayer.onloadedmetadata = resolve))
 		.then(function(){
 			// Display the cameraPlayer
-			$("#cameraDiv").show();
+			$("#cameraVideoContainer").show();
 		})
 		.catch(function(err) {
 			// Handle the error
@@ -564,7 +582,7 @@ function turnOffCamera () {
 		// Stop all video streams attached to the video element
 		_cameraPlayer.srcObject.getVideoTracks().forEach(function(track){
 			// Close the preview
-			$("#cameraDiv").hide();
+			$("#cameraVideoContainer").hide();
 			track.stop();
 		});
 	}
@@ -622,6 +640,7 @@ function takePicture (ev) {
 		// Default format type is image/png
 		var dataURL = canvas.toDataURL();
 		
+		// call gallery set data to display image
 		setData_gallery(ev, galleryControlId, "url", galleryDetails, dataURL);
 		
 	}

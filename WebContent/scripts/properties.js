@@ -6286,7 +6286,7 @@ function Property_pdfInputs(cell, propertyObject, property, details) {
 	var text = "";
 	
 	// add a header
-	table.append("<tr><td><b>Control</b></td><td><b>Field</b></td><td colspan='2'><b>Label</b></td></tr>");
+	table.append("<tr><td><b>Control</b></td><td><b>Field</b></td><td colspan='2'><b>Label</b><button class='titleButton' title='Add all page data controls'><span>&#xf055;</span></td></tr>");
 		
 	// show current choices (with delete and move)
 	for (var i = 0; i < inputs.length; i++) {
@@ -6329,7 +6329,7 @@ function Property_pdfInputs(cell, propertyObject, property, details) {
 			i--;
 		}			
 	}
-			
+
 	// add reorder listeners
 	addReorder(inputs, table.find("div.reorder"), function() { 
 		Property_pdfInputs(cell, propertyObject, property, details); 
@@ -6363,6 +6363,97 @@ function Property_pdfInputs(cell, propertyObject, property, details) {
 		// rebuild the dialogue
 		Property_pdfInputs(ev.data.cell, ev.data.propertyObject, ev.data.property, ev.data.details);
 		
+	}));
+	
+	// add add all listener
+	addListener( table.find("button.titleButton").click( {cell: cell, propertyObject: propertyObject, property: property, details: details}, function(ev) {
+		// add an undo snapshot
+		addUndo();
+		// get the list of inputs
+		var inputs = ev.data.inputs;
+		// initialise if need be
+		if (!inputs) inputs = [];
+		// get all page controls
+		var pageControls = getControls();
+		// prepare a list of controls to insert
+		var insertControls = [];
+		// loop the page controls
+		for (var i in pageControls) {
+			// get the pageControl
+			var pageControl = pageControls[i];
+			// if it has a name
+			if (pageControl.name) {
+				// get the control class
+				var controlClass = _controlTypes[pageControl.type];
+				// if this has a get data method
+				if (controlClass.getDataFunction) {
+					// get the label
+					var label = pageControl.label;
+					// if not got one yet 
+					if (!label) {
+						// look for responsive label
+						label = pageControl.responsiveLabel;
+						// if still not got one and control control is text, set label to text property
+						if (!label && i > 0 && (pageControls[i-1].type == "text" || pageControls[i-1].type == "responsivetext")) label = pageControls[i-1].text; 
+					}
+					// if there is a label
+					if (label) {
+						// trim label
+						label = label.trim();
+						// check for trailing :
+						if (label[label.length-1] == ":") {
+							// remove :
+							label = label.substr(0,label.length-1);
+							// trim again
+							label = label.trim();
+						}
+					} else {
+						// set label to empty string to avoid undefined
+						label = "";
+					}
+					// assume we don't have this control already
+					var gotControl = false;
+					// loop our controls
+					for (var i in inputs) {
+						if (inputs[i].itemId == pageControl.id) {
+							gotControl = true;
+							break;
+						}
+					}
+					// if not add to insert collection
+					if (!gotControl) insertControls.push({itemId: pageControl.id, field: "", label: label});
+				} // control get data method check
+			} // control name check
+		}
+		// now loop the insert controls
+		for (var i in insertControls) {
+			// get the insert control
+			var insertControl = insertControls[i];
+			// get the insert control position in the page
+			var insertPos = getKeyIndexControls(pageControls, insertControl.itemId);
+			// assume we haven't inserted it
+			var inserted = false;
+			// now loop the existing validation controls
+			for (var j in inputs) {
+				// get the existing position 
+				var existingPos = getKeyIndexControls(pageControls, inputs[j].itemId);
+				// if the existing pos is after the insert control position
+				if (existingPos > insertPos) {
+					// insert here
+					inputs.splice(j, 0, insertControl);
+					// retain insert
+					inserted = true;
+					// we're done
+					break;
+				} // found a control after this one so insert before the found one
+			} // loop dataCopies
+			// if we haven't inserted yet do so now
+			if (!inserted) inputs.push({itemId: insertControl.itemId, field: "", label: insertControl.label});
+		} // loop inserts
+		// add back the changed controls
+		ev.data.propertyObject.inputs = inputs;
+		// refresh dialogue
+		Property_pdfInputs(cell, propertyObject, property, details); 
 	}));
 	
 	// if we got text 
