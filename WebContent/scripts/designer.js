@@ -1557,7 +1557,7 @@ function loadPages(selectedPageId, forceLoad, fromSave) {
         			if (_redo.length > 0) $("#redo").enable();
         			// update which of prev/next are visible
             		updatePrevNext();
-        		}        		
+        		}
         	} else {        		
         		// show the designer
         		showDesigner();
@@ -3823,7 +3823,7 @@ function windowResize(ev) {
 	// only reset the height of the Iframe when mouse is not down. This was causing the controls to be move out of position when selected
 	if (!_mouseDown) {
 		// set the iframe height to auto
-		_pageIframe.css("height","auto");
+		_pageIframe.css("height","auto"); // this made the page jump up to the top when controls further down the page had properties changed, control position seems fine
 	}
 	
 	// use the function to get our working height
@@ -3919,7 +3919,7 @@ function windowResize(ev) {
     		// if the contents are taller than the device height we need vertical scrolling
     		if (contentHeight > Math.round(devHeight)) {
 	    		// set the scroll bar height to the content height
-	    		$("#scrollVInner").css("height", contentHeight);    		    		
+	    		$("#scrollVInner").css("height", contentHeight * _scale);    		    		
 	    		// show and position the scroll bars
 	    		$("#scrollV").css({
 	    			display: "block",
@@ -3937,7 +3937,7 @@ function windowResize(ev) {
     		// if the contents are wider than the device width we need horizontal scrolling
     		if (contentWidth > Math.round(devWidth)) {
     			// set the scroll bar width
-    			$("#scrollHInner").css("width", contentWidth);
+    			$("#scrollHInner").css("width", contentWidth * _scale);
     			// show and position the scroll bar
 	    		$("#scrollH").css({
 	    			display: "block",
@@ -3995,7 +3995,8 @@ function windowResize(ev) {
 		$("#scrollV").hide();
 		$("#scrollV").hide();
 		// hide the desktop covers
-		$(".desktopCover").hide();				
+		$(".desktopCover").hide();
+		
 	}
 					
 	// get the control inner
@@ -4036,6 +4037,9 @@ function windowResize(ev) {
 	
 	// resize / reposition the selection
 	positionAndSizeBorder(_selectedControl);
+	
+	// revert any scroll top
+	if (scrollTop > 0) _window.scrollTop(scrollTop);
 	
 }
 
