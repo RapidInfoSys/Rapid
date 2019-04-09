@@ -137,14 +137,16 @@ return [["","No"],["scroll","Yes"],["auto","Auto"]];
 	            <key>scrollHeight</key>
 	            <name>Height</name>
 	            <changeValueJavaScript>gridScrollHeight</changeValueJavaScript>	         
-	             <refreshHtml>true</refreshHtml>   
+	            <refreshHtml>true</refreshHtml>
+	            <helpHtml>The total height that the table will be fixed to. Can be just a number in which case px will be added.</helpHtml>
 	        </property>	
 	        
 	        <property>
 	            <key>fixedHeader</key>
 	            <name>Fixed header</name>
 	            <changeValueJavaScript>gridScrollFixedHeader</changeValueJavaScript>	           
-	             <refreshHtml>true</refreshHtml> 
+	            <refreshHtml>true</refreshHtml>
+	            <helpHtml>Whether the header row will not scroll with the other rows.</helpHtml>
 	        </property>	
 	         
 	    </properties>
@@ -194,10 +196,7 @@ div.gridScroll table {
 
 div.gridScrollHeader {
 	overflow-y: hidden;
-}
-
-div.gridScrollHeader table {
-	width: calc(100% - 16px) !important;	
+	margin-right: 16px; /* space for the scroll bar */
 }
 
 div.gridScrollHeader table.grid tr:not(:first-child) {
@@ -923,6 +922,11 @@ if (data !== undefined) {
 	// if we vertical scrolling
 	if (details && details.scrollV && details.scrollHeight) {
 	
+		// get scroll height
+		var scrollHeight = details.scrollHeight.trim();
+		// add px if no other unit specified
+		if (parseInt(scrollHeight)+'' == scrollHeight+'') scrollHeight += "px";
+	
 		// if we have a fixed header
 		if (details.fixedHeader) {
 		
@@ -932,11 +936,15 @@ if (data !== undefined) {
 			    // create and style the wrapper
 			    var oTblDiv = $("<div class='gridScrollBody' />");
 			    oTblDiv.css({
-			    	"max-height": details.scrollHeight,
+			    	"max-height": scrollHeight,
 			    	"overflow-y": details.scrollV
 			    });
 			    // wrap it
 			    control.wrap(oTblDiv);
+			    
+			    /*
+			    
+			    Not sure this and the setting below are neccessary due to the full clone
 
 			    // save original column widths			    			    
 			    control.find('thead tr td').each(function(){
@@ -944,7 +952,9 @@ if (data !== undefined) {
 			    }); 
 			    control.find('tbody tr:eq(0) td').each(function(){
 			        $(this).attr("data-item-original-width",$(this).width());
-			    });                 
+			    });
+			    
+			    */                 
 			
 			    // clone the original table
 			    var newTbl = control.clone();
@@ -961,15 +971,21 @@ if (data !== undefined) {
 			    parent.insertAfter(newTbl);
 			    // wrap the new table
 			    newTbl.wrap("<div class='gridScrollHeader' />")
+
+				/*
 			    				    			
 			    // replace original column widths
 			    newTbl.find('thead tr td').each(function(){
-			        $(this).width($(this).attr("data-item-original-width"));
+			    	var w = $(this).attr("data-item-original-width");
+			        if (w) $(this).width(w);
 			    });     
 			    control.width(control.attr('data-item-original-width'));      
 			    control.find('tbody tr:eq(0) td').each(function(){
-			        $(this).width($(this).attr("data-item-original-width"));
+			    	var w = $(this).attr("data-item-original-width");
+			        $(this).width(w);
 			    });
+			    
+			    */
 			    
 			    // positioning the header has been moved to the init on window resize
 			    
@@ -985,7 +1001,7 @@ if (data !== undefined) {
 				// create and style the wrapper
 			    var oTblDiv = $("<div class='gridScroll' id='" + id + "' />");
 			    oTblDiv.css({
-			    	"max-height": details.scrollHeight,
+			    	"max-height": scrollHeight,
 			    	"overflow-y": details.scrollV
 			    });
 			    // retain that we have applied the scroll
@@ -1224,8 +1240,8 @@ if (details) {
 				var headerHeight = headerTable.find("tr:first-child").height();
 				// set height of the header table wrapper
 				headerTable.parent().css({"height":headerHeight});
-				 // shift the second table up behind the fixed header
-				control.css("margin-top",-headerHeight);
+				// shift the second table up behind the fixed header - this is not required now body div top row is display none
+				// control.css("margin-top",-headerHeight);
 			}
 
 		});
