@@ -217,11 +217,22 @@ public class Email {
         // if we got one
         if (email != null) {
 
-            // add email to the servlet context
+        	// get the host
+        	String host = email.getHost();
+
+        	// if there is one
+        	if (host != null) {
+        		// trim it
+        		host = host.trim();
+        		// put it back
+        		email.setHost(host);
+        	}
+
+            // add email object to the servlet context
             servletContext.setAttribute("email", email);
 
-            // set the properties we've just loaded
-            setProperties(email.getHost().trim(), email.getPort(), email.getSecurity(), email.getUserName(), email.getPassword());
+            // if enabled set the properties we've just loaded
+            setProperties(host, email.getPort(), email.getSecurity(), email.getUserName(), email.getPassword());
 
         }
 

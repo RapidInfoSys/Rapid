@@ -3019,7 +3019,7 @@ public class Rapid extends Action {
 
 			} else if ("TESTEMAIL".equals(action)) {
 
-				String host = jsonAction.getString("host");
+				String host = jsonAction.getString("host").trim();
 				int port = jsonAction.getInt("port");
 				String sec = jsonAction.getString("security").trim();
 				String userName = jsonAction.getString("userName").trim();
@@ -3082,7 +3082,7 @@ public class Rapid extends Action {
 				// check whether enabled
 				if (enabled) {
 
-					String host = jsonAction.getString("host");
+					String host = jsonAction.getString("host").trim();
 					int port = jsonAction.getInt("port");
 					String sec = jsonAction.getString("security").trim();
 					String userName = jsonAction.getString("userName").trim();
