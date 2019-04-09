@@ -250,32 +250,37 @@ public class Email {
 
     public static void setProperties(String host, int port, String security, String userName, String password) {
 
-	    // Get system properties
-	    Properties props = new Properties();
+    	// if we have a host
+    	if (host != null) {
 
-	    // Setup mail server
-	    props.put("mail.smtp.host", host);
-	    props.put("mail.smtp.port", port);
+		    // Get system properties
+		    Properties props = new Properties();
 
-	    // check security - this article was very useful at describing the difference: https://luxsci.com/blog/ssl-versus-tls-whats-the-difference.html
-	    if ("ssl".equals(security)) {
+		    // Setup mail server
+		    props.put("mail.smtp.host", host);
+		    props.put("mail.smtp.port", port);
 
-	        props.put("mail.smtp.auth", "true");
-	        props.put("mail.smtp.ssl.enable", "true");
+		    // check security - this article was very useful at describing the difference: https://luxsci.com/blog/ssl-versus-tls-whats-the-difference.html
+		    if ("ssl".equals(security)) {
 
-	    } else if ("tls".equals(security)) {
+		        props.put("mail.smtp.auth", "true");
+		        props.put("mail.smtp.ssl.enable", "true");
 
-	    	props.put("mail.smtp.auth", "true");
-		    props.put("mail.smtp.starttls.enable", "true");
-		    props.put("mail.smtp.socketFactory.fallback", "true");
+		    } else if ("tls".equals(security)) {
 
-	    }
+		    	props.put("mail.smtp.auth", "true");
+			    props.put("mail.smtp.starttls.enable", "true");
+			    props.put("mail.smtp.socketFactory.fallback", "true");
 
-	    // retain these in a static
-	    _properties = props;
+		    }
 
-	    // update the static object with these new values
-    	_email = new Email(host, port, security, userName, password);
+		    // retain these in a static
+		    _properties = props;
+
+		    // update the static object with these new values
+	    	_email = new Email(host, port, security, userName, password);
+
+    	}
 
 	    // empty the authenticator so a new one is made on the first send
 	    _authenticator = null;
