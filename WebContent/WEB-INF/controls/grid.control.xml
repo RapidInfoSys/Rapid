@@ -200,11 +200,11 @@ div.gridScrollHeader {
 }
 
 div.gridScrollHeader table.grid tr:not(:first-child) {
-	visibility: hidden;
+	visibility: hidden; /* must be hidden rather than display none to still have geometry to stay in sync with body */
 }
 
 div.gridScrollBody table.grid tr:first-child {
-	display: none;
+	visibility: hidden; /* must be hidden rather than display none to still have geometry to stay in sync with header  */
 }
 	                ]]>
 				</contents>
@@ -829,8 +829,8 @@ if (data !== undefined) {
 				// get a reference to the current row
 				var row = data.rows[i];
 				
-				///var rowObject = control.append("<tr class='rowStyle" + (i % 2 + 1) + (data.rowValidation && i < data.rowValidation.length && !data.rowValidation[i] ? " validation" : "") + "'></tr>").find("tr:last");
-				rowsHtml += "<tr class='rowStyle" + (i % 2 + 1) + "'>";
+				// add the html for this row
+				rowsHtml += "<tr class='rowStyle" + (i % 2 + 1) + (data.rowValidation && i < data.rowValidation.length && !data.rowValidation[i] ? " validation" : "") + "'>";
 				
 				// add multiselect
 				if (details.multiSelect) rowsHtml += "<td><input type='checkbox' class='gridMultiSelect' /></td>";
@@ -1240,8 +1240,8 @@ if (details) {
 				var headerHeight = headerTable.find("tr:first-child").height();
 				// set height of the header table wrapper
 				headerTable.parent().css({"height":headerHeight});
-				// shift the second table up behind the fixed header - this is not required now body div top row is display none
-				// control.css("margin-top",-headerHeight);
+				// shift the second table up behind the fixed header
+				control.css("margin-top",-headerHeight);
 			}
 
 		});
