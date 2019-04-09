@@ -278,7 +278,7 @@ public class RapidHttpServlet extends HttpServlet {
 		// if we don't have one yet
 		if (_uploadMimeTypes == null) {
 			// make new one
-			_uploadMimeTypes = new ArrayList<String>();
+			_uploadMimeTypes = new ArrayList<>();
 			// get the allowed upload mimetypes from the web.xml file
 			String uploadMimeTypes = getServletContext().getInitParameter("uploadMimeTypes");
 			// default if null
@@ -298,7 +298,7 @@ public class RapidHttpServlet extends HttpServlet {
 		// if we don't have one yet
 		if (_uploadMimeTypeBytes == null) {
 			// make new one
-			_uploadMimeTypeBytes = new HashMap<String, List<byte[]>>();
+			_uploadMimeTypeBytes = new HashMap<>();
 			// get the allowed upload mimetype bytes from the web.xml file
 			String uploadMimeTypeBytes = getServletContext().getInitParameter("uploadMimeTypeBytes");
 			// default if null
@@ -313,7 +313,7 @@ public class RapidHttpServlet extends HttpServlet {
 				// get the mimetypebytes array the list - returns null if its byte array doesn't exist
 				List<byte[]> bytesList = _uploadMimeTypeBytes.get(mimeType);
 				// initialise an array list if it doesnt exist
-				if (bytesList == null) bytesList = new ArrayList<byte[]>();
+				if (bytesList == null) bytesList = new ArrayList<>();
 				// add bytes to list
 				bytesList.add(Bytes.fromHexString(signatureBytes[i]));
 				// add list to map
@@ -335,19 +335,7 @@ public class RapidHttpServlet extends HttpServlet {
 		return (ActionCache) getServletContext().getAttribute("actionCache");
 	}
 
-	// encrypt a value with the encryption adapter, if there is one
-	public String encryptValue(String value) throws GeneralSecurityException, IOException {
-		if (value != null && _encryptionProvider != null) return _encryptionProvider.encrypt(value);
-		return value;
-	}
-
-	// decrypt a value  with the encryption adapter, if there is one
-	public String decryptValue(String value) throws GeneralSecurityException, IOException {
-		if (value != null && _encryptionProvider != null) return _encryptionProvider.decrypt(value);
-		return value;
-	}
-
-	// send the user an exception in a formatted page
+	// send the user an exception in a formatted page - used by both Rapid and Designer servelets
 	public void sendException(RapidRequest rapidRequest, HttpServletResponse response, Exception ex) throws IOException {
 
 		// set the status
@@ -426,6 +414,21 @@ public class RapidHttpServlet extends HttpServlet {
 		// write body
 		writer.write("    <div class=\"image\"><a href=\"http://www.rapid-is.co.uk\"><img title=\"Rapid Information Systems\" src=\"images/RapidLogo.svg\" /></a></div>\n    <div class=\"midTitle\"><span>Rapid</span></div>\n    <div class=\"subBar\"><span class=\"link\"><a href=\"logout.jsp\">LOG OUT</a></span><span class=\"versionColumn\">" + Rapid.VERSION + "</span></div>\n    <div class=\"body\">\n      <div class=\"columnMiddle\">\n          <div class=\"info\">\n            <h1>" + title + "</h1>\n            <p>" + message + "</p>\n          </div>\n        </div>\n      </div>\n    </div>");
 
+	}
+
+	// public static methods
+
+
+	// encrypt a value with the encryption adapter, if there is one
+	public static String encryptValue(String value) throws GeneralSecurityException, IOException {
+		if (value != null && _encryptionProvider != null) return _encryptionProvider.encrypt(value);
+		return value;
+	}
+
+	// decrypt a value  with the encryption adapter, if there is one
+	public static String decryptValue(String value) throws GeneralSecurityException, IOException {
+		if (value != null && _encryptionProvider != null) return _encryptionProvider.decrypt(value);
+		return value;
 	}
 
 }
