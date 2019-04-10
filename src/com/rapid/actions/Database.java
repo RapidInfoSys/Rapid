@@ -982,8 +982,8 @@ public class Database extends Action {
 									// add a field for the results of this child action
 									jsonFields.put("childAction" + (i + 1));
 
-									// if matching fields
-									if (fieldsMap.size() > 0) {
+									// if matching fields exists and not all columns are matched (stops simple queries like for drop down lookups merging)
+									if (fieldsMap.size() > 0 && fieldsMap.size() != jsonFields.length() - i - 1) {
 										// an object with a null value for when there is no match
 										Object nullObject = null;
 										// get the child rows
