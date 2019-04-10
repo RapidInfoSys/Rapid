@@ -855,7 +855,7 @@ public class Rapid extends RapidHttpServlet {
 				responseLength = jsonApps.toString().length();
 
 				// log response
-				logger.debug("Rapid POST response : " + jsonApps.toString());
+				logger.trace("Rapid POST response : " + jsonApps.toString());
 
 			} else {
 
@@ -918,7 +918,12 @@ public class Rapid extends RapidHttpServlet {
 								responseLength = jsonResult.length();
 
 								// log response
-								logger.debug("Rapid POST response : " + jsonResult);
+
+								if (logger.isTraceEnabled()) {
+									logger.trace("Rapid POST response : " + jsonResult.toString());
+								} else {
+									logger.debug("Rapid POST response : length " + jsonResult.toString().length() + " bytes");
+								}
 
 							} // jsonData
 
