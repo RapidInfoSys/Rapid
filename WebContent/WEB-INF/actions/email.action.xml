@@ -75,6 +75,7 @@ return "<option value=''>Please select...</option>" + getInputOptions(this.to);
 				<getValuesFunction>return ["text","html"];</getValuesFunction>
 				<helpHtml>Defines whether the email will be sent as plain text or HTML.</helpHtml>
 			</property>
+			
 			<property>
 				<key>content</key>
 				<name>Content</name>
@@ -82,24 +83,28 @@ return "<option value=''>Please select...</option>" + getInputOptions(this.to);
 				<refreshProperties>true</refreshProperties>
 				<helpHtml>Specifies the email subject and body. Data from your app can be referenced inside the body and will be displayed when using ?. If you need a ? before the control reference it can be escaped using \.</helpHtml>
 			</property>
+			
 			<property>
 	            <key>attachments</key>
 	            <name>Attachments</name>
 	            <changeValueJavaScript>datacopyDestinations</changeValueJavaScript>
 	            <helpHtml>Upload controls that will have any files added as attachments.</helpHtml>
 	        </property>
+	        
 	    	<property>
 	            <key>successActions</key>
 	            <name>Success actions</name>
 	            <changeValueJavaScript>childActions</changeValueJavaScript>
 	            <helpHtml>Sets what events occur upon a successful email action</helpHtml>
 	        </property>
+	        
 	        <property>
 	            <key>errorActions</key>
 	            <name>Error actions</name>
 	            <changeValueJavaScript>childActions</changeValueJavaScript>
 	            <helpHtml>Sets what events occur upon an unsuccessful email action</helpHtml>
 	        </property>
+	        
 		</properties>
 	</action>
 </actions>
