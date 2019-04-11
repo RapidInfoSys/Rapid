@@ -108,7 +108,7 @@ return [["P","Page"],["U","URL"]];
 .dialogueCover {
 	background-color: white;
 	opacity:0.8;
-	filter:alpha(opacity=80); 
+	filter:alpha(opacity=80);
 }
 
 .dialogue {
@@ -257,7 +257,7 @@ function Action_navigate(url, dialogue, id, popup) {
 		           	// remove any existing dialogue cover for this action
 		           	$("#" + id + "cover").remove();
 		           	// add the cover and return reference
-		           	dialogueCover = body.append("<div id='" + id + "cover' class='dialogueCover' style='position:absolute;left:0px;top:0px;z-index:1000;'></div>").children().last();
+		           	dialogueCover = body.append("<div id='" + id + "cover' class='dialogueCover' style='position:absolute;left:0px;top:0px;z-index:1001;'></div>").children().last();
 		           			      		           			           		            	
 	            	// remove any existing dialogue container for this action
 		           	$("#" + id).remove();

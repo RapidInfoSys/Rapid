@@ -439,35 +439,37 @@ public class Database extends Action {
 
 			// drop in the query variable used to collect the inputs, and hold the sequence
 			js += "var query = { data: data, sequence: sequence };\n";
+			
+			// assume no child queries
+			boolean childQueries = false;
 
 			// look for any _childDatabaseActions
-			if (_childDatabaseActions != null) {
-				// if there are some
-				if (_childDatabaseActions.size() > 0) {
-					// add a collection into the parent
-					js += "query.childQueries = [];\n";
-					// count them
-					int i = 1;
-					// loop them
-					for (Database childDatabaseAction : _childDatabaseActions) {
-						// get the childQuery
-						Query childQuery = childDatabaseAction.getQuery();
-						// open function to get input data
-						js += "var childData" + i + " = getDatabaseActionInputData(" + childQuery.getMultiRow() + ", ";
-						// add inputs
-						js += getInputsJavaScript(rapidServlet.getServletContext(), application, page, childQuery);
-						// close the function
-						js += ");\n";
-						// create object
-						js += "var childQuery" + i + " = { data: childData" + i + ", index: " + (i - 1) + " };\n";
-						// add to query
-						js += "query.childQueries.push(childQuery" + i + ");\n";
-						// increment the counter
-						i ++;
-					}
+			if (_childDatabaseActions != null && _childDatabaseActions.size() > 0) {
+				// remember we have child queries
+				childQueries = true;
+				// add a collection into the parent
+				js += "query.childQueries = [];\n";
+				// count them
+				int i = 1;
+				// loop them
+				for (Database childDatabaseAction : _childDatabaseActions) {
+					// get the childQuery
+					Query childQuery = childDatabaseAction.getQuery();
+					// open function to get input data
+					js += "var childData" + i + " = getDatabaseActionInputData(" + childQuery.getMultiRow() + ", ";
+					// add inputs
+					js += getInputsJavaScript(rapidServlet.getServletContext(), application, page, childQuery);
+					// close the function
+					js += ");\n";
+					// create object
+					js += "var childQuery" + i + " = { data: childData" + i + ", index: " + (i - 1) + " };\n";
+					// add to query
+					js += "query.childQueries.push(childQuery" + i + ");\n";
+					// increment the counter
+					i ++;
 				}
 			}
-
+			
 			// control can be null when the action is called from the page load
 			String controlParam = "";
 			if (control != null) controlParam = "&c=" + control.getId();
@@ -563,8 +565,12 @@ public class Database extends Action {
 				if (outputs.size() > 0) {
 					// add the parent outputs property
 					js += "      " + getOutputsJavaScript(rapidServlet.getServletContext(), application, page, outputs, "") + ";\n";
-					// send them them and the data to the database action
-					js += "      Action_database(ev,'" + getId() + "', data, outputs);\n";
+					// add indent
+					js += "      ";
+					// if there are child queries, add child queries check
+					if (childQueries) js += "if (data.fields && data.fields.length > 0 && data.fields[0].indexOf('childAction') != 0) ";
+					// send them and the data to the database action (unless there are children and this parent has been skipped)
+					js += "Action_database(ev,'" + getId() + "', data, outputs);\n";
 				}
 			} // outputs null check
 
@@ -982,8 +988,8 @@ public class Database extends Action {
 									// add a field for the results of this child action
 									jsonFields.put("childAction" + (i + 1));
 
-									// if matching fields
-									if (fieldsMap.size() > 0) {
+									// if matching fields exists and not all columns are matched (stops simple queries like for drop down lookups merging)
+									if (fieldsMap.size() > 0 && fieldsMap.size() != jsonFields.length() - i - 1) {
 										// an object with a null value for when there is no match
 										Object nullObject = null;
 										// get the child rows
@@ -1069,15 +1075,13 @@ public class Database extends Action {
 											} // parent row loop
 										} // jsonChildRows null check
 									} else {
-										// loop the parent rows
-										for (int j = 0; j < jsonRows.length(); j++) {
-											// get the row
-											JSONArray jsonRow = jsonRows.getJSONArray(j);
-											// add the child database action data
-											jsonRow.put(jsonChildData);
-										}
+										// add a top row if we need one
+										if (jsonRows.length() == 0) jsonRows.put(new JSONArray());
+										// get the top row - only this one is used when the child data is retrieved 
+										JSONArray jsonRow = jsonRows.getJSONArray(0);
+										// add the child database action data
+										jsonRow.put(jsonChildData);
 									} // matching fields check
-
 								} // jsonChildQueries loop
 							} // jsonChildQueries null check
 						} // _childDatabaseActions size > 0
