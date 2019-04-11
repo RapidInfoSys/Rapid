@@ -147,8 +147,14 @@ function Gallery_removeImage(ev, id) {
 	if (confirm("Remove image?")) {
 		// get the image
 		var img = $(ev.target);
-		// tell Rapid Mobile an image has been removed
-		if (typeof _rapidmobile != "undefined") _rapidmobile.removeImage(id, img.attr("src")); 
+		// check if Rapid Mobile is present
+		if (typeof _rapidmobile == "undefined") {
+			// remove from storage
+			Gallery_removeImageFromStorage(id, img.attr("data-filename"));
+		} else {
+			// remove from Rapid Mobile
+			_rapidmobile.removeImage(id, img.attr("src"));
+		} 
 		// remove it
 		img.remove();
 		// look for our custom imageRemoved handler for this control
@@ -156,7 +162,21 @@ function Gallery_removeImage(ev, id) {
 		// fire it if we found it
 		if (imageRemoved) window["Event_imageRemoved_" + id]();
 	}
-}    
+}
+
+function Gallery_removeImageFromStorage(id, filename) {
+	// get the gallery images
+	var galImages = sessionStorage.getItem(id + "images");
+	// if there was anything
+	if (galImages) {
+		// convert to JSON
+		galImages = JSON.parse(galImages);
+		// remove from session storage
+		delete galImages[filename];
+		// save back
+		sessionStorage.setItem(id + "images",JSON.stringify(galImages));
+	}
+} 
 
 function setNextPrevButton(currentImage, prevButton, nextButton) {
 	
@@ -268,8 +288,12 @@ function Gallery_showImage(ev, id) {
 			let currentImage = gallery.children("img").each(function(index, element){
 				let self = $(this);
 				if(self.is(":visible")) {
-					// Find and delete this image in the small gallery (they have the same index)
-					mainGallery.children("img").eq(index).remove();
+					// Find and delete this image 
+					var img = mainGallery.children("img").eq(index);
+					// remove from storage
+					Gallery_removeImageFromStorage(id, img.attr("data-filename"));
+					// remove the image
+					img.remove();
 					gallery.hide();
 					return false;
 				}
@@ -343,15 +367,6 @@ function Gallery_showImage(ev, id) {
 	// Initialise the next/prev button - depending on whether there are more than one img in the gallery
 	setNextPrevButton(img, $("#btnPrev"), $("#btnNext"));
 }
-
-function padNumberWithZeros(number,length) {
-	number += "";
-	while (number.length < length) {
-		number = "0" + number;
-	}
-	return number;
-}
-
 	                ]]>
 	            </contents>
 	        </resource>
@@ -446,80 +461,107 @@ if (data == null || data === undefined) {
 				// loop the urls
 				for (var j in urls) {
 				
-					// get the gallery images
-					var galImages = sessionStorage.getItem(id + "images");
-					// make object if we need one
-					if (galImages) {
-						galImages = JSON.parse(galImages);
-					} else {
-						galImages = {};
-					}
-				
 					// get the url
 					var url = urls[j];
 					
-					// if it doesn't start with http or data add the sudo start for Rapid Mobile
-					if (url.indexOf("http") != 0 && url.indexOf("data:") != 0) {
-						// if we have this image in session storage
-						if (galImages[url]) {
-							// retrieve from session storage
-							url = galImages[url];
+					// check if Rapid Mobile is present
+					if (typeof _rapidmobile == "undefined") {
+					
+						// get the gallery images
+						var galImages = sessionStorage.getItem(id + "images");
+						// make object if we need one
+						if (galImages) {
+							galImages = JSON.parse(galImages);
 						} else {
+							galImages = {};
+						}
+					
+						// assume not in storage already
+						var inStorage = false;
+						// assume no filename attribute required
+						var fileNameAttr = "";
+						
+						// if it doesn't start with http or data look for it in storage
+						if (url.indexOf("http") != 0 && url.indexOf("data:") != 0) {
+							// if we have this image in session storage
+							if (galImages[url]) {
+								// retain url in fileNameAttr
+								fileNameAttr = " data-filename='" + url + "'";
+								// retrieve from session storage
+								url = galImages[url];
+								// remember it was in storage
+								inStorage = true;
+							} else {								
+								// empty the url
+								url = "";
+							}
+						}
+						
+						// assume no image data
+						var dataString = "data:";
+						// if this url is data, make a filename, unless in storage already
+						if (!inStorage && url.indexOf("data:") == 0) {
+							// Split the data and base64 byte payload part
+							var urlParts = url.split(",");
+							// Further split the data part
+							var dataParts = urlParts[0].split(";");
+							// Obtain the file extension from the dataPart
+							var fileExtension = dataParts[0].substring("data:image/".length);
+							// Get the current date
+							var date = new Date();
+							// get the 
+							// Make the date string for the file
+							var dateString = date.getFullYear() + "" + padNumberWithZeros(date.getMonth() + 1, 2) + "" + padNumberWithZeros(date.getDate(),2) + "_" + padNumberWithZeros(date.getHours(),2) + "" + padNumberWithZeros(date.getMinutes(),2) + "" + padNumberWithZeros(date.getSeconds(),2) + "" + padNumberWithZeros(date.getMilliseconds(),3);
+							// Make a file name with the dateString and extension
+							var fileName = dateString + "." + fileExtension;
+							// make a file name attribute
+							fileNameAttr = " data-filename='" + fileName + "'";
+							// store the url in session storage
+							galImages[fileName] = url;
+							// store!
+							sessionStorage.setItem(id + "images", JSON.stringify(galImages));
+						}
+					
+					} else {
+					
+						// if it doesn't start with http or data
+						if (url.indexOf("http") != 0 && url.indexOf("data:") != 0) {
+							// add a psuedo host for Rapid Mobile
 							url = "http://images/" + url;
 						}
+					
 					}
 					
-					// assume no filename attribute required
-					var fileNameAttr = "";
-					var dataString = "data:";
-					// if this url is data, make a filename
-					if (url.indexOf("data:") == 0) {
-						// Split the data and base64 byte payload part
-						var urlParts = url.split(",");
-						// Further split the data part
-						var dataParts = urlParts[0].split(";");
-						// Obtain the file extension from the dataPart
-						var fileExtension = dataParts[0].substring("data:image/".length);
-						// Get the current date
-						var date = new Date();
-						// get the 
-						// Make the date string for the file
-						var dateString = date.getFullYear() + "" + padNumberWithZeros(date.getMonth() + 1, 2) + "" + padNumberWithZeros(date.getDate(),2) + "_" + padNumberWithZeros(date.getHours(),2) + "" + padNumberWithZeros(date.getMinutes(),2) + "" + padNumberWithZeros(date.getSeconds(),2) + "" + padNumberWithZeros(date.getMilliseconds(),3);
-						// Make a file name with the dateString and extension
-						var fileName = dateString + "." + fileExtension;
-						// make a file name attribute
-						fileNameAttr = " data-filename='" + fileName + "'";
-						// store the url in session storage
-						galImages[fileName] = url;
-						// store!
-						sessionStorage.setItem(id + "images", JSON.stringify(galImages));
+					// if we got a url - images which we no longer have in storage will empty this
+					if (url) {
+										
+						// add an image element with the url
+						control.append("<img src='" + url  + "'" + fileNameAttr + "></img>");
+	
+						// remember we set an image in the gallery
+						imageSet = true;
+						// find the image element and add a click handler
+						control.find("img").last().click( function(ev) {
+							if (!details) details = window[id + "details"];
+							if (details) {
+								if (details.onImageClick == "preview") {
+									Gallery_showImage(ev,id);
+								} else if (details.onImageClick == "caption") {
+									var index = $(ev.target).index();
+									if (details.captions && details.captions[index]) alert(details.captions[index]);
+								} else if (details.onImageClick != "nothing") {
+									Gallery_removeImage(ev, id);			
+								}
+							} else {
+								Gallery_removeImage(ev, id);
+							}				
+						});
+						// look for our custom imageAddedEvent handler for this control
+						var imageAdded = window["Event_imageAdded_" + id];
+						// fire it if we found it
+						if (imageAdded) window["Event_imageAdded_" + id]();
+						
 					}
-					
-					// add an image element with the url
-					control.append("<img src='" + url  + "'" + fileNameAttr + "></img>");
-
-					// remember we set an image in the gallery
-					imageSet = true;
-					// find the image element and add a click handler
-					control.find("img").last().click( function(ev) {
-						if (!details) details = window[id + "details"];
-						if (details) {
-							if (details.onImageClick == "preview") {
-								Gallery_showImage(ev,id);
-							} else if (details.onImageClick == "caption") {
-								var index = $(ev.target).index();
-								if (details.captions && details.captions[index]) alert(details.captions[index]);
-							} else if (details.onImageClick != "nothing") {
-								Gallery_removeImage(ev, id);			
-							}
-						} else {
-							Gallery_removeImage(ev, id);
-						}				
-					});
-					// look for our custom imageAddedEvent handler for this control
-					var imageAdded = window["Event_imageAdded_" + id];
-					// fire it if we found it
-					if (imageAdded) window["Event_imageAdded_" + id]();
 				}
 			}
 		}
