@@ -466,8 +466,6 @@ function handleSwipe(event, direction, distance, duration, fingers, fingerData, 
 var _cameraPlayer;
 var _availableCameras = [];
 var _currentFacingMode = "user";
-var _totalUploaded = 0;
-var _totalUploads = 0;
 var _galleryControlId;
 var _size;
 var _quality;
@@ -665,6 +663,7 @@ function toggleCameraFacing () {
 }
 
 function base64toBlob(base64Data, contentType) {
+
     contentType = contentType || '';
     var sliceSize = 1024;
     // The atob function will decode a base64-encoded string into a new string with a character for each byte of the binary data.
@@ -685,73 +684,83 @@ function base64toBlob(base64Data, contentType) {
     }
     // Convert byte array to a Blob
     return new Blob(byteArrays, { type: contentType });
+    
 }
 
-function uploadImages(controlIds, successCallBack, errorCallBack) {
+function uploadImages(controlIds, successCallback, errorCallback) {
 
 	// If we have one
 	if (controlIds && controlIds.length > 0) {
 		
 		// Loop the control ids, will be gallery or a signature, for gallery get all images, upload use data-filename attribute as file name, on success
 		
-		_totalUploaded = 0;
-		var errored = false;
+
+		// images we are going to upload
+		var images = [];
 		
 		for (var idx in controlIds) {
 		
 			let controlId = controlIds[idx];
 		
 			let control = $("#" + controlId);
-			var url;
+			
 			// Check if this is a gallery control or signature
 			if (control.hasClass("gallery")) {
 			
 				// Get all the images from the control
 				control.find("img").each(function(){
 					
-					_totalUploads ++;
-					
 					let img = $(this);
-					url = "~?a=" + _appId + "&action=uploadImage&name=" + img.attr("data-filename");
-					var dataURL = img.attr("src");
 					
-					ajaxPostData(url, dataURL, successCallBack, errorCallBack);
-					
+					images.push({url:"~?a=" + _appId + "&action=uploadImage&name=" + img.attr("data-filename"),dataURL:img.attr("src")});
+										
 				});
 			
-			} else {
-				
-				_totalUploads ++;
-				
+			} else if (control.hasClass("signature")) {
+												
 				// Its a signature control - get the dataUrl from the signature
 				// Get a data url of the canvas, containing a representation of the image
 				// Default format type is image/png
 				
-				var signature = _signatureControls[controlId];
-				
-				var dataURL =  signature.toDataURL();
-				
+				let signature = _signatureControls[controlId];
+
 				// Get the current date
 				var date = new Date();
-				var dateString = date.getFullYear() + "" + (date.getMonth() + 1) + "" + date.getDate() + "_" + date.getHours() + "" + date.getMinutes() + "" + date.getSeconds() + "" + date.getMilliseconds();
+				var dateString = date.getFullYear() + "" + padNumberWithZeros(date.getMonth() + 1,2) + "" + padNumberWithZeros(date.getDate(),2) + "_" + padNumberWithZeros(date.getHours(),2) + "" + padNumberWithZeros(date.getMinutes(),2) + "" + padNumberWithZeros(date.getSeconds(),2) + "" + padNumberWithZeros(date.getMilliseconds(),3);
 				let fileName = 	dateString + ".png";
-				
-				url = "~?a=" + _appId + "&action=uploadImage&name=" + fileName;
-				
-				ajaxPostData(url, dataURL, successCallBack, errorCallBack);
-			
+
+				images.push({url:"~?a=" + _appId + "&action=uploadImage&name=" + fileName,dataURL:signature.toDataURL()});
+							
 			}
-			
 			
 		}
 		
+		// if there are any no images to upload
+		if (images.length == 0) {
+			
+			// call the success immediately
+			window[successCallback](ev);
+			
+		} else {
 		
+			// make a progress object set total uploads to size of images
+			var progress = {totalUploads:images.length,totalUploaded:0};
+			
+			// loop images to upload
+			for (var i in images) {
+				// get the image
+				var image = images[i];
+				// send it for uploading
+				uploadImage(image.url, image.dataURL, progress, successCallback, errorCallback);
+			}
+			
+		}
 		
 	}
 	
 }
 
-function ajaxPostData (url, dataSource, successCallBack, errorCallBack) {
+function uploadImage(url, dataSource, progress, successCallback, errorCallBack) {
 
 	var sourceParts = dataSource.split(",");
 	var dataString = "data:";
@@ -777,13 +786,13 @@ function ajaxPostData (url, dataSource, successCallBack, errorCallBack) {
    		contentType: false,  	// tell jQuery not to set contentType
 		data: data,
 		success: function(ev) {
-			_totalUploaded ++;
-			if (_totalUploaded == _totalUploads && successCallBack) window[successCallBack](ev);
+			progress.totalUploaded ++;
+			if (progress.totalUploaded == progress.totalUploads && successCallback) window[successCallback](ev);
 		},
 		error: function(ev) {
 			if (!errored) {
 				errored = true;
-				if (errorCallBack) window[errorCallBack](ev);
+				if (errorCallBack) window[errorCallback](ev);
 			}
 		}
 	});

@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2015 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -117,7 +117,7 @@ public class Mobile extends Action {
 		// initialise and populate on first get
 		if (_childActions == null) {
 			// our list of all child actions
-			_childActions = new ArrayList<Action>();
+			_childActions = new ArrayList<>();
 			// add child success actions
 			if (_successActions != null) {
 				for (Action action : _successActions) _childActions.add(action);
@@ -502,7 +502,7 @@ public class Mobile extends Action {
 				} else {
 					int maxSize = Integer.parseInt(getProperty("imageMaxSize"));
 					int quality = Integer.parseInt(getProperty("imageQuality"));
-					// mobile check, use 
+					// mobile check, use
 					js += "if (typeof _rapidmobile == 'undefined') {\n"
 						+ "  turnOnCamera('" + galleryControlId + "'," + maxSize + "," + quality + ");\n"
 						+ "} else {\n";
@@ -514,7 +514,7 @@ public class Mobile extends Action {
 			} else if ("uploadImages".equals(type)) {
 
 				// make a list of control ids
-				List<String> controlIds = new ArrayList<String>();
+				List<String> controlIds = new ArrayList<>();
 
 				// get the old style gallery id
 				String galleryControlIdProperty = getProperty("galleryControlId");
@@ -569,7 +569,7 @@ public class Mobile extends Action {
 						}
 
 					}
-					
+
 					// if we got any urls
 					// check whether request is from a mobile - upload the images
 					js += "if (urls) { \n"
@@ -578,10 +578,13 @@ public class Mobile extends Action {
 						+ "   } else {\n"
 						+ "      _rapidmobile.uploadImages('" + getId() + "', urls, " + successCallback + ", " + errorCallback + ");\n"
 						+ "   }\n"
-						+ "}\n";
-					
+						+ "}";
+
 					// if there is a successCallback call it now
-					if (!"null".equals(successCallback) && successCallback.length() > 0) js += " else {\n  " + successCallback.replace("'", "") + "(ev);\n}\n";
+					if (!"null".equals(successCallback) && successCallback.length() > 0) js += " else {\n  " + successCallback.replace("'", "") + "(ev);\n}";
+
+					// a line-break for either option above
+					js += "\n";
 
 				}
 
@@ -769,7 +772,7 @@ public class Mobile extends Action {
 							js += "  		_swipeHandlers['" + target + "'] = [];\n";
 							// close the check
 							js += "		}\n";
-								
+
 
 							// start the function
 							js += "		var f = function(ev) {\n";
@@ -783,7 +786,7 @@ public class Mobile extends Action {
 							// close the functions
 							js += "		};\n";
 
-							// add this handler 
+							// add this handler
 							js += "		_swipeHandlers['" + target + "'].push({direction:'" + direction + "',fingers:" + fingers + ",function:f});\n"
 								+ "}\n";
 
