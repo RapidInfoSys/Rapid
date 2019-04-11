@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -1009,3 +1009,10 @@ function format12hour(date) {
 	  return strTime;
 }
 
+function padNumberWithZeros(number,length) {
+	number += "";
+	while (number.length < length) {
+		number = "0" + number;
+	}
+	return number;
+}
