@@ -487,8 +487,8 @@ public class Rapid extends Action {
 				}
 			}
 		}
-		// if there is no error hadling routine insert our own
-		if (!gotErrorHandler) js += "    alert('Rapid action failed : ' + ((server && server.responseText) || error));\n";
+		// if there is no error handling routine insert our own
+		if (!gotErrorHandler) js += "    alert('Rapid action failed : ' + ((server && server.responseText) || message));\n";
 		// close the error handler
 		js += "  };\n";
 
