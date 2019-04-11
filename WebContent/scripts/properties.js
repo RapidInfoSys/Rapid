@@ -51,7 +51,7 @@ function getPageOptions(selectId, ignoreId) {
 }
 
 // this function returns a set of options for a dropdown of controls
-function getControlOptions(selectId, ignoreId, type) {
+function getControlOptions(selectId, ignoreId, type, noGroup) {
 	var controls = getControls();
 	var options = "";
 	for (var i in controls) {
@@ -59,8 +59,8 @@ function getControlOptions(selectId, ignoreId, type) {
 		// note how only controls with names are included, and type is only matched if included
 		if (control.id != ignoreId && control.name && (!type || type == control.type)) options += "<option value='" + control.id + "' " + (control.id == selectId ? "selected='selected'" : "") + ">" + control.name + "</option>"; 
 	}
-	// wrap if we had some
-	if (options) options = "<optgroup label='Page controls'>" + options + "</optgroup>";
+	// wrap if we had some and we're allowing groups
+	if (options && !noGroup) options = "<optgroup label='Page controls'>" + options + "</optgroup>";
 	// assume no other page controls added
 	var otherPageControls = false;
 	// other page controls can be used for input
@@ -2226,7 +2226,7 @@ function Property_controlsForType(cell, propertyObject, property, details) {
 							"<div class='iconsPanel'>" +
 							"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
 							"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div>" +
-							"</div></td><tr>");
+							"</div></td></tr>");
 				}				
 			}
 			
@@ -2240,7 +2240,7 @@ function Property_controlsForType(cell, propertyObject, property, details) {
 				// get the row
 				var row = $(this).closest("tr");
 				// remove the control
-				propertyObject[property.key].splice(row.index() - 1,1);
+				propertyObject[property.key].splice(row.index(),1);
 				// remove the row
 				row.remove();
 				// refresh the dialogue
@@ -2252,7 +2252,7 @@ function Property_controlsForType(cell, propertyObject, property, details) {
 			// loop the classes
 			for (var i in controlClasses) {
 				// add to the options
-				options += getControlOptions(null, null, controlClasses[i].type);
+				options += getControlOptions(null, null, controlClasses[i].type, true);
 			}
 						
 			// have an add row
@@ -5775,7 +5775,7 @@ function Property_chartType(cell, chart, property, details) {
 	}	
 }
 
-// this is a dialogue to specify the inputs, sql, and outputs for the database action
+// this is a dialogue to specify the inputs, content and merging for an email
 function Property_emailContent(cell, propertyObject, property, details) {
 	
 	// retrieve or create the dialogue
@@ -5817,7 +5817,7 @@ function Property_emailContent(cell, propertyObject, property, details) {
 	cell.text(text);
 	
 	// add inputs table, subject, and body
-	table.append("<tr><td colspan='2' style='padding:0px;vertical-align: top;'><table class='dialogueTable inputs'><tr><td><b>Input</b></td><td><b>Field</b></td></tr></table></td><td style='width:65%;padding:2px 10px 0 10px;'><b>Subject</b><br/><input class='subject' style='padding:2px;width:100%;box-sizing:border-box;border:1px solid #aaa;' /><br/><b>Body</b><br/><textarea style='width:100%;min-height:180px;height:80%;box-sizing:border-box;'></textarea></td></tr>");	
+	table.append("<tr><td colspan='2' style='padding:0px;vertical-align: top;'><table class='dialogueTable inputs'><tr><td><b>Input</b></td><td><b>Field</b></td></tr></table></td><td style='width:65%;padding:2px 10px 0 10px;'><b>Subject</b><br/><input class='subject' style='padding:2px;width:100%;box-sizing:border-box;border:1px solid #aaa;height:22px;' /><br/><b>Body</b><br/><textarea style='width:100%;min-height:180px;box-sizing:border-box;'></textarea></td></tr>");	
 	
 	// find the inputs table
 	var inputsTable = table.find("table.inputs");
