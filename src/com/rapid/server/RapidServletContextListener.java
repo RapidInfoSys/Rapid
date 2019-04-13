@@ -886,7 +886,7 @@ public class RapidServletContextListener implements ServletContextListener {
 			String appFolderName = applicationFolder.getName().toLowerCase();
 
 			// if this child file is a directory and not in our list of apps to ignore, or present in apps to load
-			if (applicationFolder.isDirectory() && (!ignoreApps.contains(appFolderName) || loadApps.contains(appFolderName))) {
+			if (applicationFolder.isDirectory() && (loadApps.size() == 0 && !ignoreApps.contains(appFolderName) || (loadApps.size() > 0 && loadApps.contains(appFolderName)))) {
 
 				// get the list of files in this folder - should be all version folders
 				File[] applicationFolders = applicationFolder.listFiles();
