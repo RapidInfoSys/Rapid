@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -849,6 +849,30 @@ public class RapidServletContextListener implements ServletContextListener {
 			for (String ignoreApp : ignoreAppsArray) ignoreApps.add(ignoreApp.trim().toLowerCase());
 		}
 
+		// assume not apps to load
+		List<String> loadApps = new ArrayList<String>();
+		// get apps file
+		File appsFile = new File(servletContext.getRealPath("/") + "/WEB-INF/loadapps.json");
+		// if it exists
+		if (appsFile.exists()) {
+			// read the load apps file
+			String loadAppsString = Strings.getString(appsFile);
+			// read it
+			JSONArray jsonApps = new JSONArray(loadAppsString);
+			// ignore it if it has no entries
+			if (jsonApps.length() > 0) {
+				// loop it
+				for (int i = 0; i < jsonApps.length(); i++) {
+					// add to array
+					loadApps.add(jsonApps.getString(i).toLowerCase());
+				}
+				// add rapid if not there already
+				if (!loadApps.contains("rapid")) loadApps.add("rapid");
+				// log
+				_logger.info("Loading only applications " + loadApps);
+			}
+		}
+
 		// make a new set of applications
 		applications = new Applications();
 
@@ -858,8 +882,11 @@ public class RapidServletContextListener implements ServletContextListener {
 		// loop the children of the application folder
 		for (File applicationFolder : applicationFolderRoot.listFiles()) {
 
-			// if this child file is a directory and not in our list of apps to ignore
-			if (applicationFolder.isDirectory() && !ignoreApps.contains(applicationFolder.getName().toLowerCase())) {
+			// get the app folder name into a string
+			String appFolderName = applicationFolder.getName().toLowerCase();
+
+			// if this child file is a directory and not in our list of apps to ignore, or present in apps to load
+			if (applicationFolder.isDirectory() && !ignoreApps.contains(appFolderName) && (loadApps.size() == 0 || loadApps.contains(appFolderName))) {
 
 				// get the list of files in this folder - should be all version folders
 				File[] applicationFolders = applicationFolder.listFiles();
