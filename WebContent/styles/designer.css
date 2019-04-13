@@ -895,6 +895,16 @@ Hint style
 	z-index:10100;
 }
 
+.hint span {
+	background-color: black;
+	display: inline-flex;
+}
+
+.hint span i {
+	color: white;
+	margin: 5px !important;
+}
+
 /*
 
 Tip styles
