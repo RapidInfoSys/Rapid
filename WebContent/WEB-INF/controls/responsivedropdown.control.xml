@@ -466,6 +466,8 @@ if (details && details.filter) {
             this._trigger( "select", event, {
               item: ui.item.option
             });
+            // fire the change event
+            $( "#" + id).trigger("change");
           },
           autocompletechange: "_changed"
         });
@@ -522,16 +524,19 @@ if (details && details.filter) {
 	            return false;
 	          }
 	        });
-	        // if not valid, and custom values are off
-	        if (!valid && (details.codes || !details.customValue)) {
-	          // Remove invalid value
-	          this.input.val( "" )
-	          this.element.val( "" );
-	          this.input.autocomplete( "instance" ).term = "";
-	        }
+	        // if not valid
+	        if (!valid) {
+	          // if custom values are off
+	          if (details.codes || !details.customValue) {
+		        // Remove invalid value
+		        this.input.val( "" )
+		        this.element.val( "" );
+		        this.input.autocomplete( "instance" ).term = "";
+		      }
+		      // fire the change event for the cleanup, or custom value - getData method will need enhancing to retrieve custom value
+		      $( "#" + id).trigger("change");
+		    }
 	     }
-	     // fire the change event
-         $( "#" + id).trigger("change");
       },
  
       _destroy: function() {
