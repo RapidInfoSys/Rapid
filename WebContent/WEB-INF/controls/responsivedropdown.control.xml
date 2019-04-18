@@ -288,7 +288,7 @@ if (this.responsiveLabel) {
 	    
 	    <getDetailsFunction>
 	    	<![CDATA[
-return {codes:this.codes,filter:this.filter,customValue:this.customValue};
+if (this.filter) return {codes:this.codes,filter:this.filter,customValue:this.customValue};
 			]]>
 	    </getDetailsFunction>
 	    
@@ -325,7 +325,7 @@ if (data !== undefined) {
 				// if we there was one
 				if (input.length > 0) {
 					// if codes, or customValues are not in use
-					if (details.codes || !details.customValue) {
+					if (details && details.codes || !details.customValue) {
 						// read the value back again which uses the select controls ability to check it has an option for the value
 						value = control.val();
 						// if there is a value
