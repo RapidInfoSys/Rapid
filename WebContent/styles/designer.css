@@ -1296,9 +1296,15 @@ span.fr {
 	font-size: 15px;
 }
 
-.CodeMirror {
+div.CodeMirror {
 	margin: 5px 0;
+	height: unset;
   	box-shadow: -1px 0px 5px 1px #9D9D9D;
+}
+
+div.CodeMirror-scroll {
+	max-height: 445px;
+	min-height: 100px;
 }
 
 #selectPeerLeft > i,
