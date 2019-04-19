@@ -1076,7 +1076,7 @@ public class Page {
 						details = ", " + control.getId() + "details";
 					}
     				// write an init call method with support for older controls that may not have had the init method
-    				pageloadLines.add("if (window['Init_" + control.getType() + "']) Init_" + control.getType() + "('" + control.getId() + "'" + details + ");\n");
+    				pageloadLines.add("Init_" + control.getType() + "('" + control.getId() + "'" + details + ");\n");
     			}
     			// check event actions
     			if (control.getEvents() != null) {
