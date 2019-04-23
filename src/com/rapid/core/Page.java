@@ -78,6 +78,7 @@ import com.rapid.server.RapidRequest;
 import com.rapid.server.filter.RapidFilter;
 import com.rapid.utils.Files;
 import com.rapid.utils.Html;
+import com.rapid.utils.Http;
 import com.rapid.utils.Minify;
 import com.rapid.utils.XML;
 
@@ -1074,7 +1075,7 @@ public class Page {
 					} else {
 						details = ", " + control.getId() + "details";
 					}
-    				// write an init call method
+    				// write an init call method with support for older controls that may not have had the init method
     				pageloadLines.add("Init_" + control.getType() + "('" + control.getId() + "'" + details + ");\n");
     			}
     			// check event actions
@@ -2157,23 +2158,23 @@ public class Page {
 
 						// using attr href was the weirdest thing. Some part of jQuery seemed to be setting the url back to v=1&p=P1 when v=2&p=P2 was printed in the html
 						writer.write(
-						" <link rel='stylesheet' type='text/css' href='styles/designlinks.css'></link>"
-						+ " <script type='text/javascript' src='scripts/designlinks.js'></script>"
-						+	"<div id='designShow'></div>\n"
-						+ "<div id='designLinks' style='display:none;'>"
+						"<link rel='stylesheet' type='text/css' href='styles/designlinks.css'></link>\n"
+						+ "<script type='text/javascript' src='scripts/designlinks.js'></script>\n"
+						+ "<div id='designShow'></div>\n"
+						+ "<div id='designLinks' style='display:none;'>\n"
 				    	+ "<a id='designLink' href='#'><img src='images/tool.svg' title='Open Rapid Design'/></a>\n"
 				    	+ "<a id='designLinkNewTab' style='padding:5px;' href='#'><img src='images/right.svg' title='Open Rapid Design in a new tab'/></a>\n"
 						+ designLinkStringBuilder.toString()
-						+ "</div>"
+						+ "</div>\n"
 				    	+ "<script type='text/javascript'>\n"
 				    	+ "/* designLink */\n"
 				    	+ "var _onDesignLink = false;\n"
 				    	+ "var _onDesignTable = false;\n"
 				    	+ "$(document).ready( function() {\n"
-				    	+ "  $('#designShow').mouseover( function(ev) {\n     $('#designLink').attr('href','design.jsp?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + _id + "'); $('#designLinkNewTab').attr('target','_blank').attr('href','design.jsp?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + _id + "'); $('#designLinks').show(); _onDesignLink = true;\n  });\n"
-				    	+ "  $('#designLinks').mouseleave( function(ev) {\n _onDesignLink = false;\n setTimeout( function() { if(!_onDesignLink && !_onDesignTable) $('#designLinks').fadeOut();\n }, 1000);  });\n"
-				    	+ "  $('#designLinks').mouseover(function(ev) {\n _onDesignLink = true;});"
-				    	+ "	 $('html').click(function(){\n if(!_onDesignLink && !_onDesignTable) { $('div.designData').fadeOut();\n $('#designLinks').fadeOut();}});"
+				    	+ "  $('#designShow').mouseover( function(ev) {\n    $('#designLink').attr('href','" + Http.getBaseUrl(rapidRequest.getRequest()) + "/design.jsp?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + _id + "');\n    $('#designLinkNewTab').attr('target','_blank').attr('href','" + Http.getBaseUrl(rapidRequest.getRequest()) + "/design.jsp?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + _id + "');\n    $('#designLinks').show(); _onDesignLink = true;\n  });\n"
+				    	+ "  $('#designLinks').mouseleave( function(ev) {\n    _onDesignLink = false;\n    setTimeout( function() {\n      if(!_onDesignLink && !_onDesignTable) $('#designLinks').fadeOut();\n    }, 1000);\n  });\n"
+				    	+ "  $('#designLinks').mouseover(function(ev) {\n   _onDesignLink = true;\n  });\n"
+				    	+ "  $('html').click(function(){\n  if(!_onDesignLink && !_onDesignTable) {\n      $('div.designData').fadeOut();\n      $('#designLinks').fadeOut();\n    }\n  });\n"
 				    	+ designLinkJQueryStringBuilder.toString()
 				    	+ "});\n"
 				    	+ "</script>\n");
