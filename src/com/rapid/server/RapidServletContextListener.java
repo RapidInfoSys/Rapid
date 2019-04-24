@@ -138,7 +138,7 @@ public class RapidServletContextListener implements ServletContextListener {
 		if (dir.exists()) {
 
 			// create an array list of json objects to hold the logins
-			ArrayList<JSONObject> logins = new ArrayList<JSONObject>();
+			ArrayList<JSONObject> logins = new ArrayList<>();
 
 			// create a filter for finding .control.xml files
 			FilenameFilter xmlFilenameFilter = new FilenameFilter() {
@@ -270,10 +270,10 @@ public class RapidServletContextListener implements ServletContextListener {
 		int adapterCount = 0;
 
 		// retain our class constructors in a hashtable - this speeds up initialisation
-		HashMap<String,Constructor> connectionConstructors = new HashMap<String,Constructor>();
+		HashMap<String,Constructor> connectionConstructors = new HashMap<>();
 
 		// create an array list of json objects which we will sort later according to the order
-		ArrayList<JSONObject> connectionAdapters = new ArrayList<JSONObject>();
+		ArrayList<JSONObject> connectionAdapters = new ArrayList<>();
 
 		// get the directory in which the control xml files are stored
 		File dir = new File(servletContext.getRealPath("/") + "/WEB-INF/database/");
@@ -358,7 +358,7 @@ public class RapidServletContextListener implements ServletContextListener {
 		int adapterCount = 0;
 
 		// retain our class constructors in a hashtable - this speeds up initialisation
-		HashMap<String,Constructor> securityConstructors = new HashMap<String,Constructor>();
+		HashMap<String,Constructor> securityConstructors = new HashMap<>();
 
 		// create a JSON Array object which will hold json for all of the available security adapters
 		JSONArray jsonSecurityAdapters = new JSONArray();
@@ -430,10 +430,10 @@ public class RapidServletContextListener implements ServletContextListener {
 		int adapterCount = 0;
 
 		// retain our form adapter class constructors in a hashtable - this speeds up initialisation
-		HashMap<String,Constructor> formConstructors = new HashMap<String,Constructor>();
+		HashMap<String,Constructor> formConstructors = new HashMap<>();
 
 		// retain our payment class constructors in a hashtable - this speeds up initialisation
-		HashMap<String,Constructor> paymentConstructors = new HashMap<String,Constructor>();
+		HashMap<String,Constructor> paymentConstructors = new HashMap<>();
 
 		// create a JSON Array object which will hold json for all of the available security adapters
 		JSONArray jsonAdapters = new JSONArray();
@@ -523,13 +523,13 @@ public class RapidServletContextListener implements ServletContextListener {
 		int actionCount = 0;
 
 		// create a list of json actions which we will sort later
-		List<JSONObject> jsonActions = new ArrayList<JSONObject>();
+		List<JSONObject> jsonActions = new ArrayList<>();
 
 		// retain our class constructors in a hashtable - this speeds up initialisation
-		HashMap<String,Constructor> actionConstructors = new HashMap<String,Constructor>();
+		HashMap<String,Constructor> actionConstructors = new HashMap<>();
 
 		// build a collection of classes so we can re-initilise the JAXB context to recognise our injectable classes
-		ArrayList<Action> actions = new ArrayList<Action>();
+		ArrayList<Action> actions = new ArrayList<>();
 
 		// get the directory in which the control xml files are stored
 		File dir = new File(servletContext.getRealPath("/") + "/WEB-INF/actions/");
@@ -647,7 +647,7 @@ public class RapidServletContextListener implements ServletContextListener {
 		int controlCount = 0;
 
 		// create a list for our controls
-		List<JSONObject> jsonControls = new ArrayList<JSONObject>();
+		List<JSONObject> jsonControls = new ArrayList<>();
 
 		// get the directory in which the control xml files are stored
 		File dir = new File(servletContext.getRealPath("/") + "/WEB-INF/controls/");
@@ -748,7 +748,7 @@ public class RapidServletContextListener implements ServletContextListener {
 		int themeCount = 0;
 
 		// create a list for our themes
-		List<Theme> themes = new ArrayList<Theme>();
+		List<Theme> themes = new ArrayList<>();
 
 		// get the directory in which the control xml files are stored
 		File dir = new File(servletContext.getRealPath("/") + "/WEB-INF/themes/");
@@ -836,7 +836,7 @@ public class RapidServletContextListener implements ServletContextListener {
 		_logger.info("Loading applications");
 
 		// assume no apps to ignore
-		List<String> ignoreApps = new ArrayList<String>();
+		List<String> ignoreApps = new ArrayList<>();
 		// find any applications to ignore
 		String ignoreAppsString = servletContext.getInitParameter("ignoreApps");
 		// if we got any
@@ -850,7 +850,7 @@ public class RapidServletContextListener implements ServletContextListener {
 		}
 
 		// assume not apps to load
-		List<String> loadApps = new ArrayList<String>();
+		List<String> loadApps = new ArrayList<>();
 		// get apps file
 		File appsFile = new File(servletContext.getRealPath("/") + "/WEB-INF/loadapps.json");
 		// if it exists
@@ -1156,7 +1156,7 @@ public class RapidServletContextListener implements ServletContextListener {
 		_logger.info("Loading processes");
 
 		// make a new set of applications
-		processes = new ArrayList<Process>();
+		processes = new ArrayList<>();
 
 		// get the directory in which the process xml files are stored
 		File dir = new File(servletContext.getRealPath("/") + "/WEB-INF/processes/");
@@ -1334,7 +1334,7 @@ public class RapidServletContextListener implements ServletContextListener {
 			_schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
 			// initialise the list of classes we're going to want in the JAXB context (the loaders will start adding to it)
-			_jaxbClasses = new ArrayList<Class>();
+			_jaxbClasses = new ArrayList<>();
 
 			// load the logins first
 			_logger.info("Loading logins");
@@ -1459,9 +1459,9 @@ public class RapidServletContextListener implements ServletContextListener {
 
 		} catch (Exception ex) {
 
-			_logger.error("Error initialising Rapid : " + ex.getMessage());
+			// log error in detail
+			_logger.error("Error initialising Rapid : " + ex.getMessage(), ex);
 
-			ex.printStackTrace();
 		}
 
 	}
