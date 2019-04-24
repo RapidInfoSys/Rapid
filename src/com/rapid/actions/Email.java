@@ -45,7 +45,7 @@ import com.rapid.server.RapidRequest;
 
 
 public class Email extends Action {
-	
+
 	// this action has generic outputs
 	@XmlType(namespace="http://rapid-is.co.uk/email")
 	public static class Output {
@@ -74,10 +74,10 @@ public class Email extends Action {
 
 	private List<Action> _successActions, _errorActions, _childActions;
 	private List<Output> _outputs;
-	
+
 	public List<Output> getOutputs() { return _outputs; }
 	public void setOutputs(List<Output> outputs) { _outputs = outputs; }
-	
+
 	// properties
 	public List<Action> getSuccessActions() { return _successActions; }
 	public void setSuccessActions(List<Action> successActions) { _successActions = successActions; }
@@ -89,21 +89,21 @@ public class Email extends Action {
 	public Email() { super(); }
 	// designer constructor
 	public Email(RapidHttpServlet rapidServlet, JSONObject jsonAction) throws Exception {
+
 		super(rapidServlet, jsonAction);
-		
-		/*OUTPUTS*/
+
 		// save all key/values from the json into the properties
 		for (String key : JSONObject.getNames(jsonAction)) {
 			// add all json properties to our properties, except for outputs, successActions and errorActions
 			if (!"outputs".equals(key) && !"successActions".equals(key) && !"errorActions".equals(key)) addProperty(key, jsonAction.get(key).toString());
 		}
-		
+
 		// grab any outputs
 		JSONArray jsonOutputs = jsonAction.optJSONArray("outputs");
 		// if we got some
 		if (jsonOutputs != null) {
 			// instantiate our array
-			_outputs = new ArrayList<Output>();
+			_outputs = new ArrayList<>();
 			// loop them
 			for (int i = 0; i < jsonOutputs.length(); i++) {
 				// get the input
@@ -133,10 +133,16 @@ public class Email extends Action {
 
 	// protected instance methods
 
-	// produced any js required for additional data from the client
+	// produces any js required for additional data from the client
 	protected String getAdditionalDataJS(RapidRequest rapidRequest, Application application, Page page, Control control, JSONObject jsonDetails) throws Exception {
 		return "";
 	}
+
+	// produces any attachements
+	protected Attachment[] getAttachments(RapidRequest rapidRequest, JSONObject jsonData) throws Exception {
+		return null;
+	}
+
 
 	// overrides
 	@Override
@@ -144,7 +150,7 @@ public class Email extends Action {
 		// initialise and populate on first get
 		if (_childActions == null) {
 			// our list of all child actions
-			_childActions = new ArrayList<Action>();
+			_childActions = new ArrayList<>();
 			// add child success actions
 			if (_successActions != null)
 				_childActions.addAll(_successActions);
@@ -228,7 +234,7 @@ public class Email extends Action {
 
 	        // add any js for additional data
 	        js += getAdditionalDataJS(rapidRequest, application, page, control, jsonDetails);
-	        
+
 	        //Lastly, check for upload controls
 	        //Check if an attachment control is specified
 	        if(attachmentsString != null){
@@ -238,16 +244,16 @@ public class Email extends Action {
 	        	//loop through the upload control ids
 	        	for(int i = 0; i < jsonAttachments.length(); i++){
 	        		JSONObject jsonControl = jsonAttachments.getJSONObject(i);
-	        		
+
 	        		String controlId = jsonControl.getString("itemId");
 	        		String controlField = jsonControl.getString("field");
-	        		
+
 	        		String getAttachmentsJs = Control.getDataJavaScript(servletContext, application, page, controlId, controlField);
 
 	        		if(getAttachmentsJs != null && getAttachmentsJs.length() > 0){
 	        			js += "data.attachments.push(" + getAttachmentsJs + ");\n";
 	        		}
-	        		
+
 	        	}
 	        }
 
@@ -459,17 +465,17 @@ public class Email extends Action {
 		// return an empty json object
 		return new JSONObject();
 	}
-	
+
 	// produces any attachments
 	protected Attachment[] getAttachments(RapidRequest rapidRequest, String attachmentFiles) throws Exception {
 
 		if(attachmentFiles == null) return null;
-		
+
 		// Decide on the base path
 		String basePath = "uploads/" +  rapidRequest.getAppId();
 		// servers with public access must use the secure upload location
 		if (rapidRequest.getRapidServlet().isPublic()) basePath = "WEB-INF/" + basePath;
-		
+
 		JSONArray attachedFiles = new JSONArray(attachmentFiles.replace("\"", ""));
 		//String[] attachedFiles = .split(",");
 		int size = attachedFiles.length();
@@ -477,16 +483,16 @@ public class Email extends Action {
 		//loop through the attachedFile strings and accumulate the attachment objects in an array
 		for(int i = 0; i < size; i++){
 			String file = attachedFiles.optString(i, null);
-			
+
 			if (file != null) {
 				String filePath = rapidRequest.getRapidServlet().getServletContext().getRealPath(basePath + "/" + file);
 				attachments[i] = new Attachment(file, new FileDataSource(filePath));
 			}
-			
+
 		}
-		
+
 		return attachments;
-		
+
 	}
 
 }
