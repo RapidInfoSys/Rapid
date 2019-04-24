@@ -741,8 +741,6 @@ public class Database extends Action {
 								}
 								// if still null try the session
 								if (value == null) value = (String) rapidRequest.getSessionAttribute(input.getItemId());
-								// convert empty strings into nulls to stop inserting them and so isnull in sql server works
-								if (value != null && value.length() == 0) value = null;
 								// add the parameter
 								parameters.add(value);
 							}
