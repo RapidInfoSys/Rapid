@@ -1303,7 +1303,6 @@ div.CodeMirror {
 }
 
 div.CodeMirror-scroll {
-	max-height: 445px;
 	min-height: 100px;
 }
 
