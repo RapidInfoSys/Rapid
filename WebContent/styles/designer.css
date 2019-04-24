@@ -1303,7 +1303,7 @@ div.CodeMirror {
 }
 
 div.CodeMirror-scroll {
-	min-height: 100px;
+	min-height: 150px;
 }
 
 #selectPeerLeft > i,
