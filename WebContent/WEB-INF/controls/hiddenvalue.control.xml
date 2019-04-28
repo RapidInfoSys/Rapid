@@ -58,7 +58,15 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <key>value</key>
 	            <name>Value</name>
 	            <changeValueJavaScript>text</changeValueJavaScript>
-	            <helpHtml>Pre-sets the value. Can be useful for testing visibility or validation conditions.</helpHtml>
+	            <helpHtml>The initial value. Can be useful for testing visibility or validation conditions.</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>noconvert</key>
+	            <name>Don't convert</name>
+	            <setConstructValueFunction>return false;</setConstructValueFunction>
+	            <changeValueJavaScript>checkbox</changeValueJavaScript>
+	            <helpHtml>If ticked the hidden value will not be converted to a number.</helpHtml>
 	        </property>
 	            
 	    </properties>
@@ -100,12 +108,18 @@ _page.object.find("#" + this.id).remove();
 // remove the image
 this.object.remove();     	    
 	        ]]>
-	    </removeJavaScript> 
+	    </removeJavaScript>
+	    
+	    <getDetailsFunction>
+	        <![CDATA[
+if (this.noconvert && this.noconvert != "false") return {noconvert: true};	        
+	        ]]>	        
+	    </getDetailsFunction>
 	    	    
 	    <getDataFunction>
 	        <![CDATA[
 var value = $("#" + id).val();
-if (value) {
+if (value && (!details || !details.noconvert)) {
 	var match = value.match(/^\-?\d*\.?\d*$/);
 	if (match) value = value * 1;
 }

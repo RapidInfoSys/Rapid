@@ -492,9 +492,22 @@ if (data == null || data === undefined) {
 								url = galImages[url];
 								// remember it was in storage
 								inStorage = true;
-							} else {								
-								// empty the url
-								url = "";
+							} else {					
+								
+								// add the path to this url from our app - check for ~, if not is pretty url use _appId
+								if (window.location.pathname.indexOf("~") > -1) {
+								
+									url = window.location.origin + window.location.pathname.replace("~","") + "uploads/" + _appId + "/" + url;
+								
+								} else {
+								
+									// This is the pretty url request
+									let context = window.location.pathname.substring(0, window.location.pathname.toLowerCase().indexOf(_appId.toLowerCase()));
+									if(!context || context.length < 1) context = "/";
+									url = window.location.origin + context + "uploads/" + _appId + "/" + url;
+								
+								}
+								
 							}
 						}
 						

@@ -150,7 +150,7 @@ public class RapidFilter implements Filter {
 		// assume this request requires authentication
 		boolean requiresAuthentication = true;
 
-		// 1. Get the requested URI without the hostname -- gets servlet path
+		// get the requested URI without the hostname -- gets servlet path
 		String path = req.getServletPath();
 
 		// all webservice related requests got to the soa servelet
@@ -187,14 +187,22 @@ public class RapidFilter implements Filter {
 		// if this request requires authentication
 		if (requiresAuthentication) {
 
+			// log full url
+			_logger.trace("RapidFilter request " + ((HttpServletRequest)request).getRequestURL().toString());
+
 			// get a filtered request
 			ServletRequest filteredRequest = _authenticationAdapter.process(request, response);
-			String[] pathPart = (path.replaceFirst("/", "")).split("/");
 
 			// continue the rest of the chain with it if we got one
 			if (filteredRequest != null) {
 
+				// the url we will forward to
 				String rapidForwardURL;
+
+				// split the path into parts by /
+				String[] pathPart = (path.replaceFirst("/", "")).split("/");
+
+				// get the list of applications to try to find any in the parts
 				Applications applications = (Applications) request.getServletContext().getAttribute("applications");
 
 				// if user has provided at least 1 path part (i.e. part1/) and the first part is a known application
@@ -290,7 +298,7 @@ public class RapidFilter implements Filter {
 		File webContentDir = new File(webContentString);
 		File[] directoryListing = webContentDir.listFiles();
 
-		_resourceDirs = new HashSet<String>();
+		_resourceDirs = new HashSet<>();
 
 		// Loop over the root of the WebContent directory, to see whether
 		// appID/** is followed by one of the folders in this directory

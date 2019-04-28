@@ -159,7 +159,7 @@ public class Database extends Action {
 		// if we had some
 		if (jsonChildDatabaseActions != null) {
 			// instantiate collection
-			_childDatabaseActions = new ArrayList<Database>();
+			_childDatabaseActions = new ArrayList<>();
 			// loop them
 			for (int i = 0; i < jsonChildDatabaseActions.length(); i++) {
 				// get one
@@ -188,7 +188,7 @@ public class Database extends Action {
 		// check
 		if (jsonParameters != null) {
 			// instantiate collection
-			parameters = new ArrayList<Parameter>();
+			parameters = new ArrayList<>();
 			// loop
 			for (int i = 0; i < jsonParameters.length(); i++) {
 				// instaniate member
@@ -211,7 +211,7 @@ public class Database extends Action {
 		// initialise and populate on first get
 		if (_childActions == null) {
 			// our list of all child actions
-			_childActions = new ArrayList<Action>();
+			_childActions = new ArrayList<>();
 			// add child success actions
 			if (_successActions != null) {
 				for (Action action : _successActions) _childActions.add(action);
@@ -439,7 +439,7 @@ public class Database extends Action {
 
 			// drop in the query variable used to collect the inputs, and hold the sequence
 			js += "var query = { data: data, sequence: sequence };\n";
-			
+
 			// assume no child queries
 			boolean childQueries = false;
 
@@ -469,7 +469,7 @@ public class Database extends Action {
 					i ++;
 				}
 			}
-			
+
 			// control can be null when the action is called from the page load
 			String controlParam = "";
 			if (control != null) controlParam = "&c=" + control.getId();
@@ -672,7 +672,7 @@ public class Database extends Action {
 			JSONObject jsonInputData = jsonAction.optJSONObject("data");
 
 			// initialise the parameters list
-			ArrayList<Parameters> parametersList = new ArrayList<Parameters>();
+			ArrayList<Parameters> parametersList = new ArrayList<>();
 
 			// populate the parameters from the inputs collection (we do this first as we use them as the cache key due to getting values from the session)
 			if (_query.getInputs() == null) {
@@ -964,7 +964,7 @@ public class Database extends Action {
 									JSONObject jsonChildData = childDatabaseAction.doQuery(rapidRequest, jsonChildAction, application, df);
 
 									// a map for indexes of matching fields between our parent and child
-									Map<Integer,Integer> fieldsMap = new HashMap<Integer,Integer>();
+									Map<Integer,Integer> fieldsMap = new HashMap<>();
 									// the child fields
 									JSONArray jsonChildFields = jsonChildData.getJSONArray("fields");
 									if (jsonChildFields != null) {
@@ -1077,7 +1077,7 @@ public class Database extends Action {
 									} else {
 										// add a top row if we need one
 										if (jsonRows.length() == 0) jsonRows.put(new JSONArray());
-										// get the top row - only this one is used when the child data is retrieved 
+										// get the top row - only this one is used when the child data is retrieved
 										JSONArray jsonRow = jsonRows.getJSONArray(0);
 										// add the child database action data
 										jsonRow.put(jsonChildData);

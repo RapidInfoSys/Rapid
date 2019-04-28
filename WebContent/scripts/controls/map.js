@@ -162,7 +162,7 @@ GT_Math.Lat_Long_to_North=function(PHI,LAM,a,b,e0,n0,f0,PHI0,LAM0)
 
 /*
 
-Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -503,12 +503,14 @@ function addMapMarker(map, pos, details, data, rowIndex, zoomMarkers) {
 			map.markers.push(marker);
 			
 			if (pos.info) {
-				var markerInfoWindow = new google.maps.InfoWindow({
-					content: pos.info
-				});
 				google.maps.event.addListener(marker, 'click', function() {
-				    markerInfoWindow.open(map,marker);
-				});
+                    if (map.markerInfoWindow) map.markerInfoWindow.close();
+                    var markerInfoWindow = new google.maps.InfoWindow({
+                        content: pos.info
+                    });
+                    map.markerInfoWindow = markerInfoWindow;
+                    markerInfoWindow.open(map,marker);
+                });
 			}
 			
 			if (details.markerClickFunction) {

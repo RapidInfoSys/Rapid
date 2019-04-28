@@ -51,7 +51,7 @@ import com.rapid.server.RapidHttpServlet;
 import com.rapid.server.RapidRequest;
 
 public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
-	
+
 	public static final String SESSION_VARIABLE_LOGIN_PATH = "login";
 	public static final String SESSION_VARIABLE_PASSWORDRESET_PATH = "passwordreset";
 
@@ -242,7 +242,7 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 						// log the error
 						_logger.error("FormAuthenticationAdapter error resetting password", ex);
 					}
-					
+
 					// Get the stored login path from session
 					loginPath = (String) session.getAttribute(SESSION_VARIABLE_LOGIN_PATH);
 					// if null set to default
@@ -282,14 +282,14 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 
 					// loop the login pages
 					for (JSONObject jsonLogin : _jsonLogins) {
-						
+
 						// get the custom login path
 						String customLoginPath = jsonLogin.optString("path").trim();
 						// get the custom index
 						String customIndexPath = jsonLogin.optString("index").trim();
 						// get any password reset
 						String customPasswordReset = jsonLogin.optString("passwordreset",null);
-						
+
 						// assume the custom index is pretty url direct for app
 						String customIndexApp = customIndexPath;
 						// if the index path is non pretty
@@ -316,6 +316,8 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 							if (customPasswordReset != null) session.setAttribute(SESSION_VARIABLE_PASSWORDRESET_PATH, customPasswordReset.trim());
 							// add cache defeating to try and stop the 302 from custom login .jsp pages to index.jsp
 							RapidFilter.noCache(response);
+							// log
+							_logger.trace("Custom login " + customLoginPath + " identified. Index set to " + customIndexPath);
 							// we're done
 							break;
 						}
@@ -402,7 +404,8 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 							// send a 401 with the login path to get RapidMobile to authenticate
 							response.sendError(401, "location=" + loginPath);
 						} else {
-							response.sendRedirect(loginPath);
+							// send a redirect with . in front to allow for Rapid instances below the root
+							response.sendRedirect("./" + loginPath);
 						}
 
 					}
@@ -435,7 +438,7 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 
 					// remember whether we are authorised for at least one application
 					boolean authorised = RapidFilter.isAuthorised(req, userName, userPassword, indexPath);
-					
+
 					// we passed authorisation so redirect the client to the resource they wanted
 					if (authorised) {
 
@@ -463,6 +466,8 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 								// request custom index path
 								sessionRequestPath = indexPath;
 							}
+							// log
+							_logger.trace("Session request path set to " + sessionRequestPath);
 						}
 
 						// if we had a requestApp in the sessionRequestPath, go straight to the app
@@ -474,6 +479,8 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 								// set the sessionRequestPath to the appId
 								sessionRequestPath = "~?a=" + requestAppParts[1];
 							}
+							// log
+							_logger.trace("Session request path set to " + sessionRequestPath);
  						}
 
 						// remove the authorisation session attribute
@@ -498,7 +505,7 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 
 							// if any app has password reset
 							if (SecurityAdapter.hasPasswordReset(getServletContext())) message += " - click <a href='" + resetPath + "'>here</a> to reset your password";
-							
+
 						}
 
 						// retain the authorisation attempt in the session
@@ -519,8 +526,14 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 
 			} // authentication check (whether username is in session)
 
+			// log the request path - see how it is cleaned up a bit at the top of this method
+			_logger.trace("FormAuthenticationAdapter requestpath=" + requestPath + ", loginPath=");
+
 			// if we are requesting the login.jsp or root but have authenticated, go to index instead
 			if ((requestPath.contains(loginPath) || "/".equals(requestPath)) && "GET".equals(request.getMethod())) {
+
+				// log that we are being redirected to the index path - this can be modified by custom logins, on Jetty the root is /, on Tomcat/AWS it's .
+				_logger.trace("Redirecting to index: " + indexPath);
 
 				// send a redirect to load the index
 				response.sendRedirect(indexPath);
