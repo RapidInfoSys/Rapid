@@ -272,8 +272,6 @@ _codeEditors = {};
 	    		<type>javascriptFile</type>
 	    		<contents>scripts/controls/codeMirror/addon/display/autorefresh.js</contents>
 	    	</resource>
-	    	
-	    	
 	    	<resource>
 	    		<type>javascriptFile</type>
 	    		<contents>scripts/controls/codeMirror/addon/hint/show-hint.js</contents>
@@ -298,6 +296,29 @@ _codeEditors = {};
 	    		<type>javascriptFile</type>
 	    		<contents>scripts/controls/codeMirror/addon/hint/xml-hint.js</contents>
 	    	</resource>
+	    	<!-- 
+	    	These have been turned off for now in favour of viewportMargin: Infinity in init
+	    	<resource>
+	    		<type>javascriptFile</type>
+	    		<contents>scripts/controls/codeMirror/addon/search/search.js</contents>
+	    	</resource>
+	    	<resource>
+	    		<type>javascriptFile</type>
+	    		<contents>scripts/controls/codeMirror/addon/search/searchcursor.js</contents>
+	    	</resource>
+	    	<resource>
+	    		<type>javascriptFile</type>
+	    		<contents>scripts/controls/codeMirror/addon/search/jump-to-line.js</contents>
+	    	</resource>
+	    	<resource>
+	    		<type>javascriptFile</type>
+	    		<contents>scripts/controls/codeMirror/addon/dialog/dialog.js</contents>
+	    	</resource>
+	    	<resource>
+	    		<type>cssFile</type>
+	    		<contents>scripts/controls/codeMirror/addon/dialog/dialog.css</contents>
+	    	</resource>
+	    	 -->
 	    	
 	    </resources>
 	    
@@ -325,7 +346,7 @@ if(myCodeMirror){
 	myCodeMirror.setOption("lineNumbers", this.details.lineNumbers);
 	myCodeMirror.setOption("matchBrackets", this.details.matchBrackets);
 	myCodeMirror.setOption("autoCloseBrackets", this.details.autoCloseBrackets);
-	myCodeMirror.setOption("readOnly", this.details.readOnly);	
+	myCodeMirror.setOption("readOnly", this.details.readOnly);
 }
 	    ]]>
 	    </rebuildJavaScript>
@@ -343,17 +364,17 @@ var myDiv = w.document.getElementById(this.id);
 //will start empty or with the value and will use the mode that we loaded
 //mode generates the styling (text-color and indent) for a given language - in this case javascript
 var myCodeMirror = w.CodeMirror(myDiv, {
-	  value: this.details.value,
-	  placeholder: this.details.placeholder,
-	  mode:  this.details.mode,
-	  theme: this.details.theme,
-	  lineWrapping: this.details.lineWrapping,
-	  lineNumbers: this.details.lineNumbers,
-	  matchBrackets: this.details.matchBrackets,
-	  autoCloseBrackets: this.details.autoCloseBrackets,
-	  extraKeys: {"Ctrl-Space": "autocomplete"},
-	  readOnly: this.details.readOnly
-	}); 
+	value: this.details.value,
+	placeholder: this.details.placeholder,
+	mode:  this.details.mode,
+	theme: this.details.theme,
+	lineWrapping: this.details.lineWrapping,
+	lineNumbers: this.details.lineNumbers,
+	matchBrackets: this.details.matchBrackets,
+	autoCloseBrackets: this.details.autoCloseBrackets,
+	extraKeys: {"Ctrl-Space": "autocomplete"},
+	readOnly: this.details.readOnly
+}); 
 	
 // store a reference to this code editor
 w._codeEditors[this.id] = myCodeMirror;
@@ -454,7 +475,7 @@ return "#" + this.id + ":focus";
 var myDiv = document.getElementById(id);
 // creates an editor instance, and appends it to the given DOM element
 // will start empty or with the value and will use the mode that we loaded
-// mode generates the styling (text-color and indent) for a given language - in this case javascript
+// mode generates the styling (text-color and indent) for a given language 
 var myCodeMirror = CodeMirror(myDiv, {
   value: details.value,
   placeholder: details.placeholder,
@@ -467,7 +488,8 @@ var myCodeMirror = CodeMirror(myDiv, {
   autoCloseBrackets: details.autoCloseBrackets,
   extraKeys: {"Ctrl-Space": "autocomplete"},
   styleActiveLine: details.styleActiveLine,
-  readOnly: details.readOnly
+  readOnly: details.readOnly,
+  viewportMargin: Infinity
 });
 	
 // store a reference to this code editor

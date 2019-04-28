@@ -1150,7 +1150,6 @@ function Property_bigtext(cell, propertyObject, property, details) {
 			myCodeMirror.setCursor(myCodeMirror.lineCount(), 0);
 		});
 		
-		
 		//now create its event handlers
 		var keyUpCallback = function(){
 			updateProperty(cell, propertyObject, property, details, myCodeMirror.getValue());
