@@ -345,7 +345,7 @@ public class Database extends Action {
 		return js;
 	}
 
-	// private function to get outputs into a string, resued by child database actions
+	// private function to get outputs into a string, reused by child database actions
 	private String getOutputsJavaScript(ServletContext servletContext, Application application, Page page, List<Parameter> outputs, String childName) {
 		// the outputs array we're going to make
 		String jsOutputs = "";
@@ -379,30 +379,29 @@ public class Database extends Action {
 			} else {
 				// get any details we may have
 				String details = outputControl.getDetailsJavaScript(application, page);
+				// set to empty string or clean up
+				if (details == null) {
+					details = "";
+				} else {
+					// if this is a page control
+					if (pageControl) {
+						// the details will already be in the page so we can use the short form
+						details = outputControl.getId() + "details";
+					}
+					// add details property with json details 
+					details = ", details: " + details;
+				}
+				// start the jsOutputs
+				jsOutputs += "{id: '" + outputControl.getId() + "', type: '" + outputControl.getType() + "', field: '" + output.getField() + "'" + details;
 				// if there are two parts this is a property
 				if (idParts.length > 1) {
-					// if we have some details
-					if (details != null) {
-						// if this is a page control
-						if (pageControl) {
-							// the details will already be in the page so we can use the short form
-							details = outputControl.getId() + "details";
-						}
-					}
 					// get the property from the second id part
 					String property = idParts[1];
-					// append the set property output call
-					jsPropertyOutputs += "setProperty_" + outputControl.getType() +  "_" + property + "(ev,'" + outputControl.getId() + "','" + output.getField() + "'," + details + ",data);\n";
-				} else {
-					// set to empty string or clean up
-					if (details == null) {
-						details = "";
-					} else {
-						details = ", details: " + details;
-					}
-					// append the javascript outputs
-					jsOutputs += "{id: '" + outputControl.getId() + "', type: '" + outputControl.getType() + "', field: '" + output.getField() + "'" + details + "},";
+					// append the property
+					jsOutputs += ", property: '" + property + "'";
 				} // property / control check
+				// close the jsOutputs
+				jsOutputs += "},";
 			} // control found check
 		} // outputs loop
 		// remove the last comma from any conventional outputs
