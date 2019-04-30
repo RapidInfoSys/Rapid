@@ -836,7 +836,7 @@ function getDialogue(cell, propertyObject, property, details, width, title, opti
 		}
 		
 		// add a close link
-		var close = dialogue.append("<b class='dialogueTitle' style='float:left;margin-top:-5px;'>" + title + "</b><i class='fa dialogueClose fa-external-link-square' style='float:right; font-size:18px; color:#494949; padding-bottom:5px;'></i></div>").children().last();
+		var close = dialogue.append("<b class='dialogueTitle' style='float:left;margin-top:-5px;'>" + title + "</b><i class='fa dialogueClose fa-external-link-square' style='float:right; font-size:18px; color:#494949; padding-bottom:5px;' title='Close dialogue'></i></div>").children().last();
 	
 		// add the close listener (it's put in the listener collection above)
 		addListener(close.click({dialogueId: dialogueId}, function(ev) {
@@ -1068,6 +1068,7 @@ function Property_number(cell, propertyObject, property, details) {
 
 
 function Property_bigtext(cell, propertyObject, property, details) {
+	
 	var value = "";
 	// set the value if it exists
 	if (propertyObject[property.key]) value = propertyObject[property.key];
@@ -2464,17 +2465,17 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 	//Get the textAreaCell and append it
 	var queryCell = document.getElementById(dialogue.attr("id") + "_dbTextAreaCell");
 	var sqlEditor = CodeMirror(queryCell, {
-		  mode:"sql",
-		  theme: "default",
-		  lineWrapping: true,
-		  lineNumbers: true,
-		  matchBrackets: true,
-		  autoCloseBrackets: true,
-		  extraKeys: {"Ctrl-Space": "autocomplete"},
-		  styleActiveLine: true,
-		  readOnly: false,
-		  autoRefresh: true
-		});
+	  mode:"sql",
+	  theme: "default",
+	  lineWrapping: true,
+	  lineNumbers: true,
+	  matchBrackets: true,
+	  autoCloseBrackets: true,
+	  extraKeys: {"Ctrl-Space": "autocomplete"},
+	  styleActiveLine: true,
+	  readOnly: false,
+	  autoRefresh: true
+	});
 	
 	// find the inputs table
 	var inputsTable = table.find("table.inputs");
@@ -3896,6 +3897,8 @@ var _gridColumnSorts = {
 var _gridSortFunctionHelpText = "// enter JavaScript here that returns a number to reflect\n// the order by comparing two objects, \"item1\" and \"item2\"\n// each has a \"value\" and \"index\" property";
 // the cell function help text
 var _gridCellFunctionHelpText = "// enter JavaScript here that can alter the contents when this\n// cell is populated. The value is available in the \"value\"\n// variable, and the cell in \"this\"";
+// the cell content edit html
+var _gridCellEditHtml = "<i class='fa fa-pencil' title='Edit function'></i>";
 
 // this is a dialogue to refine the options available in a grid control
 function Property_gridColumns(cell, grid, property, details) {
@@ -3923,7 +3926,7 @@ function Property_gridColumns(cell, grid, property, details) {
 	cell.text(text);
 	
 	// add a header
-	table.append("<tr><td style='width:20px;'><b>Visible</b></td><td><b>Title</b></td><td><b>Title style</b></td><td><b>Field</b></td><td><b>Field style</b></td><td><b>Sort</b></td><td><b>Cell function</b></td><td></td></tr>");
+	table.append("<tr><td style='width:20px;'><b>Visible</b></td><td><b>Title</b></td><td><b>Title style</b></td><td><b>Field</b></td><td><b>Field style</b></td><td><b>Sort</b></td><td colspan='2'><b>Cell function</b></td></tr>");
 		
 	// show columns
 	for (var i in columns) {
@@ -3938,18 +3941,18 @@ function Property_gridColumns(cell, grid, property, details) {
 		sortSelect += "</select>";
 			
 		// set the cellFunction text to ellipses
-		var cellFunctionText = "...";
-		// update to function if present
-		if (columns[i].cellFunction) cellFunctionText = columns[i].cellFunction;
+		var cellFunctionText = "<span title='Add cell function'>...</span>";
+		// update to edit glyph if present
+		if (columns[i].cellFunction && cellFunctionText != _gridCellFunctionHelpText) cellFunctionText = _gridCellEditHtml;
 		
 		// add the line
-		table.append("<tr><td class='center'><input type='checkbox' " + (columns[i].visible ? "checked='checked'" : "")  + " /></td><td><input value='" + escapeApos(columns[i].title) + "' /></td><td><input value='" + escapeApos(columns[i].titleStyle) + "' /></td><td><input value='" + escapeApos(columns[i].field) + "' /></td><td><input value='" + escapeApos(columns[i].fieldStyle) + "' /></td><td>" + sortSelect + "<span>...</span></td><td class='paddingLeft5'>" + cellFunctionText.replaceAll("<","&lt;") + "</td><td>" +
+		table.append("<tr><td class='center'><input type='checkbox' " + (columns[i].visible ? "checked='checked'" : "")  + " /></td><td><input value='" + escapeApos(columns[i].title) + "' /></td><td><input value='" + escapeApos(columns[i].titleStyle) + "' /></td><td><input value='" + escapeApos(columns[i].field) + "' /></td><td><input value='" + escapeApos(columns[i].fieldStyle) + "' /></td><td>" + sortSelect + "&nbsp;" + _gridCellEditHtml + "</td><td class='paddingLeft5'>" + cellFunctionText + "</td><td>" +
 				"<div class='iconsPanel'>" +
 				"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
 				"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this column'></i></div>" +
 				"</div></td></tr>");
 		
-		// find the checkbox
+		// find the visible checkbox
 		var visibleEdit = table.find("tr").last().children(":nth(0)").first().children().first();
 		// add a listener
 		addListener( visibleEdit.change( {grid: grid}, function(ev) {
@@ -4010,9 +4013,9 @@ function Property_gridColumns(cell, grid, property, details) {
 		}));
 		
 		// find the sort drop down
-		var fieldStyleEdit = table.find("tr").last().children(":nth(5)").first().children().first();
+		var sortDropDown = table.find("tr").last().children(":nth(5)").first().children().first();
 		// add a listener
-		addListener( fieldStyleEdit.change( {grid: grid, cell: cell, grid: grid, property: property, details: details}, function(ev) {
+		addListener( sortDropDown.change( {grid: grid, cell: cell, grid: grid, property: property, details: details}, function(ev) {
 			// get the input
 			var input = $(ev.target);
 			// update value
@@ -4024,13 +4027,13 @@ function Property_gridColumns(cell, grid, property, details) {
 		}));
 		
 		// find the sort custom function
-		var fieldStyleEdit = table.find("tr").last().children(":nth(5)").first().children().last();
+		var sortFunction = table.find("tr").last().children(":nth(5)").first().children().last();
 		// add a listener
-		addListener( fieldStyleEdit.click( {grid: grid}, function(ev) {
+		addListener( sortFunction.click( {grid: grid}, function(ev) {
 			// get the span
 			var span = $(ev.target);
 			// get the index
-			var index = span.parent().parent().index()-1;
+			var index = span.closest("tr").index()-1;
 			// set the index
 			textArea.attr("data-index",index);
 			// set the type
@@ -4050,13 +4053,14 @@ function Property_gridColumns(cell, grid, property, details) {
 		}));
 		
 		// find the cellFunction
-		var fieldStyleEdit = table.find("tr").last().children(":nth(6)").first();
+		var cellFunction = table.find("tr").last().children(":nth(6)").first();
+		
 		// add a listener
-		addListener( fieldStyleEdit.click( {grid: grid}, function(ev) {
+		addListener( cellFunction.click( {grid: grid}, function(ev) {
 			// get the td
 			var td = $(ev.target);
 			// get the index
-			var index = td.parent().index()-1;
+			var index = td.closest("tr").index()-1;
 			// set the index
 			textArea.attr("data-index",index);
 			// set the type
@@ -4064,7 +4068,7 @@ function Property_gridColumns(cell, grid, property, details) {
 			// get the function text
 			var cellFunctionText = ev.data.grid.columns[index].cellFunction;
 			// check the text
-			if (cellFunctionText) {
+			if (cellFunctionText && cellFunctionText != _gridCellFunctionHelpText) {
 				textArea.val(cellFunctionText);
 			} else {
 				textArea.val(_gridCellFunctionHelpText);
@@ -4072,23 +4076,25 @@ function Property_gridColumns(cell, grid, property, details) {
 			// show and focus the textarea
 			textArea.show().focus();
 		}));
-						
+		
 	}
 	
 	// add the cell function text area
 	var textArea = dialogue.append("<textarea data-index='-1' style='position:absolute;display:none;width:500px;height:300px;top:26px;right:10px;' wrap='off'></textarea>").find("textarea:first");
 	// hide it on unfocus
 	addListener( textArea.blur( function(ev) {		
-		// get the value
+		// assume no html
+		var cellHtml = "<span title='Add cell function'>...</span>"; 
+		// get the value of the text area
 		var value = textArea.val();
 		// update to elipses if nothing or only help text
-		if (!value || value == _gridCellFunctionHelpText) value = "...";
+		if (value && value != _gridCellFunctionHelpText) cellHtml = _gridCellEditHtml;
 		// get the index
 		var index = textArea.attr("data-index")*1;		
 		// get the type
 		var type = textArea.attr("data-type");	
 		// update the td text if known cell function
-		if (index >= 0 && type == "f") table.find("tr:nth(" + (index + 1) + ")").last().children("td:nth(6)").text(value);
+		if (index >= 0 && type == "f") table.find("tr:nth(" + (index + 1) + ")").last().children("td:nth(6)").html(cellHtml);
 		// empty the value
 		textArea.val("");
 		// hide it
@@ -4168,7 +4174,7 @@ function Property_gridColumns(cell, grid, property, details) {
 function Property_gridScrollWidth(cell, grid, property, details) {
 	// only if horizontal scrolling
 	if (grid.scrollH) {
-		// add the bigtext
+		// add the text property
 		Property_text(cell, grid, property, details);
 	} else {
 		// remove this row
@@ -4180,7 +4186,7 @@ function Property_gridScrollWidth(cell, grid, property, details) {
 function Property_gridScrollHeight(cell, grid, property, details) {
 	// only if vertical scrolling
 	if (grid.scrollV) {
-		// add the bigtext
+		// add the text property
 		Property_text(cell, grid, property, details);
 	} else {
 		// remove this row
@@ -4192,7 +4198,7 @@ function Property_gridScrollHeight(cell, grid, property, details) {
 function Property_gridScrollFixedHeader(cell, grid, property, details) {
 	// only if vertical scrolling
 	if (grid.scrollV) {
-		// add the bigtext
+		// add the checkbox property
 		Property_checkbox(cell, grid, property, details);
 	} else {
 		// remove this row
@@ -5167,7 +5173,7 @@ function Property_glyphCode(cell, controlAction, property, details) {
 function Property_buttonGlyphPosition(cell, propertyObject, property, details) {
 	// only if glyph code is specified
 	if (propertyObject.glyphCode) {
-		// add the bigtext
+		// add the drop down property
 		Property_select(cell, propertyObject, property, details);
 	} else {
 		// remove this row
@@ -5178,7 +5184,7 @@ function Property_buttonGlyphPosition(cell, propertyObject, property, details) {
 function Property_buttonGlyphBackground(cell, propertyObject, property, details) {
 	// only if glyph code is specified
 	if (propertyObject.glyphCode) {
-		// add the bigtext
+		// add the drop down property
 		Property_select(cell, propertyObject, property, details);
 	} else {
 		// remove this row

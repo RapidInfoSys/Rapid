@@ -507,12 +507,19 @@ table.inputs tr td:last-child, table.outputs tr td:last-child  {
 
 .inputTableWithTitles tr td:nth-child(6) span {
 	padding-left: 8px;
-	padding-right: 3px;
+	padding-right: 2px;
+	font-size: 14px;
+}
+
+.inputTableWithTitles tr:not(:nth-child(1)) td:nth-child(6) {
+    font-size: 14px;
 }
 
 .inputTableWithTitles tr:not(:nth-child(1)) td:nth-child(7) {
+	padding-left: 6px;
 	padding-right: 6px;
-	padding-top: 4px;
+    padding-top: 2px;
+    font-size: 14px;
 }
 
 .inputTableWithTitles tr:not(:first-child) td:nth-child(6):hover,
