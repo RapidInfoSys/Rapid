@@ -223,8 +223,12 @@ function Action_database(ev, actionId, data, outputs, childField) {
 				// retain this sequence as the new highest
 				if (data.sequence) _databaseActionMaxSequence[actionId] = data.sequence;
 				for (var i in outputs) {
-					var output = outputs[i];			
-					window["setData_" + output.type](ev, output.id, output.field, output.details, data);
+					var output = outputs[i];
+					if (output.property) {
+						window["setProperty_" + output.type + "_" + output.property](ev, output.id, output.field, output.details, data);
+					} else {
+						window["setData_" + output.type](ev, output.id, output.field, output.details, data);
+					}
 				}
 			}
 		}
