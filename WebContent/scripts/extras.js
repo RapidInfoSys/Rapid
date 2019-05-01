@@ -866,12 +866,14 @@ function mergeDataObjects(data1, data2, mergeType, field, maxRows, details) {
 					if (field) {
 						var fields = field.split(",");
 						for (var i in fields) {
-							var f = fields[i].trim().toLowerCase();
-							for (var i in data2.fields) {
-								if (data2.fields[i] && data2.fields[i].toLowerCase() ==  f) {
-									fieldIndexes.push(i);
+							if (fields[i]) {
+								var f = fields[i].trim().toLowerCase();
+								for (var i in data2.fields) {
+									if (data2.fields[i] && data2.fields[i].toLowerCase() ==  f) {
+										fieldIndexes.push(i);
+									}
 								}
-							}							
+							}
 						}						
 					}
 					var data = {fields: data2.fields, rows: []};			
@@ -881,7 +883,7 @@ function mergeDataObjects(data1, data2, mergeType, field, maxRows, details) {
 						for (var i in data2.rows) {
 							for (var j in fieldIndexes) {
 								var v = data2.rows[i][fieldIndexes[j]];
-								if (typeof v !== "undefined") {
+								if (v != null && typeof v !== "undefined") {
 									if (v.toLowerCase().indexOf(value) > -1) {
 										data.rows.push(data2.rows[i]);
 										break;
