@@ -4027,7 +4027,7 @@ function Property_gridColumns(cell, grid, property, details) {
 		}));
 		
 		// find the sort custom function
-		var sortFunction = table.find("tr").last().children(":nth(5)").first().children().last();
+		var sortFunction = table.find("tr").last().children(":nth(5)").first();
 		// add a listener
 		addListener( sortFunction.click( {grid: grid}, function(ev) {
 			// get the span
@@ -4054,7 +4054,6 @@ function Property_gridColumns(cell, grid, property, details) {
 		
 		// find the cellFunction
 		var cellFunction = table.find("tr").last().children(":nth(6)").first();
-		
 		// add a listener
 		addListener( cellFunction.click( {grid: grid}, function(ev) {
 			// get the td
@@ -4079,8 +4078,10 @@ function Property_gridColumns(cell, grid, property, details) {
 		
 	}
 	
-	// add the cell function text area
-	var textArea = dialogue.append("<textarea data-index='-1' style='position:absolute;display:none;width:500px;height:300px;top:26px;right:10px;' wrap='off'></textarea>").find("textarea:first");
+	// look for the cell function text area
+	var textArea = dialogue.find("textarea");
+	// add one if need be
+	if (!textArea[0]) textArea = dialogue.append("<textarea data-index='-1' style='position:absolute;display:none;width:500px;height:300px;top:26px;right:10px;' wrap='off'></textarea>").find("textarea:first");
 	// hide it on unfocus
 	addListener( textArea.blur( function(ev) {		
 		// assume no html
