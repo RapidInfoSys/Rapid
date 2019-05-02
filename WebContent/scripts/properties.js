@@ -4027,7 +4027,7 @@ function Property_gridColumns(cell, grid, property, details) {
 		}));
 		
 		// find the sort custom function
-		var sortFunction = table.find("tr").last().children(":nth(5)").first();
+		var sortFunction = table.find("tr").last().children(":nth(5)").find("i");
 		// add a listener
 		addListener( sortFunction.click( {grid: grid}, function(ev) {
 			// get the span

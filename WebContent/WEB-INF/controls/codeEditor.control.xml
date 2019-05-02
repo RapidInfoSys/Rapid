@@ -471,6 +471,11 @@ return "#" + this.id + ":focus";
 	      
 	    <initJavaScript>
 	    <![CDATA[
+	    
+// assume default theme
+var theme = details.theme;
+// if there is a local storage theme, use that
+if (window.localStorage && window.localStorage.getItem("_codeEditorTheme")) theme = window.localStorage.getItem("_codeEditorTheme");
 	        
 var myDiv = document.getElementById(id);
 // creates an editor instance, and appends it to the given DOM element
@@ -481,7 +486,7 @@ var myCodeMirror = CodeMirror(myDiv, {
   placeholder: details.placeholder,
   autoRefresh: true,
   mode:  details.mode,
-  theme: details.theme,
+  theme: theme,
   lineWrapping: details.lineWrapping,
   lineNumbers: details.lineNumbers,
   matchBrackets: details.matchBrackets,

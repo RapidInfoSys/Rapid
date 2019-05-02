@@ -234,7 +234,7 @@ function Action_rapid(ev, appId, pageId, controlId, actionId, actionType, rapidA
 		case "GETUSERS" :		
 			data = { actionType: actionType, appId: "rapid" };	
 			callback = function(data) {			    				
-				setData_grid(ev, 'rapid_P0_C823_', 'users', {"rowSelect":true,"columns":[{"field":"name","visible":true,"style":"text-align:left;padding-left:10px;"},{"field":"description","visible":true,"style":"text-align:left;padding-left:10px;padding-right:10px;"},{"cellFunction":"","field":"","visible":true,"style":""}]}, data);
+				setData_grid(ev, 'rapid_P0_C823_', 'users', {"rowSelect":true,"columns":[{"field":"name","visible":true},{"field":"description","visible":true},{"cellFunction":"","field":"","visible":true,"style":""}]}, data);
 				var rapidUserRows = $("#rapid_P0_C823_").find("tr.rowStyle1,tr.rowStyle2");
 				rapidUserRows.each( function() {
 				  var children = $(this).children("td");
