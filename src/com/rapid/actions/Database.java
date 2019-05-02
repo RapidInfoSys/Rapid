@@ -388,7 +388,7 @@ public class Database extends Action {
 						// the details will already be in the page so we can use the short form
 						details = outputControl.getId() + "details";
 					}
-					// add details property with json details 
+					// add details property with json details
 					details = ", details: " + details;
 				}
 				// start the jsOutputs
@@ -592,16 +592,6 @@ public class Database extends Action {
 							js += "      Action_database(ev,'" + getId() + "', data, " + "outputs" + childName + ",'" + childName + "');\n";
 						} // output length check
 					} // output null check
-					// get any child database action success actions
-					List<Action> childSuccessActions = _childDatabaseActions.get(i).getSuccessActions();
-					// if we got some
-					if (childSuccessActions != null) {
-						// loop them
-						for (Action childSuccessAction : childSuccessActions) {
-							// add it to the js
-							js += "      " + childSuccessAction.getJavaScript(rapidRequest, application, page, control, jsonDetails).replace("\n", "\n      ") + "\n";
-						}
-					}
 				} // child action loop
 			} // child action check
 
