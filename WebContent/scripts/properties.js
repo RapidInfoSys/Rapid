@@ -37,7 +37,7 @@ var _dialogueZindex = 10012;
 var _dialogueRefeshProperties = {};
 // the control name is important for checking conflicts and the change event is not picked up if a new control is selected so we track it specially
 var _controlName;
-//track whether the mouse is on the codeEditor
+// track whether the mouse is on the codeEditor
 var _onCodeEditor = false;
 
 // this function returns a set of options for a dropdown using the current set of pages
@@ -986,6 +986,40 @@ function escapeApos(value) {
 	}
 }
 
+// create a code mirror instance
+function getCodeMirror(element, mode) {
+	// set mode if none provided
+	if (!mode) mode = "text/plain";
+	// assume default theme
+	var theme = "default";
+	// if there is a local storage theme, use that
+	if (window.localStorage && window.localStorage.getItem("_codeEditorTheme")) theme = window.localStorage.getItem("_codeEditorTheme");
+	// assume default extra keys
+	var extraKeys = {"Ctrl-Space": "autocomplete"};
+	// add more keys if xml
+	if (mode == "xml") extraKeys = {"Ctrl-Space": "autocomplete",
+	  "'<'": completeAfter,
+	  "'/'": completeIfAfterLt,
+      "' '": completeIfInTag,
+      "'='": completeIfInTag
+	};
+	// make the code mirror
+	var codeMirror = CodeMirror(element, {
+		  mode:  mode,
+		  theme: theme,
+		  lineWrapping: true,
+		  lineNumbers: true,
+		  matchBrackets: true,
+		  autoCloseBrackets: true,
+		  extraKeys: extraKeys,
+		  styleActiveLine: true,
+		  readOnly: false,
+		  autoRefresh: true
+	});
+	// return
+	return codeMirror;
+}
+
 // a standard handler for text properties
 function Property_text(cell, propertyObject, property, details) {
 	var value = "";
@@ -1091,19 +1125,8 @@ function Property_bigtext(cell, propertyObject, property, details) {
 			dialogueId = propertyObject.id + property.key;
 			// get a reference of the propertiesDialogues
 			propertiesDialogue = $("#propertiesDialogues").append("<div id='" + dialogueId + "'></div>").find("div").last();
-			//create an editor instance, and append it to the propertiesDialogue
-			myCodeMirror = CodeMirror(propertiesDialogue[0], {
-				  mode:  "text/plain",
-				  theme: "default",
-				  lineWrapping: true,
-				  lineNumbers: true,
-				  matchBrackets: true,
-				  autoCloseBrackets: true,
-				  extraKeys: {"Ctrl-Space": "autocomplete"},
-				  styleActiveLine: true,
-				  readOnly: false,
-				  autoRefresh: true
-			});
+			// create an editor instance, and append it to the propertiesDialogue
+			myCodeMirror = getCodeMirror(propertiesDialogue[0]);
 			
 			// get codeMirror dialogue element 
 			myCodeMirrorDialogue = $(myCodeMirror.getWrapperElement());
@@ -2462,20 +2485,10 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 				 "<table  class='dialogueTable outputs outputTable'><tr><td><b>Field</b></td><td><b>Output</b></td><td></td></tr></table></div>" +
 				 "</td></tr>");
 	
-	//Get the textAreaCell and append it
+	// get the query cell
 	var queryCell = document.getElementById(dialogue.attr("id") + "_dbTextAreaCell");
-	var sqlEditor = CodeMirror(queryCell, {
-	  mode:"sql",
-	  theme: "default",
-	  lineWrapping: true,
-	  lineNumbers: true,
-	  matchBrackets: true,
-	  autoCloseBrackets: true,
-	  extraKeys: {"Ctrl-Space": "autocomplete"},
-	  styleActiveLine: true,
-	  readOnly: false,
-	  autoRefresh: true
-	});
+	// get the sql editor
+	var sqlEditor = getCodeMirror(queryCell, "sql");
 	
 	// find the inputs table
 	var inputsTable = table.find("table.inputs");
@@ -2764,24 +2777,7 @@ function Property_webserviceRequest(cell, propertyObject, property, details) {
 	var bodySOA = document.getElementById('bodySOA_' + dialogueId);
 	
 	//create an editor instance, and append it to the bodySOA
-	var myCodeEditor = CodeMirror(bodySOA, {
-		  mode:  "xml",
-		  theme: "default",
-		  lineWrapping: true,
-		  lineNumbers: true,
-		  matchBrackets: true,
-		  autoCloseBrackets: true,
-		  extraKeys: {"Ctrl-Space": "autocomplete",
-	  		  "'<'": completeAfter,
-      		  "'/'": completeIfAfterLt,
-              "' '": completeIfInTag,
-              "'='": completeIfInTag
-		  },
-		  hintOptions: {schemaInfo: tags},
-		  styleActiveLine: true,
-		  readOnly: false,
-		  autoRefresh: true
-		});
+	var myCodeEditor = getCodeMirror(bodySOA, "xml");
 	
 	// find the inputs table
 	var inputsTable = table.children().last().children().first().children().last();
