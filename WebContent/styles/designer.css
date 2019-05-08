@@ -548,6 +548,7 @@ table.stylesPanelTable  {
 	font-size: 11px;
 	border-width: 0;
 	border-radius: 0;
+	padding: 3px 5px;
 }
 
 td.styleCell {
