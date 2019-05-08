@@ -204,6 +204,10 @@ table.stylesPanelTable select.propertiesPanelTable:focus {
     width: 16px;
 }
 
+.headerToggle.down {
+ 	background-image: url("../images/down.light.svg");
+}
+
 .headerHelp {
 	float: right;
 	margin-left: -16px;
@@ -300,11 +304,12 @@ li.design-control:hover, li.design-action:hover {
 }
 
 img.conflictimgage {
-	float:right;
-	margin-top: -1px !important;
-	margin-right: 2px;
-	margin-left: -2000px;
+	float: right;
 	position: relative;
+	margin-left: -2000px;
+    margin-top: -1px !important;
+    margin-right: 0px !important;
+    background-color: rgba(0, 0, 0, 0) !important;        
 }
 
 #pageMapSearch {

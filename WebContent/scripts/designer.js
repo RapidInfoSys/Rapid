@@ -2039,9 +2039,9 @@ function toggleHeader(ev) {
 	// slide toggle contents
 	contents.slideToggle( 500, function() {
 		if (contents.is(":visible")) {
-			header.children("img.headerToggle").attr("src","images/triangleUpWhite_8x8.png");						
+			header.children("i").removeClass("down");						
 		} else {
-			header.children("img.headerToggle").attr("src","images/triangleDownWhite_8x8.png");
+			header.children("i").addClass("down");
 		}
 		switch (type) {
 		case "stylesHeader" :
