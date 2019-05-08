@@ -355,7 +355,11 @@ img.conflictimgage {
 	vertical-align: middle;
 	height: 16px;
 	width: 16px;
-	margin-top: -2px;
+	background-color: #494949;    
+    padding: 2px;
+    border-radius: 2px;
+    margin-top: 1px;
+    margin-right: 2px;
 }
 
 .mapMoveLeft {
@@ -997,6 +1001,7 @@ select {
   cursor: pointer;
   color: white;
   font-family: 'Open Sans', Arial , sans-serif;
+  font-size: 12px;
   max-width: 100%;
 }
 

@@ -853,6 +853,7 @@ input[type=checkbox]:disabled:checked:after,  input[type=radio]:disabled:checked
 }
 
 select {
+  font-size: 12px;
   padding: 7px;
   display: inline-block;
   cursor: pointer;

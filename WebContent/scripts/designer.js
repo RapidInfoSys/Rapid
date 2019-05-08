@@ -3768,11 +3768,13 @@ function showPropertiesPanel() {
 		propertiesPanel.find("img").off("mousedown");
 		propertiesDialogues.find("img").off("mousedown");
 	}
-		
+
 	// size the panel (less padding) and show - note the .stop(true, true) which clears any current animation queue and sets the final settings immediately 
 	$("#propertiesPanel").css("height",getHeight() - 20).stop(true, true).show("slide", {direction: "right"}, 200, function(){
 		// show the inner 
 		$("#propertiesPanelInner").show()
+		// resize in case the properties panel is not tall enough
+		windowResize("showProperties");
 	});
 					
 }

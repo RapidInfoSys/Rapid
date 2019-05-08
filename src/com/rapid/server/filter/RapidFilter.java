@@ -205,8 +205,14 @@ public class RapidFilter implements Filter {
 				// get the list of applications to try to find any in the parts
 				Applications applications = (Applications) request.getServletContext().getAttribute("applications");
 
+				// if favicon
+				if (pathPart[pathPart.length - 1].equals("favicon.ico")) {
+
+					// set redirect to root
+					rapidForwardURL = "/" + pathPart[pathPart.length - 1];
+
 				// if user has provided at least 1 path part (i.e. part1/) and the first part is a known application
-				if (pathPart.length >= 1 && applications.get(pathPart[0]) != null) {
+				} else if (pathPart.length >= 1 && applications.get(pathPart[0]) != null) {
 
 					// get the resource filenames only once
 					if (_resourceDirs == null) 	setResourceDirs(req);
@@ -313,17 +319,15 @@ public class RapidFilter implements Filter {
 		}
 	}
 
+	@Override
+	public void destroy() {	}
+
+	// private static methods
+
 	private boolean isResource(String fileName) {
 
-		if (_resourceDirs.contains(fileName)) {
-			return true;
-		}
+		return _resourceDirs.contains(fileName);
 
-		return false;
-	}
-
-	@Override
-	public void destroy() {
 	}
 
 	// public static methods

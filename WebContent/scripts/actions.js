@@ -1,6 +1,7 @@
 /*
 
-Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
+
+Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -24,7 +25,10 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 */
 
 // a map of help html for recognised events
-_eventHelpHtml = {
+var _eventHelpHtml = {
+	"pageload":"These events are run when the page loads.",
+	"resume":"These events are run when the Rapid Mobile application is brought back into the foreground of the mobile device. It can be used to restart timers and other listeners that would have been stopped when the application was put into the background or minimised.",
+	"reusable":"This event is never fired directly, but is a useful central place to put actions you want to reuse from several controls in the page. Espeically useful when combined with the group action.",
 	"blur" : "Occurs when a form control has lost its focus.",
 	"change" : "Occurs when a form control's value has changed, after its blur, if applicable.",
 	"click" : "Occurs when the control is clicked with the mouse.",

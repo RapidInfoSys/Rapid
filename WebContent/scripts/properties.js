@@ -1,5 +1,6 @@
 /*
 
+
 Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
@@ -912,13 +913,13 @@ function getDialogue(cell, propertyObject, property, details, width, title, opti
 // this function clears down all of the property dialogues
 function hideDialogues() {		
 	// execute the click on all visible dialogue close links to update the property and even the html
-	$("fa.dialogueClose:visible").click();
+	$("i.fa.dialogueClose:visible").click();
 	// remove all listeners
 	removeListeners();	
-	// grab a reference to any dialogues
-	var propertiesDialogues = $("#propertiesDialogues");
 	// empty any propertyDialogues that we may have used before
-	propertiesDialogues.children().remove();				
+	$("#propertiesDialogues").children().remove();
+	// hide any help hints that might be hanging around
+	$("span.hint:visible").hide();
 }
 
 // this function returns an object with id and name for inputs and outputs, including looking up run-time property details (used by dataCopy, database, and webservice)

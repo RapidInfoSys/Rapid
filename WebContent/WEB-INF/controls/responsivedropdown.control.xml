@@ -80,7 +80,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <setConstructValueFunction>return [{value:"", text:"Value 1"}, {value:"", text:"Value 2"}, {value:"", text:"Value 3"}];</setConstructValueFunction>
 	            <changeValueJavaScript>options</changeValueJavaScript>
 	            <refreshHtml>true</refreshHtml>
-	             <refreshProperties>true</refreshProperties>
+	            <refreshProperties>true</refreshProperties>
 	            <helpHtml>Defines what the dropdown will contain. An option for enabling codes can also be used. Codes allow for more precise visibility and validation conditions.</helpHtml>
 	        </property>
 	        
