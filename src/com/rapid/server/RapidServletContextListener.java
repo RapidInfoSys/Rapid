@@ -1254,8 +1254,41 @@ public class RapidServletContextListener implements ServletContextListener {
 
 			e.printStackTrace();
 		}
-
+				
 		try {
+			
+			// add some useful global objects
+
+			String localDateFormat = servletContext.getInitParameter("localDateFormat");
+			if (localDateFormat == null) localDateFormat = "dd/MM/yyyy";
+			servletContext.setAttribute("localDateFormat", localDateFormat);
+
+			String localDateTimeFormat = servletContext.getInitParameter("localDateTimeFormat");
+			if (localDateTimeFormat == null) localDateTimeFormat = "dd/MM/yyyy HH:mm a";
+			servletContext.setAttribute("localDateTimeFormat", localDateTimeFormat);
+
+			boolean actionCache = Boolean.parseBoolean(servletContext.getInitParameter("actionCache"));
+			if (actionCache) servletContext.setAttribute("actionCache", new ActionCache(servletContext));
+
+			// allow calling to https without checking certs (for now)
+			SSLContext sc = SSLContext.getInstance("SSL");
+			TrustManager[] trustAllCerts = new TrustManager[]{ new Https.TrustAllCerts() };
+	        sc.init(null, trustAllCerts, new java.security.SecureRandom());
+	        HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+	        
+	        // look for a proxy host
+	     	String httpProxyHost = servletContext.getInitParameter("http.proxyHost");
+	     	if (httpProxyHost != null) {
+	     		System.setProperty("http.proxyHost", httpProxyHost);
+	     		_logger.info("http.proxyHost set to " + httpProxyHost);
+	     	}
+	     	
+	     	// look for a proxy port
+	     	String httpProxyPort = servletContext.getInitParameter("http.proxyPort");
+	     	if (httpProxyPort != null) {
+	     		System.setProperty("http.proxyPort", httpProxyPort);
+	     		_logger.info("http.ProxyPort set to " + httpProxyPort);
+	     	}
 
 			// assume no encryptionProvider
 			EncryptionProvider encryptionProvider = null;
@@ -1437,25 +1470,6 @@ public class RapidServletContextListener implements ServletContextListener {
 
 			// load the processes
 			loadProcesses(servletContext);
-
-			// add some useful global objects
-
-			String localDateFormat = servletContext.getInitParameter("localDateFormat");
-			if (localDateFormat == null) localDateFormat = "dd/MM/yyyy";
-			servletContext.setAttribute("localDateFormat", localDateFormat);
-
-			String localDateTimeFormat = servletContext.getInitParameter("localDateTimeFormat");
-			if (localDateTimeFormat == null) localDateTimeFormat = "dd/MM/yyyy HH:mm a";
-			servletContext.setAttribute("localDateTimeFormat", localDateTimeFormat);
-
-			boolean actionCache = Boolean.parseBoolean(servletContext.getInitParameter("actionCache"));
-			if (actionCache) servletContext.setAttribute("actionCache", new ActionCache(servletContext));
-
-			// allow calling to https without checking certs (for now)
-			SSLContext sc = SSLContext.getInstance("SSL");
-			TrustManager[] trustAllCerts = new TrustManager[]{ new Https.TrustAllCerts() };
-            sc.init(null, trustAllCerts, new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 
 		} catch (Exception ex) {
 

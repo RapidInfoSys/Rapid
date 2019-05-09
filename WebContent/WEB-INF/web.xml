@@ -240,4 +240,19 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
   </context-param>
    -->
    
+   <!-- These are for when a http proxy is required -->
+  
+  <!-- 
+  <context-param>
+    <description>HTTP proxy host name or IP address</description>
+    <param-name>http.proxyHost</param-name>
+    <param-value>127.0.0.1</param-value>
+  </context-param>
+  <context-param>
+    <description>HTTP proxy port</description>
+    <param-name>http.proxyPort</param-name>
+    <param-value>3128</param-value>
+  </context-param>
+   -->
+   
 </web-app>
