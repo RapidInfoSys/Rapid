@@ -2479,7 +2479,7 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 				 "<div class='overflowDiv'>" + 
 				 "<table class='dialogueTable inputs inputTable'><tr><td></td><td><b>Input</b></td><td><b>Field</b></td><td></td></tr></table></div>" +
 				 "</td>" +
-				 "<td id='" + dialogue.attr("id") + "_dbTextAreaCell' style=';padding:2px 10px 0 10px;'>" +
+				 "<td id='" + dialogue.attr("id") + "_dbTextAreaCell' style='vertical-align:top;padding:2px 10px 0 10px;'>" +
 				 "<b>SQL</b><br/>" +
 				 "</td>" +
 				 "<td style='padding:0px;vertical-align:top;width:30%;'>" +
