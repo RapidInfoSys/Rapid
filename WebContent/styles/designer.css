@@ -141,7 +141,7 @@ hr {
 
 #controlPanel select {
 	width: 100%;
-    padding: 2px 26px 2px 5px;
+    padding: 4px 26px 4px 10px;
     -moz-appearance: none;
     -webkit-appearance: none;
  	background-image: url("../images/down.light.svg");
@@ -528,19 +528,22 @@ table.stylesPanelTable  {
 	font-family: 'Open Sans', Arial;
 	width: 100%;
 	background-color: white;
-	border-left: 1px solid gray;
-	border-top: 1px solid gray;
-	border-right: 1px solid gray;
 	border-spacing: 0px;
-	margin-top: 2px;	
-	font-size: 11px;
+	font-size: 12px;
 }
 
 .stylesPanelTable td {
 	text-align: left;
 	padding-left: 5px;
-	border-bottom: 1px solid gray;	
+	border-bottom: 1px solid #bbb;	
 	width: 32px;
+}
+
+.stylesPanelTable tr:first-child > td {
+	background: #D5D6D2;
+	border-bottom: none;
+	height: 21px;
+    font-size: 12px;
 }
 
 .stylesPanelTable select {
@@ -554,26 +557,31 @@ table.stylesPanelTable  {
 td.styleCell {
 	text-align: left;
 	padding-left: 5px;
-	border-bottom: 1px solid gray;	
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	max-width: 154px;
-	height: 16px;
+	height: 20px;
 	z-index:10;
 }
 
 .styleCell span {
 	height:16px;
+	padding-left: 3px;
+	padding-right: 3px;
 }
 
 .styleCell span.styleColon {
-	padding-left: 5px;
-	padding-right: 5px;
+	padding-left: 3px;
+	padding-right: 3px;
 }
 
 td.styleCell.validationFail {
 	text-decoration: line-through;
+}
+
+.styleAttr:hover, .styleValue:hover {
+	background: #f2f2f2;
 }
 
 #styleInput {
@@ -581,9 +589,10 @@ td.styleCell.validationFail {
 	left:0;
 	bottom:0;
 	background-color: white;
-	font-size: 11px;
+	font-size: 12px;
 	display: none;
-	padding-left: 3px;	
+	padding-left: 3px;
+	padding-right: 3px;
 	z-index:10016;
 }
 

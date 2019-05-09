@@ -55,6 +55,7 @@ table.propertiesPanelTable  {
 	display: inline-block;
 	margin: auto;
 	font-size: 12px;
+    letter-spacing: 0.5px;
 }
 
 .propertiesPanelTable input {
@@ -63,6 +64,10 @@ table.propertiesPanelTable  {
 	text-indent: 3px;
 	border: none;
 	/*transition: background 0.3s ease;*/
+}
+
+.propertiesPanelTable input:focus {
+    outline: none;
 }
 
 .propertiesPanelTable tr:hover td:first-child:not(.propertyHeader) {
@@ -271,7 +276,7 @@ div.propertyDialogue {
   	-moz-user-select: -moz-none;
   	-ms-user-select: none;
   	user-select: none;
-	box-shadow: 0 0 6px 1px rgba(0, 0, 0, 0.4);
+	box-shadow: 0 0 0px 1px rgba(0, 0, 0, 0.1), 0 1px 5px 2px rgba(0, 0, 0, 0.25);
 }
 
 .propertyDialogue span {

@@ -1015,7 +1015,8 @@ function getCodeMirror(element, mode) {
 		  extraKeys: extraKeys,
 		  styleActiveLine: true,
 		  readOnly: false,
-		  autoRefresh: true
+		  autoRefresh: true,
+		  viewportMargin: Infinity
 	});
 	// return
 	return codeMirror;
