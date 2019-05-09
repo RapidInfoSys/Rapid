@@ -153,10 +153,6 @@ td.propertySubHeader select:hover {
 	margin-right: 0;
 }
 
-table.stylesPanelTable tr:not(:first-child):hover {
-	background: #D5D6D2;
-}
-
 i.controlHelp, img.controlHelp {
 	float: right;
 	font-size: 15px;

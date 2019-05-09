@@ -155,6 +155,10 @@ hr {
     background-position: right 2px center;
 }
 
+table.stylesPanelTable tr:not(:first-child):hover {
+	background: #D5D6D2;
+}
+
 table.stylesPanelTable select.propertiesPanelTable {
     -moz-appearance: none;
     -webkit-appearance: none;
@@ -562,11 +566,11 @@ td.styleCell {
 	text-overflow: ellipsis;
 	max-width: 154px;
 	height: 20px;
-	z-index:10;
+	z-index: 10;
 }
 
 .styleCell span {
-	height:16px;
+	height: 16px;
 	padding-left: 3px;
 	padding-right: 3px;
 }
@@ -592,7 +596,7 @@ td.styleCell.validationFail {
 	font-size: 12px;
 	display: none;
 	padding-left: 3px;
-	padding-right: 3px;
+	padding-right: 0px;
 	z-index:10016;
 }
 
@@ -605,9 +609,10 @@ td.styleCell.validationFail {
 	position: absolute;
 	background-color: white;
 	color: gray;
-	font-size: 11px;
+	font-size: 12px;
 	display: none;
-	padding-left: 3px;	
+	padding-left: 3px;
+	padding-right: 3px;
 	z-index:10015;
 }
 
@@ -618,7 +623,7 @@ td.styleCell.validationFail {
 	margin-top: 0px;		
 	padding-left: 3px;
 	padding-right: 3px;
-	font-size: 11px;	
+	font-size: 12px;	
 	list-style-type: none;
 	display: none;
 	z-index:10015;
