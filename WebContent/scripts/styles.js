@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -209,7 +209,7 @@ function styleRule_integer(value) {
 }
 
 function styleRule_length(value) {
-	return value.match(/^auto$|^[+-]?[0-9]+\.?([0-9]+)?(px|em|ex|%|in|cm|mm|pt|pc)?$/);
+	return value.match(/^auto$|^[0-9]+\.?([0-9]+)?(px|em|rem|ex|%|in|cm|mm|pt|pc)?$|^calc\([0-9]+\.?([0-9]+)?%( +[+-] +|[ ?\*/ ?])[0-9]+\.?([0-9]+)?(px|em|rem|ex|%|in|cm|mm|pt|pc)\)$/);
 }
 
 function styleRule_margin_width(value) {
@@ -266,7 +266,7 @@ function validateStyle(name, value) {
 		// get the rules in this option
 		var rules = option.split(" ");
 		// get the values
-		var values = value.split(" ");
+		var values = value.split(" ");		
 		// must have same or more values than rules
 		if (rules.length <= values.length) {
 			// loop the rules
@@ -281,6 +281,8 @@ function validateStyle(name, value) {
 					var styleRuleFunction = "styleRule_" + r.replace("<","").replace(">","").replace("-","_");
 					// if we have a function
 					if (window[styleRuleFunction]) {
+						// calc is an exception to the split, use the original value
+						if (v.indexOf("calc") == 0) v = value;
 						// go onto the next option if this value doesn't pass the function
 						if (!window[styleRuleFunction](v)) break;					
 					}
@@ -790,7 +792,7 @@ function showStyles(control) {
 				// grab a refrence to the table
 				var stylesTable = _stylesPanelDiv.find("tbody").last();			
 				// write it to the table;
-				stylesTable.append("<tr><td  colspan='2' data-appliesTo='" + appliesTo + "'><b>" + style.name + "</b></td></tr><tr><td colspan='2'></td></tr>");
+				stylesTable.append("<tr><td  colspan='2' data-appliesTo='" + appliesTo + "'><b>" + style.name + "</b></td></tr>");
 				// look for any style rules for this style in the control
 				if (control.styles) {
 					// loop them
