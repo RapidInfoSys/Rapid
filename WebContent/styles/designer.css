@@ -307,6 +307,14 @@ li.design-control:hover, li.design-action:hover {
 	max-height: 500px;
 }
 
+.pageMapNamed {
+	color: #000;
+}
+
+.pageMapNoName {
+	color: #777;
+}
+
 img.conflictimgage {
 	float: right;
 	position: relative;

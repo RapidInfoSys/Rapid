@@ -63,7 +63,7 @@ function createMapEntry(list, c) {
 	}
 
 	// create the list entry
-	list.append("<li><span data-id='" + c.id + "' " + (conflict ? " class='conflict'": "") + ">" + ((controlClass.image) ? "<img src='" + controlClass.image + "'/>" : "") + c.type + (c.name ? " - " + c.name: "") + conflict + "</span></li>");
+	list.append("<li class='" + (c.name ? "pageMapNamed" : "pageMapNoName") + "'><span data-id='" + c.id + "' " + (conflict ? " class='conflict'": "") + ">" + ((controlClass.image) ? "<img src='" + controlClass.image + "' title='" + controlClass.name + "' />" : "") + (c.name ? c.name: controlClass.name) + conflict + "</span></li>");
 	// get the list entry
 	var li = list.children("li").last();	
 	// check for child controls

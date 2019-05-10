@@ -214,7 +214,7 @@ if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRe
 					</div>					
 				</div>	
 				
-				<h2 id="controlsMap" style="margin-top:5px; border:none;">Page controls
+				<h2 id="controlsMap" style="margin-top:5px;">Page controls
 					<i class="headerToggle fa" title="Hide page controls" style="color:white;"></i>
 					<i id="helpMap" class="headerHelp glyph fa hintIcon"></i>
 				</h2>
