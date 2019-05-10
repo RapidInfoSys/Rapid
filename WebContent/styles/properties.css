@@ -334,6 +334,7 @@ td.propertySubHeader {
 
 .propertySubHeader h3 {
 	float: left;
+	padding-top: 2px;
 }
 
 .propertySubHeader i.actionHelp {
