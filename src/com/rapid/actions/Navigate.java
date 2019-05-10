@@ -90,7 +90,7 @@ public class Navigate extends Action {
 			_sessionVariables = null;
 		} else {
 			// initialise the collection
-			_sessionVariables = new ArrayList<SessionVariable>();
+			_sessionVariables = new ArrayList<>();
 			// loop it
 			for (int i = 0; i < jsonInputs.length(); i++) {
 				// get this input
@@ -107,23 +107,23 @@ public class Navigate extends Action {
 
 	@Override
 	public String getJavaScript(RapidRequest rapidRequest, Application application, Page page, Control control, JSONObject jsonDetails) {
-		
+
 		// the JavaScript we are making
 		String js = "";
-		
+
 		// check type, P or U
 		String navigationType = getProperty("navigationType");
 		String popup = getProperty("popup");
-		
+
 		if ("U".equals(navigationType)) {
-			
+
 			// get the url
 			String url = getProperty("url");
 			// set the js, including optional popup
 			js = "Action_navigate('" + url + "', false, null," +  popup + ");\n";
-			
+
 		} else {
-			
+
 			// this code only for type == P
 			String pageId = getProperty("page");
 			if (pageId == null) {
@@ -152,8 +152,17 @@ public class Navigate extends Action {
 						} // null check
 					} // loop
 				}
+
+				// get the application id
+				String appId = application.getId();
+				// assume no version
+				String version = "";
+				// if this is not the latest live version, add version to url
+				if (application.getStatus() != Application.STATUS_LIVE || !application.getVersion().equals(rapidRequest.getRapidServlet().getApplications().get(appId).getVersion())) version = "&v=" + application.getVersion();
+
 				// build the action string (also used in mobile action for online check type)
-				js = "Action_navigate('~?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + pageId;
+				js = "Action_navigate('~?a=" + appId + version + "&p=" + pageId;
+
 				// check if this is a dialogue
 				boolean dialogue = Boolean.parseBoolean(getProperty("dialogue"));
 				// if so add the action parameter to the url
@@ -162,9 +171,9 @@ public class Navigate extends Action {
 				js += sessionVariables + "'," + dialogue + ",'" + pageId + "'," + popup + ");\n";
 				// replace any unnecessary characters
 				js = js.replace(" + ''", "");
-				
+
 			}
-			
+
 		}
 
 		// return false if we're stopping further actions
