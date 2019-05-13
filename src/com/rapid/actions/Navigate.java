@@ -147,7 +147,7 @@ public class Navigate extends Action {
 								if (getter == null) getter = "''";
 								if (getter.length() == 0) getter = "''";
 								// build the concatenating string
-								sessionVariables += "&" + sessionVariable.getName() + "=' + " +  getter + " + '";
+								sessionVariables += "&" + sessionVariable.getName() + "=' + encodeURI(" +  getter + ") + '";
 							} // length check
 						} // null check
 					} // loop
