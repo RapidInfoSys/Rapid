@@ -400,7 +400,7 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 						session.setAttribute("requestPath", authorisationRequestPath);
 
 						// send a redirect to load the login page unless the login path (from the custom login) is the request path (this creates a redirect)
-						if (authorisationRequestPath.equals(loginPath) && request.getHeader("User-Agent").contains("RapidMobile")) {
+						if (authorisationRequestPath.equals(loginPath) && request.getHeader("User-Agent") != null && request.getHeader("User-Agent").contains("RapidMobile")) {
 							// send a 401 with the login path to get RapidMobile to authenticate
 							response.sendError(401, "location=" + loginPath);
 						} else {
