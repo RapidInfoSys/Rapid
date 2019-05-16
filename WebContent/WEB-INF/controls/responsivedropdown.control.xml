@@ -354,7 +354,7 @@ if (data !== undefined) {
 						}
 					}
 					if (!text && row[0] != null) text = row[0];
-					if (value == null && row[1] != null) value = row[1];
+					if (value == null && row[1] != null && typeof(row[1]) != "object") value = row[1];
 					if (value == null) {
 						value = "";
 					} else {
