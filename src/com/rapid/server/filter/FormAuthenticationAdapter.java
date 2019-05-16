@@ -356,7 +356,7 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 					} else {
 
 						// if we're allowing public access, but not if this is the login page, nor RapidMobile
-						if (_publicAccess && !requestPath.endsWith(loginPath) && !request.getHeader("User-Agent").contains("RapidMobile")) {
+						if (_publicAccess && !requestPath.endsWith(loginPath) && request.getHeader("User-Agent") != null && !request.getHeader("User-Agent").contains("RapidMobile")) {
 
 							// set the user name to public
 							session.setAttribute(RapidFilter.SESSION_VARIABLE_USER_NAME, PUBLIC_ACCESS_USER);
