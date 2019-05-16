@@ -81,25 +81,32 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
     <filter-class>com.rapid.server.filter.RapidFilter</filter-class>
     <!-- 
     <init-param>
-         <description>Whether unauthenticated users will be allowed access to application security providers (but not important resources)</description>
-        <param-name>public</param-name>
-        <param-value>true</param-value>
-    </init-param>
-     -->
-     <!-- 
-    <init-param>
-         <description>Comma separated values that the client IP address must start with in order to see sensitive pages such as login.jsp, logout.jsp, design.jsp, the designer servlet, and the Rapid Admin application</description>
-        <param-name>ipcheck</param-name>
-        <param-value>127.0.0.1,0:0:0:0:0:0:0:1,10.,192.</param-value>
+      <description>Whether unauthenticated users will be allowed access to application security providers (but not important resources)</description>
+      <param-name>public</param-name>
+      <param-value>true</param-value>
     </init-param>
     -->
     <!-- 
-     <init-param>
-         <description>Value for the X-FRAME-OPTIONS header to prevent click-jacking, etc. If not specified will be SAMEORIGIN</description>
-        <param-name>xFrameOptions</param-name>
-        <param-value>ALLOWALL</param-value>
+    <init-param>
+      <description>Comma separated values that the client IP address must start with in order to see sensitive pages such as login.jsp, logout.jsp, design.jsp, the designer servlet, and the Rapid Admin application</description>
+      <param-name>ipcheck</param-name>
+      <param-value>127.0.0.1,0:0:0:0:0:0:0:1,10.,192.</param-value>
     </init-param>
-      -->
+    -->
+    <!-- 
+    <init-param>
+      <description>Value for the X-FRAME-OPTIONS header to prevent click-jacking, etc. If not specified will be SAMEORIGIN</description>
+      <param-name>xFrameOptions</param-name>
+      <param-value>ALLOWALL</param-value>
+    </init-param>
+    -->
+    <!--
+    <init-param>
+      <description>Comma-separated list of resources that do not require authentication to be served to the client</description>
+      <param-name>noAuthResources</param-name>
+      <param-value>/favicon.ico</param-value>
+    </init-param>
+    -->
   </filter>
   <filter-mapping>
     <filter-name>RapidFilter</filter-name>
@@ -229,6 +236,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
     <param-name>rebuildPages</param-name>
     <param-value>true</param-value>
   </context-param>
+  
 
   <!-- This is useful for doing demos on different networks, the cache is exported with the application -->
   
@@ -239,8 +247,9 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
     <param-value>true</param-value>
   </context-param>
    -->
+ 
    
-   <!-- These are for when a http proxy is required -->
+  <!-- These are for when a http proxy is required -->
   
   <!-- 
   <context-param>

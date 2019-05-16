@@ -27,7 +27,9 @@ package com.rapid.server.filter;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.servlet.Filter;
@@ -63,9 +65,10 @@ public class RapidFilter implements Filter {
 	private RapidAuthenticationAdapter _authenticationAdapter;
 	private boolean _noCaching;
 	private String _xFrameOptions;
+	private List<String> _noAuthResources;
 
 	private Set<String> _resourceDirs = null;
-	private int _contextIdx = 1;		//keep track of the context position of the URL
+	private int _contextIdx = 1; // keep track of the context position of the URL
 
 	// overrides
 
@@ -104,6 +107,19 @@ public class RapidFilter implements Filter {
 			_xFrameOptions = filterConfig.getInitParameter("xFrameOptions");
 			// if we didn't get one set to SAMEORIGIN, the default
 			if (_xFrameOptions == null) _xFrameOptions = "SAMEORIGIN";
+
+			// initialise _noAuthResources
+			_noAuthResources = new ArrayList<>();
+			// look for a specified noAuthResources in web.xml
+			String noAuthResourcesParam = filterConfig.getInitParameter("noAuthResources");
+			// if we got some
+			if (noAuthResourcesParam != null) {
+				// split on ,
+				for (String noAuthResource : noAuthResourcesParam.split("\\,")) {
+					// trim and add to list
+					_noAuthResources.add(noAuthResource.trim());
+				}
+			}
 
 		} catch (Exception ex) {
 
@@ -183,6 +199,9 @@ public class RapidFilter implements Filter {
 
 		// safety doesn't need authentication
 		if ("/safety".equals(path)) requiresAuthentication = false;
+
+		// check any parameterises no authentication resources;
+		if (_noAuthResources.contains(path)) requiresAuthentication = false;
 
 		// if this request requires authentication
 		if (requiresAuthentication) {
