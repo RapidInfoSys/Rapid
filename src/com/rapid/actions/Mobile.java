@@ -390,8 +390,6 @@ public class Mobile extends Action {
 				} else {
 					// get the number field
 					String numberField = getProperty("numberField");
-					// mobile check with alert
-					js += getMobileCheck(true);
 					// get number
 					js += "  var number = " + Control.getDataJavaScript(rapidServlet.getServletContext(), application, page, numberControlId, numberField) + ";\n";
 					// sms has a message too
@@ -407,16 +405,30 @@ public class Mobile extends Action {
 							// get the field
 							String messageField = getProperty("messageField");
 							// get the message
-							js += "  var message = " + Control.getDataJavaScript(rapidServlet.getServletContext(), application, page, messageControlId, messageField) + ";\n";
+							js += "var message = " + Control.getDataJavaScript(rapidServlet.getServletContext(), application, page, messageControlId, messageField) + ";\n";
+							// start mobile check
+							js += getMobileCheckAlternative();
 							// send the message
 							js += "  _rapidmobile.openSMS(number, message);\n";
+							// else
+							js += "} else {\n";
+							// no rapid mobile so just open in new tab
+							js += "  window.location.href = 'sms://' + number + '?body=' + message;\n";
+							// close mobile check
+							js += "}\n";
 						}
 					} else {
+						// start mobile check
+						js += getMobileCheckAlternative();
 						// dial number
 						js += "  _rapidmobile.openPhone(number);\n";
+						// else
+						js += "} else {\n";
+						// no rapid mobile so just open in new tab
+						js += "  window.location.href = 'tel://' + number;\n";
+						// close mobile check
+						js += "}\n";
 					}
-					// close mobile check
-					js += "}";
 				}
 
 			} else if ("email".equals(type)) {
@@ -444,7 +456,7 @@ public class Mobile extends Action {
 
 					// start the alernative mobile check
 					js += getMobileCheckAlternative();
-					// start the check for the addBarcode function
+					// start the check for rapid mobile function
 					js += "  if (_rapidmobile.openEmail) {\n";
 					// send the message
 					js += "    _rapidmobile.openEmail(email, subject, message);\n";
@@ -453,7 +465,7 @@ public class Mobile extends Action {
 					// else
 					js += "} else {\n";
 					// no rapid mobile so just open in new tab
-					js += "  window.location.href = 'mailto:' + email + '?subject=' + subject + '&body=' + message;\n";
+					js += "  window.location.href = 'mailto://' + email + '?subject=' + subject + '&body=' + message;\n";
 					// close the mobile check
 					js += "}\n";
 
@@ -789,7 +801,6 @@ public class Mobile extends Action {
 							// add this handler
 							js += "		_swipeHandlers['" + target + "'].push({direction:'" + direction + "',fingers:" + fingers + ",function:f});\n"
 								+ "}\n";
-
 
 						} catch (Exception ex) {
 							// print an error instead
