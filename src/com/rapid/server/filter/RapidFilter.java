@@ -221,25 +221,28 @@ public class RapidFilter implements Filter {
 				// split the path into parts by /
 				String[] pathPart = (path.replaceFirst("/", "")).split("/");
 
+				// get the last path part
+				String lastPartPath = pathPart[pathPart.length - 1];
+
 				// get the list of applications to try to find any in the parts
 				Applications applications = (Applications) request.getServletContext().getAttribute("applications");
 
 				// if favicon
-				if (pathPart[pathPart.length - 1].equals("favicon.ico")) {
+				if (lastPartPath.equals("favicon.ico")) {
 
-					// set redirect to root
-					rapidForwardURL = "/" + pathPart[pathPart.length - 1];
+					// set forward to root
+					rapidForwardURL = "/" + lastPartPath;
 
 				// if user has provided at least 1 path part (i.e. part1/) and the first part is a known application
 				} else if (pathPart.length >= 1 && applications.get(pathPart[0]) != null) {
 
 					// get the resource filenames only once
-					if (_resourceDirs == null) 	setResourceDirs(req);
+					if (_resourceDirs == null) setResourceDirs(req);
 
 					String appID = pathPart[0];
 					rapidForwardURL = "/~?a=" + appID;
 
-					if ("POST".equals(req.getMethod()) || ("GET".equals(req.getMethod()) && "~".equals(pathPart[pathPart.length - 1]))) {
+					if ("POST".equals(req.getMethod()) || ("GET".equals(req.getMethod()) && "~".equals(lastPartPath))) {
 
 						rapidForwardURL = "/~?" + req.getQueryString();
 
