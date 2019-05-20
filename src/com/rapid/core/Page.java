@@ -2171,7 +2171,7 @@ public class Page {
 				    	+ "var _onDesignLink = false;\n"
 				    	+ "var _onDesignTable = false;\n"
 				    	+ "$(document).ready( function() {\n"
-				    	+ "  $('#designShow').mouseover( function(ev) {\n    $('#designLink').attr('href','" + Http.getBaseUrl(rapidRequest.getRequest()) + "/design.jsp?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + _id + "');\n    $('#designLinkNewTab').attr('target','_blank').attr('href','" + Http.getBaseUrl(rapidRequest.getRequest()) + "/design.jsp?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + _id + "');\n    $('#designLinks').show(); _onDesignLink = true;\n  });\n"
+				    	+ "  $('#designShow').mouseover( function(ev) {\n    $('#designLink').attr('href','design.jsp?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + _id + "');\n    $('#designLinkNewTab').attr('target','_blank').attr('href','" + Http.getBaseUrl(rapidRequest.getRequest()) + "/design.jsp?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + _id + "');\n    $('#designLinks').show(); _onDesignLink = true;\n  });\n"
 				    	+ "  $('#designLinks').mouseleave( function(ev) {\n    _onDesignLink = false;\n    setTimeout( function() {\n      if(!_onDesignLink && !_onDesignTable) $('#designLinks').fadeOut();\n    }, 1000);\n  });\n"
 				    	+ "  $('#designLinks').mouseover(function(ev) {\n   _onDesignLink = true;\n  });\n"
 				    	+ "  $('html').click(function(){\n  if(!_onDesignLink && !_onDesignTable) {\n      $('div.designData').fadeOut();\n      $('#designLinks').fadeOut();\n    }\n  });\n"
