@@ -1336,6 +1336,7 @@ span.fr {
 div.CodeMirror {
 	margin: 5px 0;
 	height: unset;
+    border: 1px solid #bbb;
 }
 
 div.CodeMirror-scroll {

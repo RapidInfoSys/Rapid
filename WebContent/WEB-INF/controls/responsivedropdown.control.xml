@@ -294,7 +294,7 @@ if (this.filter) return {codes:this.codes,filter:this.filter,customValue:this.cu
 	    
 	    <getDataFunction>
 	        <![CDATA[
-if (details && details.customValue) {
+if (details && !details.codes && details.customValue) {
 	return $("#" + id).find("input").val();
 } else {
 	return $("#" + id).find("select").val();
