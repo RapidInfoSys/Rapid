@@ -46,7 +46,7 @@ hr {
 	margin: auto;
 	width: 350px;
 	background: #202326;
-	box-shadow: 0px 3px 5px 1px dimgrey;
+	box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.3);
 	color: white;
 }
 
@@ -192,6 +192,7 @@ table.stylesPanelTable select.propertiesPanelTable:focus {
 	clear: left;
 	text-transform: uppercase;
     font-size: 12px;
+    letter-spacing: 0.5px;
 	margin-top: 5px;
 	margin-bottom: 3px;
 }
@@ -351,6 +352,7 @@ img.conflictimgage {
 	display: block;
 	vertical-align: middle;
 	cursor: pointer;
+	margin: 2px 0;
 }
 
 .design-map span {
@@ -358,6 +360,7 @@ img.conflictimgage {
 	cursor: pointer;	
 	white-space: nowrap;
 	transition: background 0.3s ease;
+	padding: 1px 0;
 }
 
 .design-map span.selected {
@@ -375,7 +378,6 @@ img.conflictimgage {
 	background-color: #494949;    
     padding: 2px;
     border-radius: 2px;
-    margin-top: 1px;
     margin-right: 2px;
 }
 
@@ -615,7 +617,7 @@ td.styleCell.validationFail {
 
 #styleInput:focus {
 	outline: none;
- 	box-shadow: 0 0 5px red;;
+ 	box-shadow: 0 0 5px red;
 }
 
 #styleHint {
@@ -731,10 +733,9 @@ div.button {
 	background-color: #ccc;
 }
 
-li.selected {
-	border-top:1px solid #ccc;
-	border-left:1px solid #ccc;
-	border-bottom:1px solid #ccc;
+.design-map li.selected {
+	box-shadow: -1px 0 0 1px #ccc;
+	background: #eee;
 }
 
 span.selected {
@@ -808,7 +809,6 @@ Selection Styles
 
 .selectionInsertCover {
 	background-size: 30px 30px;
-	border: 1px solid rgba(106,148,220,0.1);
 }
 
 .selectionCursor {
@@ -860,7 +860,7 @@ Selection Styles
 	height: 24px;
 	z-index: 10006;
 	background-color: rgb(73, 73, 73);
-	box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.6);
+	box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.4);
 	padding: 3px;
     border: 2px solid white;
 }
@@ -927,7 +927,7 @@ Hint style
 	border-radius: 5px;
 	padding: 10px;
 	opacity: 0.9;
-	box-shadow: 5px 5px 5px #888;
+	box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
 	z-index:10100;
 }
 
@@ -957,7 +957,7 @@ Tip styles
 	border: 5px solid;
 	border-radius: 5px;
 	padding: 10px;	
-	box-shadow: 5px 5px 5px #888;
+	box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
 }
 
 #tipArrow {	
@@ -1218,10 +1218,10 @@ select:hover {
 
 .flow .action {
     border: 1px solid #346789;
-    box-shadow: 2px 2px 19px #aaa;
-    -o-box-shadow: 2px 2px 19px #aaa;
-    -webkit-box-shadow: 2px 2px 19px #aaa;
-    -moz-box-shadow: 2px 2px 19px #aaa;
+    box-shadow: 2px 2px 19px rgba(0, 0, 0, 0.3);
+    -o-box-shadow: 2px 2px 19px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 2px 2px 19px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow: 2px 2px 19px rgba(0, 0, 0, 0.3);
     -moz-border-radius: 0.5em;
     border-radius: 0.5em;
     opacity: 0.8;
@@ -1241,10 +1241,10 @@ select:hover {
 }
 
 .flow .action:hover {
-    box-shadow: 2px 2px 19px #444;
-    -o-box-shadow: 2px 2px 19px #444;
-    -webkit-box-shadow: 2px 2px 19px #444;
-    -moz-box-shadow: 2px 2px 19px #444;
+    box-shadow: 2px 2px 19px rgba(0, 0, 0, 0.7);
+    -o-box-shadow: 2px 2px 19px rgba(0, 0, 0, 0.7);
+    -webkit-box-shadow: 2px 2px 19px rgba(0, 0, 0, 0.7);
+    -moz-box-shadow: 2px 2px 19px rgba(0, 0, 0, 0.7);
     opacity: 0.6;
 }
 
@@ -1336,7 +1336,6 @@ span.fr {
 div.CodeMirror {
 	margin: 5px 0;
 	height: unset;
-  	box-shadow: -1px 0px 5px 1px #9D9D9D;
 }
 
 div.CodeMirror-scroll {
