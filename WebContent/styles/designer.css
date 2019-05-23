@@ -734,7 +734,7 @@ div.button {
 }
 
 .design-map li.selected {
-	box-shadow: -1px 0 0 1px #ccc;
+	box-shadow: 0 0 0 1px #ccc;
 	background: #eee;
 }
 
@@ -1041,8 +1041,9 @@ select:focus {
   outline: 0;
 }
 
-select option {
+select option, select:focus-within {
   color: #000;
+  background: #b2b2b2;
 }
 
 .buttons button:disabled {
