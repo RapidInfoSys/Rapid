@@ -572,9 +572,13 @@ td.styleCell {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	max-width: 154px;
+	max-width: 143px;
 	height: 20px;
 	z-index: 10;
+}
+
+td.styleCell + td {
+	width: 1%;
 }
 
 .styleCell span {
@@ -606,6 +610,7 @@ td.styleCell.validationFail {
 	padding-left: 3px;
 	padding-right: 0px;
 	z-index:10016;
+	white-space: nowrap;
 }
 
 #styleInput:focus {

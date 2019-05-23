@@ -247,6 +247,10 @@ i.delete.fa.fa-trash {
 	text-align: right;
 }
 
+.propertyHeader > .iconsPanel {
+	min-width: unset;
+}
+
 div.resizeX {
 	position:absolute;
 	top:0;
