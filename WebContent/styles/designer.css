@@ -352,7 +352,6 @@ img.conflictimgage {
 	display: block;
 	vertical-align: middle;
 	cursor: pointer;
-	margin: 2px 0;
 }
 
 .design-map span {
@@ -360,7 +359,7 @@ img.conflictimgage {
 	cursor: pointer;	
 	white-space: nowrap;
 	transition: background 0.3s ease;
-	padding: 1px 0;
+	margin-top: 1px
 }
 
 .design-map span.selected {
