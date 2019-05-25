@@ -702,13 +702,19 @@ public class Database extends Action {
 								String value = null;
 								// if it looks like a control, or a system value (bit of extra safety checking)
 								if (id.indexOf("_C") > 0 || id.indexOf("System.") == 0) {
-									// device is a special case
-									if (id.equals("System.device")) {
-										// get the device from the request
-										value = rapidRequest.getDevice();
-									} else {
-										// get the value from the json inputs
-										value = getJsonInputValue(jsonFields, jsonRow, id);
+									// check special cases
+									switch (id) {
+										case "System.device" :
+											// get the device from the request
+											value = rapidRequest.getDevice();
+											break;
+										case "System.user name" :
+											// get the user name from the session (don't trust the front end)
+											value = rapidRequest.getUserName();
+											break;
+										default :
+											// get the value from the json inputs
+											value = getJsonInputValue(jsonFields, jsonRow, id);
 									}
 								} else {
 									// didn't look like a control so check page variables
