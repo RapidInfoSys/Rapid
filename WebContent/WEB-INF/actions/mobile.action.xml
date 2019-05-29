@@ -556,7 +556,11 @@ function turnOnCamera(galleryControlId, size, quality) {
 			getAvailableCameras();
 			
 		})	// Wait for the loadedmetadata event, before displaying the cameraDiv
-		.then(() => new Promise(resolve => _cameraPlayer.onloadedmetadata = resolve))
+		.then(function () {
+		  return new Promise(function (resolve) {
+		    return _cameraPlayer.onloadedmetadata = resolve;
+		  });
+		})
 		.then(function(){
 			// Display the cameraPlayer
 			$("#cameraVideoContainer").show();
