@@ -1040,9 +1040,17 @@ select:focus {
   outline: 0;
 }
 
-select option, select:focus-within {
+select:focus-within {
   color: #000;
   background: #b2b2b2;
+}
+
+select option {
+  background: #D5D6D2;
+}
+
+select optgroup {
+  background: #C5C6C2;
 }
 
 .buttons button:disabled {
@@ -1094,7 +1102,6 @@ button {
 }
 
 button:hover {
-	text: #000;
 	background: #b2b2b2;
 }
 
