@@ -110,7 +110,7 @@ table.propertiesPanelTable  {
 .propertiesPanelTable tr:hover td:nth-child(2) select {
 	width: 100%;
 	height: 19px;
-	background: inherit;
+	background: none;
 	color: black;
 	font-size: 12px;
 	-moz-appearance: none;
