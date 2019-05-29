@@ -121,6 +121,10 @@ table.propertiesPanelTable  {
 	text-overflow: ellipsis;
 }
 
+select::-ms-expand {
+	display: none;
+}
+
 .propertiesPanelTable tr:hover td select:hover, .propertiesPanelTable tr:hover td input:hover {
 	background-color: #f2f2f2;
 }
