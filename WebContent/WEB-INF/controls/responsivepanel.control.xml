@@ -82,7 +82,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <changeValueJavaScript>select</changeValueJavaScript>
 	            <getValuesFunction>
 	                <![CDATA[
-return [{value:"", text:"Please select..."}, {value:"hidden-xs", text:"hidden"}, {value:"xs-1", text:"1/12"}, {value:"xs-2", text:"2/12s"}, {value:"xs-3", text:"3/12s"}, {value:"xs-4", text:"4/12s"}, {value:"xs-5", text:"5/12s"}, {value:"xs-6", text:"6/12s"}, {value:"xs-7", text:"7/12s"}, {value:"xs-8", text:"8/12s"}, {value:"xs-9", text:"9/12s"}, {value:"xs-10", text:"10/12s"}, {value:"xs-11", text:"11/12s"}, {value:"xs-12", text:"12/12s"}];
+return [{value:"", text:"Please select..."}, {value:"hidden-xs", text:"hidden"}, {value:"xs-1", text:"1/12"}, {value:"xs-2", text:"2/12"}, {value:"xs-3", text:"3/12"}, {value:"xs-4", text:"4/12"}, {value:"xs-5", text:"5/12"}, {value:"xs-6", text:"6/12"}, {value:"xs-7", text:"7/12"}, {value:"xs-8", text:"8/12"}, {value:"xs-9", text:"9/12"}, {value:"xs-10", text:"10/12"}, {value:"xs-11", text:"11/12"}, {value:"xs-12", text:"12/12"}];
 					]]>
 	            </getValuesFunction>
 	            <refreshHtml>true</refreshHtml>
@@ -96,7 +96,7 @@ return [{value:"", text:"Please select..."}, {value:"hidden-xs", text:"hidden"},
 	            <changeValueJavaScript>select</changeValueJavaScript>
 	            <getValuesFunction>
 	                <![CDATA[
-return [{value:"", text:"Please select..."}, {value:"hidden-sm", text:"hidden"}, {value:"sm-1", text:"1/12"}, {value:"sm-2", text:"2/12s"}, {value:"sm-3", text:"3/12s"}, {value:"sm-4", text:"4/12s"}, {value:"sm-5", text:"5/12s"}, {value:"sm-6", text:"6/12s"}, {value:"sm-7", text:"7/12s"}, {value:"sm-8", text:"8/12s"}, {value:"sm-9", text:"9/12s"}, {value:"sm-10", text:"10/12s"}, {value:"sm-11", text:"11/12s"}, {value:"sm-12", text:"12/12s"}];
+return [{value:"", text:"Please select..."}, {value:"hidden-sm", text:"hidden"}, {value:"sm-1", text:"1/12"}, {value:"sm-2", text:"2/12"}, {value:"sm-3", text:"3/12"}, {value:"sm-4", text:"4/12"}, {value:"sm-5", text:"5/12"}, {value:"sm-6", text:"6/12"}, {value:"sm-7", text:"7/12"}, {value:"sm-8", text:"8/12"}, {value:"sm-9", text:"9/12"}, {value:"sm-10", text:"10/12"}, {value:"sm-11", text:"11/12"}, {value:"sm-12", text:"12/12"}];
 					]]>
 	            </getValuesFunction>
 	            <refreshHtml>true</refreshHtml>
@@ -110,7 +110,7 @@ return [{value:"", text:"Please select..."}, {value:"hidden-sm", text:"hidden"},
 	            <changeValueJavaScript>select</changeValueJavaScript>
 	            <getValuesFunction>
 	                <![CDATA[
-return [{value:"", text:"Please select..."}, {value:"hidden-md", text:"hidden"}, {value:"md-1", text:"1/12"}, {value:"md-2", text:"2/12s"}, {value:"md-3", text:"3/12s"}, {value:"md-4", text:"4/12s"}, {value:"md-5", text:"5/12s"}, {value:"md-6", text:"6/12s"}, {value:"md-7", text:"7/12s"}, {value:"md-8", text:"8/12s"}, {value:"md-9", text:"9/12s"}, {value:"md-10", text:"10/12s"}, {value:"md-11", text:"11/12s"}, {value:"md-12", text:"12/12s"}];
+return [{value:"", text:"Please select..."}, {value:"hidden-md", text:"hidden"}, {value:"md-1", text:"1/12"}, {value:"md-2", text:"2/12"}, {value:"md-3", text:"3/12"}, {value:"md-4", text:"4/12"}, {value:"md-5", text:"5/12"}, {value:"md-6", text:"6/12"}, {value:"md-7", text:"7/12"}, {value:"md-8", text:"8/12"}, {value:"md-9", text:"9/12"}, {value:"md-10", text:"10/12"}, {value:"md-11", text:"11/12"}, {value:"md-12", text:"12/12"}];
 					]]>
 	            </getValuesFunction>
 	            <refreshHtml>true</refreshHtml>
@@ -124,7 +124,7 @@ return [{value:"", text:"Please select..."}, {value:"hidden-md", text:"hidden"},
 	            <changeValueJavaScript>select</changeValueJavaScript>
 	            <getValuesFunction>
 	                <![CDATA[
-return [{value:"", text:"Please select..."}, {value:"hidden-lg", text:"hidden"}, {value:"lg-1", text:"1/12"}, {value:"lg-2", text:"2/12s"}, {value:"lg-3", text:"3/12s"}, {value:"lg-4", text:"4/12s"}, {value:"lg-5", text:"5/12s"}, {value:"lg-6", text:"6/12s"}, {value:"lg-7", text:"7/12s"}, {value:"lg-8", text:"8/12s"}, {value:"lg-9", text:"9/12s"}, {value:"lg-10", text:"10/12s"}, {value:"lg-11", text:"11/12s"}, {value:"lg-12", text:"12/12s"}];
+return [{value:"", text:"Please select..."}, {value:"hidden-lg", text:"hidden"}, {value:"lg-1", text:"1/12"}, {value:"lg-2", text:"2/12"}, {value:"lg-3", text:"3/12"}, {value:"lg-4", text:"4/12"}, {value:"lg-5", text:"5/12"}, {value:"lg-6", text:"6/12"}, {value:"lg-7", text:"7/12"}, {value:"lg-8", text:"8/12"}, {value:"lg-9", text:"9/12"}, {value:"lg-10", text:"10/12"}, {value:"lg-11", text:"11/12"}, {value:"lg-12", text:"12/12"}];
 					]]>
 	            </getValuesFunction>
 	            <refreshHtml>true</refreshHtml>
