@@ -19,16 +19,6 @@
    style="enable-background:new">
   <defs
      id="defs2">
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter1185">
-      <feBlend
-         inkscape:collect="always"
-         mode="normal"
-         in2="BackgroundImage"
-         id="feBlend1187" />
-    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -83,7 +73,7 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-288.53333)"
-     style="filter:url(#filter1185)">
+     style="">
     <path
        style="fill:#0a64ff;fill-opacity:1;stroke:#e6e6e6;stroke-width:0;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:3.40000057;stroke-dasharray:none;stroke-opacity:1"
        d="m 4.2333334,293.56041 h 3.9687598 l -3.9687598,3.175 -3.96873996,-3.175 z"

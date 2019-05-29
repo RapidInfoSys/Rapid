@@ -1102,6 +1102,7 @@ button {
 }
 
 button:hover {
+	color: #000;
 	background: #b2b2b2;
 }
 
