@@ -555,15 +555,11 @@ function turnOnCamera(galleryControlId, size, quality) {
 			// Get all the available cameras into global array
 			getAvailableCameras();
 			
-		})	// Wait for the loadedmetadata event, before displaying the cameraDiv
-		.then(function () {
-		  return new Promise(function (resolve) {
-		    return _cameraPlayer.onloadedmetadata = resolve;
-		  });
-		})
-		.then(function(){
-			// Display the cameraPlayer
-			$("#cameraVideoContainer").show();
+		    // Wait for the loadedmetadata event, before displaying the cameraDiv
+			_cameraPlayer.onloadedmetadata = function() {
+				// Display the cameraPlayer
+				$("#cameraVideoContainer").show();
+			};
 		})
 		.catch(function(err) {
 			// Handle the error
