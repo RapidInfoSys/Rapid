@@ -2,7 +2,7 @@
 
 <!-- 
 
-Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -30,7 +30,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	    <type>tabGroup</type>	    
 	    <name>Tabs</name>	    
 	    <image>images/tabs.svg</image>
-	    <helpHtml>A stack of panels the user can select from.</helpHtml>
+	    <helpHtml>A set of tab panels the user can select from.</helpHtml>
 	    
 	    <dependentTypes>
 	        <dependentType>tabPanel</dependentType>
@@ -400,6 +400,7 @@ if (tabOpeners.children("li.selected").length == 0) tabOpeners.children("li").fi
 	      	    
 	    <canUserInsert>true</canUserInsert>
 	    <canUserAddPeers>true</canUserAddPeers>
+	    <canBeUsedForFormPageVisibilty>false</canBeUsedForFormPageVisibilty>
 	    
 	    <properties>
 	        

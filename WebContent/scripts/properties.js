@@ -2770,7 +2770,7 @@ function Property_webserviceRequest(cell, propertyObject, property, details) {
 			     "<input type='radio' name='WSType" + propertyObject.id + "' id='WSTypeTEXT" + propertyObject.id + "' value='TEXT'/><label for='WSTypeTEXT" + propertyObject.id + "'>Text</label>" + 
 			     "<b style='display:block;margin-top:5px;margin-bottom:5px;'>URL</b><input class='WSUrl' /></br><b style='display:block;margin-top:5px;margin-bottom:5px;'>Action</b><input class='WSAction' /></br><b style='display:block;margin-top:5px;margin-bottom:5px;'>Headers</b><input class='WSHeaders' />" +
 			     "<b style='display:block;margin-top:5px;margin-bottom:2px;'>Body</b>" +
-			     "<div id='bodySOA_" + dialogueId + "' style='width:100%;min-height:200px;' class='WSBody'></div><b style='display:block;'>Response transform</b><textarea style='width:100%;' class='WSTransform'></textarea><b style='display:block;;margin-bottom:5px;'>Response root element</b><input class='WSRoot' style='margin-bottom:5px;' /></td>"  + 
+			     "<div id='bodySOA_" + dialogueId + "' style='width:100%;' class='WSBody'></div><b style='display:block;'>Response transform</b><textarea style='width:100%;' class='WSTransform'></textarea><b style='display:block;;margin-bottom:5px;'>Response root element</b><input class='WSRoot' style='margin-bottom:5px;' /></td>"  + 
 			     "<td style='padding:0px;vertical-align:top;width:35%;'>" + 
 			     "<table class='dialogueTable outputTable'><tr><td><b>Field</b></td><td><b>Output</b></td><td></td></tr></table>"
 			     +"</td></tr>");
@@ -2830,7 +2830,7 @@ function Property_webserviceRequest(cell, propertyObject, property, details) {
 	// add the add input
 	inputsTable.append("<tr><td style='padding:0px;' colspan=3><select style='margin:0;'><option value=''>Add input...</option>" + getInputOptions() + "</select></td><td></td></tr>");
 	// find the input add
-	var inputAdd = inputsTable.find("tr").last().children().first().children().first();
+	var inputAdd = inputsTable.find("tr").last().find("select");
 	// listener to add input
 	addListener( inputAdd.change( {cell: cell, propertyObject: propertyObject, property: property, details: details}, function(ev) {
 		// initialise array if need be
@@ -2947,7 +2947,7 @@ function Property_webserviceRequest(cell, propertyObject, property, details) {
 	// add the add
 	outputsTable.append("<tr><td style='padding:0px;' colspan=2><select style='margin:0px'><option value=''>Add output...</option>" + getOutputOptions() + "</select></td><td>&nbsp;</td></tr>");
 	// find the output add
-	var outputAdd = outputsTable.find("tr").last().children(":nth(1)").last().children().last();
+	var outputAdd = outputsTable.find("tr").last().find("select");
 	// listener to add output
 	addListener( outputAdd.change( {cell: cell, propertyObject: propertyObject, property: property, details: details}, function(ev) {
 		// initialise array if need be
