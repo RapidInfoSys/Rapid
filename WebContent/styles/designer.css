@@ -1053,14 +1053,6 @@ select optgroup {
   background: #C5C6C2;
 }
 
-.buttons button:disabled {
-  color: #6A6A6A;
-}
-
-.buttons button:disabled:hover {
-  color: #6A6A6A;
-}
-
 #controlPanel, #propertiesPanel, table.propertiesPanelTable, table.stylesPanelTable, .propertyDialogue {
   font-family: 'Open Sans', Arial;
 }
@@ -1102,13 +1094,7 @@ button {
 }
 
 button:hover {
-	color: #000;
 	background: #b2b2b2;
-}
-
-button:disabled {
-  color: #6a6a6a;
-  cursor: default;
 }
 
 .normalInputs input:not([type]) {
@@ -1194,17 +1180,16 @@ table.propertiesPanelTable, table.stylesPanelTable {
 }
 
 .buttons button:disabled {
-  background: #DDD;
+  background: #333;
+  color: #888;
 }
 
 .buttons button:disabled:hover {
   cursor: default;
-  background: linear-gradient(to bottom,  #cccccc 0%,#bbbbbb 20%,#a9a9a9 100%);
 }
 
 button:disabled:hover {
   cursor: auto;
-  background: linear-gradient(to bottom,  #cccccc 0%,#bbbbbb 20%,#a9a9a9 100%);
 }
 
 select:hover {
