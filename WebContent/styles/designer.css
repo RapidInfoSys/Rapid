@@ -1180,8 +1180,7 @@ table.propertiesPanelTable, table.stylesPanelTable {
 }
 
 .buttons button:disabled {
-  background: #333;
-  color: #888;
+  opacity: 0.5;
 }
 
 .buttons button:disabled:hover {
