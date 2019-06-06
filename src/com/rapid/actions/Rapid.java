@@ -2540,7 +2540,7 @@ public class Rapid extends Action {
 				String description = jsonAction.getString("description").trim();
 
 				// add the role
-				security.addRole(rapidRequest, new Role(roleName, description));
+				security.addRole(rapidActionRequest, new Role(roleName, description));
 				// set the result message
 				result.put("message", "Role added");
 
@@ -2549,7 +2549,7 @@ public class Rapid extends Action {
 				// get the role
 				String role = jsonAction.getString("role").trim();
 				// delete the role
-				security.deleteRole(rapidRequest, role);
+				security.deleteRole(rapidActionRequest, role);
 				// set the result message
 				result.put("message", "Role deleted");
 
