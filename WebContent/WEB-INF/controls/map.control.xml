@@ -224,10 +224,10 @@ return "<div id='" + this.id + "' style='width:" + this.width + ";height:" + thi
 var w = _pageIframe[0].contentWindow;
 	        
 // use loadMapJavaScript from /scripts/controls/map.js
-w.loadMapJavaScript(this.id, this._getDetails());
+w && w.loadMapJavaScript && w.loadMapJavaScript(this.id, this._getDetails());
 
 // call rebuildLoadedMap map manually
-w.rebuildLoadedMap(this.id);
+w && w.rebuildLoadedMap && w.rebuildLoadedMap(this.id);
 
 	        ]]>
 	    </rebuildJavaScript>
