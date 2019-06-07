@@ -182,12 +182,19 @@ i.propertyHelp, img.propertyHelp {
 }
 
 .fa {
-	cursor:pointer;
+	cursor: pointer;
 	transition: transform 0.2s;
+}
+button[disabled] i.fa {
+	cursor: default;
 }
 
 .fa:not(.fa-stack):not(.fa-stack-1x):hover{
 	transform: scale(1.2);
+}
+
+button[disabled] .fa:not(.fa-stack):not(.fa-stack-1x):hover{
+	transform: scale(1);
 }
 
 .fa-stack {
