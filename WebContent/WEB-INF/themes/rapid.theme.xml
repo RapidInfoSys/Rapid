@@ -584,8 +584,11 @@ button {
   padding: 8px;
   border: none;
   background: #494949;
-  width: 200px;
   transition: background 0.5s ease;
+}
+
+.formTableStylingLowerTab button {
+  width: 200px;
 }
 
 button:hover {
@@ -866,9 +869,10 @@ select {
 
 select option {
   color: #000;
+  background: #b2b2b2;
 }
 
-select:hover {
+select:hover, select:focus-within {
   color: #000;
   background: #b2b2b2;
   outline: 1px solid #b2b2b2;
