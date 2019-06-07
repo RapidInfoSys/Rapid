@@ -78,7 +78,6 @@ import com.rapid.server.RapidRequest;
 import com.rapid.server.filter.RapidFilter;
 import com.rapid.utils.Files;
 import com.rapid.utils.Html;
-import com.rapid.utils.Http;
 import com.rapid.utils.Minify;
 import com.rapid.utils.XML;
 
@@ -1645,20 +1644,6 @@ public class Page {
 
     }
 
-	/*
-	// this routine will write the no page permission - used by both page permission and if control permission permutations fail to result in any html
-	void writeMessagex(RapidHttpServlet rapidServlet, Writer writer, String title, String message) throws IOException {
-
-		// write a header
-		writer.write("<html>\n  <head>\n    <title>Rapid - " + title + "</title>\n    <meta charset=\"utf-8\"/>\n    <link rel='stylesheet' type='text/css' href='styles/index.css'></link>\n  </head>\n");
-
-		// write body
-		writer.write("  <body>\n    <div class=\"image\"><a href=\"http://www.rapid-is.co.uk\"><img title=\"Rapid Information Systems\" src=\"images/RapidLogo.svg\" /></a></div>\n    <div class=\"midTitle\"><span>Rapid</span></div>\n    <div class=\"subBar\"><span class=\"link\"><a href=\"logout.jsp\">LOG OUT</a></span><span class=\"versionColumn\">" + Rapid.VERSION + "</span></div>\n    <div class=\"body\">\n      <div class=\"columnMiddle\">\n          <div class=\"info\">\n            <h1>" + title + "</h1>\n            <p>" + message + "</p>\n          </div>\n        </div>\n      </div>\n    </div>\n  </body>\n</html>");
-
-	}
-
-	*/
-
 	// this function interatively checks permission and writes control role html
 	private void writeRoleControlHtml(Writer writer, List<String> userRoles, RoleControlHtml roleControlHtml) throws IOException {
 		// if we have a roleControlHtml
@@ -1707,6 +1692,9 @@ public class Page {
 	// this routine produces the entire page
 	public void writeHtml(RapidHttpServlet rapidServlet, HttpServletResponse response, RapidRequest rapidRequest,  Application application, User user, Writer writer, boolean designerLink, boolean download) throws JSONException, IOException, RapidLoadingException {
 
+		// get the servlet context
+		ServletContext servletContext = rapidServlet.getServletContext();
+
 		// this doctype is necessary (amongst other things) to stop the "user agent stylesheet" overriding styles
 		writer.write("<!DOCTYPE html>\n");
 
@@ -1714,7 +1702,7 @@ public class Page {
 		writer.write("<html lang=\"en\">\n");
 
 		// get any theme
-    	Theme theme = application.getTheme(rapidServlet.getServletContext());
+    	Theme theme = application.getTheme(servletContext);
 
 		// check for undermaintenance status
 		if (application.getStatus() == Application.STATUS_MAINTENANCE) {
@@ -1752,7 +1740,7 @@ public class Page {
 			if (gotPagePermission) {
 
 				// whether we're rebulding the page for each request
-		    	boolean rebuildPages = Boolean.parseBoolean(rapidServlet.getServletContext().getInitParameter("rebuildPages"));
+		    	boolean rebuildPages = Boolean.parseBoolean(servletContext.getInitParameter("rebuildPages"));
 
 		    	// check whether or not we rebuild
 		    	if (rebuildPages) {
@@ -2156,6 +2144,13 @@ public class Page {
 							}
 						}
 
+						// create the url to open this page in the designer, we'll put this in the change page and new tab links,
+						String designerUrl = "design.jsp?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + _id;
+						// look for any serverURL parameter in web.xml
+						String serverUrl = servletContext.getInitParameter("serverUrl");
+						// if there was one pre-pend to url, this is useful if the server is behind a proxy
+						if (serverUrl != null) designerUrl = serverUrl + "/" + designerUrl;
+
 						// using attr href was the weirdest thing. Some part of jQuery seemed to be setting the url back to v=1&p=P1 when v=2&p=P2 was printed in the html
 						writer.write(
 						"<link rel='stylesheet' type='text/css' href='styles/designlinks.css'></link>\n"
@@ -2171,7 +2166,7 @@ public class Page {
 				    	+ "var _onDesignLink = false;\n"
 				    	+ "var _onDesignTable = false;\n"
 				    	+ "$(document).ready( function() {\n"
-				    	+ "  $('#designShow').mouseover( function(ev) {\n    $('#designLink').attr('href','design.jsp?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + _id + "');\n    $('#designLinkNewTab').attr('target','_blank').attr('href','" + Http.getBaseUrl(rapidRequest.getRequest()) + "/design.jsp?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + _id + "');\n    $('#designLinks').show(); _onDesignLink = true;\n  });\n"
+				    	+ "  $('#designShow').mouseover( function(ev) {\n    $('#designLink').attr('href','" + designerUrl + "');\n    $('#designLinkNewTab').attr('target','_blank').attr('href','" + designerUrl + "');\n    $('#designLinks').show(); _onDesignLink = true;\n  });\n"
 				    	+ "  $('#designLinks').mouseleave( function(ev) {\n    _onDesignLink = false;\n    setTimeout( function() {\n      if(!_onDesignLink && !_onDesignTable) $('#designLinks').fadeOut();\n    }, 1000);\n  });\n"
 				    	+ "  $('#designLinks').mouseover(function(ev) {\n   _onDesignLink = true;\n  });\n"
 				    	+ "  $('html').click(function(){\n  if(!_onDesignLink && !_onDesignTable) {\n      $('div.designData').fadeOut();\n      $('#designLinks').fadeOut();\n    }\n  });\n"
