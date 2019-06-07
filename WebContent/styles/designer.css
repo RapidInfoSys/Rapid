@@ -1025,6 +1025,7 @@ Tip styles
 }
 
 select {
+  transition: background 0.3s ease;
   padding: 0 24px 0 5px;
   border: none;
   background: #494949;
@@ -1093,7 +1094,7 @@ button {
   cursor:pointer;
 }
 
-button:hover {
+button:not([disabled]):hover {
 	background: #b2b2b2;
 }
 
@@ -1192,7 +1193,7 @@ button:disabled:hover {
 }
 
 select:hover {
-	color: #000;
+	transition: background 0.3s ease;
 	background: #b2b2b2;
 }
 
