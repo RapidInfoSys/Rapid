@@ -60,6 +60,15 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	        </property>
 	        
 	        <property>
+	            <key>responsiveLabel</key>
+	            <name>Label</name>
+	            <setConstructValueFunction>return "";</setConstructValueFunction>
+	            <changeValueJavaScript>text</changeValueJavaScript>
+	            <refreshHtml>true</refreshHtml>
+	            <helpHtml>Label to appear above the control</helpHtml>
+	        </property>
+	        
+	        <property>
 	            <key>codes</key>
 	            <name>Codes</name>
 	            <visible>false</visible>
@@ -107,7 +116,9 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <setConstructValueFunction>return false;</setConstructValueFunction>
 	            <changeValueJavaScript>checkbox</changeValueJavaScript>
 	            <refreshHtml>true</refreshHtml>
+	            <helpHtml>Arranges the radio buttons after each other, rather than on top.</helpHtml>
 	        </property>
+	        
 	        <property>
 	            <key>extraSmall</key>
 	            <name>Extra small width</name>
@@ -165,12 +176,17 @@ return [{value:"", text:"Please select..."}, {value:"lg-1", text:"1/12"}, {value
 	        </property>
 	        
 	    </properties>
-	    
+
 	    <resources>
 	    	<resource>
 	    		<type>css</type>
 	    		<contents>
-.radiobuttons label {
+	    		
+.r-radio > label {
+	width: 100%;
+}
+
+.radio-radio label {
 	display: inline-block;
 }
 
@@ -240,8 +256,12 @@ if (this.buttons || this.valueList) {
 } else {
 	radiobuttonHtml = "No buttons";
 }
-// place into the select
-var html = "<div id='" + this.id + "' class='radiobuttons r-radio" + classes + "'>" + radiobuttonHtml + "</div>";
+// start the parent div
+var html = "<div id='" + this.id + "' class='radiobuttons r-radio" + classes + "'>"
+// if there is a responsiveLabel add it in
+if (this.responsiveLabel) html += "<label>" + this.responsiveLabel + "</label>";
+// add radios and close div
+html += radiobuttonHtml + "</div>";
 // return
 return html;
 	        ]]>
