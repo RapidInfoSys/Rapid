@@ -64,7 +64,7 @@ var _localDateFormat = "dd/MM/yyyy";
 // the controlAndActionSuffix, used to avoid conflicts in ids from other environments, default to empty space
 var _controlAndActionSuffix = "";
 // the styling targets that we display guidelines for
-var _guideLines = ".table td, .panel, .r-panel, .r-text, .flowLayoutCell { border: 1px dashed #ccc; margin: -1px; }";
+var _guideLines = ".table td, .panel, .r-panel, .r-text, .flowLayoutCell { outline: 1px dashed rgba(128, 128, 128, 0.4); }";
 
 // the document window
 var _window;
