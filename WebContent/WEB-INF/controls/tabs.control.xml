@@ -375,6 +375,8 @@ tabOpeners.children("li").each( function(idx) {
 				// selected tab is table cell
 				tabBody.css("display","table-cell").show();
 			}
+			// fire a window resize for controls like the grid that may need to measure and resize themselves now that they're visible and geometry is available
+			$(window).trigger('resize');
 		});
 	} else {
 		// since there is no tab body to show, remove the opener
