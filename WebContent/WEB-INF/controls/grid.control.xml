@@ -206,6 +206,10 @@ div.gridScrollHeader table.grid tr:not(:first-child) {
 div.gridScrollBody table.grid tr:first-child {
 	visibility: hidden; /* must be hidden rather than display none to still have geometry to stay in sync with header  */
 }
+
+[disabled] table.grid tr td {
+	cursor: not-allowed;
+}
 	                ]]>
 				</contents>
 	        </resource>
@@ -1141,6 +1145,8 @@ if (data !== undefined) {
 	            <filterFunction>
 <![CDATA[
 var target = $(ev.target);
+// don't fire if any ancestor is disabled
+if (target.closest("[disabled]")) return true;
 // don't fire if the target is the top row or tbody, but allow the multi select
 if ((target.closest("tr").index() == 0 || target.is("tbody")) && !target.is("input.gridMultiSelectHeader")) return true;
 // don't fire if the target is the cell around the multiselect
