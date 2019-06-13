@@ -1359,8 +1359,8 @@ function Property_fields(cell, action, property, details) {
 			// add reorder 			
 			table.append("<tr><td><input value='" + escapeApos(fields[i]) + "'/></td><td style='width:45px'>" +
 					"<div class='iconsPanel'>" +
-					"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
-					"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div>" +
+					"<div class='reorder fa-stack fa-sm' title='Drag to change order'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
+					"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Click to delete'></i></div>" +
 					"</div></td></tr>");
 		}	
 	}
@@ -1466,8 +1466,8 @@ function Property_galleryImages(cell, gallery, property, details) {
 		// append
 		table.append("<tr><td><input class='url' value='" + escapeApos(image.url) + "' /></td>" + (gallery.gotCaptions ? "<td><input class='caption' value='" + escapeApos(image.caption) + "' /></td>" : "") + "<td>" +
 				"<div class='iconsPanel'>" +
-				"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
-				"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div>" +
+				"<div class='reorder fa-stack fa-sm' title='Drag to change order'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
+				"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Click to delete'></i></div>" +
 				"</div></td></tr>");
 	}
 	
@@ -1736,8 +1736,8 @@ function Property_validationControls(cell, propertyObject, property, details) {
 			// add the row for this value
 			table.append("<tr><td>" + control.name + "</td><td style='width:45px'>" +
 					"<div class='iconsPanel'>" +
-					"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
-					"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div>" +
+					"<div class='reorder fa-stack fa-sm' title='Drag to change order'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
+					"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Click to delete'></i></div>" +
 					"</div></td></tr>");			
 		} else {
 			// remove this control
@@ -2002,8 +2002,8 @@ function Property_inputs(cell, propertyObject, property, details) {
 			// add a row
 			table.append("<tr><td>" + dataItem.name + "</td><td><input value='" + input.field + "' /></td><td><input value='" + input.inputField + "' /></td><td style='width:45px'>" +
 					"<div class='iconsPanel'>" +
-					"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
-					"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div>" +
+					"<div class='reorder fa-stack fa-sm' title='Drag to change order'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
+					"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Click to delete'></i></div>" +
 					"</div></td></tr>");
 			// get the field
 			var editField = table.find("tr").last().children("td:nth(1)").children("input");
@@ -2118,8 +2118,8 @@ function Property_outputs(cell, propertyObject, property, details) {
 			// add a row
 			table.append("<tr><td><input value='" + output.outputField + "' /></td><td>" + dataItem.name + "</td><td><input value='" + output.field + "' /></td><td style='width:45px'>" +
 					"<div class='iconsPanel'>" +
-					"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
-					"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div>" +
+					"<div class='reorder fa-stack fa-sm' title='Drag to change order'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
+					"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Click to delete'></i></div>" +
 					"</div></td></tr>");			
 			// get the outputfield
 			var editOutputField = table.find("tr").last().children("td:nth(0)").children("input");
@@ -2249,8 +2249,8 @@ function Property_controlsForType(cell, propertyObject, property, details) {
 					// add a row with the control name
 					table.append("<tr><td>" + control.name + "</td><td>" +
 							"<div class='iconsPanel'>" +
-							"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
-							"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div>" +
+							"<div class='reorder fa-stack fa-sm' title='Drag to change order'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
+							"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Click to delete'></i></div>" +
 							"</div></td></tr>");
 				}				
 			}
@@ -2509,8 +2509,8 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 		// add the row
 		inputsTable.append("<tr><td style='text-align:center;'>" + (+i + 1) + ".</td><td>" + (query.multiRow && i > 0 ? "&nbsp;" : itemName) + "</td><td><input value='" + escapeApos(field) + "' /></td><td style='width:45px;'>" +
 				   "<div class='iconsPanel'>" +
-				   "<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
-				   "<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div>" +
+				   "<div class='reorder fa-stack fa-sm' title='Drag to change order'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
+				   "<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Click to delete'></i></div>" +
 				   "</div></td></tr>");
 		
 		// get the field input
@@ -2597,8 +2597,8 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 		// add the row
 		outputsTable.append("<tr><td><input value='" + escapeApos(field) + "' /></td><td>" + itemName + "</td><td style='width:45px;'>" +
 				"<div class='iconsPanel'>" +
-				"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
-				"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div>" +
+				"<div class='reorder fa-stack fa-sm' title='Drag to change order'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
+				"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Click to delete'></i></div>" +
 				"</div></td></tr>");
 		// get the field input
 		var fieldOutput = outputsTable.find("tr").last().children().first().children().last();
@@ -2798,8 +2798,8 @@ function Property_webserviceRequest(cell, propertyObject, property, details) {
 		// add the row
 		inputsTable.append("<tr><td style='text-align:center;'>" + (+i + 1) + ".</td><td>" + itemName + "</td><td><input value='" + escapeApos(field) + "' /></td><td style='width:45px;'>" +
 				"<div class='iconsPanel'>" +
-				"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
-				"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div>" +
+				"<div class='reorder fa-stack fa-sm' title='Drag to change order'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
+				"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Click to delete'></i></div>" +
 				"</div></td></tr>");
 		
 		// get the field input
@@ -2916,8 +2916,8 @@ function Property_webserviceRequest(cell, propertyObject, property, details) {
 		// add the row
 		outputsTable.append("<tr><td><input value='" + escapeApos(field) + "' /></td><td>" + itemName + "</td><td style='width:45px;'>" +
 				"<div class='iconsPanel'>" +
-				"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
-				"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div>" +
+				"<div class='reorder fa-stack fa-sm' title='Drag to change order'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
+				"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Click to delete'></i></div>" +
 				"</div></td></tr>");
 		// get the field input
 		var fieldOutput = outputsTable.find("tr").last().children().first().children().last();
@@ -3022,7 +3022,7 @@ function Property_pageSessionVariables(cell, page, property, details, textOnly) 
 			for (var i in variables) {
 				// add the line
 				table.append("<tr><td><input class='variable' value='" + escapeApos(variables[i]) + "' /></td><td style='width:25px; text-align:right;'>" +
-						"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div></td></tr>");
+						"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Click to delete'></i></div></td></tr>");
 				
 				// find the text
 				var valueEdit = table.find("input.variable").last();
@@ -3109,7 +3109,7 @@ function Property_roles(cell, control, property, details) {
 	for (var i in roles) {
 		// add the line
 		table.append("<tr><td>" + roles[i] + "</td><td style='width:25px; text-align:right;'>" +
-				"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div></td></tr>");
+				"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Click to delete'></i></div></td></tr>");
 						
 		// find the delete
 		var optionDelete = table.find("div.delete");
@@ -3358,8 +3358,8 @@ function Property_radiobuttons(cell, control, property, details) {
 			// add the line
 			table.append("<tr><td><input class='label' value='" + escapeApos(buttons[i].label) + "' /></td>" + (control.codes ? "<td><input class='value' value='" + escapeApos(buttons[i].value) + "' /></td>" : "") + "<td>" +
 					"<div class='iconsPanel'>" +
-					"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
-					"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div>" +
+					"<div class='reorder fa-stack fa-sm' title='Drag to change order'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
+					"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Click to delete'></i></div>" +
 					"</div></td></tr>");
 			
 			// find the code
@@ -3621,8 +3621,8 @@ function Property_logicConditions(cell, action, property, details) {
 		// add cells
 		table.append("<tr><td></td><td style='width:150px;'></td><td></td><td style='width:40px;'>" +
 				"<div class='iconsPanel'>" +
-				"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
-				"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div>" +
+				"<div class='reorder fa-stack fa-sm' title='Drag to change order'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
+				"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Click to delete'></i></div>" +
 				"</div></td></tr>");
 		
 		// get last row
@@ -3772,8 +3772,8 @@ function Property_options(cell, control, property, details) {
 			// add the line
 			table.append("<tr><td><input class='text' value='" + escapeApos(options[i].text) + "' /></td>" + (control.codes ? "<td><input class='value' value='" + escapeApos(options[i].value) + "' /></td>" : "") + "<td>" +
 					"<div class='iconsPanel'>" +
-					"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
-					"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div>" +
+					"<div class='reorder fa-stack fa-sm' title='Drag to change order'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
+					"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Click to delete'></i></div>" +
 					"</div></td></tr>");
 							
 			// find the text
@@ -3946,7 +3946,7 @@ function Property_gridColumns(cell, grid, property, details) {
 		// add the line
 		table.append("<tr><td class='center'><input type='checkbox' " + (columns[i].visible ? "checked='checked'" : "")  + " /></td><td><input value='" + escapeApos(columns[i].title) + "' /></td><td><input value='" + escapeApos(columns[i].titleStyle) + "' /></td><td><input value='" + escapeApos(columns[i].field) + "' /></td><td><input value='" + escapeApos(columns[i].fieldStyle) + "' /></td><td>" + sortSelect + "&nbsp;" + _gridCellEditHtml + "</td><td class='paddingLeft5'>" + cellFunctionText + "</td><td>" +
 				"<div class='iconsPanel'>" +
-				"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
+				"<div class='reorder fa-stack fa-sm' title='Drag to change order'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
 				"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this column'></i></div>" +
 				"</div></td></tr>");
 		
@@ -4244,8 +4244,8 @@ function Property_controlHints(cell, hints, property, details) {
 		// add the row
 		table.append("<tr class='nopadding'><td><select class='control'><option value=''>Please select...</option>" + getControlOptions(controlHint.controlId) + "</select></td><td><select class='type'>" + typeOptions + "</select></td><td style='max-width:150px;'><span>" + controlHint.text + "</span></td><td><input value='" + escapeApos(controlHint.style) + "'/></td><td style='width:45px;'>" +
 				"<div class='iconsPanel'>" +
-				"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
-				"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div>" +
+				"<div class='reorder fa-stack fa-sm' title='Drag to change order'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
+				"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Click to delete'></i></div>" +
 				"</div></td></tr>");
 	
 		// add a seperating comma to the text if not the last hint
@@ -4506,8 +4506,8 @@ function Property_datacopyDestinations(cell, propertyObject, property, details) 
 				// add a row
 				table.append("<tr><td>" + dataItem.name + "</td><td><input value='" + dataDestination.field + "' /></td><td style='width:45px'>" +
 						"<div class='iconsPanel'>" +
-						"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
-						"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div>" +
+						"<div class='reorder fa-stack fa-sm' title='Drag to change order'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
+						"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Click to delete'></i></div>" +
 						"</div></td></tr>");
 				// get the field
 				var editField = table.find("tr").last().children("td:nth(1)").children("input");
@@ -4922,8 +4922,8 @@ function Property_datacopyCopies(cell, datacopyAction, property, details) {
 			// add a row
 			table.append("<tr><td><select class='source'><option value=''>Please select...</option>" + getInputOptions(dataCopy.source) + "</select></td><td><input  class='source' value='" + escapeApos(dataCopy.sourceField) + "' /></td><td><select class='destination'><option value=''>Please select...</option>" + getOutputOptions(dataCopy.destination) + "</select></td><td><input class='destination' value='" + escapeApos(dataCopy.destinationField) + "' /></td><td><select class='type' style='min-width:80px;'>" + getCopyTypeOptions(dataCopy.type) + "</select></td><td style='width:45px'>" +
 					"<div class='iconsPanel'>" +
-					"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
-					"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div>" +
+					"<div class='reorder fa-stack fa-sm' title='Drag to change order'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
+					"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Click to delete'></i></div>" +
 					"</div></td></tr>");
 			
 			// get the source data item
@@ -5626,7 +5626,7 @@ function Property_pageOrder(cell, propertyObject, property, details) {
 			
 		// add a page name row
 		table.append("<tr><td>" + page.name + " - " + page.title + "</td><td style='text-align:right;'>" +
-				"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div></td></tr>");
+				"<div class='reorder fa-stack fa-sm' title='Drag to change order'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div></td></tr>");
 		
 	}
 		
@@ -5840,8 +5840,8 @@ function Property_emailContent(cell, propertyObject, property, details) {
 		// add the row
 		inputsTable.append("<tr><td>" + itemName + "</td><td><input value='" + escapeApos(field) + "' /></td><td style='width:45px;'>" +
 				"<div class='iconsPanel'>" +
-				"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
-				"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div>" +
+				"<div class='reorder fa-stack fa-sm' title='Drag to change order'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
+				"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Click to delete'></i></div>" +
 				"</div></td></tr>");
 		// get the field input
 		var fieldInput = inputsTable.find("tr").last().children(":nth(1)").last().children().last();
@@ -6181,8 +6181,8 @@ function Property_validationLogic(cell, propertyObject, property, details) {
 		// add the condition row
 		table.append("<tr data-index='" + i + "'><td style='width:60px;'>Conditions</td><td></td><td style='min-width:45px'>" +
 					"<div class='iconsPanel'>" +
-					"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
-					"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div>" +
+					"<div class='reorder fa-stack fa-sm' title='Drag to change order'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
+					"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Click to delete'></i></div>" +
 					"</div></td></tr>");
 		// get the conditions cell
 		var conditionsCell = table.find("tr").last().children(":nth-child(2)");
@@ -6305,8 +6305,8 @@ function Property_pdfInputs(cell, propertyObject, property, details) {
 			// add a row
 			table.append("<tr><td>" + dataItem.name + "</td><td><input value='" + input.field + "' /></td><td><input value='" + input.label + "' /></td><td style='width:45px'>" +
 					"<div class='iconsPanel'>" +
-					"<div class='reorder fa-stack fa-sm' title='Reorder this action'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
-					"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Delete this action'></i></div>" +
+					"<div class='reorder fa-stack fa-sm' title='Drag to change order'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
+					"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Click to delete'></i></div>" +
 					"</div></td></tr>");
 			// get the field
 			var editField = table.find("tr").last().children("td:nth(1)").children("input");
