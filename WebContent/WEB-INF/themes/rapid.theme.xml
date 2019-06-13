@@ -343,6 +343,16 @@ body {
     border-bottom: 2px solid #f4091b;
 }
 
+@media only screen and (max-width: 500px) {
+  .midTitle {
+	text-align:left;
+	padding-left: 20px;
+  }
+  .midTitle span {
+	font-size:30px; 
+  }
+}
+
 .subBar {
 	background: #f4091b; 
 	height:30px; 
@@ -412,6 +422,10 @@ body {
 	border-collapse: collapse;
 	box-shadow: 0px 3px 5px 1px #9d9d9d;
 	background: #d5d6d2;
+}
+
+.formTableStylingLowerTab td {
+	white-space: nowrap;
 }
 
 .cellLabels {
@@ -585,10 +599,7 @@ button {
   border: none;
   background: #494949;
   transition: background 0.5s ease;
-}
-
-.formTableStylingLowerTab button {
-  width: 200px;
+  white-space: nowrap;
 }
 
 button:hover {
@@ -611,6 +622,14 @@ button:disabled {
 
 button span.fa {
 	margin-right: 2px;
+}
+
+.formTableStylingLowerTab button {
+  width: 180px;
+}
+
+.formTablePadding.glossyTitle.tableStyling button {
+	width: 180px;
 }
 
 .dialogueTable select option:nth-child(n) {
