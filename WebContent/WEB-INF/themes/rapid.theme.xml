@@ -547,7 +547,7 @@ table.dialogueTable.webserviceTable tr:not(:first-child):not(:last-child) td:hov
 table.dialogueTable.webserviceTable td {
 	max-width: 80px;
 	padding: 0px !important;
-	text-align: center;
+	text-align: left;
 	vertical-align: middle;
 }
 

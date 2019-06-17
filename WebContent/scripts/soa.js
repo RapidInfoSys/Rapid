@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -117,11 +117,11 @@ function showSOARestrictions(collection, control, details) {
 	// if we didn't find one add
 	if (!dialogue[0]) {
 		// add the div
-		$("body").append("<div id='restrictionsDialogue' style='position:absolute;display:none;width:280px;border:1px solid black;background-color:white;font-size:11px;padding:10px;'></div>");
+		$("body").append("<div id='restrictionsDialogue' style='position:absolute;display:none;width:320px;border:1px solid black;background-color:white;font-size:11px;padding:10px;'></div>");
 		// now get the reference
 		dialogue = $("#restrictionsDialogue");
 		// add close link
-		var close = dialogue.append("<b style='float:left;margin-top:-5px;'>Restrictions</b><button style='float:right;margin-top:-5px;'>close</button></div>").children().last();
+		var close = dialogue.append("<b style='float:left;margin-top:-5px;'>Restrictions</b><i class='fa dialogueClose fa-external-link-square' style='float:right;font-size:18px;color:#494949; padding-bottom:5px;' title='Close dialogue'></i></div>").children().last();
 		// add close listener
 		_listeners.push( close.click( {details: details}, function(ev) {
 			// hide the dialogue
@@ -137,7 +137,7 @@ function showSOARestrictions(collection, control, details) {
 	dialogue.find("button.add").last().remove();
 	
 	// replace the add link
-	dialogue.append("<button class='add'>add...</button>").find("button").last().click( {collection: collection, control : control, details:details}, function(ev) {
+	dialogue.append("<button class='add' style='margin-top:10px;'>add...</button>").find("button").last().click( {collection: collection, control : control, details:details}, function(ev) {
 		// add new restriction
 		_soaRestrictions.push({type:"MinOccursRestriction", value:"1"});
 		// refresh dialogue
@@ -154,7 +154,10 @@ function showSOARestrictions(collection, control, details) {
 		// get individual restriction
 		var restriction = _soaRestrictions[i];
 		// add a row for this restriction
-		table.append("<tr><td>" + getSOARestrictionSelect(element.dataType, restriction.type) + "</td><td><input value='" + restriction.value + "'/></td><td><img class='delete' src='images/bin_16x16.png' /><img class='reorder' src='images/moveUpDown_16x16.png' /></td></tr>");				
+		table.append("<tr><td>" + getSOARestrictionSelect(element.dataType, restriction.type) + "</td><td><input value='" + restriction.value + "'/></td><td><div class='iconsPanel'>" +
+					"<div class='reorder fa-stack fa-sm' title='Drag to change order'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
+					"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Click to delete'></i></div>" +
+					"</div></td></tr>");				
 	}
 	
 	// type change listener
@@ -173,17 +176,17 @@ function showSOARestrictions(collection, control, details) {
 		_soaRestrictions[input.parent().parent().index() - 1].value = input.val();
 	});
 	
+	// reorder listener
+	addReorder(_soaRestrictions, table.find("div.reorder"), function(ev) {
+		showSOARestrictions(collection, control);
+	});
+	
 	// delete listener
-	table.find("img.delete").click( {collection: collection, control: control, details:details}, function(ev) {
+	table.find("div.delete").click( {collection: collection, control: control, details:details}, function(ev) {
 		// remove item
 		_soaRestrictions.splice($(ev.target).parent().parent().index() - 1, 1);
 		// refresh
 		showSOARestrictions(ev.data.collection, ev.data.control, ev.data.details);
-	});
-	
-	// reorder listener
-	addReorder(_soaRestrictions, table.find("img.reorder"), function(ev) {
-		showSOARestrictions(collection, control);
 	});
 	
 	// positon and show the dialog
@@ -228,7 +231,7 @@ function loadSOA(details) {
 		// if not there
 		if (!requestTable[0]) {
 			// add a header
-			requestCell.append("<span class='webserviceTitle'>Child elements :</span>");
+			requestCell.append("<span class='webserviceTitle'>Child elements</span>");
 			// create table
 			requestTable = requestCell.append("<table class='dialogueTable webserviceTable'></table>").children("table");
 		}
@@ -255,7 +258,7 @@ function loadSOA(details) {
 					}
 				}
 				// populate child element
-				requestTable.append("<tr><td class='elementName'><input value='" + element.name + "' /></td><td>" + getSOADataTypeSelect(element.dataType) + "</td><td class='restriction'>" + text + "</td><td><i class='delete fa fa-trash' style='margin-left:1px;'></i><div class='reorder fa-stack fa-sm' title='Reorder this action' style='top:0; right:0;'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div></td></tr>");				
+				requestTable.append("<tr><td class='elementName'><input value='" + element.name + "' /></td><td>" + getSOADataTypeSelect(element.dataType) + "</td><td class='restriction'>" + text + "</td><td><div class='reorder fa-stack fa-sm' title='Reorder this action' style='top:0; right:0;'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div><i class='delete fa fa-trash' style='margin-left:1px;'></i></td></tr>");				
 			}  
 			
 			// name
@@ -330,7 +333,7 @@ function loadSOA(details) {
 		// if not there
 		if (!responseTable[0]) {
 			// add a header
-			responseCell.append("<span class='webserviceTitle'>Child elements :</span>");
+			responseCell.append("<span class='webserviceTitle'>Child elements</span>");
 			// create table
 			responseTable = responseCell.append("<table class='dialogueTable webserviceTable'></table>").children("table");
 		}
@@ -359,7 +362,7 @@ function loadSOA(details) {
 					}
 				}
 				// populate child element
-				responseTable.append("<tr><td class='elementName'><input class='elementName' value='" + element.name + "' /></td><td class='elementField'><input class='elementField' value='" + element.field + "' /></td><td>" + getSOADataTypeSelect(element.dataType) + "</td><td class='restriction'>" + text + "</td><td><i class='delete fa fa-trash' style='margin-left:1px;'></i><div class='reorder fa-stack fa-sm' title='Reorder this action' style='top:0; right:0;'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div></td></tr>");				
+				responseTable.append("<tr><td class='elementName'><input class='elementName' value='" + element.name + "' /></td><td class='elementField'><input class='elementField' value='" + element.field + "' /></td><td>" + getSOADataTypeSelect(element.dataType) + "</td><td class='restriction'>" + text + "</td><td><div class='reorder fa-stack fa-sm' title='Reorder this action' style='top:0; right:0;'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div><i class='delete fa fa-trash' style='margin-left:1px;'></i></td></tr>");				
 			}
 			
 			// name
