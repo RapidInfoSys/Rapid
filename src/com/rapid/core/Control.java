@@ -98,7 +98,7 @@ public class Control {
 
 	// these are some helper methods for common properties
 	public void addProperty(String key, String value) {
-		if (_properties == null) _properties = new HashMap<String,String>();
+		if (_properties == null) _properties = new HashMap<>();
 		_properties.put(key, value);
 	}
 	// returns the value of a specific, named property
@@ -111,15 +111,11 @@ public class Control {
 	public String getName() { return getProperty("name"); }
 	// the form summary label of this object
 	public String getLabel() {
-		//get default label
+		// get default label
 		String label = getProperty("label");
-
-		// try getting the responsive label, if label is null or empty
-		if(label == null || label.trim().isEmpty()) label = getProperty("responsiveLabel");
-
-		// label is null or empty, set label as null
+		// label is null or empty, set label as null - this is to stop it appearing on the form summary page
 		if (label == null || label.trim().isEmpty()) label = null;
-
+		// return
 		return label;
 	}
 
@@ -139,7 +135,7 @@ public class Control {
 
 	// helper method for child components
 	public void addChildControl(Control childControl) {
-		if (_childControls == null) _childControls = new ArrayList<Control>();
+		if (_childControls == null) _childControls = new ArrayList<>();
 		_childControls.add(childControl);
 	}
 
@@ -184,7 +180,7 @@ public class Control {
 
 	// helper method for styles
 	public void addStyle(Style style) {
-		if (_styles == null) _styles = new ArrayList<Style>();
+		if (_styles == null) _styles = new ArrayList<>();
 		_styles.add(style);
 	}
 
@@ -320,7 +316,7 @@ public class Control {
 	public static ArrayList<Event> getEvents(RapidHttpServlet rapidServlet, JSONArray jsonEvents) throws IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException, JSONException {
 
 		// the array of events we're about to return
-		ArrayList<Event> events = new ArrayList<Event>();
+		ArrayList<Event> events = new ArrayList<>();
 
 		// if we have events
 		if (jsonEvents != null) {
@@ -364,7 +360,7 @@ public class Control {
 		// if any came in
 		if (jsonActions != null) {
 			// instantiate our return
-			actions = new ArrayList<Action>();
+			actions = new ArrayList<>();
 			// loop them
 			for (int j = 0; j < jsonActions.length(); j++) {
 				// get an action
@@ -385,7 +381,7 @@ public class Control {
 	// this is here as a static so it used when creating the page object, or a control object
 	public static ArrayList<Style> getStyles(RapidHttpServlet rapidServlet, JSONArray jsonStyles) throws JSONException {
 		// the styles we are making
-		ArrayList<Style> styles = new ArrayList<Style>();
+		ArrayList<Style> styles = new ArrayList<>();
 		// if not null
 		if (jsonStyles != null) {
 			// loop jsonStyles

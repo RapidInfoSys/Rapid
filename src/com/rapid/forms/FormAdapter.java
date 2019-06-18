@@ -611,82 +611,95 @@ public abstract class FormAdapter {
 
 	protected String getSummaryGridHtml(Application application, Control control, FormControlValue controlValue) {
 
-		//Start of the summary grid table
-		String gridTable = "<span class='formSummaryControl'>" + Html.escape(control.getLabel()) + " : </br>\n"
-						 + "<table><tr>\n";
+		// Start of the summary grid table
+		String gridTable = "<span class='formSummaryControl'>" + Html.escape(control.getLabel()) + " : </span>\n";
+
 		try {
-			JSONObject jsonData = new JSONObject(controlValue.getValue());
 
-			//get the fields jsonArray
-			JSONArray fields = jsonData.getJSONArray("fields");
-			//get all the properties for all the fields
-			JSONArray columnsProperties = new JSONArray(control.getProperty("columns"));
+			if (controlValue == null) {
 
-			// a list to store the visible fields
-			List<String> visibleFields = new ArrayList<String>();
+			} else {
 
-			//loop through all the fields, to populate the table headers
-			for(int i = 0; i < fields.length(); i++){
-				//a field
-				String field = fields.getString(i);
-				//check if we have 'columns' key
-				if (columnsProperties != null) {
-					//loop through the columnsProperties
-					for(int c = 0; c < columnsProperties.length(); c++){
-						//for each column, get its properties
-						JSONObject column_properties = columnsProperties.getJSONObject(c);
+				// get the json data from the control
+				JSONObject jsonData = new JSONObject(controlValue.getValue());
 
-						//find the properties for 'this' field and make sure its visible
-						if(field.equals(column_properties.getString("field")) && column_properties.getBoolean("visible")){
-							//create the header tag for this field
-							gridTable += "<th>" + column_properties.getString("title") + "</th>\n";
-							//store the visible field in a list
-							visibleFields.add(field);
-							break;
+				// get the fields jsonArray
+				JSONArray fields = jsonData.getJSONArray("fields");
+				// get all the properties for all the fields
+				JSONArray columnsProperties = new JSONArray(control.getProperty("columns"));
+
+				// a list to store the visible fields
+				List<String> visibleFields = new ArrayList<>();
+
+				// start the grid
+				gridTable += "<table><tr>\n";
+
+				// loop through all the fields, to populate the table headers
+				for (int i = 0; i < fields.length(); i++){
+					// a field
+					String field = fields.getString(i);
+					// check if we have 'columns' key
+					if (columnsProperties != null) {
+						// loop through the columnsProperties
+						for (int c = 0; c < columnsProperties.length(); c++){
+							// for each column, get its properties
+							JSONObject column_properties = columnsProperties.getJSONObject(c);
+
+							// find the properties for 'this' field and make sure its visible
+							if (field.equals(column_properties.getString("field")) && column_properties.getBoolean("visible")){
+								// create the header tag for this field
+								gridTable += "<th>" + column_properties.getString("title") + "</th>\n";
+								// store the visible field in a list
+								visibleFields.add(field);
+								// we're done
+								break;
+							}
+
+						} // end of inner loop
+
+					} // check for 'columns' key
+
+				} // end of outer loop
+
+				// close the tr tag
+				gridTable += "</tr>\n";
+
+				// now loop through the rows, to populate the table data
+				JSONArray rows = jsonData.getJSONArray("rows");
+				for (int i = 0; i < rows.length(); i++){
+					// open a new row tag
+					gridTable += "<tr>\n";
+					JSONArray row = rows.getJSONArray(i);
+
+					// for each row, loop through the row cells
+					for (int j = 0; j < row.length(); j++){
+						String field = fields.getString(j);
+
+						// if this field is a visible field
+						if(visibleFields.contains(field)){
+							// get and create its column data table
+							gridTable += "<td>" + row.getString(j) + "</td>\n";
 						}
 
 					}// end of inner loop
 
-				}
+					gridTable += "</tr>\n";
 
-			}// end of outer loop
+				}// end of outer loop
 
-			//close the tr tag
-			gridTable += "</tr>\n";
+				// close the table tag
+				gridTable += "</table><br/>\n";
 
-			//now loop through the rows, to populate the table data
-			JSONArray rows = jsonData.getJSONArray("rows");
-			for(int i = 0; i < rows.length(); i++){
-				//open a new row tag
-				gridTable += "<tr>\n";
-				JSONArray row = rows.getJSONArray(i);
+			}
 
-				//for each row, loop through the row cells
-				for(int j = 0; j < row.length(); j++){
-					String field = fields.getString(j);
-
-					//if this field is a visible field
-					if(visibleFields.contains(field)){
-						//get and create its column data table
-						gridTable += "<td>" + row.getString(j) + "</td>\n";
-					}
-
-				}//end of inner loop
-
-				gridTable += "</tr>\n";
-
-			}// end of outer loop
-
-			//close the table tag
-			gridTable += "</table></span><br/>\n";
-
-
-		} catch (JSONException ex) {
+		} catch (Exception ex) {
+			// log error
 			_logger.error("Error creating the grid summary data", ex);
+			// return the error message
 			return "Error creating the grid summary data : " + ex.getMessage();
 		}
 
-		//return the html table
+		// return the html table
 		return gridTable;
 	}
 
@@ -1032,7 +1045,7 @@ public abstract class FormAdapter {
 		// if this is null
 		if (submittedForms == null) {
 			// make a new one
-			submittedForms = new ArrayList<String>();
+			submittedForms = new ArrayList<>();
 			// store it
 			rapidRequest.getRequest().getSession().setAttribute(USER_FORMS_SUBMITTED, submittedForms);
 		}
@@ -1080,7 +1093,7 @@ public abstract class FormAdapter {
 				// log
 				_logger.trace("Creating user session form details store for user " + rapidRequest.getUserName() + " from " + rapidRequest.getRequest().getRemoteAddr());
 				// make some
-				allFormDetails = new HashMap<String, UserFormDetails>();
+				allFormDetails = new HashMap<>();
 				// add to session
 				session.setAttribute(USER_FORM_DETAILS, allFormDetails);
 			}
@@ -1196,7 +1209,7 @@ public abstract class FormAdapter {
 		// get all user form details
 		Map<String,UserFormDetails> allDetails = (Map<String, UserFormDetails>) session.getAttribute(USER_FORM_DETAILS);
 		// make some if we didn't get
-		if (allDetails == null) allDetails = new HashMap<String, UserFormDetails>();
+		if (allDetails == null) allDetails = new HashMap<>();
 		// store the form if for a given app id / version
 		allDetails.put(getFormMapKey(rapidRequest), details);
 		// put the updated forms details back in the session
@@ -1748,7 +1761,7 @@ public abstract class FormAdapter {
 						List<Control> pageControls = page.getAllControls();
 
 						// a list of control values to print
-						List<String> controlValues = new ArrayList<String>();
+						List<String> controlValues = new ArrayList<>();
 
 						// a running height of this section
 						float sh = 0;
@@ -1928,7 +1941,7 @@ public abstract class FormAdapter {
 										value = value.substring(value.indexOf("]]:") + 3);
 
 										JSONObject jsonData = new JSONObject(value);
-										
+
 										Control control = application.getControl(rapidRequest.getRapidServlet().getServletContext(), controlId);
 
 										//get the fields
@@ -1939,7 +1952,7 @@ public abstract class FormAdapter {
 										JSONArray columnsProperties = new JSONArray(control.getProperty("columns"));
 
 										//get a list of the visible fields
-										List<String> visibleFields = new ArrayList<String>();
+										List<String> visibleFields = new ArrayList<>();
 										for(int i = 0; i < fields.length(); i++){
 											//a field
 											String field = fields.getString(i);
@@ -1968,22 +1981,22 @@ public abstract class FormAdapter {
 
 												//keep a track of the maxWidth - assume maxWidth is the field
 												float maxWidth = font.getStringWidth(field) / 1000 * FONT_SIZE;
-												
+
 												cs.beginText();
 												cs.setFont(fontBold, FONT_SIZE);
 												cs.newLineAtOffset(newXOffset, h - y);
 												cs.showText(field);
 												cs.endText();
-												
+
 												y += getFontHeight(font, FONT_SIZE) + MARGIN_TEXT_BOTTOM;
-												
+
 												for(int j = 0; j < rows.length(); j++){
 
 														JSONArray row = rows.getJSONArray(j);
 														String columnCell = row.getString(i);
 
 														float cellWidth = font.getStringWidth(columnCell) / 1000 * FONT_SIZE;
-														
+
 														if(cellWidth > maxWidth){
 															maxWidth = cellWidth;
 														}
@@ -2002,7 +2015,7 @@ public abstract class FormAdapter {
 												newXOffset += maxWidth + MARGIN_GRID_COLUMN;
 												//reset the y position for the new column
 												y = initialYOffset;
-												
+
 											}
 
 										}// end of outer loop
@@ -2305,14 +2318,14 @@ public abstract class FormAdapter {
 												if (value.length() > max) throw new ServerSideValidationException("Server side validation error - value " + id + " for form " + formId+ " failed regex");
 											}
 										} // maxlength check
-										
+
 									} // found control in page
-									
+
 								} // value null check
-								
-								// if there was a control 
+
+								// if there was a control
 								if (control != null) {
-								
+
 									// if we have hidden controls to check
 									if (hiddenControls != null) {
 										// loop the hidden controls
@@ -2326,11 +2339,11 @@ public abstract class FormAdapter {
 											} // this is a hidden control
 										} // loop the hidden controls
 									} // got hidden controls to check
-									
+
 									// add name value pair - controls with null values still need storing for display in the summary page
 									pageControlValues.add(id, value, hidden);
 								}
-								
+
 							} // last value
 						}	// id .length > 0
 					} // id != null
@@ -2384,7 +2397,7 @@ public abstract class FormAdapter {
 			return pageControlValues;
 		} // postBody check
 	}
-	
+
 	// called when form application is deleted in Rapid Admin - might update any casework system reference tables, matching code for first insert / updates in Form Adapter constructor
 	public synchronized void delete(RapidRequest rapidRequest) {
 	}
