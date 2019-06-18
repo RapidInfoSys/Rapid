@@ -56,6 +56,7 @@ hr {
 	overflow: hidden;
 	display: none;	
 	background-color: white;
+	border: 1px solid #202326;
 }
 
 #designerTools {

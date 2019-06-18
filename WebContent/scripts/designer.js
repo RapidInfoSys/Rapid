@@ -1026,6 +1026,8 @@ function selectControl(control) {
 function showDesigner() {	
 	// hide the loading message
 	$("#loading").hide();
+	// set the background colour for large dialogues not to see the grey when properties panel is fixed and the dialogue is really tall
+	$("body").css({"background-color":"#202326"});
 	// show the control panel and properties panel
 	$("#designerTools").show();
 	// show the page
@@ -3776,7 +3778,7 @@ function showPropertiesPanel() {
 		// resize in case the properties panel is not tall enough
 		windowResize("showProperties");
 	});
-					
+
 }
 
 function hideControlPanel(resetOffset) {
