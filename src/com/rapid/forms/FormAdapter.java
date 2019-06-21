@@ -616,9 +616,8 @@ public abstract class FormAdapter {
 
 		try {
 
-			if (controlValue == null) {
-
-			} else {
+			// check we have a controlValue and its value is non-null
+			if (controlValue != null && controlValue.getValue() != null) {
 
 				// get the json data from the control
 				JSONObject jsonData = new JSONObject(controlValue.getValue());
@@ -696,7 +695,7 @@ public abstract class FormAdapter {
 			// log error
 			_logger.error("Error creating the grid summary data", ex);
 			// return the error message
-			return "Error creating the grid summary data : " + ex.getMessage();
+			return "Error creating the grid summary data : " + ex.getMessage() + "<br/>\n";
 		}
 
 		// return the html table

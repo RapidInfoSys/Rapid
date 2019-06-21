@@ -1291,16 +1291,17 @@ if (details) {
 		});
 	} // datastorage type check
 	
-	// get any form
-	var form = $("form");
+	// get the rapid form - it will always have an id and a POST method. Forms in the page from the theme typically don't have the id. If grid data is not being retained in Rapid forms, it may be that duplicate controls are being added to other forms from the theme
+	var form = $("form[id][method=POST]");
 	// if there was one
-	if (form) {
+	if (form[0]) {
 		// add a hidden form input for the grid
 		form.append("<input id='" + id + "data' name='" + id + "' type='hidden'/>");
 		// listen for form submit and use getData_grid(ev, id, null, details)
-		$("form").submit(function(ev){
-			//getData_grid, // stringify with JSON.stringify and put into $("#" + id + "value")
+		form.submit(function(ev){
+			// get grid data and stringify with JSON.stringify
 			var jsonData = JSON.stringify(getData_grid(ev, id, null, details));
+			// put into our data input which has the name of the control so should be included in the form post
 			$("#" + id + "data").val(jsonData);
 		});
 		
