@@ -1013,6 +1013,7 @@ public class Rapid extends Action {
 						result.put("showControlIds", app.getShowControlIds());
 						// add whether to show action ids
 						result.put("showActionIds", app.getShowActionIds());
+
 						// add the form settings
 						result.put("isForm", app.getIsForm());
 						// add the form adapter
@@ -1025,6 +1026,33 @@ public class Rapid extends Action {
 						result.put("formEmailTo", app.getFormEmailTo());
 						// add forms attachment type
 						result.put("formEmailAttachmentType", app.getFormEmailAttachmentType());
+
+						// get app input controls
+						List<Control> inputControls = app.getAllControls(servletContext, "input");
+						// make a json array for them
+						JSONArray jsonInputControls = new JSONArray();
+						// if there were controls
+						if (inputControls != null && inputControls.size() > 0) {
+							// loop them
+							for (Control control : inputControls) {
+								// get the name
+								String controlName = control.getName();
+								// if there is one
+								if (controlName != null && controlName.trim().length() > 0) {
+									// make a json object for them
+									JSONObject jsonControl = new JSONObject();
+									// add text
+									jsonControl.put("text", controlName);
+									// add value
+									jsonControl.put("value", control.getId());
+									// add control to collection
+									jsonInputControls.put(jsonControl);
+								}
+							}
+						}
+						// add the json control collection to the result
+						result.put("inputControls", jsonInputControls);
+
 						// add form file details
 						result.put("formFile", app.getFormFile());
 						// add form file type

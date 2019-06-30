@@ -885,6 +885,50 @@ public class Application {
 		return null;
 	}
 
+	// get a control by it's id
+	public List<Control> getAllControls(ServletContext servletContext, String... types) {
+		// list of controls we will return
+		List<Control> controls = null;
+		// check we have pages
+		if (_pages != null) {
+			// initialise list
+			controls = new ArrayList<>();
+			try {
+				// no page matching this control id prefix so just loop all pages
+				for (String loopPageId : _pages.getPageIds()) {
+					// fetch this page
+					Page page = _pages.getPage(servletContext, loopPageId);
+					// get page controls
+					List<Control> pageControls = page.getAllControls();
+					// if we got some
+					if (pageControls != null && pageControls.size() > 0) {
+						// check type specified
+						if (types == null) {
+							// if no type specified, add them all
+							controls.addAll(pageControls);
+						} else {
+							// type is specified so loop controls
+							for (Control control : pageControls) {
+								// loop types
+								for (String type : types) {
+									// add if type matches
+									if (type.equals(control.getType())) controls.add(control);
+								}
+							}
+						}
+					}
+				}
+			} catch (Exception ex) {
+				// get the logger
+				Logger logger = (Logger) servletContext.getAttribute("logger");
+				// log this exception
+				logger.error("Error getting controls for application", ex);
+			}
+		} // id and page non-null check
+		// return controls
+		return controls;
+	}
+
 	// get an action by it's id
 	public Action getAction(ServletContext servletContext, String id) {
 		Action action = null;
