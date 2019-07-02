@@ -367,14 +367,14 @@ public class Application {
 		public Resource(int type, String content, int dependencyTypeClass) {
 			_type = type;
 			_content = content;
-			_dependancies = new ArrayList<ResourceDependency>();
+			_dependancies = new ArrayList<>();
 			_dependancies.add(new ResourceDependency(dependencyTypeClass));
 		}
 
 		public Resource(int type, String content, int dependencyTypeClass, String dependencyType) {
 			_type = type;
 			_content = content;
-			_dependancies = new ArrayList<ResourceDependency>();
+			_dependancies = new ArrayList<>();
 			_dependancies.add(new ResourceDependency(dependencyTypeClass, dependencyType));
 		}
 
@@ -386,7 +386,7 @@ public class Application {
 
 		// methods
 		public void addDependency(ResourceDependency dependency) {
-			if (_dependancies == null) _dependancies = new ArrayList<ResourceDependency>();
+			if (_dependancies == null) _dependancies = new ArrayList<>();
 			_dependancies.add(dependency);
 		}
 
@@ -489,8 +489,8 @@ public class Application {
 
 	// instance variables
 	private int _xmlVersion, _status, _applicationBackupsMaxSize, _pageBackupsMaxSize;
-	private String _id, _version, _name, _title, _description, _startPageId, _themeType, _styles, _statusBarColour, _statusBarHighlightColour, _statusBarTextColour, _statusBarIconColour, _functions, _securityAdapterType, _storePasswordDuration, _formAdapterType, _createdBy, _modifiedBy, _formEmailFrom, _formEmailTo, _formEmailAttachmentType, _formFileType, _formFilePath, _formFileUserName, _formFilePassword, _formWebserviceURL, _formWebserviceType, _formWebserviceSOAPAction;
-	private boolean _isForm, _pageNameIds, _showConrolIds, _showActionIds, _deviceSecurity, _formEmail, _formFile, _formWebservice;
+	private String _id, _version, _name, _title, _description, _startPageId, _formAdapterType, _formEmailFrom, _formEmailTo, _formEmailAttachmentType, _formEmailCustomerControlId, _formEmailCustomerType, _formEmailCustomerBody, _formEmailCustomerAttachmentType, _formFileType, _formFilePath, _formFileUserName, _formFilePassword, _formWebserviceURL, _formWebserviceType, _formWebserviceSOAPAction, _themeType, _styles, _statusBarColour, _statusBarHighlightColour, _statusBarTextColour, _statusBarIconColour, _securityAdapterType, _storePasswordDuration, _functions, _createdBy, _modifiedBy;
+	private boolean _isForm, _pageNameIds, _showConrolIds, _showActionIds, _deviceSecurity, _formDisableAutoComplete, _formEmail, _formEmailCustomer, _formFile, _formWebservice;
 	private Date _createdDate, _modifiedDate;
 	private Map<String,Integer> _pageOrders;
 	private SecurityAdapter _securityAdapter;
@@ -575,6 +575,14 @@ public class Application {
 	public String getStartPageId() { return _startPageId; }
 	public void setStartPageId(String startPageId) { _startPageId = startPageId; }
 
+	// the type name of the form adapter this application uses (if any)
+	public String getFormAdapterType() { return _formAdapterType; }
+	public void setFormAdapterType(String formAdapterType) { _formAdapterType = formAdapterType; }
+
+	// whether to disable form autocomplete
+	public boolean getFormDisableAutoComplete() { return _formDisableAutoComplete; }
+	public void setFormDisableAutoComplete(boolean formDisableAutoComplete) { _formDisableAutoComplete = formDisableAutoComplete; }
+
 	// whether email form checkbox has been ticked or not
 	public boolean getFormEmail() { return _formEmail; }
 	public void setFormEmail(boolean formEmail) { _formEmail = formEmail; }
@@ -590,6 +598,26 @@ public class Application {
 	// whether to set the email attachment type to none, CSV or PDF
 	public String getFormEmailAttachmentType() { return _formEmailAttachmentType; }
 	public void setFormEmailAttachmentType(String formEmailAttachmentType) { _formEmailAttachmentType = formEmailAttachmentType; }
+
+	// whether the customer will be emailed a form acknowledgement
+	public boolean getFormEmailCustomer() { return _formEmailCustomer; }
+	public void setFormEmailCustomer(boolean formEmailCustomer) { _formEmailCustomer = formEmailCustomer; }
+
+	// the control id of the customer email address
+	public String getFormEmailCustomerControlId() { return _formEmailCustomerControlId; }
+	public void setFormEmailCustomerControlId(String formEmailCustomerControlId) { _formEmailCustomerControlId = formEmailCustomerControlId; }
+
+	// the type of email to send the customer, text or html
+	public String getFormEmailCustomerType() { return _formEmailCustomerType; }
+	public void setFormEmailCustomerType(String formEmailCustomerType) { _formEmailCustomerType = formEmailCustomerType; }
+
+	// whether to set the email attachment type to none, CSV or PDF
+	public String getFormEmailCustomerBody() { return _formEmailCustomerBody; }
+	public void setFormEmailCustomerBody(String formEmailCustomerBody) { _formEmailCustomerBody = formEmailCustomerBody; }
+
+	// whether to set the customer email attachment type to none, CSV or PDF
+	public String getFormEmailCustomerAttachmentType() { return _formEmailCustomerAttachmentType; }
+	public void setFormEmailCustomerAttachmentType(String formEmailCustomerAttachmentType) { _formEmailCustomerAttachmentType = formEmailCustomerAttachmentType; }
 
 	// whether the form details file checkbox has been ticked or not
 	public boolean getFormFile() { return _formFile; }
@@ -675,10 +703,6 @@ public class Application {
 	public String getStorePasswordDuration() { return _storePasswordDuration; }
 	public void setStorePasswordDuration(String storePasswordDuration) { _storePasswordDuration = storePasswordDuration; }
 
-	// the type name of the form adapter this application uses (if any)
-	public String getFormAdapterType() { return _formAdapterType; }
-	public void setFormAdapterType(String formAdapterType) { _formAdapterType = formAdapterType; }
-
 	// a collection of parameters for this application
 	public List<ValueList> getValueLists() { return _valueLists; }
 	public void setValueLists(List<ValueList> valueLists) { _valueLists = valueLists; }
@@ -712,14 +736,14 @@ public class Application {
 	public Application() throws ParserConfigurationException, XPathExpressionException, RapidLoadingException, SAXException, IOException {
 		_xmlVersion = XML_VERSION;
 		_pages = new Pages(this);
-		_pageOrders = new HashMap<String,Integer>();
+		_pageOrders = new HashMap<>();
 		_statusBarColour = "#aaaaaa";
 		_statusBarHighlightColour = "#999999";
 		_statusBarTextColour = "#ffffff";
 		_statusBarIconColour = "white";
-		_databaseConnections = new ArrayList<DatabaseConnection>();
-		_webservices = new ArrayList<Webservice>();
-		_parameters = new ArrayList<Parameter>();
+		_databaseConnections = new ArrayList<>();
+		_webservices = new ArrayList<>();
+		_parameters = new ArrayList<>();
 		_applicationBackupsMaxSize = 3;
 		_pageBackupsMaxSize = 3;
 	};
@@ -1002,7 +1026,7 @@ public class Application {
 		// if not set yet
 		if (_pageVariables == null) {
 			// make the collection of pages
-			_pageVariables = new ArrayList<String>();
+			_pageVariables = new ArrayList<>();
 			// loop the pages
 			for (String pageId : _pages.getPageIds()) {
 				// get the page
@@ -1316,10 +1340,10 @@ public class Application {
 			StringBuilder resourceCSS = new StringBuilder();
 
 			// collection of dependent controls that need adding
-			ArrayList<String> dependentControls = new ArrayList<String>();
+			ArrayList<String> dependentControls = new ArrayList<>();
 
 			// collection of dependent actions that need adding
-			ArrayList<String> dependentActions = new ArrayList<String>();
+			ArrayList<String> dependentActions = new ArrayList<>();
 
 			// check controls
 			if (jsonControls != null) {
@@ -1786,7 +1810,7 @@ public class Application {
 	    	} // loop resources
 
 			// a list for all of the style classes we're going to send up with
-			_styleClasses = new ArrayList<String>();
+			_styleClasses = new ArrayList<>();
 
 			// populate the list of style classes by scanning the global styles
 			scanStyleClasses(_styles, _styleClasses);
@@ -1843,7 +1867,7 @@ public class Application {
 
 	public List<Backup> getApplicationBackups(RapidHttpServlet rapidServlet) throws JSONException {
 
-		List<Backup> backups = new ArrayList<Backup>();
+		List<Backup> backups = new ArrayList<>();
 
 		File backupFolder = new File(getBackupFolder(rapidServlet.getServletContext(), false));
 
@@ -1929,7 +1953,7 @@ public class Application {
 
 	public List<Backup> getPageBackups(RapidHttpServlet rapidServlet) throws JSONException {
 
-		List<Backup> backups = new ArrayList<Backup>();
+		List<Backup> backups = new ArrayList<>();
 
 		File backupFolder = new File(getBackupFolder(rapidServlet.getServletContext(), false));
 
@@ -1999,7 +2023,7 @@ public class Application {
 			});
 
 			// create a map to count backups of each page
-			Map<String,Integer> pageBackupCounts = new HashMap<String,Integer>();
+			Map<String,Integer> pageBackupCounts = new HashMap<>();
 			// loop all of the backups in reverse order
 			for (int i = backups.size() - 1; i >= 0; i--) {
 				// get the back up
@@ -2051,7 +2075,7 @@ public class Application {
 		File appFolder = new File(getConfigFolder(rapidServlet.getServletContext()));
 
 		// create a list of files to ignore
-		List<String> ignoreFiles = new ArrayList<String>();
+		List<String> ignoreFiles = new ArrayList<>();
 		ignoreFiles.add(BACKUP_FOLDER);
 
 	 	// copy the existing files and folders to the backup folder
@@ -2415,7 +2439,7 @@ public class Application {
 			ZipFile zipFile = new ZipFile(tempFile);
 
 			// create a list of files to ignore
-			ArrayList<String> ignoreFiles = new ArrayList<String>();
+			ArrayList<String> ignoreFiles = new ArrayList<>();
 			// don't include any files or folders from the back in the .zip
 			ignoreFiles.add(BACKUP_FOLDER);
 

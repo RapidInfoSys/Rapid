@@ -305,25 +305,38 @@ function Action_rapid(ev, appId, pageId, controlId, actionId, actionType, rapidA
 				saveVersion: $("#rapid_P0_C1077_").val(),
 				title: $("#rapid_P0_C394_").val(),
 				description: $("#rapid_P0_C393_").val(),
-				formAdapter: $("#rapid_P0_C1406_").val(),
+						
 				isForm: getData_checkbox(ev, "rapid_P0_C1826_"), 
 				startPageId: $("#rapid_P0_C644_").val(),				
 				pageNameIds: getData_checkbox(ev, "rapid_P0_C2409_"),
 				showControlIds: getData_checkbox(ev, "rapid_P0_C381_"),
 				showActionIds: getData_checkbox(ev, "rapid_P0_C382_"),
+				
+				formAdapter: $("#rapid_P0_C1406_").val(),
+				formDisableAutoComplete: getData_checkbox(ev, "rapid_P0_C3086_"),
+				
 				formEmail: getData_checkbox(ev, "rapid_P0_C1874_"),
 				formEmailFrom: $("#rapid_P0_C1994_").val(),
 				formEmailTo: $("#rapid_P0_C1875_").val(),
 				formEmailAttachmentType: $("#rapid_P0_C1876_").val(),
+
+				formEmailCustomer: getData_checkbox(ev, "rapid_P0_C3009_"),
+				formEmailCustomerControlId: $("#rapid_P0_C3048_").val(),
+				formEmailCustomerType: $("#rapid_P0_C3047_").val(),
+				formEmailCustomerBody: $("#rapid_P0_C3059_").val(),
+				formEmailCustomerAttachmentType: $("#rapid_P0_C3063_").val(),
+				
 				formFile: getData_checkbox(ev, "rapid_P0_C1878_"),
 				formFileType: $("#rapid_P0_C1897_").val(),
 				formFilePath: $("#rapid_P0_C1898_").val(),
 				formFileUserName: $("#rapid_P0_C1899_").val(),
 				formFilePassword: $("#rapid_P0_C1900_").val(),
+				
 				formWebservice: getData_checkbox(ev, "rapid_P0_C1905_"),
 				formWebserviceURL: $("#rapid_P0_C1903_").val(),
 				formWebserviceType: $("#rapid_P0_C1902_").val(),
 				formWebserviceSOAPAction: $("#rapid_P0_C1901_").val()
+				
 			};	
 		break;
 		case "SAVESTYLES" :		

@@ -1018,6 +1018,9 @@ public class Rapid extends Action {
 						result.put("isForm", app.getIsForm());
 						// add the form adapter
 						result.put("formAdapterType", app.getFormAdapterType());
+						// add if auto complete is disabled
+						result.put("formDisableAutoComplete", app.getFormDisableAutoComplete());
+
 						// add forms email setting
 						result.put("formEmail", app.getFormEmail());
 						// add forms from address
@@ -1027,6 +1030,8 @@ public class Rapid extends Action {
 						// add forms attachment type
 						result.put("formEmailAttachmentType", app.getFormEmailAttachmentType());
 
+						// add whether to email the customer
+						result.put("formEmailCustomer", app.getFormEmailCustomer());
 						// get app input controls
 						List<Control> inputControls = app.getAllControls(servletContext, "input");
 						// make a json array for them
@@ -1052,6 +1057,15 @@ public class Rapid extends Action {
 						}
 						// add the json control collection to the result
 						result.put("inputControls", jsonInputControls);
+
+						// add the customer email control id
+						result.put("formEmailCustomerControlId", app.getFormEmailCustomerControlId());
+						// add the customer email type, T or H
+						result.put("formEmailCustomerType", app.getFormEmailCustomerType());
+						// add the customer email body
+						result.put("formEmailCustomerBody", app.getFormEmailCustomerBody());
+						// add the customer email attachment type
+						result.put("formEmailCustomerAttachmentType", app.getFormEmailCustomerAttachmentType());
 
 						// add form file details
 						result.put("formFile", app.getFormFile());
@@ -1852,22 +1866,33 @@ public class Rapid extends Action {
 				String name = jsonAction.getString("name");
 				String title = jsonAction.getString("title");
 				String description = jsonAction.getString("description");
-				String formAdapter = jsonAction.optString("formAdapter");
+
 				boolean isForm = jsonAction.optBoolean("isForm");
 				String startPageId = jsonAction.optString("startPageId","");
 				boolean pageNameIds = jsonAction.optBoolean("pageNameIds");
 				boolean showControlIds = jsonAction.optBoolean("showControlIds");
 				boolean showActionIds = jsonAction.optBoolean("showActionIds");
 
+				String formAdapter = jsonAction.optString("formAdapter");
+				boolean formDisableAutoComplete = jsonAction.optBoolean("formDisableAutoComplete");
+
 				boolean formEmail = jsonAction.optBoolean("formEmail");
 				String formEmailFrom = jsonAction.optString("formEmailFrom");
 				String formEmailTo = jsonAction.optString("formEmailTo");
 				String formEmailAttachmentType = jsonAction.optString("formEmailAttachmentType");
+
+				boolean formEmailCustomer = jsonAction.optBoolean("formEmailCustomer");
+				String formEmailCustomerControlId = jsonAction.optString("formEmailCustomerControlId");
+				String formEmailCustomerType = jsonAction.optString("formEmailCustomerType");
+				String formEmailCustomerBody = jsonAction.optString("formEmailCustomerBody");
+				String formEmailCustomerAttachmentType = jsonAction.optString("formEmailCustomerAttachmentType");
+
 				boolean formFile = jsonAction.optBoolean("formFile");
 				String formFileType = jsonAction.optString("formFileType");
 				String formFilePath = jsonAction.optString("formFilePath");
 				String formFileUserName = jsonAction.optString("formFileUserName");
 				String formFilePassword = jsonAction.optString("formFilePassword");
+
 				boolean formWebservice = jsonAction.optBoolean("formWebservice");
 				String formWebserviceURL = jsonAction.optString("formWebserviceURL");
 				String formWebserviceType = jsonAction.optString("formWebserviceType");
@@ -1889,22 +1914,33 @@ public class Rapid extends Action {
 				app.setStatus(status);
 				app.setTitle(title);
 				app.setDescription(description);
-				app.setFormAdapterType(formAdapter);
+
 				app.setIsForm(isForm);
 				app.setStartPageId(startPageId);
 				app.setPageNameIds(pageNameIds);
 				app.setShowControlIds(showControlIds);
 				app.setShowActionIds(showActionIds);
 
+				app.setFormAdapterType(formAdapter);
+				app.setFormDisableAutoComplete(formDisableAutoComplete);
+
 				app.setFormEmail(formEmail);
 				app.setFormEmailFrom(formEmailFrom);
 				app.setFormEmailTo(formEmailTo);
 				app.setFormEmailAttachmentType(formEmailAttachmentType);
+
+				app.setFormEmailCustomer(formEmailCustomer);
+				app.setFormEmailCustomerControlId(formEmailCustomerControlId);
+				app.setFormEmailCustomerType(formEmailCustomerType);
+				app.setFormEmailCustomerBody(formEmailCustomerBody);
+				app.setFormEmailCustomerAttachmentType(formEmailCustomerAttachmentType);
+
 				app.setFormFile(formFile);
 				app.setFormFileType(formFileType);
 				app.setFormFilePath(formFilePath);
 				app.setFormFileUserName(formFileUserName);
 				app.setFormFilePassword(formFilePassword);
+
 				app.setFormWebservice(formWebservice);
 				app.setFormWebserviceURL(formWebserviceURL);
 				app.setFormWebserviceType(formWebserviceType);

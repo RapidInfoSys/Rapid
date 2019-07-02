@@ -1950,7 +1950,7 @@ public class Page {
 
 		    	// start the form if in use (but not for dialogues and other cases where the page is partial)
 		    	if (formAdapter != null && designerLink) {
-		    		writer.write("    <form id='" + _id + "_form' action='~?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + _id + "' method='POST'>\n");
+		    		writer.write("    <form id='" + _id + "_form' action='~?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + _id + "' method='POST'" + (application.getFormDisableAutoComplete() ? " autocomplete='off'" : "") + ">\n");
 		    		writer.write("      <input type='hidden' name='csrfToken' value='" + rapidRequest.getCSRFToken() + "' />\n");
 		    		writer.write("      <input type='hidden' id='" + _id +  "_hiddenControls' name='" + _id +  "_hiddenControls' />\n");
 		    	}
