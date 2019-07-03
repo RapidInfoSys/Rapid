@@ -1181,6 +1181,51 @@ public class Rapid extends RapidHttpServlet {
 									// log it!
 									logger.trace("Form data : " + formData);
 
+									// get all of the app pages
+									PageHeaders pageHeaders = app.getPages().getSortedPages();
+
+									// get the if of the page we just submitted
+									String requestPageId = rapidRequest.getPage().getId();
+
+									////////////////////////////////////////////////////////////////////////////////////////
+
+									// if this is the last page and there are no form summary labels we will submit
+									if (false && !formDetails.getSubmitted()) {
+
+										// get the position of the next page in sequence
+										int requestPageIndex = pageHeaders.indexOf(requestPageId) + 1;
+
+										// if there are any pages next to check
+										if (requestPageIndex < pageHeaders.size()) {
+
+											// get the next page
+											Page nextPage = app.getPages().getPage(getServletContext(), pageHeaders.get(requestPageIndex).getId());
+
+											// check the page visibility
+											while (!nextPage.isVisible(rapidRequest, app, formDetails)) {
+												// if we're here the visibility check on the current page failed so increment the index
+												requestPageIndex ++;
+												// if there are no more pages
+												if (requestPageIndex > pageHeaders.size() - 1) {
+													// we can submit
+													action = "submit";
+													// we're done
+													break;
+												} else {
+													// select the next page to check the visibility of
+													nextPage = app.getPages().getPage(getServletContext(), pageHeaders.get(requestPageIndex).getId());
+												} // pages remaining check
+											} // page visible loop
+
+										} else {
+											// allow submission immediately
+											action = "submit";
+										}
+
+									}
+
+									///////////////////////////////////////////////////////////////////////////////////////
+
 									// if there's a submit or pay action
 									if ("submit".equals(action) || "pay".equals(action) ) {
 
@@ -1350,9 +1395,6 @@ public class Rapid extends RapidHttpServlet {
 
 											} else {
 
-												// get the page id
-												String requestPageId = rapidRequest.getPage().getId();
-
 												// assume we are not requesting a save
 												boolean requestSave = false;
 
@@ -1384,9 +1426,6 @@ public class Rapid extends RapidHttpServlet {
 
 												// assume we're not going to go to the summary
 												boolean requestSummary = false;
-
-												// get all of the app pages
-												PageHeaders pageHeaders = app.getPages().getSortedPages();
 
 												// if this is a request for the save page
 												if (requestSave) {
