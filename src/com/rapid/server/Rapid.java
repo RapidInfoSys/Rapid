@@ -207,12 +207,20 @@ public class Rapid extends RapidHttpServlet {
 
 									} else {
 
-										// if  we had some and this is the correct version
+										// if we have a max page some and this is the correct version of the form
 										if (app.getId().equals(formDetails.getAppId()) && app.getVersion().equals(formDetails.getVersion())) {
-											// summary is never cached
-											RapidFilter.noCache(response);
-											// write the form summary page
-											formAdapter.writeFormSummary(rapidRequest, response);
+
+											// if we have form summary labels
+											if (formAdapter.getHasSummaryLabels(rapidRequest, formId)) {
+												// summary is never cached
+												RapidFilter.noCache(response);
+												// write the form summary page
+												formAdapter.writeFormSummary(rapidRequest, response);
+											} else {
+												// to summary to show so got to the start page, without invalidating the session
+												gotoStartPage(request, response, app, false);
+											}
+
 										} else {
 											// request the correct version for the summary (this also avoids ERR_CACH_MISS issues on the back button )
 											response.sendRedirect("~?a=" + app.getId() + "&v=" + app.getVersion() + "&action=summary");
@@ -1187,10 +1195,11 @@ public class Rapid extends RapidHttpServlet {
 									// get the if of the page we just submitted
 									String requestPageId = rapidRequest.getPage().getId();
 
-									////////////////////////////////////////////////////////////////////////////////////////
-
 									// if this is the last page and there are no form summary labels we will submit
-									if (false && !formDetails.getSubmitted()) {
+									if (!formDetails.getSubmitted()) {
+
+										// assume we won't submit the form
+										boolean submit = false;
 
 										// get the position of the next page in sequence
 										int requestPageIndex = pageHeaders.indexOf(requestPageId) + 1;
@@ -1208,7 +1217,7 @@ public class Rapid extends RapidHttpServlet {
 												// if there are no more pages
 												if (requestPageIndex > pageHeaders.size() - 1) {
 													// we can submit
-													action = "submit";
+													submit = true;
 													// we're done
 													break;
 												} else {
@@ -1219,12 +1228,21 @@ public class Rapid extends RapidHttpServlet {
 
 										} else {
 											// allow submission immediately
-											action = "submit";
+											submit = true;
+										}
+
+										// if we are about to reach the submit page
+										if (submit) {
+
+											// check whether it has form summary labels
+											boolean formLabels = formAdapter.getHasSummaryLabels(rapidRequest, formDetails.getId());
+
+											// if there were no form labels we can proceed to submit
+											if (!formLabels) action="submit";
+
 										}
 
 									}
-
-									///////////////////////////////////////////////////////////////////////////////////////
 
 									// if there's a submit or pay action
 									if ("submit".equals(action) || "pay".equals(action) ) {
@@ -1490,8 +1508,18 @@ public class Rapid extends RapidHttpServlet {
 														formAdapter.setFormComplete(rapidRequest, formDetails);
 													}
 
-													// send a redirect for the summary (this also avoids ERR_CACH_MISS issues on the back button )
-													response.sendRedirect("~?a=" + app.getId() + "&v=" + app.getVersion() + "&action=summary");
+													// if this form has labels
+													if (formAdapter.getHasSummaryLabels(rapidRequest, formDetails.getId())) {
+
+														// send a redirect for the summary (this also avoids ERR_CACH_MISS issues on the back button )
+														response.sendRedirect("~?a=" + app.getId() + "&v=" + app.getVersion() + "&action=summary");
+
+													} else {
+
+														// otherwise ask for the first page without invalidating the session
+														gotoStartPage(request, response, app, false);
+
+													}
 
 												} else if (requestSave) {
 

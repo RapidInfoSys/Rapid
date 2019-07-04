@@ -597,8 +597,6 @@ public abstract class FormAdapter {
 					if ("grid".equals(control.getType())) {
 						// grid summary html is created specially
 						return getSummaryGridHtml(application, control, controlValue);
-
-						//return "<span class='formSummaryControl'>" + label + " :</br>" + controlValue.getValue() + "</span><br/>\n";
 					} else {
 						// otherwise use the conventional way of getting the html and value
 						String value = getSummaryControlValue(application, control, controlValue, "(no value)");
@@ -1488,7 +1486,7 @@ public abstract class FormAdapter {
 
 	}
 
-	// processes the submitting of  the form via the abstract submitForm method as well as generating emails and attachments
+	// processes the submitting of the form via the abstract submitForm method as well as generating emails and attachments
 	public synchronized void doSubmitForm(RapidRequest rapidRequest) throws Exception {
 
 		// get the form details
@@ -1632,6 +1630,82 @@ public abstract class FormAdapter {
 
 		// a string list of all the control values
 		return valueList;
+	}
+
+	// whether this form has any summary labels, if not we can skip the summary
+	public boolean getHasSummaryLabels(RapidRequest rapidRequest, String formId) throws Exception {
+
+		// assume not
+		boolean hasSummaryLabels = false;
+
+		// if there is an application
+		if (_application != null) {
+
+			// get it's pages
+			PageHeaders pages = _application.getPages().getSortedPages();
+
+			// loop them
+			for (PageHeader pageHeader : pages) {
+
+				// get the page
+				Page page = _application.getPages().getPage(pageHeader.getId());
+
+				// get the page label
+				String pageLabel = page.getLabel();
+
+				// if the page has a label we can go!
+				if (pageLabel != null && pageLabel.trim().length() > 0) {
+					// we have labels
+					hasSummaryLabels = true;
+					// we're done
+					break;
+				}
+
+				// get user form page values
+				FormPageControlValues controlValues = getFormPageControlValues(rapidRequest, formId, pageHeader.getId());
+
+				// if there are some
+				if (controlValues != null && controlValues.size() > 0) {
+
+					// loop them
+					for (FormControlValue value : controlValues) {
+
+						// if not hidden
+						if (!value.getHidden()) {
+
+							// get the control
+							Control control = page.getControl(value.getId());
+
+							// if we got one
+							if (control != null) {
+
+								// get its label
+								String label = control.getLabel();
+
+								// if there is something we're good!
+								if (label != null && label.trim().length() > 0) {
+
+									// we have labels
+									hasSummaryLabels = true;
+									// we're done
+									break;
+
+								} // label check
+
+							} // control null check
+
+						} // control hidden check
+
+					} // control value loop
+
+				} // control value check
+
+			} // page header loop
+
+		} // application check
+
+		return hasSummaryLabels;
+
 	}
 
 	// this writes the form pdf to an Output stream

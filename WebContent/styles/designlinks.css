@@ -1,3 +1,7 @@
+a.disabled {
+	cursor: not-allowed;
+}
+
 div#designShow {
 	position: fixed;
     left: 0;

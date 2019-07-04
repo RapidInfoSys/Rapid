@@ -947,12 +947,16 @@ function Event_initForm(id) {
 	});
 }
 
+// disables all form controls and links for submitted forms
 function Event_checkForm() {
+	// if the form has been submitted
 	if (_formSubmitted) {
+		// disable controls
 		$("input").disable();
 		$("select").disable();
 		$("textarea").disable();
-		$("a:not([target])").unbind("click").click( function(ev){
+		// disable links, except for designer show ones
+		$("a:not(#designLink):not(#designLinkNewTab)").unbind("click").click( function(ev){
 			return false;
 		}).addClass("disabled");
 	}
