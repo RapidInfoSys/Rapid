@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<security>
+    <roles>
+        <description>Manage application in Rapid Admin</description>
+        <name>RapidAdmin</name>
+    </roles>
+    <roles>
+        <description>Design application in Rapid Designer</description>
+        <name>RapidDesign</name>
+    </roles>
+    <roles>
+        <description>Only manage users in Rapid Admin</description>
+        <name>RapidUsers</name>
+    </roles>
+    <users>
+        <description>Admin user</description>
+        <deviceDetails></deviceDetails>
+        <name>admin</name>
+        <password>admin</password>
+        <roles>RapidAdmin</roles>
+        <roles>RapidDesign</roles>
+    </users>
+    <users>
+        <description>Design user</description>
+        <deviceDetails></deviceDetails>
+        <email></email>
+        <name>design</name>
+        <password>design</password>
+        <roles>RapidDesign</roles>
+    </users>
+    <users>
+        <description>Unprivileged user</description>
+        <deviceDetails></deviceDetails>
+        <email></email>
+        <name>user</name>
+        <password>user</password>
+    </users>
+    <users>
+        <description>Manage users</description>
+        <deviceDetails></deviceDetails>
+        <email></email>
+        <name>users</name>
+        <password>users</password>
+        <roles>RapidUsers</roles>
+    </users>
+</security>

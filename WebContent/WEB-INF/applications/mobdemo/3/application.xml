@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><application><actionTypes>control</actionTypes><actionTypes>custom</actionTypes><actionTypes>dataCopy</actionTypes><actionTypes>database</actionTypes><actionTypes>email</actionTypes><actionTypes>existing</actionTypes><actionTypes>logic</actionTypes><actionTypes>mobile</actionTypes><actionTypes>navigate</actionTypes><actionTypes>validation</actionTypes><actionTypes>webservice</actionTypes><controlTypes>page</controlTypes><controlTypes>button</controlTypes><controlTypes>calendar</controlTypes><controlTypes>dataStore</controlTypes><controlTypes>flowLayout</controlTypes><controlTypes>gallery</controlTypes><controlTypes>glyph</controlTypes><controlTypes>grid</controlTypes><controlTypes>image</controlTypes><controlTypes>link</controlTypes><controlTypes>map</controlTypes><controlTypes>pagePanel</controlTypes><controlTypes>panel</controlTypes><controlTypes>responsivebutton</controlTypes><controlTypes>responsivecheckbox</controlTypes><controlTypes>responsivedate</controlTypes><controlTypes>responsivedropdown</controlTypes><controlTypes>responsiveinput</controlTypes><controlTypes>responsivepanel</controlTypes><controlTypes>responsiveradiobuttons</controlTypes><controlTypes>responsivetext</controlTypes><controlTypes>signature</controlTypes><controlTypes>slidePanel</controlTypes><controlTypes>text</controlTypes><controlTypes>flowLayoutCell</controlTypes><controlTypes>slidePanelPane</controlTypes><createdBy>admin</createdBy><createdDate>2019-06-06T11:39:22.337+01:00</createdDate><databaseConnections><connectionAdapterClass>com.rapid.data.SimpleConnectionAdapter</connectionAdapterClass><connectionString>jdbc:sqlite:[[rootfolder]]/database/rapidsample.db</connectionString><driverClass>org.sqlite.JDBC</driverClass><name>Demo connection</name><password></password><userName></userName></databaseConnections><description></description><deviceSecurity>false</deviceSecurity><formAdapterType></formAdapterType><formDisableAutoComplete>false</formDisableAutoComplete><formEmail>false</formEmail><formEmailAttachmentType></formEmailAttachmentType><formEmailCustomer>false</formEmailCustomer><formEmailFrom></formEmailFrom><formEmailTo></formEmailTo><formFile>false</formFile><formFilePassword></formFilePassword><formFilePath></formFilePath><formFileType></formFileType><formFileUserName></formFileUserName><formWebservice>false</formWebservice><formWebserviceSOAPAction></formWebserviceSOAPAction><formWebserviceType></formWebserviceType><formWebserviceURL></formWebserviceURL><id>mobdemo</id><isForm>false</isForm><modifiedBy>admin</modifiedBy><modifiedDate>2019-07-04T17:09:44.107+01:00</modifiedDate><name>mobdemo</name><pageBackupsMaxSize>3</pageBackupsMaxSize><pageNameIds>false</pageNameIds><pageOrders/><securityAdapterType>rapid</securityAdapterType><showActionIds>false</showActionIds><showControlIds>false</showControlIds><startPageId>P1</startPageId><status>0</status><statusBarColour>#666666</statusBarColour><statusBarHighlightColour>#999999</statusBarHighlightColour><statusBarIconColour>white</statusBarIconColour><statusBarTextColour>#ffffff</statusBarTextColour><styles>* {
+  cursor: default;
+}
+
+body {
+  background: white;
+}
+
+body, .form-control {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  background: #f0f1f3;
+}
+
+.titleText {
+ z-index: 99;
+ position: absolute;
+ top: 0;
+ left: 0;
+ padding-top: 10px;
+ text-align: center;
+ width: 100%;
+ color: white;
+ font-weight: bold;
+ font-size: 20px;
+}
+
+h1 {
+  font-weight: 700;
+}
+
+.menuItem {
+ padding: 10px;
+}
+
+.menuItem:hover {
+  color: white;
+  background: #0066b8;
+}
+
+.form-control {
+  transition: border-color 0.3s;
+  padding: 0px 6px 3px;
+  border-radius: 5px;
+  border-color: #ddd;
+  background: white;
+}
+
+.form-control:focus {
+  border-color: #d00;
+}
+
+.r-inputbox label, .r-date label {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+button.btn {
+  transition: filter 0.3s, box-shadow 0.3s;
+  border: none;
+  background: white;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1), 0 0 2px rgba(0, 0, 0, 0.2);
+  padding: 0 10px;
+  min-width: 45px;
+  font-weight: 700;
+  height: 35px;
+}
+
+button.btn:hover {
+  transition: none;
+  filter: brightness(120%);
+  box-shadow: 0 6px 10px rgba(0,0,0,0.1), 0 0 2px rgba(0, 0, 0, 0.2);
+}
+
+button.btn:active {
+  transition: none;
+  filter: brightness(90%);
+  box-shadow: none;
+}
+
+.grid tr:first-child {
+  font-weight: 600;
+}
+
+.grid tr:nth-child(2n-1) {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.grid tr:hover:not(:first-child) {
+  background: #0066b8;
+  color: white;
+}
+
+.grid td {
+  padding: 8px;
+}
+
+.grid td:not(:last-child) {
+  border-right: solid 1px rgba(0, 0, 0, 0.08);
+}
+
+#cameraVideoContainer {
+  z-index: 101;
+}
+
+.signature {
+  border: 1px solid #ccc;
+  box-shadow: 0 8px 12px 2px rgba(0, 0, 0 0.1);
+}
+
+.slidePanelCover, .dialogueCover {
+  background-color: #000;
+  opacity: 0.2;
+}
+
+.slidePanelPane, .dialogue {
+  border: none;
+  box-shadow: 0 0 12px 6px rgba(0, 0, 0, 0.1);
+}
+
+.slidePanelPane {
+  background-color: rgba(255,255,255,0.9);
+}
+
+.slidePanelPane .glyph {
+  font-size: 20px;
+}
+
+div.slidePanelOpen {
+    margin-left: 0;
+}
+
+.slidePanelPane + .r-panel {
+  background: #606369 !important;
+}
+
+.slidePanelPane &gt; .r-panel:first-child {
+  background: none !important;
+}
+
+.slidePanel &gt; .fa-bars {
+  cursor: pointer;
+}
+
+.slidePanelOpen &gt; .fa-bars {
+  color: black;
+}
+			
+div.ui-datepicker {
+	box-shadow: 0 3px 10px rgba(0,0,0,0.3), 0 0 0 1px rgba(0,0,0,0.1);
+}
+
+div.ui-datepicker div.ui-datepicker-header {
+	background: white;
+	border: none;
+}
+
+.ui-datepicker tr:first-child {
+	border: none !important;
+}
+
+.ui-datepicker tr:not(:last-child) td:not(ui-state-disabled) {
+	border-bottom: solid 1px #ddd;
+}
+
+div.ui-datepicker thead th {
+	background: #ddd;
+	padding: 0;
+	border-top: 1px solid #ddd !important;
+}
+
+div.ui-datepicker thead th&gt;span {
+	color: black;
+	text-shadow: none;
+}
+
+.ui-datepicker td {
+	border: none;
+}
+
+.ui-datepicker td a.ui-state-default {
+	background: #eee;
+	box-shadow: none;
+	text-shadow: none;
+}
+
+.ui-datepicker-today a.ui-state-highlight {
+ 	background: gray !important;
+	color: white !important;
+	box-shadow: none !important;
+}
+
+.ui-datepicker-current-day a.ui-state-active {
+	    background: darkred !important;
+	    box-shadow: none !important;
+}
+
+.ui-datepicker-current-day a {
+	color: white !important;
+	text-shadow: none !important;
+	box-shadow: none !important;
+}</styles><themeType>responsive</themeType><title>Rapid Mobile demo</title><version>3</version><XMLVersion>1</XMLVersion></application>
