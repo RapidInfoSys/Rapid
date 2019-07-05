@@ -322,6 +322,7 @@ function Action_rapid(ev, appId, pageId, controlId, actionId, actionType, rapidA
 
 				formEmailCustomer: getData_checkbox(ev, "rapid_P0_C3009_"),
 				formEmailCustomerControlId: $("#rapid_P0_C3048_").val(),
+				formEmailCustomerSubject: $("#rapid_P0_C3136_").val(),
 				formEmailCustomerType: getData_radiobuttons(ev, "rapid_P0_C3047_"),
 				formEmailCustomerBody: $("#rapid_P0_C3059_").val(),
 				formEmailCustomerAttachmentType: $("#rapid_P0_C3063_").val(),

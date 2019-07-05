@@ -319,7 +319,7 @@ public class Email {
         message.setSubject(subject);
         message.setText(text);
 
-     // assume no attachments
+        // assume no attachments
         boolean gotAttachments = false;
         // if something was provided
         if (attachments != null) {

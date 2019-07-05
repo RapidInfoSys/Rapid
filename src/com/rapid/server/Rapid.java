@@ -326,8 +326,8 @@ public class Rapid extends RapidHttpServlet {
 
 									// if there is a start parameter, nuke the session and then move on one page without the start parameter so users can go back to the beginning without loosing values
 									if (request.getParameter("start") != null) {
-										// invalidate the session
-										request.getSession().invalidate();
+										// empty the user form details
+										formAdapter.emptyUserFormDetails(rapidRequest);
 										// start the url
 										String url = "~?";
 										// start the position

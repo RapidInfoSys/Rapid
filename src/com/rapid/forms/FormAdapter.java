@@ -883,10 +883,7 @@ public abstract class FormAdapter {
 	}
 
 	// this returns the input stream for the attachment file
-	protected Attachment getEmailAttachment(RapidRequest rapidRequest, String formId) throws Exception {
-
-		// get the type
-		String attachmentType = _application.getFormEmailAttachmentType();
+	protected Attachment getEmailAttachment(RapidRequest rapidRequest, String attachmentType, String formId) throws Exception {
 
 		// get the file name
 		String fileName = getFormFileName(rapidRequest, formId, attachmentType, true);
@@ -1213,12 +1210,22 @@ public abstract class FormAdapter {
 		session.setAttribute(USER_FORM_DETAILS, allDetails);
 		// if we were given details
 		if (details == null) {
-			// put the new form id in the session
+			// empty the new form id in the session
 			session.setAttribute(USER_FORM_ID, null);
 		} else {
 			// put the new form id in the session
 			session.setAttribute(USER_FORM_ID, details.getId());
 		}
+	}
+
+	// sets the form details in the user session for a given application id and version
+	public synchronized void emptyUserFormDetails(RapidRequest rapidRequest) {
+		// get the user session (making a new one if need be)
+		HttpSession session = rapidRequest.getRequest().getSession();
+		// empty the new form id in the session
+		session.setAttribute(USER_FORM_ID, null);
+		// empty all user form details
+		session.setAttribute(USER_FORM_DETAILS, null);
 	}
 
 	// a helper method to get the form id via the details
@@ -1517,30 +1524,86 @@ public abstract class FormAdapter {
 			// only email if 3rd party and internal submission did not fail
 			if (application.getFormEmail()) {
 
-				// get a string writer which the summary html will be written to
-				StringWriter writer = new StringWriter();
+				// get the email from
+				String emailFrom = application.getFormEmailFrom();
 
-				// write to the writer
-				writeFormSummaryHTML(rapidRequest, formDetails, writer, true);
+				// get the back office email to
+				String backOfficeEmailTo = application.getFormEmailTo();
 
-				// get the attachment (might not be one)
-				Attachment attachment = getEmailAttachment(rapidRequest, formId);
+				// keep the attachment here to avoid making it twice
+				Attachment attachment = null;
 
-				// get upload control file names
-				List<String> namesOfFilesToAttach = getAllControlValues(rapidRequest, formId, "upload");
+				// if there was a back office email
+				if (backOfficeEmailTo != null && backOfficeEmailTo.trim().length() > 0) {
 
-				// get file data sources from list of file names
-				List<Attachment> attachmentList = getFileAttachments(rapidRequest, namesOfFilesToAttach);
+					// get a string writer which the summary html will be written to
+					StringWriter writer = new StringWriter();
 
-				// add the form summary attachment as the first in the list
-				attachmentList.add(0,  attachment);
+					// write to the writer
+					writeFormSummaryHTML(rapidRequest, formDetails, writer, true);
 
-				// create an array from the list
-				Attachment[] attachmentArray = attachmentList.toArray(new Attachment[attachmentList.size()]);
+					// get the attachment (might not be one)
+					if (application.getFormEmailAttachmentType().length() > 0) attachment = getEmailAttachment(rapidRequest, application.getFormEmailAttachmentType(), formId);
 
-				// send the email
-				Email.send(application.getFormEmailFrom(), application.getFormEmailTo(), getEmailSubject(rapidRequest, formId), "HTML preview not available", writer.toString(), attachmentArray);
-			}
+					// get upload control file names
+					List<String> namesOfFilesToAttach = getAllControlValues(rapidRequest, formId, "upload");
+
+					// get file data sources from list of file names
+					List<Attachment> attachmentList = getFileAttachments(rapidRequest, namesOfFilesToAttach);
+
+					// add the form summary attachment as the first in the list
+					attachmentList.add(0,  attachment);
+
+					// create an array from the list
+					Attachment[] attachmentArray = attachmentList.toArray(new Attachment[attachmentList.size()]);
+
+					// send the email
+					Email.send(emailFrom, backOfficeEmailTo, getEmailSubject(rapidRequest, formId), "HTML preview not available", writer.toString(), attachmentArray);
+
+				} // back office email check
+
+				// get the customer email address control id
+				String custorEmailToControlId = application.getFormEmailCustomerControlId();
+
+				// if there is a customer email
+				if (application.getFormEmailCustomer() && custorEmailToControlId != null) {
+
+					// get the customer email address
+					String custorEmailTo = this.getFormControlValue(rapidRequest, formId, custorEmailToControlId);
+
+					// if we got one
+					if (custorEmailTo != null && custorEmailTo.trim().length() > 0) {
+
+						// get the subject
+						String subject = application.getFormEmailCustomerSubject(); ////////////////////
+
+						// get the body
+						String body = application.getFormEmailCustomerBody(); ////////////////////
+
+						// if the customer email attachment is different from the back-office attachment
+						if (!application.getFormEmailAttachmentType().equals(application.getFormEmailCustomerAttachmentType())) {
+							// get the attachment for the customer
+							attachment = getEmailAttachment(rapidRequest, application.getFormEmailCustomerAttachmentType(), formId);
+						}
+
+						// email type check
+						if ("H".equals(application.getFormEmailCustomerAttachmentType())) {
+
+							// send the email
+							Email.send(emailFrom, custorEmailTo, subject, "HTML preview not available", body, attachment);
+
+						} else {
+
+							// send the email
+							Email.send(emailFrom, custorEmailTo, subject, body, null, attachment);
+
+						}
+
+					} // customer email address check
+
+				} // customer email check
+
+			} // email check
 
 			// retain the submitted date/time in the details
 			formDetails.setSubmittedDateTime(submissionDetails.getDateTime());

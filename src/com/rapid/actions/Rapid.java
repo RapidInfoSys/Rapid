@@ -1033,7 +1033,7 @@ public class Rapid extends Action {
 						// add whether to email the customer
 						result.put("formEmailCustomer", app.getFormEmailCustomer());
 						// get app input controls
-						List<Control> inputControls = app.getAllControls(servletContext, "input");
+						List<Control> inputControls = app.getAllControls(servletContext, "input", "responsiveinput");
 						// make a json array for them
 						JSONArray jsonInputControls = new JSONArray();
 						// if there were controls
@@ -1060,6 +1060,8 @@ public class Rapid extends Action {
 
 						// add the customer email control id
 						result.put("formEmailCustomerControlId", app.getFormEmailCustomerControlId());
+						// add the customer email subject
+						result.put("formEmailCustomerSubject", app.getFormEmailCustomerSubject());
 						// add the customer email type, T or H
 						result.put("formEmailCustomerType", app.getFormEmailCustomerType());
 						// add the customer email body
@@ -1883,6 +1885,7 @@ public class Rapid extends Action {
 
 				boolean formEmailCustomer = jsonAction.optBoolean("formEmailCustomer");
 				String formEmailCustomerControlId = jsonAction.optString("formEmailCustomerControlId");
+				String formEmailCustomerSubject = jsonAction.optString("formEmailCustomerSubject");
 				String formEmailCustomerType = jsonAction.optString("formEmailCustomerType");
 				String formEmailCustomerBody = jsonAction.optString("formEmailCustomerBody");
 				String formEmailCustomerAttachmentType = jsonAction.optString("formEmailCustomerAttachmentType");
@@ -1931,6 +1934,7 @@ public class Rapid extends Action {
 
 				app.setFormEmailCustomer(formEmailCustomer);
 				app.setFormEmailCustomerControlId(formEmailCustomerControlId);
+				app.setFormEmailCustomerSubject(formEmailCustomerSubject);
 				app.setFormEmailCustomerType(formEmailCustomerType);
 				app.setFormEmailCustomerBody(formEmailCustomerBody);
 				app.setFormEmailCustomerAttachmentType(formEmailCustomerAttachmentType);
