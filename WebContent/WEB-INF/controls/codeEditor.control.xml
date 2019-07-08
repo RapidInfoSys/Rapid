@@ -81,7 +81,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <changeValueJavaScript>select</changeValueJavaScript>
 	            <getValuesFunction>
 	                <![CDATA[
-return [["javascript"],["css"],["sql"],["htmlmixed"],["text"],["xml"]];
+return [["css"],["htmlmixed"],["javascript"],["sql"],["text"],["xml"]];
 					]]>
 	            </getValuesFunction>
 	            <refreshHtml>true</refreshHtml>
@@ -220,29 +220,7 @@ _codeEditors = {};
 	        <resource>
 	    		<type>cssFile</type>
 	    		<contents>scripts/controls/codeMirror/lib/codemirror.css</contents>
-	    	</resource>    		    	
-	    	<resource>
-	    		<type>javascriptFile</type>
-	    		<contents>scripts/controls/codeMirror/lib/codemirror.js</contents>
-	    	</resource> 
-	    	<resource>
-	    		<type>javascriptFile</type>
-	    		<contents>scripts/controls/codeMirror/addon/display/placeholder.js</contents>
-	    	</resource> 
-	    	
-	    	<resource>
-	    		<type>javascriptFile</type>
-	    		<contents>scripts/controls/codeMirror/mode/javascript/javascript.js</contents>
-	    	</resource> 
-	    	<resource>
-	    		<type>javascriptFile</type>
-	    		<contents>scripts/controls/codeMirror/mode/css/css.js</contents>
-	    	</resource> 
-	    	<resource>
-	    		<type>javascriptFile</type>
-	    		<contents>scripts/controls/codeMirror/mode/sql/sql.js</contents>
-	    	</resource> 
-	    	
+	    	</resource>
 	    	<resource>
 	    		<type>cssFile</type>
 	    		<contents>scripts/controls/codeMirror/theme/cobalt.css</contents>
@@ -250,6 +228,32 @@ _codeEditors = {};
 	    	<resource>
 	    		<type>cssFile</type>
 	    		<contents>scripts/controls/codeMirror/theme/dracula.css</contents>
+	    	</resource>
+	    	
+	    	<resource>
+	    		<type>javascriptFile</type>
+	    		<contents>scripts/controls/codeMirror/lib/codemirror.js</contents>
+	    	</resource>
+	    	
+	    	<resource>
+	    		<type>javascriptFile</type>
+	    		<contents>scripts/controls/codeMirror/mode/css/css.js</contents>
+	    	</resource>
+	    	<resource>
+	    		<type>javascriptFile</type>
+	    		<contents>scripts/controls/codeMirror/mode/htmlmixed/htmlmixed.js</contents>
+	    	</resource>
+	    	<resource>
+	    		<type>javascriptFile</type>
+	    		<contents>scripts/controls/codeMirror/mode/javascript/javascript.js</contents>
+	    	</resource>
+	    	<resource>
+	    		<type>javascriptFile</type>
+	    		<contents>scripts/controls/codeMirror/mode/sql/sql.js</contents>
+	    	</resource>
+	    	<resource>
+	    		<type>javascriptFile</type>
+	    		<contents>scripts/controls/codeMirror/mode/xml/xml.js</contents>
 	    	</resource>
 	    	
 	    	<resource>
@@ -271,6 +275,10 @@ _codeEditors = {};
 	    	<resource>
 	    		<type>javascriptFile</type>
 	    		<contents>scripts/controls/codeMirror/addon/display/autorefresh.js</contents>
+	    	</resource>
+	    	<resource>
+	    		<type>javascriptFile</type>
+	    		<contents>scripts/controls/codeMirror/addon/display/placeholder.js</contents>
 	    	</resource>
 	    	<resource>
 	    		<type>javascriptFile</type>
