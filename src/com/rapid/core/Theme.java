@@ -33,13 +33,14 @@ public class Theme  {
 	// private instance variables
 	private String _type, _name, _css, _headerHtml, _footerHtml, _headerHtmlDesigner, _footerHtmlDesigner, _formSummaryHeaderHtml, _formSummaryPageStartHtml, _formSummaryPageEndHtml, _formSummaryPagesEndHtml, _formSummaryFooterHtml;
 	private boolean _visible;
-	private JSONObject _resources;
+	private JSONObject _parameters, _resources;
 
 	// properties
 	public String getType() { return _type; }
 	public String getName() { return _name; }
 	public boolean getVisible() { return _visible; }
 	public String getCSS() { return _css; }
+	public JSONObject getParameters()  { return _parameters; }
 	public JSONObject getResources()  { return _resources; }
 	public String getHeaderHtml() { return _headerHtml; }
 	public String getFooterHtml() { return _footerHtml; }
@@ -60,6 +61,7 @@ public class Theme  {
 		_name = jsonTheme.getString("name");
 		_visible = jsonTheme.optBoolean("visible", true);
 		_css = jsonTheme.getString("css").trim();
+		_parameters = jsonTheme.optJSONObject("parameters");
 		_resources = jsonTheme.optJSONObject("resources");
 		_headerHtml = jsonTheme.optString("headerHtml", null);
 		_footerHtml = jsonTheme.optString("footerHtml", null);

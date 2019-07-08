@@ -71,7 +71,45 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 					</xs:annotation>
 				</xs:element>
 				
+				<xs:element name="parameters" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>
+							Theme parameters are also included where ever application parameters are replaced 
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="parameter" minOccurs="1"
+								maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="name">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:minLength value="1" />
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="value">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:minLength value="1" />
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				
 				<xs:element name="resources" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>
+							Resources allow other files to be included in the appropriate places in each pages html, and will be included in the Rapid Mobile download .zip file
+						</xs:documentation>
+					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="resource" minOccurs="1"

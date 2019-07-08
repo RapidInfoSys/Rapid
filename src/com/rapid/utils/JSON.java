@@ -53,7 +53,7 @@ public class JSON {
 			// return the array
 			return jsonArray;
 		}
-		// no onject
+		// no object
 		return null;
 	}
 

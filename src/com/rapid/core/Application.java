@@ -78,6 +78,7 @@ import com.rapid.server.RapidHttpServlet;
 import com.rapid.server.RapidRequest;
 import com.rapid.soa.Webservice;
 import com.rapid.utils.Files;
+import com.rapid.utils.JSON;
 import com.rapid.utils.Minify;
 import com.rapid.utils.Strings;
 import com.rapid.utils.XML;
@@ -794,6 +795,30 @@ public class Application {
 							String matchString = "[[" + parameter.getName() + "]]";
 							// if the match string is present replace it with the value
 							if (string.contains(matchString)) string = string.replace(matchString, parameter.getValue());
+						}
+					}
+					// get any theme
+					Theme theme = getTheme(servletContext);
+					// if we have a theme
+					if (theme != null) {
+						// try
+						try {
+							// get any parameters
+							JSONArray jsonParameters = JSON.getJSONArray(theme.getParameters(),"parameter");
+							// if we got some
+							if (jsonParameters != null) {
+								// loop them
+								for (int i = 0; i < jsonParameters.length(); i++) {
+									// get this parameter
+									JSONObject jsonParameter = jsonParameters.getJSONObject(i);
+									// define the match string
+									String matchString = "[[" + jsonParameter.optString("name") + "]]";
+									// if the match string is present replace it with the value
+									if (string.contains(matchString)) string = string.replace(matchString, jsonParameter.optString("value"));
+								}
+							}
+						} catch (JSONException ex) {
+							// silent fail - should never happen
 						}
 					}
 				}
