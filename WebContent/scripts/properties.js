@@ -264,7 +264,7 @@ function getDataOptions(selectId, ignoreId, input, hasDatetime) {
 	return options;
 }
 
-// this function returns a set of options for form values from this, and previous pages
+// this function returns a set of options for form values from previous pages
 function getFormValueOptions(selectId) {
 	// we want this pages session variables and all prior pages session variables and controls with canBeUsedForFormPageVisibilty
 	var options = "";
@@ -287,7 +287,8 @@ function getFormValueOptions(selectId) {
 	if (_page && _pages) {
 		// loop the pages
 		for (var i in _pages) {
-			// if this page has controls
+			// stop when the current page is reached (we only want the prior ones)
+			if (_pages[i].id == _page.id) break;
 			if (_pages[i].controls) {
 				var pageControlOptions = "";
 				// page session variables
@@ -314,9 +315,7 @@ function getFormValueOptions(selectId) {
 				}
 				// if we got options for the page we are looping wrap into a group
 				if (pageControlOptions) options += "<optgroup label='" + escapeApos(_pages[i].name + " - " + _pages[i].title) + "'>" + pageControlOptions + "</optgroup>";
-			}
-			// stop when the current page is reached (we only want this, and the prior ones)
-			if (_pages[i].id == _page.id) break;
+			}			
 		}
 	}
 	return options;
