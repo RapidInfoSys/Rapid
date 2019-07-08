@@ -913,7 +913,7 @@ public class Application {
 		return null;
 	}
 
-	// get a control by it's id
+	// get all controls in application, by optional array of types
 	public List<Control> getAllControls(ServletContext servletContext, String... types) {
 		// list of controls we will return
 		List<Control> controls = null;
@@ -922,7 +922,7 @@ public class Application {
 			// initialise list
 			controls = new ArrayList<>();
 			try {
-				// no page matching this control id prefix so just loop all pages
+				// loop all pages
 				for (String loopPageId : _pages.getPageIds()) {
 					// fetch this page
 					Page page = _pages.getPage(servletContext, loopPageId);
@@ -931,7 +931,7 @@ public class Application {
 					// if we got some
 					if (pageControls != null && pageControls.size() > 0) {
 						// check type specified
-						if (types == null) {
+						if (types == null || types.length == 0) {
 							// if no type specified, add them all
 							controls.addAll(pageControls);
 						} else {
@@ -950,12 +950,60 @@ public class Application {
 				// get the logger
 				Logger logger = (Logger) servletContext.getAttribute("logger");
 				// log this exception
-				logger.error("Error getting controls for application", ex);
+				logger.error("Error getting all controls for application", ex);
 			}
 		} // id and page non-null check
 		// return controls
 		return controls;
 	}
+
+	// get all named controls for the application by optional type
+	public List<Control> getAllNamedControls(ServletContext servletContext, String... types) {
+		// list of controls we will return
+		List<Control> controls = null;
+		// check we have pages
+		if (_pages != null) {
+			// initialise list
+			controls = new ArrayList<>();
+			try {
+				// loop all page ids
+				for (String loopPageId : _pages.getPageIds()) {
+					// fetch this page
+					Page page = _pages.getPage(servletContext, loopPageId);
+					// page controls
+					List<Control> pageControls = page.getAllControls();
+					// if we got some
+					if (pageControls != null && pageControls.size() > 0) {
+						// loop controls
+						for (Control control : pageControls) {
+							// if control has name
+							if (control.getName() != null && control.getName().trim().length() > 0) {
+								// check type specified
+								if (types == null || types.length == 0) {
+									// if no type specified, add if name
+									controls.add(control);
+								} else {
+									// loop types
+									for (String type : types) {
+										// add if type matches
+										if (type.equals(control.getType())) controls.add(control);
+									}
+								}
+							}
+						}
+					}
+				}
+			} catch (Exception ex) {
+				// get the logger
+				Logger logger = (Logger) servletContext.getAttribute("logger");
+				// log this exception
+				logger.error("Error getting all controls for application", ex);
+			}
+		} // id and page non-null check
+		// return controls
+		return controls;
+	}
+
 
 	// get an action by it's id
 	public Action getAction(ServletContext servletContext, String id) {

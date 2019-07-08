@@ -304,13 +304,17 @@ public abstract class FormAdapter {
 	private static final String USER_FORMS_SUBMITTED = "userFormsSubmitted";
 	private static final String USER_FORM_ID = "userFormId";
 
+	// static variables
+
+	protected static Logger _logger;
+
 	// instance variables
 
 	protected String _type, _css, _submittedPage, _errorPage;
 	protected ServletContext _servletContext;
 	protected Application _application;
 	protected PaymentGateway _paymentGateway;
-	protected static Logger _logger;
+	protected Map<String,String> _ControlParametersMap;
 
 	// properties
 
@@ -1465,13 +1469,6 @@ public abstract class FormAdapter {
 			// send users back to the start if no form details
 			Rapid.gotoStartPage(rapidRequest.getRequest(), response, _application, false);
 
-			/* Problem with this is unsubmitted forms could not be resumed
-		} else if (!formDetails.getComplete()) {
-
-			// send users back to the start if form not completed yet
-			Rapid.gotoStartPage(rapidRequest.getRequest(), response, _application, false);
-			*/
-
 		} else {
 
 			// create a writer
@@ -1575,10 +1572,33 @@ public abstract class FormAdapter {
 					if (custorEmailTo != null && custorEmailTo.trim().length() > 0) {
 
 						// get the subject
-						String subject = application.getFormEmailCustomerSubject(); ////////////////////
+						String subject = application.getFormEmailCustomerSubject();
+
+						// do the simple parameters here so we don't spend ages looking for them as control values
+						subject = insertFormParameters(rapidRequest, formDetails, subject);
 
 						// get the body
-						String body = application.getFormEmailCustomerBody(); ////////////////////
+						String body = application.getFormEmailCustomerBody();
+
+						// do the simple parameters here so we don't spend ages looking for them as control values
+						body = insertFormParameters(rapidRequest, formDetails, body);
+
+						// if parameters have not been scanned yet
+						if (_ControlParametersMap == null) {
+
+							// add subject parameters
+							populateControlParametersMap(rapidRequest, subject);
+
+							// add body parameters
+							populateControlParametersMap(rapidRequest, body);
+
+						}
+
+						// insert parameter values
+						subject = insertControlParameters(rapidRequest, formDetails, subject);
+
+						// insert parameter values
+						body = insertControlParameters(rapidRequest, formDetails, body);
 
 						// if the customer email attachment is different from the back-office attachment
 						if (!application.getFormEmailAttachmentType().equals(application.getFormEmailCustomerAttachmentType())) {
@@ -1587,7 +1607,7 @@ public abstract class FormAdapter {
 						}
 
 						// email type check
-						if ("H".equals(application.getFormEmailCustomerAttachmentType())) {
+						if ("H".equals(application.getFormEmailCustomerType())) {
 
 							// send the email
 							Email.send(emailFrom, custorEmailTo, subject, "HTML preview not available", body, attachment);
@@ -1693,82 +1713,6 @@ public abstract class FormAdapter {
 
 		// a string list of all the control values
 		return valueList;
-	}
-
-	// whether this form has any summary labels, if not we can skip the summary
-	public boolean getHasSummaryLabels(RapidRequest rapidRequest, String formId) throws Exception {
-
-		// assume not
-		boolean hasSummaryLabels = false;
-
-		// if there is an application
-		if (_application != null) {
-
-			// get it's pages
-			PageHeaders pages = _application.getPages().getSortedPages();
-
-			// loop them
-			for (PageHeader pageHeader : pages) {
-
-				// get the page
-				Page page = _application.getPages().getPage(pageHeader.getId());
-
-				// get the page label
-				String pageLabel = page.getLabel();
-
-				// if the page has a label we can go!
-				if (pageLabel != null && pageLabel.trim().length() > 0) {
-					// we have labels
-					hasSummaryLabels = true;
-					// we're done
-					break;
-				}
-
-				// get user form page values
-				FormPageControlValues controlValues = getFormPageControlValues(rapidRequest, formId, pageHeader.getId());
-
-				// if there are some
-				if (controlValues != null && controlValues.size() > 0) {
-
-					// loop them
-					for (FormControlValue value : controlValues) {
-
-						// if not hidden
-						if (!value.getHidden()) {
-
-							// get the control
-							Control control = page.getControl(value.getId());
-
-							// if we got one
-							if (control != null) {
-
-								// get its label
-								String label = control.getLabel();
-
-								// if there is something we're good!
-								if (label != null && label.trim().length() > 0) {
-
-									// we have labels
-									hasSummaryLabels = true;
-									// we're done
-									break;
-
-								} // label check
-
-							} // control null check
-
-						} // control hidden check
-
-					} // control value loop
-
-				} // control value check
-
-			} // page header loop
-
-		} // application check
-
-		return hasSummaryLabels;
-
 	}
 
 	// this writes the form pdf to an Output stream
@@ -2315,6 +2259,220 @@ public abstract class FormAdapter {
 		return details;
 	}
 
+	// called when form application is deleted in Rapid Admin - might update any casework system reference tables, matching code for first insert / updates in Form Adapter constructor
+	public synchronized void delete(RapidRequest rapidRequest) {}
+
+	// whether this form has any summary labels, if not we can skip the summary
+	public boolean getHasSummaryLabels(RapidRequest rapidRequest, String formId) throws Exception {
+
+		// assume not
+		boolean hasSummaryLabels = false;
+
+		// if there is an application
+		if (_application != null) {
+
+			// get it's pages
+			PageHeaders pages = _application.getPages().getSortedPages();
+
+			// loop them
+			for (PageHeader pageHeader : pages) {
+
+				// get the page
+				Page page = _application.getPages().getPage(pageHeader.getId());
+
+				// get the page label
+				String pageLabel = page.getLabel();
+
+				// if the page has a label we can go!
+				if (pageLabel != null && pageLabel.trim().length() > 0) {
+					// we have labels
+					hasSummaryLabels = true;
+					// we're done
+					break;
+				}
+
+				// get user form page values
+				FormPageControlValues controlValues = getFormPageControlValues(rapidRequest, formId, pageHeader.getId());
+
+				// if there are some
+				if (controlValues != null && controlValues.size() > 0) {
+
+					// loop them
+					for (FormControlValue value : controlValues) {
+
+						// if not hidden
+						if (!value.getHidden()) {
+
+							// get the control
+							Control control = page.getControl(value.getId());
+
+							// if we got one
+							if (control != null) {
+
+								// get its label
+								String label = control.getLabel();
+
+								// if there is something we're good!
+								if (label != null && label.trim().length() > 0) {
+
+									// we have labels
+									hasSummaryLabels = true;
+									// we're done
+									break;
+
+								} // label check
+
+							} // control null check
+
+						} // control hidden check
+
+					} // control value loop
+
+				} // control value check
+
+			} // page header loop
+
+		} // application check
+
+		return hasSummaryLabels;
+
+	}
+
+	// simple parameters are insert into the subject or body
+	protected String insertFormParameters(RapidRequest rapidRequest, UserFormDetails formDetails, String string) {
+
+		// application parameters
+		string = _application.insertParameters(rapidRequest.getRapidServlet().getServletContext(), string);
+		// form id
+		if (string.contains("[[id]]")) string = string.replace("[[id]]", formDetails.getId());
+		// title
+		if (string.contains("[[title]]")) string = string.replace("[[title]]", _application.getTitle());
+
+		// return string
+		return string;
+
+	}
+
+	// scans a string and adds mapping entries of keys and control ids to _ControlParametersMap which is used to search and replace form values for customer email subject and body
+	protected void populateControlParametersMap(RapidRequest rapidRequest, String string) {
+
+		// make a new parameters map - this will be emptied each time the app is saved in Rapid Admin as the form adapter is re-initalised
+		if (_ControlParametersMap == null) _ControlParametersMap = new HashMap<String,String>();
+
+		// get any startPos
+		int startPos = string.indexOf("[[");
+		// if there was one#
+		if (startPos > -1) {
+			// get the end pos
+			int endPos = string.indexOf("]]", startPos);
+
+			// get the servlet context
+			ServletContext servletContext = rapidRequest.getRapidServlet().getServletContext();
+
+			// named controls, we only want to fetch them once
+			List<Control> namedControls = null;
+
+			// if it has [[ and ]] thereafter
+			while (startPos > -1 && endPos > startPos) {
+
+				// get the key
+				String key = string.substring(startPos + 2, endPos);
+
+				// whether we have added the parameter yet
+				boolean parameterAdded = false;
+
+				// if it looks like a control it
+				if (key.contains("_C")) {
+
+					// get control from key
+					Control control = _application.getControl(servletContext, key);
+
+					// check control
+					if (control != null) {
+
+						// the key is a control id so the key and value are the same
+						_ControlParametersMap.put(key, key);
+
+						// remember we added it
+						parameterAdded = true;
+
+					}
+
+				}
+
+				// if we haven't added the parameter yet - use the more expensive get by names
+				if (!parameterAdded) {
+
+					// get named controls if we have to
+					if (namedControls == null) namedControls = _application.getAllNamedControls(servletContext);
+
+					// loop the named controls
+					for (Control namedControl : namedControls) {
+
+						// if this is the one we're looking for
+						if (key.equals(namedControl.getName())) {
+
+							// retain
+							_ControlParametersMap.put(key, namedControl.getId());
+
+							// we're done!
+							break;
+
+						}
+
+					}
+
+				}
+
+				// get the next startPos
+				startPos = string.indexOf("[[", endPos);
+				// if we got one get the next endPos
+				if (startPos > -1) endPos = string.indexOf("]]", startPos);
+
+			} // loop for ]]
+
+		} // ]] check again
+
+	}
+
+	// insert parameters, used in customer email subject and body
+	public String insertControlParameters(RapidRequest rapidRequest, UserFormDetails formDetails, String string) throws Exception {
+
+		// get pos of [[
+		int startPos = string.indexOf("[[");
+		// check string contains [[
+		if (startPos > -1) {
+
+			// get the form id
+			String formId = formDetails.getId();
+
+			// loop the email parameters map
+			for (String key : _ControlParametersMap.keySet()) {
+
+				// if we have this key in our string
+				if (string.contains(key)) {
+
+					// get the value
+					String value = this.getFormControlValue(rapidRequest, formId, _ControlParametersMap.get(key));
+
+					// if we got one
+					if (value != null) {
+
+						// put it in!
+						string = string.replace("[[" + key + "]]", value);
+
+					} // check for value
+
+				} // check for key
+
+			} // loop parameter keys
+
+		} // ]] check
+
+		// return
+		return string;
+
+	}
 
 	// static methods
 
@@ -2532,10 +2690,6 @@ public abstract class FormAdapter {
 			// return values
 			return pageControlValues;
 		} // postBody check
-	}
-
-	// called when form application is deleted in Rapid Admin - might update any casework system reference tables, matching code for first insert / updates in Form Adapter constructor
-	public synchronized void delete(RapidRequest rapidRequest) {
 	}
 
 }
