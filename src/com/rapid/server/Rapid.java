@@ -211,13 +211,13 @@ public class Rapid extends RapidHttpServlet {
 										if (app.getId().equals(formDetails.getAppId()) && app.getVersion().equals(formDetails.getVersion())) {
 
 											// if we have form summary labels
-											if (formAdapter.getHasSummaryLabels(rapidRequest, formId)) {
+											if (formAdapter.getHasSummaryLabels(rapidRequest, formDetails.getId())) {
 												// summary is never cached
 												RapidFilter.noCache(response);
 												// write the form summary page
 												formAdapter.writeFormSummary(rapidRequest, response);
 											} else {
-												// to summary to show so got to the start page, without invalidating the session
+												// no summary to show so got to the start page, without invalidating the session
 												gotoStartPage(request, response, app, false);
 											}
 
@@ -1192,57 +1192,8 @@ public class Rapid extends RapidHttpServlet {
 									// get all of the app pages
 									PageHeaders pageHeaders = app.getPages().getSortedPages();
 
-									// get the if of the page we just submitted
+									// get the id of the page we just submitted
 									String requestPageId = rapidRequest.getPage().getId();
-
-									// if this is the last page and there are no form summary labels we will submit
-									if (!formDetails.getSubmitted()) {
-
-										// assume we won't submit the form
-										boolean submit = false;
-
-										// get the position of the next page in sequence
-										int requestPageIndex = pageHeaders.indexOf(requestPageId) + 1;
-
-										// if there are any pages next to check
-										if (requestPageIndex < pageHeaders.size()) {
-
-											// get the next page
-											Page nextPage = app.getPages().getPage(getServletContext(), pageHeaders.get(requestPageIndex).getId());
-
-											// check the page visibility
-											while (!nextPage.isVisible(rapidRequest, app, formDetails)) {
-												// if we're here the visibility check on the current page failed so increment the index
-												requestPageIndex ++;
-												// if there are no more pages
-												if (requestPageIndex > pageHeaders.size() - 1) {
-													// we can submit
-													submit = true;
-													// we're done
-													break;
-												} else {
-													// select the next page to check the visibility of
-													nextPage = app.getPages().getPage(getServletContext(), pageHeaders.get(requestPageIndex).getId());
-												} // pages remaining check
-											} // page visible loop
-
-										} else {
-											// allow submission immediately
-											submit = true;
-										}
-
-										// if we are about to reach the submit page
-										if (submit) {
-
-											// check whether it has form summary labels
-											boolean formLabels = formAdapter.getHasSummaryLabels(rapidRequest, formDetails.getId());
-
-											// if there were no form labels we can proceed to submit
-											if (!formLabels) action="submit";
-
-										}
-
-									}
 
 									// if there's a submit or pay action
 									if ("submit".equals(action) || "pay".equals(action) ) {
@@ -1516,10 +1467,44 @@ public class Rapid extends RapidHttpServlet {
 
 													} else {
 
-														// otherwise ask for the first page without invalidating the session
-														gotoStartPage(request, response, app, false);
+														// do the submit (this will call the non-abstract submit, manage the form state, and retain the submit message)
+														formAdapter.doSubmitForm(rapidRequest);
 
-													}
+														// place holder for first submitted page specified in the designer for the app
+														String submittedPageId = getFirstPageForFormType(app, Page.FORM_PAGE_TYPE_SUBMITTED);
+														// place holder for the submitted page from the adapter
+														String submittedPage = formAdapter.getSubmittedPage();
+
+														// check for neither app nor adapter submit page or crf fail
+														if (submittedPageId == null && submittedPage == null) {
+
+															// invalidate the form
+															formAdapter.emptyUserFormDetails(rapidRequest);
+
+															// log
+															logger.debug("Returning to start - form has been submitted, no submitted page");
+
+															// go to the start page. Destroy session unless user has the design role
+															gotoStartPage(request, response, app, false);
+
+														} else {
+
+															// look for an app submitted page
+															if (submittedPageId == null) {
+
+																// request the adapter submitted page
+																response.sendRedirect(submittedPage);
+
+															} else {
+
+																// no adapter page so request the first designer submitted page
+																response.sendRedirect("~?a=" + app.getId() + "&v=" + app.getVersion() + "&p=" + submittedPageId);
+
+															} // submittedPageId check
+
+														} // submitted page or csrf fail check
+
+													} // form label check
 
 												} else if (requestSave) {
 
