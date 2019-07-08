@@ -2,7 +2,7 @@
 
 <!-- 
 
-Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -71,7 +71,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <setConstructValueFunction>return "";</setConstructValueFunction>
 	            <changeValueJavaScript>text</changeValueJavaScript>
 	            <refreshHtml>true</refreshHtml>
-	            <helpHtml>Option that can be used to make faded string appear in the editor when it is empty and not focused.</helpHtml>
+	            <helpHtml>Option that can be used to make a faded string appear in the editor when it is empty and not focused.</helpHtml>
 	        </property>
 	        
 	        <property>
@@ -81,12 +81,12 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <changeValueJavaScript>select</changeValueJavaScript>
 	            <getValuesFunction>
 	                <![CDATA[
-return [["javascript"],["css"],["sql"],["html"],["xml"]];
+return [["javascript"],["css"],["sql"],["htmlmixed"],["text"],["xml"]];
 					]]>
 	            </getValuesFunction>
 	            <refreshHtml>true</refreshHtml>
 	            <refreshProperties>true</refreshProperties>
-	            <helpHtml>Modes are JavaScript programs that help color (and optionally indent) text written in a given language</helpHtml>
+	            <helpHtml>Modes are JavaScript programs that help colour (and optionally indent) text written in a given language</helpHtml>
 	        </property>
 			
 			<property>
