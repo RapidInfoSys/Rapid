@@ -864,7 +864,7 @@ public class RapidServletContextListener implements ServletContextListener {
 				// loop it
 				for (int i = 0; i < jsonApps.length(); i++) {
 					// add to array
-					loadApps.add(jsonApps.getString(i).toLowerCase());
+					loadApps.add(jsonApps.getString(i).trim().toLowerCase());
 				}
 				// add rapid if not there already
 				if (!loadApps.contains("rapid")) loadApps.add("rapid");
@@ -885,8 +885,33 @@ public class RapidServletContextListener implements ServletContextListener {
 			// get the app folder name into a string
 			String appFolderName = applicationFolder.getName().toLowerCase();
 
-			// if this child file is a directory and not in our list of apps to ignore, or present in apps to load
-			if (applicationFolder.isDirectory() && (loadApps.size() == 0 && !ignoreApps.contains(appFolderName) || (loadApps.size() > 0 && loadApps.contains(appFolderName)))) {
+			// assume we should not load this app
+			boolean shouldLoadApp = false;
+
+			// if this child file is a directory and not in our list of apps to ignore
+			if (applicationFolder.isDirectory() && loadApps.size() == 0 && !ignoreApps.contains(appFolderName)) {
+				// we can load the app
+				shouldLoadApp = true;
+			} else if (loadApps.size() > 0) {
+				// simple check for if loadApps contains the app
+				if (loadApps.contains(appFolderName)) {
+					shouldLoadApp = true;
+				} else {
+					// loop all load apps
+					for (String loadApp : loadApps) {
+						// check for loadApp ending in wildcard matching start of appFolderName
+						if (loadApp.endsWith("*") && appFolderName.startsWith(loadApp.substring(0, loadApp.length() - 1))) {
+							// we can load this app
+							shouldLoadApp = true;
+							// we're done checking the apps we could load
+							break;
+						}
+					}
+				}
+			}
+
+			// if we passed the test to load the app
+			if (shouldLoadApp) {
 
 				// get the list of files in this folder - should be all version folders
 				File[] applicationFolders = applicationFolder.listFiles();
@@ -1254,9 +1279,9 @@ public class RapidServletContextListener implements ServletContextListener {
 
 			e.printStackTrace();
 		}
-				
+
 		try {
-			
+
 			// add some useful global objects
 
 			String localDateFormat = servletContext.getInitParameter("localDateFormat");
@@ -1275,14 +1300,14 @@ public class RapidServletContextListener implements ServletContextListener {
 			TrustManager[] trustAllCerts = new TrustManager[]{ new Https.TrustAllCerts() };
 	        sc.init(null, trustAllCerts, new java.security.SecureRandom());
 	        HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-	        
+
 	        // look for a proxy host
 	     	String httpProxyHost = servletContext.getInitParameter("http.proxyHost");
 	     	if (httpProxyHost != null) {
 	     		System.setProperty("http.proxyHost", httpProxyHost);
 	     		_logger.info("http.proxyHost set to " + httpProxyHost);
 	     	}
-	     	
+
 	     	// look for a proxy port
 	     	String httpProxyPort = servletContext.getInitParameter("http.proxyPort");
 	     	if (httpProxyPort != null) {
