@@ -1,0 +1,23 @@
+<configuration>
+
+	<!-- Some libraries like C3P0 and Waffle use logback so this file is included to adjust them individually -->
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n
+            </Pattern>
+        </layout>
+    </appender>
+
+	<!-- only warn messages for C3P0 as it can be very noisy -->
+    <logger name="com.mchange" level="warn" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+	<!-- default to debug messages -->
+    <root level="debug">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</configuration>

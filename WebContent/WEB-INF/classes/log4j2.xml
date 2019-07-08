@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="INFO">
+
+	<!-- This is the main logging configuration file used by Rapid -->
+	
 	<Appenders>
 		<Console name="Console" target="SYSTEM_OUT">
 			<PatternLayout pattern="%d %5p - %m%n" />
@@ -15,21 +18,26 @@
 			<DefaultRolloverStrategy max="100"/>
 		</RollingFile>
 	</Appenders>
+	
 	<Loggers>
+	
 	    <!-- only warn messages for apache http as it can be very noisy -->
 	    <Logger name="org.apache.http" level="warn">
   			<AppenderRef ref="Console" />
 			<AppenderRef ref="File" />
 		</Logger>
+		
 		<!-- only warn messages for C3P0 as it can be very noisy -->
 		<Logger name="com.mchange" level="warn">
   			<AppenderRef ref="Console" />
 			<AppenderRef ref="File" />
 		</Logger>
-	    <!-- level can be error, warn, info, debug, trace -->
+		
+	    <!-- default level can be error, warn, info, debug, trace -->
 		<Root level="debug">
 			<AppenderRef ref="Console" />
 			<AppenderRef ref="File" />
 		</Root>
 	</Loggers>
+	
 </Configuration>
