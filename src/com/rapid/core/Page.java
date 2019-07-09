@@ -2147,7 +2147,7 @@ public class Page {
 						// create the url to open this page in the designer, we'll put this in the change page and new tab links,
 						String designerUrl = "design.jsp?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + _id;
 						// look for any serverURL parameter in web.xml
-						String serverUrl = servletContext.getInitParameter("serverUrl");
+						String serverUrl = servletContext.getInitParameter("serverURL");
 						// if there was one pre-pend to url, this is useful if the server is behind a proxy
 						if (serverUrl != null) designerUrl = serverUrl + "/" + designerUrl;
 

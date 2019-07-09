@@ -384,8 +384,8 @@ public class Mobile extends Action {
 				String numberControlId = getProperty("numberControlId");
 				// get the control
 				Control numberControl = Control.getControl(rapidServlet.getServletContext(), application, page, numberControlId);
-				// check we got one
-				if (numberControl == null) {
+				// check we got one, unless it's System.field
+				if (numberControl == null && !"System.field".equals(numberControlId)) {
 					js += "// phone number control " + numberControlId + " not found\n";
 				} else {
 					// get the number field
@@ -399,7 +399,7 @@ public class Mobile extends Action {
 						// get the messagecontrol
 						Control messageControl = Control.getControl(rapidServlet.getServletContext(), application, page, messageControlId);
 						// check we got one
-						if (messageControl == null) {
+						if (messageControl == null && !"System.field".equals(messageControlId)) {
 							js += "// message control " + numberControlId + " not found\n";
 						} else {
 							// get the field
@@ -413,7 +413,7 @@ public class Mobile extends Action {
 							// else
 							js += "} else {\n";
 							// no rapid mobile so just open in new tab
-							js += "  window.location.href = 'sms://' + number + '?body=' + message;\n";
+							js += "  window.location.href = 'sms:' + number + '?body=' + message;\n";
 							// close mobile check
 							js += "}\n";
 						}
@@ -425,7 +425,7 @@ public class Mobile extends Action {
 						// else
 						js += "} else {\n";
 						// no rapid mobile so just open in new tab
-						js += "  window.location.href = 'tel://' + number;\n";
+						js += "  window.location.href = 'tel:' + number;\n";
 						// close mobile check
 						js += "}\n";
 					}
@@ -465,7 +465,7 @@ public class Mobile extends Action {
 					// else
 					js += "} else {\n";
 					// no rapid mobile so just open in new tab
-					js += "  window.location.href = 'mailto://' + email + '?subject=' + subject + '&body=' + message;\n";
+					js += "  window.location.href = 'mailto:' + email + '?subject=' + subject + '&body=' + message;\n";
 					// close the mobile check
 					js += "}\n";
 
