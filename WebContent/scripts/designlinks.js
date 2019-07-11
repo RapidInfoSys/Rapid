@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2014 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -99,4 +99,15 @@ function getDesignDataTable(data) {
 function renderDesignData(name, data, div) {
 	var table = getDesignDataTable(data);
 	div.html(name + "<br/>" + table).slideDown(500);
+}
+
+// used in Page.java to provide the url to open the current page in the designer. Due to pretty urls changing the context, this can get back to the root if need be
+function getDesignerUrl() {
+	var url = "design.jsp?a=" + _appId + "&v=" + _appVersion + "&p=" + _pageId;
+	var path = window.location.pathname;
+	if (path) {
+		if (path.indexOf("/" + _appId + "/") > 0) url = "../" + url
+		if (path.indexOf("/" + _appVersion + "/") > 0) url = "../" + url
+	}
+	return url;
 }

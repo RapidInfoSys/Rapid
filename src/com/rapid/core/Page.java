@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -2144,14 +2144,8 @@ public class Page {
 							}
 						}
 
-						// create the url to open this page in the designer, we'll put this in the change page and new tab links,
-						String designerUrl = "design.jsp?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + _id;
-						// look for any serverURL parameter in web.xml
-						String serverUrl = servletContext.getInitParameter("serverURL");
-						// if there was one pre-pend to url, this is useful if the server is behind a proxy
-						if (serverUrl != null) designerUrl = serverUrl + "/" + designerUrl;
-
 						// using attr href was the weirdest thing. Some part of jQuery seemed to be setting the url back to v=1&p=P1 when v=2&p=P2 was printed in the html
+						// we also now use a JavaScript function getDesignerUrl in designlinks.js to make the url whilst checking for pretty urls
 						writer.write(
 						"<link rel='stylesheet' type='text/css' href='styles/designlinks.css'></link>\n"
 						+ "<script type='text/javascript' src='scripts/designlinks.js'></script>\n"
@@ -2165,8 +2159,9 @@ public class Page {
 				    	+ "/* designLink */\n"
 				    	+ "var _onDesignLink = false;\n"
 				    	+ "var _onDesignTable = false;\n"
+				    	+ "var designerUrl = getDesignerUrl();\n"
 				    	+ "$(document).ready( function() {\n"
-				    	+ "  $('#designShow').mouseover( function(ev) {\n    $('#designLink').attr('href','" + designerUrl + "');\n    $('#designLinkNewTab').attr('target','_blank').attr('href','" + designerUrl + "');\n    $('#designLinks').show(); _onDesignLink = true;\n  });\n"
+				    	+ "  $('#designShow').mouseover( function(ev) {\n    $('#designLink').attr('href', designerUrl);\n    $('#designLinkNewTab').attr('target','_blank').attr('href', designerUrl);\n    $('#designLinks').show(); _onDesignLink = true;\n  });\n"
 				    	+ "  $('#designLinks').mouseleave( function(ev) {\n    _onDesignLink = false;\n    setTimeout( function() {\n      if(!_onDesignLink && !_onDesignTable) $('#designLinks').fadeOut();\n    }, 1000);\n  });\n"
 				    	+ "  $('#designLinks').mouseover(function(ev) {\n   _onDesignLink = true;\n  });\n"
 				    	+ "  $('html').click(function(){\n  if(!_onDesignLink && !_onDesignTable) {\n      $('div.designData').fadeOut();\n      $('#designLinks').fadeOut();\n    }\n  });\n"
