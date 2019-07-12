@@ -26,9 +26,9 @@
      borderopacity="1"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="34.166667"
-     inkscape:cx="12"
-     inkscape:cy="12"
+     inkscape:zoom="1"
+     inkscape:cx="1.5772728"
+     inkscape:cy="4.126017"
      inkscape:document-units="pt"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -50,7 +50,7 @@
        opacity="0.11764706"
        spacingx="0.26458334"
        originy="0.52916668"
-       visible="true"
+       visible="false"
        empspacing="5"
        empcolor="#3f80ff"
        empopacity="0.19607843"
@@ -133,5 +133,14 @@
        x="0.79375005"
        y="293.29584"
        ry="0" />
+    <rect
+       style="fill:#e6e6e6;fill-opacity:1;stroke:none;stroke-width:0.35277975;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new"
+       id="rect837-7"
+       width="1.5875"
+       height="1.058345"
+       x="0.79375005"
+       y="292.23749"
+       ry="0.21167569"
+       rx="0.26458317" />
   </g>
 </svg>
