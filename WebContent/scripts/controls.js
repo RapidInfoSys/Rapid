@@ -330,9 +330,9 @@ function Control(controlType, parentControl, jsonControl, loadComplexObjects, pa
 				
 		// set and run the getHtml statement
 		try {			
-			// create a function from this text and retain a refence to it
+			// create a function from this text and retain a reference to it
 			this._getHtml = new Function(controlClass.getHtmlFunction.trim());
-			// run it against this controls
+			// run it against this control
 			this._html = this._getHtml.apply(this, []);
 		} catch (ex) {
 			// show error message in place of xml
@@ -341,31 +341,41 @@ function Control(controlType, parentControl, jsonControl, loadComplexObjects, pa
 			this.error = true;
 		}
 		
-		// append the new html to the parent object 
-		if (controlClass.appendJavaScript) {
-			// clean up the JavaScript by triming and removing line breaks and tabs
-			var js = controlClass.appendJavaScript.trim();
-			// try and apply it
-			try {				
-				// get the js into a new function variable
-				var f = new Function(js);
-				// retain a reference to it (which is used for rebuilding the html on property updates)
-				this._append = f;
-				// apply it to this control, passing in the html
-				f.apply(this, []);
-			} catch (ex) {
-				alert("appendJavaScript failed for " + this.type + ". " + ex + "\r\r" + js);
-				// remember there is an error (stops properties and styles being rendered)
-				this.error = true;
-			}
+		// if we are pasting a page in
+		if (controlType == "page" && paste) {
+			
+			// we're going to ignore this control and just use it's children so set object to parent
+			this.object = this._parent.object;
+			
 		} else {
-			this._parent.object.append(this._html);
-		}
 		
-		// if this is not the page
-		if (this._parent) {
-			// grab a reference to the object
-			this.object = this._parent.object.children().last();
+			// append the new html to the parent object 
+			if (controlClass.appendJavaScript) {
+				// clean up the JavaScript by triming and removing line breaks and tabs
+				var js = controlClass.appendJavaScript.trim();
+				// try and apply it
+				try {				
+					// get the js into a new function variable
+					var f = new Function(js);
+					// retain a reference to it (which is used for rebuilding the html on property updates)
+					this._append = f;
+					// apply it to this control, passing in the html
+					f.apply(this, []);
+				} catch (ex) {
+					alert("appendJavaScript failed for " + this.type + ". " + ex + "\r\r" + js);
+					// remember there is an error (stops properties and styles being rendered)
+					this.error = true;
+				}
+			} else {
+				this._parent.object.append(this._html);
+			}
+			
+			// if this is not the page
+			if (this._parent) {
+				// grab a reference to the object
+				this.object = this._parent.object.children().last();
+			}
+			
 		}
 						
 		// run the create statement if there is one (can reassign the object or add other html)

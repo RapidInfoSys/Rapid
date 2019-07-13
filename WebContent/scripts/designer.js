@@ -738,7 +738,7 @@ function positionBorder(x, y) {
 	// check we got something
 	if (x != null) {
 		// if x is actually a control
-		if (typeof x === "object" && x.object) {
+		if (typeof x === "object" && x.object && x.object.length > 0) {
 			// get the top
 			var top = x.object.offset().top;
 			// check if nonVisualControl
@@ -1895,7 +1895,10 @@ function applyStyleForPaste(control) {
 }
 
 // this function will paste an existing control into a specified parent - if no parent is specified we assume we are pasting a whole page
-function doPaste(control, _parent) {
+function doPaste(control, _parent, avoidNameCheck) {
+	
+	// if avoidNameCheck is undefined set to false
+	if (avoidNameCheck === undefined) avoidNameCheck = false;
 		
 	// remove any dialogues or components
 	$("#dialogues").children().remove();
@@ -1908,11 +1911,11 @@ function doPaste(control, _parent) {
 	// assume no new control
 	var newControl = null;
 	
-	// it's a little different for the page (we can idenitfy it as it doesn't have a parent)
+	// it's a little different for the page (we can identify it as it doesn't have a parent)
 	if (_parent) {
 		
 		// create the new control
-		newControl = loadControl(control, _parent, true, true);
+		newControl = loadControl(control, _parent, true, true, false);
 		
 		// retain the next id at this point
 		var nextId = _nextId;
@@ -1921,7 +1924,22 @@ function doPaste(control, _parent) {
 		var controlNumbers = JSON.stringify(_controlNumbers);
 		
 		// remove the current object if not the body
-		if (!newControl.object.is("body")) newControl._remove();
+		if (!newControl.object.is("body")) {
+			// if we are pasting in a page
+			if (control.type == "page") {
+				// if we have child controls
+				if (control.childControls) {
+					// loop the children of the new control
+					for (var i in control.childControls) {
+						// remove this
+						newControl.childControls[i]._remove();
+					}
+				}
+			} else {
+				// remove the new control
+				newControl._remove();
+			}
+		}
 		
 		// remove any items that were placed in dialogues
 		$("#dialogues").children().remove();
@@ -1954,7 +1972,7 @@ function doPaste(control, _parent) {
 		var mappedControl = JSON.parse(newControlString);
 		
 		// reload the control with all the new references
-		newControl = loadControl(mappedControl, _parent, true, true, false, true);
+		newControl = loadControl(mappedControl, _parent, true, true, false, !avoidNameCheck);
 		
 		// apply any styling in the new control
 		applyStyleForPaste(newControl);
@@ -3128,15 +3146,37 @@ $(document).ready( function() {
 					}
 				}
 				// can we do an insert, or add as a peer - but stop controls pasting into themselves - panels especially!
-				if (_controlTypes[pasteControl.type].canUserInsert && pasteControl.id != _copyControl.id && (_controlTypes[_copyControl.type].canUserAdd || childCanAddPeers)) {
-					// create the new control and place in child collection of current parent
-					var newControl = doPaste(_copyControl, pasteControl);
-					// add to childControl collection of current parent
-					pasteControl.childControls.push(newControl);
-					// move the html to the right place
-					pasteControl.object.append(newControl.object);
-					// if there is an insert right run it
-					if (newControl._insertRight) newControl._insertRight();
+				if (_controlTypes[pasteControl.type].canUserInsert && pasteControl.id != _copyControl.id) {
+					
+					if (_controlTypes[_copyControl.type].canUserAdd || childCanAddPeers) {
+						
+						// create the new control and place in child collection of current parent
+						var newControl = doPaste(_copyControl, pasteControl);
+						// add to childControl collection of current parent
+						pasteControl.childControls.push(newControl);
+						// move the html to the right place
+						pasteControl.object.append(newControl.object);
+						// if there is an insert right run it
+						if (newControl._insertRight) newControl._insertRight();
+						
+					} else if (_copyControl.type == "page") {
+						
+						// create the new control and place in child collection of current parent, avoiding the control name check / increment
+						var newControlParent = doPaste(_copyControl, pasteControl, true);
+						// loop the new control children
+						for (var i in newControlParent.childControls) {
+							// get the new control
+							var newControl = newControlParent.childControls[i];
+							// add children to childControl collection of current parent
+							pasteControl.childControls.push(newControl);
+							// move the html to the right place
+							pasteControl.object.append(newControl.object);
+							// if there is an insert right run it
+							if (newControl._insertRight) newControl._insertRight();
+						}
+						
+					}
+					
 				} else if (_controlTypes[_copyControl.type].canUserAdd || peerCanAddPeers) {
 					// create the new control as peer of current selection
 					var newControl = doPaste(_copyControl, pasteControl._parent);
