@@ -553,7 +553,7 @@ public class Rapid extends Action {
 		// get the rapid servlet for easy reference
 		RapidHttpServlet rapidServlet = rapidRequest.getRapidServlet();
 
-		// get the servel context for easy reference
+		// get the servlet context for easy reference
 		ServletContext servletContext = rapidServlet.getServletContext();
 
 		// prepare our result object
@@ -569,6 +569,7 @@ public class Rapid extends Action {
 		boolean rapidAdmin = false;
 		boolean rapidDesign = false;
 		boolean rapidUsers = false;
+		boolean rapidMaster = false;
 
 		// get the rapid security for the current user
 		SecurityAdapter security = rapidRequest.getApplication().getSecurityAdapter();
@@ -579,8 +580,10 @@ public class Rapid extends Action {
 			rapidAdmin = security.checkUserRole(rapidRequest, com.rapid.server.Rapid.ADMIN_ROLE);
 			// if no admin check designer
 			if (!rapidAdmin) rapidDesign = security.checkUserRole(rapidRequest, com.rapid.server.Rapid.DESIGN_ROLE);
-			// if no admin check designer
+			// if no admin check users
 			if (!rapidAdmin) rapidUsers = security.checkUserRole(rapidRequest, com.rapid.server.Rapid.USERS_ROLE);
+			// if we have admin check admin master
+			if (rapidAdmin) rapidMaster = security.checkUserRole(rapidRequest, com.rapid.server.Rapid.MASTER_ROLE);
 		}
 
 		// get the id of the app we're about to manipulate
@@ -595,12 +598,6 @@ public class Rapid extends Action {
 
 		// only if we had an application and one of the special Rapid roles
 		if (app != null && (rapidAdmin || rapidDesign || rapidUsers)) {
-
-			/////////////////////////////////////////////////////////
-
-			// There is still scope for extra security to arrange the actions into rapidAdmin only, rapidAdmin or rapidDesign, and rapidAdmin or rapidUsers
-
-			/////////////////////////////////////////////////////////
 
 			// recreate the rapid request using the application we wish to manipulate
 			RapidRequest rapidActionRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), app);
@@ -623,50 +620,52 @@ public class Rapid extends Action {
 						// get the this application version
 						Application application = rapidServlet.getApplications().get(id, version);
 
-						// get the security for this application
-						security = application.getSecurityAdapter();
+						// assume permission is the same as rapid master
+						boolean permission = rapidMaster;
 
-						// now emulate the app we are looping
-						RapidRequest appSecurityRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), application);
+						// if we don't have permission, yet
+						if (!permission) {
 
-						// check app permission
-						boolean permission = security.checkUserPassword(appSecurityRequest, rapidRequest.getUserName(), rapidRequest.getUserPassword());
+							// get the security for this application
+							security = application.getSecurityAdapter();
 
-						// if we passed the password check
-						if (permission) {
-							// if we have rapid admin
-							if (rapidAdmin) {
-								// we need it in the app too
-								permission = security.checkUserRole(appSecurityRequest, com.rapid.server.Rapid.ADMIN_ROLE);
-							} else {
-								// if we have rapid design we need it in the app too
-								if (rapidDesign) permission = security.checkUserRole(appSecurityRequest, com.rapid.server.Rapid.DESIGN_ROLE);
-								// if we have rapid users we need it in the app too
-								if (rapidUsers) permission = security.checkUserRole(appSecurityRequest, com.rapid.server.Rapid.USERS_ROLE);
+							// now emulate the app we are looping
+							RapidRequest appSecurityRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), application);
+
+							// check app permission
+							permission = security.checkUserPassword(appSecurityRequest, rapidRequest.getUserName(), rapidRequest.getUserPassword());
+
+							// if we passed the password check
+							if (permission) {
+								// if we have rapid admin
+								if (rapidAdmin) {
+									// we need it in the app too
+									permission = security.checkUserRole(appSecurityRequest, com.rapid.server.Rapid.ADMIN_ROLE);
+								} else {
+									// if we have rapid design we need it in the app too
+									if (rapidDesign) permission = security.checkUserRole(appSecurityRequest, com.rapid.server.Rapid.DESIGN_ROLE);
+									// if we have rapid users we need it in the app too
+									if (rapidUsers) permission = security.checkUserRole(appSecurityRequest, com.rapid.server.Rapid.USERS_ROLE);
+								}
 							}
+
 						}
 
-						// check the user password
+						// if app is rapid do a further check
+						if (permission && "rapid".equals(application.getId())) permission = security.checkUserRole(rapidRequest, com.rapid.server.Rapid.SUPER_ROLE);
+
+						// if we got permission - add this application to the list
 						if (permission) {
-
-							// if app is rapid do a further check
-							if (permission && "rapid".equals(application.getId())) permission = security.checkUserRole(appSecurityRequest, com.rapid.server.Rapid.SUPER_ROLE);
-
-							// if we got permssion - add this application to the list
-							if (permission) {
-								// create a json object
-								JSONObject jsonApplication = new JSONObject();
-								// add the details we want
-								jsonApplication.put("value", application.getId());
-								jsonApplication.put("text", application.getName() + " - " + application.getTitle());
-								// add the object to the collection
-								jsonApps.put(jsonApplication);
-								// no need to check any further versions
-								break;
-							}
-
-
-						} // password check
+							// create a json object
+							JSONObject jsonApplication = new JSONObject();
+							// add the details we want
+							jsonApplication.put("value", application.getId());
+							jsonApplication.put("text", application.getName() + " - " + application.getTitle());
+							// add the object to the collection
+							jsonApps.put(jsonApplication);
+							// no need to check any further versions
+							break;
+						}
 
 					} // version loop
 
@@ -928,54 +927,57 @@ public class Rapid extends Action {
 					// loop the list of applications sorted by id (with rapid last)
 					for (Application application : versions.sort()) {
 
-						// get the application security
-						security = application.getSecurityAdapter();
+						// assume permission is the same as master
+						boolean permission = rapidMaster;
 
-						// now emulate the app we are looping
-						RapidRequest appSecurityRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), application);
+						// if we don't have permission
+						if (!permission) {
 
-						// check permission
-						boolean permission = security.checkUserPassword(appSecurityRequest, rapidRequest.getUserName(), rapidRequest.getUserPassword());
+							// get the application security
+							security = application.getSecurityAdapter();
 
-						// if we passed the password check
-						if (permission) {
-							// if we have rapid admin
-							if (rapidAdmin) {
-								// we need it in the app too
-								permission = security.checkUserRole(appSecurityRequest, com.rapid.server.Rapid.ADMIN_ROLE);
-							} else {
-								// if we have rapid design we need it in the app too
-								if (rapidDesign) permission = security.checkUserRole(appSecurityRequest, com.rapid.server.Rapid.DESIGN_ROLE);
-								// if we have rapid users we need it in the app too
-								if (rapidUsers) permission = security.checkUserRole(appSecurityRequest, com.rapid.server.Rapid.USERS_ROLE);
+							// now emulate the app we are looping
+							RapidRequest appSecurityRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), application);
+
+							// check permission
+							permission = security.checkUserPassword(appSecurityRequest, rapidRequest.getUserName(), rapidRequest.getUserPassword());
+
+							// if we passed the password check
+							if (permission) {
+								// if we have rapid admin
+								if (rapidAdmin) {
+									// we need it in the app too
+									permission = security.checkUserRole(appSecurityRequest, com.rapid.server.Rapid.ADMIN_ROLE);
+								} else {
+									// if we have rapid design we need it in the app too
+									if (rapidDesign) permission = security.checkUserRole(appSecurityRequest, com.rapid.server.Rapid.DESIGN_ROLE);
+									// if we have rapid users we need it in the app too
+									if (rapidUsers) permission = security.checkUserRole(appSecurityRequest, com.rapid.server.Rapid.USERS_ROLE);
+								}
 							}
+
 						}
+
+						// if app is rapid do a further check
+						if (permission && "rapid".equals(application.getId())) permission = application.getSecurityAdapter().checkUserRole(rapidRequest, com.rapid.server.Rapid.SUPER_ROLE);
 
 						// check the user password
 						if (permission) {
 
-							// if app is rapid do a further check
-							if (permission && "rapid".equals(application.getId())) permission = application.getSecurityAdapter().checkUserRole(appSecurityRequest, com.rapid.server.Rapid.SUPER_ROLE);
+							// make a json object for this version
+							JSONObject jsonVersion = new JSONObject();
+							// add the version
+							jsonVersion.put("value", application.getVersion());
+							// derive the text
+							String text = application.getVersion();
+							// if live add some
+							if (application.getStatus() == 1) text += " - (Live)";
+							// add the title
+							jsonVersion.put("text", text);
+							// put the entry into the collection
+							jsonVersions.put(jsonVersion);
 
-							// check the RapidDesign role is present in the users roles for this application
-							if (permission) {
-
-								// make a json object for this version
-								JSONObject jsonVersion = new JSONObject();
-								// add the version
-								jsonVersion.put("value", application.getVersion());
-								// derive the text
-								String text = application.getVersion();
-								// if live add some
-								if (application.getStatus() == 1) text += " - (Live)";
-								// add the title
-								jsonVersion.put("text", text);
-								// put the entry into the collection
-								jsonVersions.put(jsonVersion);
-
-							} // design permission
-
-						} // password check
+						}
 
 					} // versions loop
 
@@ -986,315 +988,323 @@ public class Rapid extends Action {
 
 			} else if ("GETVERSION".equals(action)) {
 
-				// password check
-				if (security.checkUserPassword(rapidActionRequest, rapidRequest.getUserName(), rapidRequest.getUserPassword())) {
+				// assume permission is the same as master
+				boolean permission = rapidMaster;
 
-					// check the users permission to admin this application
-					boolean adminPermission = security.checkUserRole(rapidActionRequest, com.rapid.server.Rapid.ADMIN_ROLE);
+				// if we don't have permission
+				if (!permission) {
 
-					// if app is rapid do a further check
-					if (adminPermission && "rapid".equals(app.getId())) adminPermission = security.checkUserRole(rapidActionRequest, com.rapid.server.Rapid.SUPER_ROLE);
+					// password check
+					if (security.checkUserPassword(rapidActionRequest, rapidRequest.getUserName(), rapidRequest.getUserPassword())) {
 
-					if (adminPermission) {
+						// check the users permission to admin this application
+						permission = security.checkUserRole(rapidActionRequest, com.rapid.server.Rapid.ADMIN_ROLE);
 
-						// add the name
-						result.put("name", app.getName());
-						// add the version
-						result.put("version", app.getVersion());
-						// add the status
-						result.put("status", app.getStatus());
-						// add the title
-						result.put("title", app.getTitle());
-						// add the description
-						result.put("description", app.getDescription());
-						// add whether to show control ids
-						result.put("pageNameIds", app.getPageNameIds());
-						// add whether to show control ids
-						result.put("showControlIds", app.getShowControlIds());
-						// add whether to show action ids
-						result.put("showActionIds", app.getShowActionIds());
+						// if app is rapid do a further check
+						if (permission && "rapid".equals(app.getId())) permission = security.checkUserRole(rapidActionRequest, com.rapid.server.Rapid.SUPER_ROLE);
 
-						// add the form settings
-						result.put("isForm", app.getIsForm());
-						// add the form adapter
-						result.put("formAdapterType", app.getFormAdapterType());
-						// add if auto complete is disabled
-						result.put("formDisableAutoComplete", app.getFormDisableAutoComplete());
+					}
 
-						// add forms email setting
-						result.put("formEmail", app.getFormEmail());
-						// add forms from address
-						result.put("formEmailFrom", app.getFormEmailFrom());
-						// add forms email to address
-						result.put("formEmailTo", app.getFormEmailTo());
-						// add forms attachment type
-						result.put("formEmailAttachmentType", app.getFormEmailAttachmentType());
+				}
 
-						// add whether to email the customer
-						result.put("formEmailCustomer", app.getFormEmailCustomer());
-						// get app input controls
-						List<Control> inputControls = app.getAllControls(servletContext, "input", "responsiveinput");
-						// make a json array for them
-						JSONArray jsonInputControls = new JSONArray();
-						// if there were controls
-						if (inputControls != null && inputControls.size() > 0) {
-							// loop them
-							for (Control control : inputControls) {
-								// get the name
-								String controlName = control.getName();
-								// if there is one
-								if (controlName != null && controlName.trim().length() > 0) {
-									// make a json object for them
-									JSONObject jsonControl = new JSONObject();
-									// add text
-									jsonControl.put("text", controlName);
-									// add value
-									jsonControl.put("value", control.getId());
-									// add control to collection
-									jsonInputControls.put(jsonControl);
+				if (permission) {
+
+					// add the name
+					result.put("name", app.getName());
+					// add the version
+					result.put("version", app.getVersion());
+					// add the status
+					result.put("status", app.getStatus());
+					// add the title
+					result.put("title", app.getTitle());
+					// add the description
+					result.put("description", app.getDescription());
+					// add whether to show control ids
+					result.put("pageNameIds", app.getPageNameIds());
+					// add whether to show control ids
+					result.put("showControlIds", app.getShowControlIds());
+					// add whether to show action ids
+					result.put("showActionIds", app.getShowActionIds());
+
+					// add the form settings
+					result.put("isForm", app.getIsForm());
+					// add the form adapter
+					result.put("formAdapterType", app.getFormAdapterType());
+					// add if auto complete is disabled
+					result.put("formDisableAutoComplete", app.getFormDisableAutoComplete());
+
+					// add forms email setting
+					result.put("formEmail", app.getFormEmail());
+					// add forms from address
+					result.put("formEmailFrom", app.getFormEmailFrom());
+					// add forms email to address
+					result.put("formEmailTo", app.getFormEmailTo());
+					// add forms attachment type
+					result.put("formEmailAttachmentType", app.getFormEmailAttachmentType());
+
+					// add whether to email the customer
+					result.put("formEmailCustomer", app.getFormEmailCustomer());
+					// get app input controls
+					List<Control> inputControls = app.getAllControls(servletContext, "input", "responsiveinput");
+					// make a json array for them
+					JSONArray jsonInputControls = new JSONArray();
+					// if there were controls
+					if (inputControls != null && inputControls.size() > 0) {
+						// loop them
+						for (Control control : inputControls) {
+							// get the name
+							String controlName = control.getName();
+							// if there is one
+							if (controlName != null && controlName.trim().length() > 0) {
+								// make a json object for them
+								JSONObject jsonControl = new JSONObject();
+								// add text
+								jsonControl.put("text", controlName);
+								// add value
+								jsonControl.put("value", control.getId());
+								// add control to collection
+								jsonInputControls.put(jsonControl);
+							}
+						}
+					}
+					// add the json control collection to the result
+					result.put("inputControls", jsonInputControls);
+
+					// add the customer email control id
+					result.put("formEmailCustomerControlId", app.getFormEmailCustomerControlId());
+					// add the customer email subject
+					result.put("formEmailCustomerSubject", app.getFormEmailCustomerSubject());
+					// add the customer email type, T or H
+					result.put("formEmailCustomerType", app.getFormEmailCustomerType());
+					// add the customer email body
+					result.put("formEmailCustomerBody", app.getFormEmailCustomerBody());
+					// add the customer email attachment type
+					result.put("formEmailCustomerAttachmentType", app.getFormEmailCustomerAttachmentType());
+
+					// add form file details
+					result.put("formFile", app.getFormFile());
+					// add form file type
+					result.put("formFileType", app.getFormFileType());
+					// add form file path
+					result.put("formFilePath", app.getFormFilePath());
+					// add form file username
+					result.put("formFileUserName", app.getFormFileUserName());
+					// add form file password
+					result.put("formFilePassword", app.getFormFilePassword());
+					// add form webservice
+					result.put("formWebservice", app.getFormWebservice());
+					// add form webservice URL
+					result.put("formWebserviceURL", app.getFormWebserviceURL());
+					// add form webservice type
+					result.put("formWebserviceType", app.getFormWebserviceType());
+					// add form webservice SOAP action
+					result.put("formWebserviceSOAPAction", app.getFormWebserviceSOAPAction());
+
+					// create a simplified array to hold the pages
+					JSONArray jsonPages = new JSONArray();
+					// retrieve the pages
+					List<PageHeader> pages = app.getPages().getSortedPages();
+					// check we have some
+					if (pages != null) {
+						for (PageHeader page : pages) {
+							JSONObject jsonPage = new JSONObject();
+							jsonPage.put("text", page.getName() + " - " + page.getTitle());
+							jsonPage.put("value", page.getId());
+							jsonPages.put(jsonPage);
+						}
+					}
+					// add the pages
+					result.put("pages", jsonPages);
+
+					// add the start page Id
+					result.put("startPageId", app.getStartPageId());
+
+					// add the styles
+					result.put("themeType", app.getThemeType());
+					result.put("styles", app.getStyles());
+					result.put("statusBarColour", app.getStatusBarColour());
+					result.put("statusBarHighlightColour", app.getStatusBarHighlightColour());
+					result.put("statusBarTextColour", app.getStatusBarTextColour());
+					result.put("statusBarIconColour", app.getStatusBarIconColour());
+
+					// add the security adapter
+					result.put("securityAdapter", app.getSecurityAdapterType());
+					// add whether there is device security
+					result.put("deviceSecurity", app.getDeviceSecurity());
+					// add whether password is retained on Rapid Mobile
+					result.put("storePasswordDuration", app.getStorePasswordDuration());
+					// add action types
+					result.put("actionTypes", app.getActionTypes());
+					// add control types
+					result.put("controlTypes", app.getControlTypes());
+
+					// create an array for the database connections
+					JSONArray jsonDatabaseConnections = new JSONArray();
+
+					// check we have some database connections
+					if (app.getDatabaseConnections() != null) {
+						// remember the index
+						int index = 0;
+						// loop and add to jsonArray
+						for (DatabaseConnection dbConnection : app.getDatabaseConnections()) {
+							// create an object for the database connection
+							JSONObject jsonDBConnection = new JSONObject();
+							// set the index as the value
+							jsonDBConnection.put("value", index);
+							// set the name as the text
+							jsonDBConnection.put("text", dbConnection.getName());
+							// add to our collection
+							jsonDatabaseConnections.put(jsonDBConnection);
+							// inc the index
+							index ++;
+						}
+					}
+					// add database connections
+					result.put("databaseConnections", jsonDatabaseConnections);
+
+					// create an array for the soa webservices
+					JSONArray jsonWebservices = new JSONArray();
+
+					// check we have some webservices
+					if (app.getWebservices() != null) {
+						// get a synchronised list for multithreaded sorting
+						List<Webservice> webservices = Collections.synchronizedList(app.getWebservices());
+						// synchronise this block for thread-safety
+						synchronized (this) {
+							// sort them by their name
+							Collections.sort(webservices, new Comparator<Webservice>() {
+								@Override
+								public int compare(Webservice o1, Webservice o2) {
+									if (o1 == null) {
+										return -1;
+									} else if (o2 == null) {
+										return 1;
+									} else {
+										return Comparators.AsciiCompare(o1.getName(), o2.getName(), false);
+									}
 								}
-							}
+							});
 						}
-						// add the json control collection to the result
-						result.put("inputControls", jsonInputControls);
-
-						// add the customer email control id
-						result.put("formEmailCustomerControlId", app.getFormEmailCustomerControlId());
-						// add the customer email subject
-						result.put("formEmailCustomerSubject", app.getFormEmailCustomerSubject());
-						// add the customer email type, T or H
-						result.put("formEmailCustomerType", app.getFormEmailCustomerType());
-						// add the customer email body
-						result.put("formEmailCustomerBody", app.getFormEmailCustomerBody());
-						// add the customer email attachment type
-						result.put("formEmailCustomerAttachmentType", app.getFormEmailCustomerAttachmentType());
-
-						// add form file details
-						result.put("formFile", app.getFormFile());
-						// add form file type
-						result.put("formFileType", app.getFormFileType());
-						// add form file path
-						result.put("formFilePath", app.getFormFilePath());
-						// add form file username
-						result.put("formFileUserName", app.getFormFileUserName());
-						// add form file password
-						result.put("formFilePassword", app.getFormFilePassword());
-						// add form webservice
-						result.put("formWebservice", app.getFormWebservice());
-						// add form webservice URL
-						result.put("formWebserviceURL", app.getFormWebserviceURL());
-						// add form webservice type
-						result.put("formWebserviceType", app.getFormWebserviceType());
-						// add form webservice SOAP action
-						result.put("formWebserviceSOAPAction", app.getFormWebserviceSOAPAction());
-
-						// create a simplified array to hold the pages
-						JSONArray jsonPages = new JSONArray();
-						// retrieve the pages
-						List<PageHeader> pages = app.getPages().getSortedPages();
-						// check we have some
-						if (pages != null) {
-							for (PageHeader page : pages) {
-								JSONObject jsonPage = new JSONObject();
-								jsonPage.put("text", page.getName() + " - " + page.getTitle());
-								jsonPage.put("value", page.getId());
-								jsonPages.put(jsonPage);
-							}
+						// loop and add to jsonArray
+						for (Webservice webservice : webservices) {
+							jsonWebservices.put(webservice.getName());
 						}
-						// add the pages
-						result.put("pages", jsonPages);
+					}
+					// add webservices connections
+					result.put("webservices", jsonWebservices);
 
-						// add the start page Id
-						result.put("startPageId", app.getStartPageId());
+					// create an array for the parameters
+					JSONArray jsonParameters = new JSONArray();
 
-						// add the styles
-						result.put("themeType", app.getThemeType());
-						result.put("styles", app.getStyles());
-						result.put("statusBarColour", app.getStatusBarColour());
-						result.put("statusBarHighlightColour", app.getStatusBarHighlightColour());
-						result.put("statusBarTextColour", app.getStatusBarTextColour());
-						result.put("statusBarIconColour", app.getStatusBarIconColour());
-
-						// add the security adapter
-						result.put("securityAdapter", app.getSecurityAdapterType());
-						// add whether there is device security
-						result.put("deviceSecurity", app.getDeviceSecurity());
-						// add whether password is retained on Rapid Mobile
-						result.put("storePasswordDuration", app.getStorePasswordDuration());
-						// add action types
-						result.put("actionTypes", app.getActionTypes());
-						// add control types
-						result.put("controlTypes", app.getControlTypes());
-
-						// create an array for the database connections
-						JSONArray jsonDatabaseConnections = new JSONArray();
-
-						// check we have some database connections
-						if (app.getDatabaseConnections() != null) {
-							// remember the index
-							int index = 0;
-							// loop and add to jsonArray
-							for (DatabaseConnection dbConnection : app.getDatabaseConnections()) {
-								// create an object for the database connection
-								JSONObject jsonDBConnection = new JSONObject();
-								// set the index as the value
-								jsonDBConnection.put("value", index);
-								// set the name as the text
-								jsonDBConnection.put("text", dbConnection.getName());
-								// add to our collection
-								jsonDatabaseConnections.put(jsonDBConnection);
-								// inc the index
-								index ++;
-							}
-						}
-						// add database connections
-						result.put("databaseConnections", jsonDatabaseConnections);
-
-						// create an array for the soa webservices
-						JSONArray jsonWebservices = new JSONArray();
-
-						// check we have some webservices
-						if (app.getWebservices() != null) {
-							// get a synchronised list for multithreaded sorting
-							List<Webservice> webservices = Collections.synchronizedList(app.getWebservices());
-							// synchronise this block for thread-safety
-							synchronized (this) {
-								// sort them by their name
-								Collections.sort(webservices, new Comparator<Webservice>() {
-									@Override
-									public int compare(Webservice o1, Webservice o2) {
-										if (o1 == null) {
-											return -1;
-										} else if (o2 == null) {
-											return 1;
-										} else {
-											return Comparators.AsciiCompare(o1.getName(), o2.getName(), false);
-										}
+					// check we have some webservices
+					if (app.getParameters() != null) {
+						// get a synchronised list for multithreaded sorting
+						List<Parameter> parameters = Collections.synchronizedList(app.getParameters());
+						// synchronize this block
+						synchronized (this) {
+							// sort them by their name
+							Collections.sort(parameters, new Comparator<Parameter>() {
+								@Override
+								public int compare(Parameter o1, Parameter o2) {
+									if (o1 == null) {
+										return -1;
+									} else if (o2 == null) {
+										return 1;
+									} else {
+										return Comparators.AsciiCompare(o1.getName(), o2.getName(), false);
 									}
-								});
-							}
-							// loop and add to jsonArray
-							for (Webservice webservice : webservices) {
-								jsonWebservices.put(webservice.getName());
-							}
+								}
+							});
 						}
-						// add webservices connections
-						result.put("webservices", jsonWebservices);
+						// loop and add to jsonArray
+						for (Parameter parameter : parameters) {
+							jsonParameters.put(parameter.getName());
+						}
+					}
+					// add webservices connections
+					result.put("parameters", jsonParameters);
 
-						// create an array for the parameters
-						JSONArray jsonParameters = new JSONArray();
+					// create an array for the resources
+					JSONArray jsonResources = new JSONArray();
 
-						// check we have some webservices
-						if (app.getParameters() != null) {
-							// get a synchronised list for multithreaded sorting
-							List<Parameter> parameters = Collections.synchronizedList(app.getParameters());
-							// synchronize this block
-							synchronized (this) {
-								// sort them by their name
-								Collections.sort(parameters, new Comparator<Parameter>() {
-									@Override
-									public int compare(Parameter o1, Parameter o2) {
-										if (o1 == null) {
-											return -1;
-										} else if (o2 == null) {
-											return 1;
-										} else {
-											return Comparators.AsciiCompare(o1.getName(), o2.getName(), false);
-										}
+					// check we have some resources
+					if (app.getAppResources() != null) {
+						// get a synchronised list for multithreaded sorting
+						List<Resource> resources = Collections.synchronizedList(app.getAppResources());
+						// synchronize this block
+						synchronized (this) {
+							// sort them by their name
+							Collections.sort(resources, new Comparator<Resource>() {
+								@Override
+								public int compare(Resource o1, Resource o2) {
+									if (o1 == null) {
+										return -1;
+									} else if (o2 == null) {
+										return 1;
+									} else {
+										return Comparators.AsciiCompare(o1.getName(), o2.getName(), false);
 									}
-								});
-							}
-							// loop and add to jsonArray
-							for (Parameter parameter : parameters) {
-								jsonParameters.put(parameter.getName());
-							}
+								}
+							});
 						}
-						// add webservices connections
-						result.put("parameters", jsonParameters);
-
-						// create an array for the resources
-						JSONArray jsonResources = new JSONArray();
-
-						// check we have some resources
-						if (app.getAppResources() != null) {
-							// get a synchronised list for multithreaded sorting
-							List<Resource> resources = Collections.synchronizedList(app.getAppResources());
-							// synchronize this block
-							synchronized (this) {
-								// sort them by their name
-								Collections.sort(resources, new Comparator<Resource>() {
-									@Override
-									public int compare(Resource o1, Resource o2) {
-										if (o1 == null) {
-											return -1;
-										} else if (o2 == null) {
-											return 1;
-										} else {
-											return Comparators.AsciiCompare(o1.getName(), o2.getName(), false);
-										}
-									}
-								});
-							}
-							// loop and adds2 to jsonArray
-							for (Resource resource : resources) {
-								jsonResources.put(resource.getName());
-							}
+						// loop and adds2 to jsonArray
+						for (Resource resource : resources) {
+							jsonResources.put(resource.getName());
 						}
-						// add webservices connections
-						result.put("resources", jsonResources);
+					}
+					// add webservices connections
+					result.put("resources", jsonResources);
 
-						// create an array for the app backups
-						JSONArray jsonAppBackups = new JSONArray();
+					// create an array for the app backups
+					JSONArray jsonAppBackups = new JSONArray();
 
-						// check we have some app backups
-						if (app.getApplicationBackups(rapidServlet) != null) {
-							// loop and add to jsonArray
-							for (Application.Backup appBackup : app.getApplicationBackups(rapidServlet)) {
-								// create the backup json object
-								JSONObject jsonBackup = new JSONObject();
-								// populate it
-								jsonBackup.append("id", appBackup.getId());
-								jsonBackup.append("date", rapidServlet.getLocalDateTimeFormatter().format(appBackup.getDate()));
-								jsonBackup.append("user", appBackup.getUser());
-								jsonBackup.append("size", appBackup.getSize());
-								// add it
-								jsonAppBackups.put(jsonBackup);
-							}
+					// check we have some app backups
+					if (app.getApplicationBackups(rapidServlet) != null) {
+						// loop and add to jsonArray
+						for (Application.Backup appBackup : app.getApplicationBackups(rapidServlet)) {
+							// create the backup json object
+							JSONObject jsonBackup = new JSONObject();
+							// populate it
+							jsonBackup.append("id", appBackup.getId());
+							jsonBackup.append("date", rapidServlet.getLocalDateTimeFormatter().format(appBackup.getDate()));
+							jsonBackup.append("user", appBackup.getUser());
+							jsonBackup.append("size", appBackup.getSize());
+							// add it
+							jsonAppBackups.put(jsonBackup);
 						}
-						// add webservices connections
-						result.put("appbackups", jsonAppBackups);
+					}
+					// add webservices connections
+					result.put("appbackups", jsonAppBackups);
 
-						// add the max number of application backups
-						result.put("appBackupsMaxSize", app.getApplicationBackupsMaxSize());
+					// add the max number of application backups
+					result.put("appBackupsMaxSize", app.getApplicationBackupsMaxSize());
 
-						// create an array for the page backups
-						JSONArray jsonPageBackups = new JSONArray();
+					// create an array for the page backups
+					JSONArray jsonPageBackups = new JSONArray();
 
-						// check we have some app backups
-						if (app.getPageBackups(rapidServlet) != null) {
-							// loop and add to jsonArray
-							for (Application.Backup appBackup : app.getPageBackups(rapidServlet)) {
-								// create the backup json object
-								JSONObject jsonBackup = new JSONObject();
-								// populate it
-								jsonBackup.append("id", appBackup.getId());
-								jsonBackup.append("page", appBackup.getName());
-								jsonBackup.append("date", rapidServlet.getLocalDateTimeFormatter().format(appBackup.getDate()));
-								jsonBackup.append("user", appBackup.getUser());
-								jsonBackup.append("size", appBackup.getSize());
-								// add it
-								jsonPageBackups.put(jsonBackup);
-							}
+					// check we have some app backups
+					if (app.getPageBackups(rapidServlet) != null) {
+						// loop and add to jsonArray
+						for (Application.Backup appBackup : app.getPageBackups(rapidServlet)) {
+							// create the backup json object
+							JSONObject jsonBackup = new JSONObject();
+							// populate it
+							jsonBackup.append("id", appBackup.getId());
+							jsonBackup.append("page", appBackup.getName());
+							jsonBackup.append("date", rapidServlet.getLocalDateTimeFormatter().format(appBackup.getDate()));
+							jsonBackup.append("user", appBackup.getUser());
+							jsonBackup.append("size", appBackup.getSize());
+							// add it
+							jsonPageBackups.put(jsonBackup);
 						}
-						// add webservices connections
-						result.put("pagebackups", jsonPageBackups);
+					}
+					// add webservices connections
+					result.put("pagebackups", jsonPageBackups);
 
-						// add the max number of page backups
-						result.put("pageBackupsMaxSize", app.getPageBackupsMaxSize());
+					// add the max number of page backups
+					result.put("pageBackupsMaxSize", app.getPageBackupsMaxSize());
 
-					} // permission check
-
-				} // password check
+				} // permission check
 
 			} else if ("GETWORKFLOWS".equals(action)) {
 
@@ -1402,1988 +1412,2016 @@ public class Rapid extends Action {
 				result.put("title", workflow.getTitle());
 				result.put("description", workflow.getDescription());
 
-			} else if ("GETDBCONN".equals(action)) {
+			} // action type check
 
-				// must have rapid admin
+			// if we don't have a result yet
+			if (result.length() == 0) {
+
+				// if we have rapid admin role
 				if (rapidAdmin) {
 
-					// get the index
-					int index = jsonAction.getInt("index");
+					if ("GETDEVICE".equals(action)) {
 
-					// get the database connections
-					List<DatabaseConnection> dbConns = app.getDatabaseConnections();
+						// retrieve the index
+						int index = jsonAction.getInt("index");
 
-					// check we have database connections
-					if (dbConns != null) {
-						// check the index we where given will retieve a database connection
-						if (index > -1 && index < dbConns.size()) {
-							// get the database connection
-							DatabaseConnection dbConn = dbConns.get(index);
-							// add the name
-							result.put("name", dbConn.getName());
-							// add the driver type
-							result.put("driver", dbConn.getDriverClass());
-							// add the connection adapter class
-							result.put("connectionString", dbConn.getConnectionString());
-							// add the connection adapter class
-							result.put("connectionAdapter", dbConn.getConnectionAdapterClass());
-							// add the user name
-							result.put("userName", dbConn.getUserName());
-							// add the password
-							if ("".equals(dbConn.getPassword())) {
-								result.put("password", "");
-							} else {
-								result.put("password", "********");
+						// create the json object
+						JSONObject jsonDevice = new JSONObject();
+
+						// reference to all devices
+						Devices devices = rapidServlet.getDevices();
+
+						// check we have devices
+						if (devices != null) {
+							// check the index is ok
+							if (index >= 0 && index < devices.size()) {
+
+								// get the device
+								Device device = rapidServlet.getDevices().get(index);
+
+								// add the name and value
+								jsonDevice.put("name", device.getName());
+								jsonDevice.put("width", device.getWidth());
+								jsonDevice.put("height", device.getHeight());
+								jsonDevice.put("ppi", device.getPPI());
+								jsonDevice.put("scale", device.getScale());
+
 							}
 						}
-					}
 
-				}
+						// add the parameter to the result
+						result.put("device", jsonDevice);
 
-			} else if ("GETSOA".equals(action)) {
+					} else if ("GETSESSIONS".equals(action)) {
 
-				// retain the JSON object which we will return
-				JSONObject jsonWebservice;
+						// create the json object
+						JSONObject jsonDetails= new JSONObject();
 
-				// get the index
-				int index = jsonAction.getInt("index");
+						// create a json array
+						JSONArray jsonSessions = new JSONArray();
 
-				// get the database connections
-				List<Webservice> webservices = app.getWebservices();
+						// get the sessions
+						Map<String, HttpSession> sessions = RapidSessionListener.getSessions();
 
-				// check we have database connections
-				if (webservices != null) {
-					// check the index we where given will retieve a database connection
-					if (index > -1 && index < webservices.size()) {
-						// get the webservice from the collection
-						Webservice webservice = webservices.get(index);
-						// convert it into a json object
-						jsonWebservice = new JSONObject(webservice);
-						// add the type
-						jsonWebservice.put("type", webservice.getClass().getSimpleName());
-						// add the user to the response
-						result.put("webservice", jsonWebservice);
-					}
-				}
+						// check we got some
+						if (sessions != null) {
 
-			} else if ("GETSEC".equals(action)) {
+							// get a date formatter
+							SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
-				// get all of the available security adapters
-				JSONArray jsonSecurityAdapters = rapidServlet.getJsonSecurityAdapters();
-
-				// get the securityAdapter type from the jsonAction
-				String securityAdapterType = jsonAction.optString("securityAdapter", null);
-
-				// check we got one, might not have if drop down is not visible
-				if (securityAdapterType == null) {
-
-					// check we have some security adapters
-					if (security != null && jsonSecurityAdapters != null) {
-						// loop what we have
-						for (int i = 0; i < jsonSecurityAdapters.length(); i++) {
-							// get the item
-							JSONObject jsonSecurityAdapter = jsonSecurityAdapters.getJSONObject(i);
-							// if this is the type that came in
-							if (security.getClass().getCanonicalName().equals(jsonSecurityAdapter.getString("class"))) {
-								// add the adapter index as we know we don't have a drop down
-								result.put("adapterIndex", i);
-								// we're done
-								break;
-							}
-						}
-					}
-
-				} else {
-
-					// assume the current class has not been set
-					String securityAdapterClass = "";
-
-					// check we have some security adapters
-					if (jsonSecurityAdapters != null) {
-						// loop what we have
-						for (int i = 0; i < jsonSecurityAdapters.length(); i++) {
-							// get the item
-							JSONObject jsonSecurityAdapter = jsonSecurityAdapters.getJSONObject(i);
-							// if this is the type that came in
-							if (securityAdapterType.equals(jsonSecurityAdapter.getString("type"))) {
-								// retain the name
-								securityAdapterClass = jsonSecurityAdapter.getString("class");
-								// we're done
-								break;
-							}
-						}
-					}
-
-					// if it's different from what came in
-					if (!securityAdapterClass.equals(security.getClass().getCanonicalName())) {
-						// set the new security adapter
-						app.setSecurityAdapter(servletContext, securityAdapterType);
-						// read it back again
-						security = app.getSecurityAdapter();
-					}
-
-				} // got security adapter type
-
-				// if we got the security
-				if (security != null) {
-
-					// recreate the rapidRequest with the selected app (so app parameters etc are available from the app in the rapidRequest)
-					rapidRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), app);
-
-					// if we high-level Rapid Admin or high-level Rapid Users
-					if (rapidAdmin || rapidUsers) {
-
-						// get the roles
-						Roles roles = security.getRoles(rapidRequest);
-
-						// add the entire roles collection to the response
-						result.put("roles", roles);
-
-						// if we had some roles
-						if (roles != null) {
-							// prepapre a list of just the role names (not descriptions) - these go in the drop down for new roles that can be added
-							List<String> roleNames = new ArrayList<>();
-							// loop the roles
-							for (Role role : roles) {
-								// we need the RapidAdmin role to add RapidAdmin or RapidDesign
-								if ((!com.rapid.server.Rapid.ADMIN_ROLE.equals(role.getName()) && !com.rapid.server.Rapid.DESIGN_ROLE.equals(role.getName())) || security.checkUserRole(rapidRequest, com.rapid.server.Rapid.ADMIN_ROLE))
-									roleNames.add(role.getName());
-							}
-							// add the rolenames
-							result.put("roleNames", roleNames);
-						}
-
-					} // high-level Rapid Admin check
-
-					// get the users
-					Users users = security.getUsers(rapidRequest);
-
-					// if we got some add the users safely to the response (does not include password)
-					if (users != null) result.put("users", getSafeUsersJSON(rapidRequest, security, rapidAdmin, users));
-
-				} // got security
-
-			} else if ("GETUSER".equals(action)) {
-
-				// get the userName from the incoming json
-				String userName = jsonAction.getString("userName");
-
-				// recreate the rapidRequest with the selected app (so app parameters etc are available from the app in the rapidRequest)
-				rapidRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), app);
-
-				// derive whether this is the current user
-				boolean currentUser = userName.toLowerCase().equals(rapidRequest.getUserName().toLowerCase());
-
-				// now set the rapid request user to the user we want
-				rapidRequest.setUserName(userName);
-
-				// get all of the available security adapters
-				JSONArray jsonSecurityAdapters = rapidServlet.getJsonSecurityAdapters();
-
-				// check we have some security adapters
-				if (security != null && jsonSecurityAdapters != null) {
-					// loop what we have
-					for (int i = 0; i < jsonSecurityAdapters.length(); i++) {
-						// get the item
-						JSONObject jsonSecurityAdapter = jsonSecurityAdapters.getJSONObject(i);
-						// if this is the type that came in
-						if (security.getClass().getCanonicalName().equals(jsonSecurityAdapter.getString("class"))) {
-							// add the adapter index as we know we don't have a drop down
-							result.put("adapterIndex", i);
-							// we're done
-							break;
-						}
-					}
-				}
-
-				// get the user
-				User user = security.getUser(rapidRequest);
-
-				// add the user name
-				result.put("userName", userName);
-
-				// add the user description
-				result.put("description", user.getDescription());
-
-				// add the user email
-				result.put("email", user.getEmail());
-
-				// set the default password mask
-				String password = "********";
-
-				// if the password is blank reflect this in what we send
-				if ("".equals(user.getPassword())) password = "";
-
-				// add a masked password
-				result.put("password", password);
-
-				// add isLocked status
-				result.put("isLocked", user.getIsLocked());
-
-				// add the device details
-				result.put("deviceDetails", user.getDeviceDetails());
-
-				// if we got one
-				if (security != null) {
-
-					// get the users roles
-					List<String> roles = security.getUser(rapidRequest).getRoles();
-
-					// add the users to the response
-					result.put("roles", roles);
-
-				} // got security
-
-				// if this user record is for the logged in user
-				result.put("currentUser", currentUser);
-
-			} else if ("GETUSERS".equals(action)) {
-
-				// add the current user
-				result.put("currentUser", rapidRequest.getUserName());
-
-				// if we got one
-				if (security != null) {
-
-					// recreate the rapidRequest with the selected app (so app parameters etc are available from the app in the rapidRequest)
-					rapidRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), app);
-
-					// get the users of the selected app
-					Users users = security.getUsers(rapidRequest);
-
-					// if we got some
-					if (users != null) {
-						// put the list of users
-						result.put("users", getSafeUsersJSON(rapidRequest, security, rapidAdmin, users));
-					}
-
-				} // got security
-
-			} else if ("GETPARAM".equals(action)) {
-
-				// retrieve the index
-				int index = jsonAction.getInt("index");
-
-				// create the json object
-				JSONObject jsonParameter = new JSONObject();
-
-				// check the parameters
-				if (app.getParameters() != null) {
-
-					// check we have the one requested
-					if (index >= 0 && index < app.getParameters().size()) {
-
-						// get the parameter
-						Parameter parameter = app.getParameters().get(index);
-
-						// add the name and value
-						jsonParameter.put("name", parameter.getName());
-						jsonParameter.put("description", parameter.getDescription());
-						jsonParameter.put("value", parameter.getValue());
-
-					}
-				}
-
-				// add the parameter to the result
-				result.put("parameter", jsonParameter);
-
-			} else if ("GETRESOURCE".equals(action)) {
-
-				// retrieve the index
-				int index = jsonAction.getInt("index");
-
-				// create the json object
-				JSONObject jsonParameter = new JSONObject();
-
-				// check the resources
-				if (app.getAppResources() != null) {
-
-					// check we have the one requested
-					if (index >= 0 && index < app.getAppResources().size()) {
-
-						// get the parameter
-						Resource resource = app.getAppResources().get(index);
-
-						// add the name and value
-						jsonParameter.put("name", resource.getName());
-						jsonParameter.put("type", resource.getType());
-						jsonParameter.put("value", resource.getContent());
-
-					}
-				}
-
-				// add the parameter to the result
-				result.put("resource", jsonParameter);
-
-			} else if ("GETDEVICE".equals(action)) {
-
-				// retrieve the index
-				int index = jsonAction.getInt("index");
-
-				// create the json object
-				JSONObject jsonDevice = new JSONObject();
-
-				// reference to all devices
-				Devices devices = rapidServlet.getDevices();
-
-				// check we have devices
-				if (devices != null) {
-					// check the index is ok
-					if (index >= 0 && index < devices.size()) {
-
-						// get the device
-						Device device = rapidServlet.getDevices().get(index);
-
-						// add the name and value
-						jsonDevice.put("name", device.getName());
-						jsonDevice.put("width", device.getWidth());
-						jsonDevice.put("height", device.getHeight());
-						jsonDevice.put("ppi", device.getPPI());
-						jsonDevice.put("scale", device.getScale());
-
-					}
-				}
-
-				// add the parameter to the result
-				result.put("device", jsonDevice);
-
-			} else if ("GETSESSIONS".equals(action)) {
-
-				// create the json object
-				JSONObject jsonDetails= new JSONObject();
-
-				// create a json array
-				JSONArray jsonSessions = new JSONArray();
-
-				// get the sessions
-				Map<String, HttpSession> sessions = RapidSessionListener.getSessions();
-
-				// check we got some
-				if (sessions != null) {
-
-					// get a date formatter
-					SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-
-					// loop them
-					for (String key : sessions.keySet()) {
-						// get the session
-						HttpSession httpSession = sessions.get(key);
-						// create object
-						JSONObject jsonSession = new JSONObject();
-						// add name
-						jsonSession.put("name", httpSession.getAttribute(RapidFilter.SESSION_VARIABLE_USER_NAME));
-						// get a new date from the time
-						Date accessTime = new Date(httpSession.getLastAccessedTime());
-						// add last access
-						jsonSession.put("access", df.format(accessTime));
-						// add to collections
-						jsonSessions.put(jsonSession);
-					}
-
-				}
-
-				// add sessions
-				jsonDetails.put("sessions", jsonSessions);
-
-				return jsonDetails;
-
-			} else if ("RELOADACTIONS".equals(action)) {
-
-				// load actions and set the result message
-				result.put("message", RapidServletContextListener.loadActions(servletContext) + " actions reloaded");
-
-			} else if ("RELOADCONTROLS".equals(action)) {
-
-				// load controls and set the result message
-				result.put("message", RapidServletContextListener.loadControls(servletContext) + " controls reloaded");
-
-			} else if ("RELOADAPPLICATIONS".equals(action)) {
-
-				// load applications and set the result message
-				result.put("message", RapidServletContextListener.loadApplications(servletContext) + " applications reloaded");
-
-			} else if ("RELOADADAPTERS".equals(action)) {
-
-				// ints for number of bits of each we're reloading
-				int databaseDrivers = 0;
-				int connectionAdapters = 0;
-				int securityAdapters = 0;
-				int forms = 0;
-				int themes = 0;
-				int devices = 0;
-
-				// reload adapters and set the int for the result message
-				databaseDrivers = RapidServletContextListener.loadDatabaseDrivers(servletContext);
-				connectionAdapters = RapidServletContextListener.loadConnectionAdapters(servletContext);
-				securityAdapters = RapidServletContextListener.loadSecurityAdapters(servletContext);
-				forms =  RapidServletContextListener.loadFormAdapters(servletContext);
-				themes = RapidServletContextListener.loadThemes(servletContext);
-				devices = Devices.load(servletContext).size();
-
-				// reset upload mime types so they are reloaded
-				rapidServlet.resetMimeTypes();
-
-				// show result message
-				result.put("message",
-					databaseDrivers + " database driver" + (databaseDrivers == 1 ? "" : "s") + ", " +
-					connectionAdapters + " connection adapter" + (connectionAdapters == 1 ? "" : "s") + ", " +
-					securityAdapters + " security adapter" + (securityAdapters == 1 ? "" : "s") + ", " +
-					forms + " form adapter" + (forms == 1 ? "" : "s") + ", " +
-					themes + " theme" + (themes == 1 ? "" : "s") + ", " +
-					devices + " device" + (devices == 1 ? "" : "s") + " reloaded"
-				);
-
-			} else if ("RELOADPROCESSES".equals(action)) {
-
-				int processes = 0;
-
-				processes = RapidServletContextListener.loadProcesses(servletContext);
-
-				// load processes and set the result message
-				result.put("message", processes + " process" + (processes == 1 ? "" : "es") + " reloaded");
-
-			} else if ("RELOADVERSION".equals(action)) {
-
-				// look for an application file in the application folder
-				File applicationFile = new File(app.getConfigFolder(servletContext) + "/application.xml");
-
-				// close the existing app
-				app.close(servletContext);
-
-				// reload the application from file
-				Application reloadedApplication = Application.load(servletContext, applicationFile);
-
-				// replace it into the applications collection
-				rapidServlet.getApplications().put(reloadedApplication);
-
-				// load applications and set the result message
-				result.put("message", "Version reloaded");
-
-			} else if ("SAVEAPP".equals(action)) {
-
-				// get the new values
-				String id = Files.safeName(jsonAction.getString("name")).toLowerCase();
-				String version = Files.safeName(jsonAction.getString("saveVersion"));
-				int status = jsonAction.optInt("status");
-				String name = jsonAction.getString("name");
-				String title = jsonAction.getString("title");
-				String description = jsonAction.getString("description");
-
-				boolean isForm = jsonAction.optBoolean("isForm");
-				String startPageId = jsonAction.optString("startPageId","");
-				boolean pageNameIds = jsonAction.optBoolean("pageNameIds");
-				boolean showControlIds = jsonAction.optBoolean("showControlIds");
-				boolean showActionIds = jsonAction.optBoolean("showActionIds");
-
-				String formAdapter = jsonAction.optString("formAdapter");
-				boolean formDisableAutoComplete = jsonAction.optBoolean("formDisableAutoComplete");
-
-				boolean formEmail = jsonAction.optBoolean("formEmail");
-				String formEmailFrom = jsonAction.optString("formEmailFrom");
-				String formEmailTo = jsonAction.optString("formEmailTo");
-				String formEmailAttachmentType = jsonAction.optString("formEmailAttachmentType");
-
-				boolean formEmailCustomer = jsonAction.optBoolean("formEmailCustomer");
-				String formEmailCustomerControlId = jsonAction.optString("formEmailCustomerControlId");
-				String formEmailCustomerSubject = jsonAction.optString("formEmailCustomerSubject");
-				String formEmailCustomerType = jsonAction.optString("formEmailCustomerType");
-				String formEmailCustomerBody = jsonAction.optString("formEmailCustomerBody");
-				String formEmailCustomerAttachmentType = jsonAction.optString("formEmailCustomerAttachmentType");
-
-				boolean formFile = jsonAction.optBoolean("formFile");
-				String formFileType = jsonAction.optString("formFileType");
-				String formFilePath = jsonAction.optString("formFilePath");
-				String formFileUserName = jsonAction.optString("formFileUserName");
-				String formFilePassword = jsonAction.optString("formFilePassword");
-
-				boolean formWebservice = jsonAction.optBoolean("formWebservice");
-				String formWebserviceURL = jsonAction.optString("formWebserviceURL");
-				String formWebserviceType = jsonAction.optString("formWebserviceType");
-				String formWebserviceSOAPAction = jsonAction.optString("formWebserviceSOAPAction");
-
-				// assume we do not need to update the applications drop down
-				boolean appUpdated = false;
-
-				// if the id or version is now different we need to move it, rebuilding all the resources as we go
-				if (!app.getId().equals(id) || !app.getVersion().equals(version)) {
-					// copy the app to the id/version, returning the new one for saving
-					app = app.copy(rapidServlet, rapidRequest, id, version, true, true);
-					// mark that it has been updated
-					appUpdated = true;
-				}
-
-				// update the values
-				app.setName(name);
-				app.setStatus(status);
-				app.setTitle(title);
-				app.setDescription(description);
-
-				app.setIsForm(isForm);
-				app.setStartPageId(startPageId);
-				app.setPageNameIds(pageNameIds);
-				app.setShowControlIds(showControlIds);
-				app.setShowActionIds(showActionIds);
-
-				app.setFormAdapterType(formAdapter);
-				app.setFormDisableAutoComplete(formDisableAutoComplete);
-
-				app.setFormEmail(formEmail);
-				app.setFormEmailFrom(formEmailFrom);
-				app.setFormEmailTo(formEmailTo);
-				app.setFormEmailAttachmentType(formEmailAttachmentType);
-
-				app.setFormEmailCustomer(formEmailCustomer);
-				app.setFormEmailCustomerControlId(formEmailCustomerControlId);
-				app.setFormEmailCustomerSubject(formEmailCustomerSubject);
-				app.setFormEmailCustomerType(formEmailCustomerType);
-				app.setFormEmailCustomerBody(formEmailCustomerBody);
-				app.setFormEmailCustomerAttachmentType(formEmailCustomerAttachmentType);
-
-				app.setFormFile(formFile);
-				app.setFormFileType(formFileType);
-				app.setFormFilePath(formFilePath);
-				app.setFormFileUserName(formFileUserName);
-				app.setFormFilePassword(formFilePassword);
-
-				app.setFormWebservice(formWebservice);
-				app.setFormWebserviceURL(formWebserviceURL);
-				app.setFormWebserviceType(formWebserviceType);
-				app.setFormWebserviceSOAPAction(formWebserviceSOAPAction);
-
-				// save
-				app.save(rapidServlet, rapidRequest, true);
-
-				// add the application to the response
-				result.put("message", "Application details saved");
-				result.put("update", appUpdated);
-
-			} else if ("SAVESTYLES".equals(action)) {
-
-				String themeType = jsonAction.getString("themeType");
-				String styles = jsonAction.getString("styles");
-				String statusBarColour = jsonAction.optString("statusBarColour");
-				String statusBarHighlightColour = jsonAction.optString("statusBarHighlightColour");
-				String statusBarTextColour = jsonAction.optString("statusBarTextColour");
-				String statusBarIconColour = jsonAction.optString("statusBarIconColour");
-
-				app.setThemeType(themeType);
-				app.setStyles(styles);
-				app.setStatusBarColour(statusBarColour);
-				app.setStatusBarHighlightColour(statusBarHighlightColour);
-				app.setStatusBarTextColour(statusBarTextColour);
-				app.setStatusBarIconColour(statusBarIconColour);
-
-				app.save(rapidServlet, rapidRequest, true);
-
-				// add the application to the response
-				result.put("message", "Styles saved");
-
-			} else if ("SAVEDBCONN".equals(action)) {
-
-				// get the index
-				int index = jsonAction.getInt("index");
-
-				// get the database connections
-				List<DatabaseConnection> dbConns = app.getDatabaseConnections();
-
-				// remeber whether we found the connection
-				boolean foundConnection = false;
-
-				// check we have database connections
-				if (dbConns != null) {
-					// check the index we where given will retieve a database connection
-					if (index > -1 && index < dbConns.size()) {
-						// get the database connection
-						DatabaseConnection dbConn = dbConns.get(index);
-
-						// set the databse connection properties
-						dbConn.setName(jsonAction.getString("name"));
-						dbConn.setDriverClass(jsonAction.getString("driver"));
-						dbConn.setConnectionString(jsonAction.getString("connectionString"));
-						dbConn.setConnectionAdapterClass(jsonAction.getString("connectionAdapter"));
-						dbConn.setUserName(jsonAction.getString("userName"));
-						String password = jsonAction.getString("password");
-						// only set the password if it's different from the default
-						if (!"********".equals(password)) dbConn.setPassword(password);
-
-						// reset the dbconn so the adapter is re-initialised with any changes
-						dbConn.reset();
-
-						// save the app
-						app.save(rapidServlet, rapidRequest, true);
-
-						foundConnection = true;
-
-						// add the application to the response
-						result.put("message", "Database connection saved");
-
-					}
-				}
-
-				if (!foundConnection) result.put("message", "Database connection could not be found");
-
-			} else if ("SAVESOASQL".equals(action)) {
-
-				// get the index
-				int index = jsonAction.getInt("index");
-
-				// get the webservices
-				List<Webservice> webservices = app.getWebservices();
-
-				// remeber whether we found the connection
-				boolean foundWebservice = false;
-
-				// check we have database connections
-				if (webservices != null) {
-					// check the index we where given will retieve a database connection
-					if (index > -1 && index < webservices.size()) {
-						// get the web service connection
-						Webservice webservice = webservices.get(index);
-						// check the type
-						if (webservice.getClass() == SQLWebservice.class) {
-							// cast to our type
-							SQLWebservice sqlWebservice = (SQLWebservice) webservice;
-
-							// set the webservice properties
-							sqlWebservice.setName(jsonAction.getString("name").trim());
-							sqlWebservice.setDatabaseConnectionIndex(jsonAction.getInt("databaseConnectionIndex"));
-
-							// get the rest of the complex details
-							JSONObject jsonDetails = jsonAction.getJSONObject("details");
-
-							// set the sql
-							sqlWebservice.setSQL(jsonDetails.getString("SQL").trim());
-
-							// get the json request
-							JSONObject jsonRequestSchmea = jsonDetails.optJSONObject("requestSchema");
-							// check it
-							if (jsonRequestSchmea != null) {
-								// get the root element
-								JSONObject jsonElement = jsonRequestSchmea.getJSONObject("rootElement");
-								// get its name
-								String elementName = jsonElement.optString("name").trim();
-								// create the schema
-								SOASchema requestSchema = new SOASchema(elementName);
-								// get any child elements
-								JSONArray jsonChildElements = jsonElement.optJSONArray("childElements");
-								// check
-								if (jsonChildElements != null) {
-									// loop
-									for (int i = 0; i < jsonChildElements.length(); i++) {
-										// get child element
-										JSONObject jsonChildElement = jsonChildElements.getJSONObject(i);
-										// get child element name
-										String childElementName = jsonChildElement.getString("name").trim();
-										// get its data type
-										int childElementDataType = jsonChildElement.optInt("dataType",1);
-										// add child element to schema (and get a reference)
-										SOASchemaElement soaChildElement = requestSchema.addChildElement(childElementName);
-										// set the data type
-										soaChildElement.setDataType(childElementDataType);
-										// add any restrictions
-										soaChildElement.setRestrictions(getRestrictions(jsonChildElement.optJSONArray("restrictions")));
-									}
-								}
-								// set the schema property
-								sqlWebservice.setRequestSchema(requestSchema);
-							}
-
-							// get the json response
-							JSONObject jsonResponseSchema = jsonDetails.optJSONObject("responseSchema");
-							// check it
-							if (jsonResponseSchema != null) {
-								// get the root element
-								JSONObject jsonElement = jsonResponseSchema.getJSONObject("rootElement");
-								// get its name
-								String elementName = jsonElement.optString("name");
-								// get if array
-								boolean isArray = Boolean.parseBoolean(jsonElement.optString("isArray"));
-								// create the schema
-								SOASchema responseSchema = new SOASchema(elementName, isArray);
-								// get any child elements
-								JSONArray jsonChildElements = jsonElement.optJSONArray("childElements");
-								// check
-								if (jsonChildElements != null) {
-									// loop
-									for (int i = 0; i < jsonChildElements.length(); i++) {
-										// get child element
-										JSONObject jsonChildElement = jsonChildElements.getJSONObject(i);
-										// get child element name
-										String childElementName = jsonChildElement.getString("name").trim();
-										// get child element field
-										String childElementField = jsonChildElement.optString("field","");
-										// get its data type
-										int childElementDataType = jsonChildElement.optInt("dataType",1);
-										// add child element to schema (and get reference)
-										SOASchemaElement soaChildElement = responseSchema.addChildElement(childElementName);
-										// set field
-										soaChildElement.setField(childElementField);
-										// set data type
-										soaChildElement.setDataType(childElementDataType);
-										// add any restrictions
-										soaChildElement.setRestrictions(getRestrictions(jsonChildElement.optJSONArray("restrictions")));
-									}
-								}
-								// set the schema property
-								sqlWebservice.setResponseSchema(responseSchema);
-							}
-
-							// save the app
-							app.save(rapidServlet, rapidRequest, true);
-
-							foundWebservice = true;
-
-							// add the application to the response
-							result.put("message", "SQL webservice saved");
-						}
-					}
-				}
-
-				if (!foundWebservice) result.put("message", "SQL webservice could not be found");
-
-			} else if ("SAVESOAJAVA".equals(action)) {
-
-				// get the index
-				int index = jsonAction.getInt("index");
-
-				// get the webservices
-				List<Webservice> webservices = app.getWebservices();
-
-				// remeber whether we found the connection
-				boolean foundWebservice = false;
-
-				// check we have database connections
-				if (webservices != null) {
-					// check the index we where given will retieve a database connection
-					if (index > -1 && index < webservices.size()) {
-						// get the web service connection
-						Webservice webservice = webservices.get(index);
-						// check the type
-						if (webservice.getClass() == JavaWebservice.class) {
-
-							// cast to our type
-							JavaWebservice javaWebservice = (JavaWebservice) webservice;
-
-							// set the webservice properties
-							javaWebservice.setName(jsonAction.getString("name").trim());
-							javaWebservice.setClassName(jsonAction.getString("className").trim());
-
-							// save the app
-							app.save(rapidServlet, rapidRequest, true);
-
-							foundWebservice = true;
-
-							// add the application to the response
-							result.put("message", "Java webservice saved");
-						}
-					}
-				}
-
-				if (!foundWebservice) result.put("message", "Java webservice could not be found");
-
-			} else if ("SAVESECURITYADAPT".equals(action)) {
-
-				String securityAdapter = jsonAction.getString("securityAdapter").trim();
-
-				boolean deviceSecurity = jsonAction.optBoolean("deviceSecurity");
-
-				String storePasswordDuration = jsonAction.optString("storePasswordDuration");
-
-				app.setSecurityAdapterType(securityAdapter);
-
-				app.setDeviceSecurity(deviceSecurity);
-
-				app.setStorePasswordDuration(storePasswordDuration);
-
-				app.save(rapidServlet, rapidRequest, true);
-
-				// add the application to the response
-				result.put("message", "Security adapter saved");
-
-			} else if ("SAVEACTIONS".equals(action)) {
-
-				JSONArray jsonActionTypes = jsonAction.getJSONArray("actionTypes");
-
-				ArrayList<String> actionTypes = new ArrayList<>();
-
-				for (int i = 0; i < jsonActionTypes.length(); i++) {
-					actionTypes.add(jsonActionTypes.getString(i).trim());
-				}
-
-				// make sure some required actions are there if this is the rapid app
-				if ("rapid".equals(appId)) {
-					String [] requiredActionTypes = {"rapid", "ajax", "control", "custom", "dataCopy", "existing", "validation"};
-					for (String actionType : requiredActionTypes) {
-						if (!actionTypes.contains(actionType)) actionTypes.add(actionType);
-					}
-				}
-
-				// sort the types
-				Collections.sort(actionTypes);
-
-				// put the list into the app
-				app.setActionTypes(actionTypes);
-
-				// save it
-				app.save(rapidServlet, rapidRequest, true);
-
-				// add the message to the response
-				result.put("message", actionTypes.size() + " actions");
-
-			} else if ("SAVECONTROLS".equals(action)) {
-
-				JSONArray jsonControlTypes = jsonAction.getJSONArray("controlTypes");
-
-				ArrayList<String> controlTypes = new ArrayList<>();
-
-				// loop the controls
-				for (int i = 0; i < jsonControlTypes.length(); i++) {
-					// get the control type
-					String controlType = jsonControlTypes.getString(i).trim();
-					// get the json for it
-					JSONObject jsonControl = rapidServlet.getJsonControl(controlType);
-					// if there was one
-					if (jsonControl != null) {
-						// add this type
-						controlTypes.add(controlType);
-						// look for any required action
-						String requiredActionType = jsonControl.optString("requiredActionType", null);
-						// if we got one
-						if (requiredActionType != null) {
-							// get the action types
-							List<String> actionTypes = app.getActionTypes();
-							// if it doesn't exist
-							if (!actionTypes.contains(requiredActionType)) {
-								// get the json for it
-								JSONObject jsonActionType = rapidServlet.getJsonControl(requiredActionType);
-								// if we got one
-								if (jsonActionType != null) {
-									// add it
-									actionTypes.add(requiredActionType);
-									// sort the list
-									Collections.sort(actionTypes);
-								}
-							}
-						}
-					}
-				}
-
-				// make sure some required controls are there if this is the rapid app
-				if ("rapid".equals(appId)) {
-					String [] requiredControlTypes = {"button", "dataStore", "dropdown", "grid", "image", "input", "page", "table", "tabGroup", "text"};
-					for (String controlType : requiredControlTypes) {
-						if (!controlTypes.contains(controlType)) controlTypes.add(controlType);
-					}
-				}
-
-				// sort the types
-				Collections.sort(controlTypes);
-
-				// add the controls to the app
-				app.setControlTypes(controlTypes);
-
-				// save
-				app.save(rapidServlet, rapidRequest, true);
-
-				// add the message to the response
-				result.put("message", controlTypes.size() + " controls");
-
-			} else if ("REBUILDPAGES".equals(action)) {
-
-				// add the message to the response
-				result.put("message", "This feature is not supported");
-
-			} else if ("NEWAPP".equals(action)) {
-
-				// retrieve the inputs from the json
-				String name = jsonAction.getString("name").trim();
-				String version = jsonAction.getString("newVersion").trim();
-				String title = jsonAction.optString("title").trim();
-				String type = jsonAction.optString("type");
-				String formAdapterType = jsonAction.optString("formAdapter", null);
-				boolean responsive = jsonAction.optBoolean("responsive");
-				String themeType = jsonAction.optString("themeType");
-				String description = jsonAction.optString("description").trim();
-
-				// create a new application with our reusable, private method
-				Application newApp = createApplication(rapidServlet, rapidRequest, name, version, title, type, responsive, themeType, description);
-
-				// if this is a form, add the adapter
-				if ("F".equals(type)) newApp.setFormAdapter(servletContext, formAdapterType);
-
-				// set the result message
-				result.put("message", "Application " + newApp.getTitle() + " created");
-
-				// set the result appId
-				result.put("appId", newApp.getId());
-
-				// set the result version
-				result.put("version", newApp.getVersion());
-
-			} else if ("DELAPP".equals(action)) {
-
-				// check we have an app
-				if (app != null)  {
-					// get the collection of applications and versions
-					Applications applications = rapidServlet.getApplications();
-					// get all versions of this application
-					Versions versions = applications.getVersions(app.getId());
-					// get the number of version
-					int versionCount = versions.size();
-					// make a list of versions
-					ArrayList<String> versionNumbers = new ArrayList<>();
-					// loop the versions
-					for (String version : versions.keySet()) {
-						versionNumbers.add(version);
-					}
-					// loop the versionNumbers
-					for (String versionNumber: versionNumbers) {
-						// get this version
-						Application v = applications.get(app.getId(), versionNumber);
-						// delete it
-						v.delete(rapidServlet, rapidActionRequest, true);
-					}
-					// set the result message
-					result.put("message", versionCount + " application version" + (versionCount == 1 ? "" : "s") + " deleted for " + app.getName());
-				}
-
-			} else if ("DUPAPP".equals(action)) {
-
-				String version = jsonAction.getString("newVersion").trim();
-				String title = jsonAction.optString("title").trim();
-				String description = jsonAction.optString("description").trim();
-
-				// use the application.copy routine (this updates the status and created time)
-				Application dupApp = app.copy(rapidServlet, rapidRequest, app.getId(), version, false, false);
-
-				// set the new title into the duplicate
-				dupApp.setTitle(title);
-				// set the new description
-				dupApp.setDescription(description);
-
-				// save the duplicate
-				dupApp.save(rapidServlet, rapidRequest, false);
-
-				// set the result message
-				result.put("message", "Application " + app.getTitle() + " duplicated");
-				result.put("id", dupApp.getId());
-				result.put("version", dupApp.getVersion());
-
-			} else if ("NEWVERSION".equals(action)) {
-
-				// retrieve the inputs from the json
-				String id = jsonAction.getString("appId").trim();
-				String version = jsonAction.getString("newVersion").trim();
-				String title = jsonAction.optString("title").trim();
-				String description = jsonAction.optString("description").trim();
-
-				// create a new application with our reusable, private method
-				Application newApp = createApplication(rapidServlet, rapidRequest, id, version, title, "", false, "", description);
-
-				// set the result message
-				result.put("message", "Version " + newApp.getVersion() + " created for " + newApp.getTitle());
-
-				// set the result appId
-				result.put("appId", newApp.getId());
-
-				// set the result version
-				result.put("version", newApp.getVersion());
-
-				// set the result message
-				result.put("message", "Application " + app.getTitle() + " duplicated");
-				result.put("id", newApp.getId());
-				result.put("version", newApp.getVersion());
-
-			} else if ("DELVERSION".equals(action)) {
-
-				// delete the application version
-				if (app != null) app.delete(rapidServlet, rapidActionRequest, false);
-				// set the result message
-				result.put("message", "Version " + app.getVersion() + " deleted");
-
-			} else if ("NEWPAGE".equals(action)) {
-
-				String id = jsonAction.getString("id").trim();
-				String name = jsonAction.getString("name").trim();
-				String title = jsonAction.optString("title").trim();
-				String description = jsonAction.optString("description").trim();
-
-				// assume designer set id
-				boolean nameIds = false;
-
-				// this parameter existed against the entire system for just a single version of Rapid 2.4.1 before being moved to each application from 2.4.2
-				if (Boolean.parseBoolean(servletContext.getInitParameter("pageNameIds")) || rapidActionRequest.getApplication().getPageNameIds()) nameIds = true;
-
-				// check nameIds and set accordingly
-				if (nameIds) id = name;
-
-				Page newPage = new Page();
-				newPage.setId(id);
-				newPage.setName(name);
-				newPage.setTitle(title);
-				newPage.setDescription(description);
-				newPage.setCreatedBy(rapidRequest.getUserName());
-				newPage.setCreatedDate(new Date());
-
-				// save the page to file
-				newPage.save(rapidServlet, rapidActionRequest, app, false);
-
-				// put the id in the result
-				result.put("id", id);
-
-				// set the result message
-				result.put("message", "Page " + newPage.getTitle() + " created");
-
-			} else if ("DELPAGE".equals(action)) {
-
-				// get the id
-				String id = jsonAction.getString("id").trim();
-				// retrieve the page
-				Page delPage = app.getPages().getPage(rapidRequest.getRapidServlet().getServletContext(), id);
-				// delete it if we got one
-				if (delPage != null) delPage.delete(rapidServlet, rapidActionRequest, app);
-				// set the result message
-				result.put("message", "Page " + delPage.getName() + " delete");
-
-			} else if ("NEWWORKFLOW".equals(action)) {
-
-				// retrieve the inputs from the json
-				String name = jsonAction.getString("name").trim();
-				String title = jsonAction.optString("title").trim();
-				String description = jsonAction.optString("description").trim();
-
-				// create a new workflow with our reusable, private method
-				Workflow newWorkflow = createWorkflow(rapidServlet, rapidRequest, name, title, description);
-
-				// set the result message
-				result.put("message", "Workflow " + app.getTitle() + " created");
-
-				// set the result appId
-				result.put("wfId", newWorkflow.getId());
-
-			} else if ("DELWORKFLOW".equals(action)) {
-
-				// get the id
-				String id = jsonAction.getString("id").trim();
-				// get the collection of workflows
-				Workflows workflows = rapidServlet.getWorkflows();
-				// get the workflow
-				Workflow workflow = workflows.get(id);
-				// delete it
-				workflow.delete(rapidServlet, rapidRequest);
-				// set the result message
-				result.put("message", "Work flow " + workflow.getName() + " deleted");
-
-			} else if ("NEWDBCONN".equals(action)) {
-
-				// get the database connections
-				List<DatabaseConnection> dbConns = app.getDatabaseConnections();
-				// instantiate if null
-				if (dbConns == null) dbConns = new ArrayList<>();
-
-				// make the new database connection
-				DatabaseConnection dbConn = new DatabaseConnection(
-					servletContext,
-					app,
-					jsonAction.getString("name").trim(),
-					jsonAction.getString("driver").trim(),
-					jsonAction.getString("connectionString").trim(),
-					jsonAction.getString("connectionAdapter").trim(),
-					jsonAction.getString("userName").trim(),
-					jsonAction.getString("password")
-				);
-
-				// add it to the collection
-				dbConns.add(dbConn);
-
-				// save the app
-				app.save(rapidServlet, rapidRequest, true);
-
-				// add the application to the response
-				result.put("message", "Database connection added");
-
-			} else if ("DELDBCONN".equals(action)) {
-
-				// get the index
-				int index = jsonAction.getInt("index");
-
-				// get the database connections
-				List<DatabaseConnection> dbConns = app.getDatabaseConnections();
-
-				// remeber whether we found the connection
-				boolean foundConnection = false;
-
-				// check we have database connections
-				if (dbConns != null) {
-					// check the index we where given will retieve a database connection
-					if (index > -1 && index < dbConns.size()) {
-
-						// remove the database connection
-						dbConns.remove(index);
-
-						// save the app
-						try { app.save(rapidServlet, rapidRequest, true);	}
-						catch (Exception ex) { throw new JSONException(ex);	}
-
-						// add the application to the response
-						result.put("message", "Database connection deleted");
-
-					}
-				}
-
-				if (!foundConnection) result.put("message", "Database connection could not be found");
-
-			} else if ("NEWSOA".equals(action)) {
-
-				// the webservice we are about to make
-				Webservice webservice = null;
-
-				// get the type
-				String type = jsonAction.getString("type");
-
-				if ("SQLWebservice".equals(type)) {
-					// make the new SQL webservice
-					webservice = new SQLWebservice(
-						jsonAction.getString("name").trim()
-					);
-				} else if ("JavaWebservice".equals(type)) {
-					// make the new Java class webservice
-					webservice = new JavaWebservice(
-						jsonAction.getString("name").trim()
-					);
-				}
-
-				// if one was made
-				if (webservice != null) {
-
-					// add it to the collection
-					app.getWebservices().add(webservice);
-
-					// save the app
-					app.save(rapidServlet, rapidRequest, true);
-
-					// add the application to the response
-					result.put("message", "SOA webservice added");
-
-				} else {
-					// send message
-					result.put("message", "Webservice type not recognised");
-				}
-
-			} else if ("DELSOA".equals(action)) {
-
-				// get the index
-				int index = jsonAction.getInt("index");
-
-				// get the webservices
-				List<Webservice> webservices = app.getWebservices();
-
-				// remeber whether we found the webservice
-				boolean foundWebservice = false;
-
-				// check we have database connections
-				if (webservices != null) {
-					// check the index we where given will retieve a database connection
-					if (index > -1 && index < webservices.size()) {
-
-						// remove the database connection
-						webservices.remove(index);
-
-						// save the app
-						app.save(rapidServlet, rapidRequest, true);
-
-						// add the application to the response
-						result.put("message", "SOA webservice deleted");
-
-					}
-				}
-
-				if (!foundWebservice) result.put("message", "SOA webservice could not be found");
-
-			} else if ("NEWROLE".equals(action)) {
-
-				// get the role name
-				String roleName = jsonAction.getString("role").trim();
-				// get the role descrition
-				String description = jsonAction.getString("description").trim();
-
-				// add the role
-				security.addRole(rapidActionRequest, new Role(roleName, description));
-				// set the result message
-				result.put("message", "Role added");
-
-			} else if ("DELROLE".equals(action)) {
-
-				// get the role
-				String role = jsonAction.getString("role").trim();
-				// delete the role
-				security.deleteRole(rapidActionRequest, role);
-				// set the result message
-				result.put("message", "Role deleted");
-
-			} else if ("NEWUSER".equals(action)) {
-
-				// get the userName
-				String userName = jsonAction.getString("userName").trim();
-				// get the userDescription
-				String description = jsonAction.optString("description","").trim();
-				// get the email
-				String email = jsonAction.optString("email");
-				// get the password
-				String password = jsonAction.getString("password");
-				// get locked status
-				boolean isLocked = jsonAction.isNull("isLocked")?false:"true".equalsIgnoreCase(jsonAction.getString("isLocked"));
-				// get the device details
-				String deviceDetails = jsonAction.optString("deviceDetails");
-				// check for useAdmin - must have Radpid Admin to grant
-				boolean useAdmin = jsonAction.optBoolean("useAdmin") && rapidAdmin;
-				// check for useDesign - must have Radpid Admin to grant
-				boolean useDesign = jsonAction.optBoolean("useDesign") && rapidAdmin;
-				// check for useUsers
-				boolean useUsers = jsonAction.optBoolean("useUsers");
-
-				// recreate the rapidRequest with the selected app (so app parameters etc are available from the app in the rapidRequest)
-				rapidRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), app);
-
-				// add the user
-				security.addUser(rapidRequest, new User(userName, description, email, password, isLocked, deviceDetails));
-
-				// update the Rapid Request to have the new user name
-				rapidRequest.setUserName(userName);
-
-				// add role if we were given one
-				if (useAdmin) security.addUserRole(rapidRequest, com.rapid.server.Rapid.ADMIN_ROLE);
-
-				// add role if we were given one
-				if (useDesign) security.addUserRole(rapidRequest, com.rapid.server.Rapid.DESIGN_ROLE);
-
-				// add role if we were given one
-				if (useUsers) security.addUserRole(rapidRequest, com.rapid.server.Rapid.USERS_ROLE);
-
-				// set the result message
-				result.put("message", "User added");
-
-			} else if ("DELUSER".equals(action)) {
-
-				// get the userName
-				String userName = jsonAction.getString("userName").trim();
-				// recreate the rapidRequest with the selected app (so app parameters etc are available from the app in the rapidRequest)
-				rapidRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), app);
-				// override the standard request user
-				rapidRequest.setUserName(userName);
-				// delete the user
-				security.deleteUser(rapidRequest);
-				// remove any of their page locks
-				app.removeUserPageLocks(servletContext, userName);
-				// set the result message
-				result.put("message", "User deleted");
-
-			} else if ("SAVEROLE".equals(action)) {
-
-				// get the role
-				String roleName = jsonAction.getString("role").trim();
-				// get the description
-				String roleDescription = jsonAction.getString("description").trim();
-				// recreate the rapidRequest with the selected app (so app parameters etc are available from the app in the rapidRequest)
-				rapidRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), app);
-				// update the role
-				security.updateRole(rapidRequest, new Role(roleName, roleDescription));
-				// set the result message
-				result.put("message", "Role details saved");
-
-			} else if ("NEWUSERROLE".equals(action)) {
-
-				// get the userName
-				String userName = jsonAction.getString("userName").trim();
-				// recreate the rapidRequest with the selected app (so app parameters etc are available from the app in the rapidRequest)
-				rapidRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), app);
-				// override the standard request user
-				rapidRequest.setUserName(userName);
-				// get the role
-				String role = jsonAction.getString("role").trim();
-				// add the user role - if RapidAdmin or RapidDesign, must have rapidAdmin
-				if ((!com.rapid.server.Rapid.ADMIN_ROLE.equals(role) && !com.rapid.server.Rapid.DESIGN_ROLE.equals(role)) || rapidAdmin) security.addUserRole(rapidRequest, role);
-				// set the result message
-				result.put("message", "User role added");
-
-			} else if ("DELUSERROLE".equals(action)) {
-
-				// get the userName
-				String userName = jsonAction.getString("userName").trim();
-				// recreate the rapidRequest with the selected app (so app parameters etc are available from the app in the rapidRequest)
-				rapidRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), app);
-				// override the standard request user
-				rapidRequest.setUserName(userName);
-				// get the role
-				String role = jsonAction.getString("role").trim();
-				// add the user role
-				security.deleteUserRole(rapidRequest, role);
-				// set the result message
-				result.put("message", "User role deleted");
-
-			} else if ("SAVEUSER".equals(action)) {
-
-				// get the userName of the user being changed
-				String userName = jsonAction.getString("userName").trim();
-				// recreate the rapidRequest with the selected app (so app parameters etc are available from the app in the rapidRequest)
-				rapidRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), app);
-				// override the standard request user
-				rapidRequest.setUserName(userName);
-				// get the description
-				String description = jsonAction.getString("description").trim();
-				// get the email
-				String email = jsonAction.optString("email");
-				// get the password
-				String password = jsonAction.getString("password");
-				// get locked status
-				String isLocked = jsonAction.isNull("isLocked")?"false":jsonAction.getString("isLocked");
-				// get the device details
-				String deviceDetails = jsonAction.getString("deviceDetails");
-
-				// get the user
-				User user = security.getUser(rapidRequest);
-				// update the email
-				user.setEmail(email);
-				// update the description
-				user.setDescription(description);
-				// update the device details
-				user.setDeviceDetails(deviceDetails);
-				// update the locked status
-				user.setIsLocked("true".equalsIgnoreCase(isLocked));
-
-				// if password is different from the mask
-				if ("********".equals(password)) {
-					// just update the user
-					security.updateUser(rapidRequest, user);
-				} else {
-					// get the old password
-					String oldPassword = user.getPassword();
-					// update the password
-					user.setPassword(password);
-					// update the user
-					security.updateUser(rapidRequest, user);
-					// update the session password as well if we are changing our own password (this is required especially when changing the rapid app password)
-					if (user.getName().equals(rapidRequest.getSessionAttribute(RapidFilter.SESSION_VARIABLE_USER_NAME))) rapidRequest.setUserPassword(password);
-					// if there is an old password - should always be
-					if (oldPassword != null) {
-						// only if the new password is different from the old one
-						if (!password.equals(oldPassword)) {
-							// get all applications
-							Applications applications = rapidRequest.getRapidServlet().getApplications();
 							// loop them
-							for (String id : applications.getIds()) {
-								// get their versions
-								Versions versions = applications.getVersions(id);
-								// loop the versions
-								for (String version : versions.keySet()) {
-									// get this version
-									Application v = applications.get(id, version);
-									// we have updated the password in the selected app already so no need to do it again
-									if (!(app.getId().equals(v.getId()) && app.getVersion().equals(v.getVersion()))) {
-										// get this app versions security adapter
-										SecurityAdapter s = v.getSecurityAdapter();
-										// recreate the rapidRequest with the selected version (so app parameters etc are available from the app in the rapidRequest)
-										rapidRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), v);
-										// override the standard request user
-										rapidRequest.setUserName(userName);
-										// check the user had permission to the app with their old password
-										if (s.checkUserPassword(rapidRequest, userName, oldPassword)) {
-											// get this user
-											User u = s.getUser(rapidRequest);
-											// safety check for if we found one
-											if (u == null) {
-												// log that it passed password check but can't be found
-												rapidRequest.getRapidServlet().getLogger().debug("User " + userName + " passed password check for " + app.getId() + "/" + app.getVersion() + " but now can't be found for password update");
-											} else {
-												// set new user password
-												u.setPassword(password);
-												// update user
-												s.updateUser(rapidRequest, u);
-											}
-										} // password match check
-									} // ignore app version updated already
-								} // version loop
-							} // app id loop
-						} // old password different from new
-					} // old password null check
-				} // password provided
+							for (String key : sessions.keySet()) {
+								// get the session
+								HttpSession httpSession = sessions.get(key);
+								// create object
+								JSONObject jsonSession = new JSONObject();
+								// add name
+								jsonSession.put("name", httpSession.getAttribute(RapidFilter.SESSION_VARIABLE_USER_NAME));
+								// get a new date from the time
+								Date accessTime = new Date(httpSession.getLastAccessedTime());
+								// add last access
+								jsonSession.put("access", df.format(accessTime));
+								// add to collections
+								jsonSessions.put(jsonSession);
+							}
 
-				// if we are updating the rapid application we have used checkboxes for the Rapid Admin, Rapid Designer, and user manager roles
-				if ("rapid".equals(app.getId())) {
-					// get the value of rapidAdmin
-					String useAdmin = jsonAction.optString("useAdmin");
-					// check useAdmin was sent
-					if (useAdmin != null) {
-						// check the user was given the role
-						if ("true".equals(useAdmin)) {
-							// add the role if the user doesn't have it already
-							if (!security.checkUserRole(rapidRequest, com.rapid.server.Rapid.ADMIN_ROLE))
-								security.addUserRole(rapidRequest, com.rapid.server.Rapid.ADMIN_ROLE);
-						} else {
-							// remove the role
-							security.deleteUserRole(rapidRequest, com.rapid.server.Rapid.ADMIN_ROLE);
 						}
-					}
-					// get the value of rapidDesign
-					String useDesign = jsonAction.optString("useDesign");
-					// check useDesign was sent
-					if (useDesign != null) {
-						// check the user was given the role
-						if ("true".equals(useDesign)) {
-							// add the role if the user doesn't have it already
-							if (!security.checkUserRole(rapidRequest, com.rapid.server.Rapid.DESIGN_ROLE))
-								security.addUserRole(rapidRequest, com.rapid.server.Rapid.DESIGN_ROLE);
-						} else {
-							// remove the role
-							security.deleteUserRole(rapidRequest, com.rapid.server.Rapid.DESIGN_ROLE);
-						}
-					}
-					// get the value of rapidUsers
-					String useUsers = jsonAction.optString("useUsers");
-					// check useUsers was sent
-					if (useUsers != null) {
-						// check the user was given the role
-						if ("true".equals(useUsers)) {
-							// add the role if the user doesn't have it already
-							if (!security.checkUserRole(rapidRequest, com.rapid.server.Rapid.USERS_ROLE))
-								security.addUserRole(rapidRequest, com.rapid.server.Rapid.USERS_ROLE);
-						} else {
-							// remove the role
-							security.deleteUserRole(rapidRequest, com.rapid.server.Rapid.USERS_ROLE);
-						}
-					}
-				}
 
-				// set the result message
-				result.put("message", "User details saved");
+						// add sessions
+						jsonDetails.put("sessions", jsonSessions);
 
-			} else if ("CHECKPASSWORDCOMPLEXITY".equals(action)) {
+						return jsonDetails;
 
-				// get the password
-				String password = jsonAction.getString("password");
+					} else if ("RELOADACTIONS".equals(action)) {
 
-				// check complexity
-				boolean complexPass = security.checkPasswordComplexity(rapidRequest, password);
+						// load actions and set the result message
+						result.put("message", RapidServletContextListener.loadActions(servletContext) + " actions reloaded");
 
-				// add check result
-				result.put("complexPass", complexPass);
-				// add whether rapid app
-				result.put("rapidApp", "rapid".equals(app.getId()));
+					} else if ("RELOADCONTROLS".equals(action)) {
 
-				// check passed
-				if (complexPass) {
+						// load controls and set the result message
+						result.put("message", RapidServletContextListener.loadControls(servletContext) + " controls reloaded");
 
-					// set the result message
-					result.put("message", "Password is sufficiently complex");
+					} else if ("RELOADAPPLICATIONS".equals(action)) {
 
-				} else {
+						// load applications and set the result message
+						result.put("message", RapidServletContextListener.loadApplications(servletContext) + " applications reloaded");
 
-					// set the result message
-					result.put("message", security.getPasswordComplexityDescription(rapidRequest, password));
+					} else if ("RELOADADAPTERS".equals(action)) {
 
-				}
+						// ints for number of bits of each we're reloading
+						int databaseDrivers = 0;
+						int connectionAdapters = 0;
+						int securityAdapters = 0;
+						int forms = 0;
+						int themes = 0;
+						int devices = 0;
 
-			} else if ("NEWPARAM".equals(action)) {
+						// reload adapters and set the int for the result message
+						databaseDrivers = RapidServletContextListener.loadDatabaseDrivers(servletContext);
+						connectionAdapters = RapidServletContextListener.loadConnectionAdapters(servletContext);
+						securityAdapters = RapidServletContextListener.loadSecurityAdapters(servletContext);
+						forms =  RapidServletContextListener.loadFormAdapters(servletContext);
+						themes = RapidServletContextListener.loadThemes(servletContext);
+						devices = Devices.load(servletContext).size();
 
-				// add a new parameter to the collection
-				app.getParameters().add(new Parameter());
+						// reset upload mime types so they are reloaded
+						rapidServlet.resetMimeTypes();
 
-			} else if ("DELPARAM".equals(action)) {
+						// show result message
+						result.put("message",
+							databaseDrivers + " database driver" + (databaseDrivers == 1 ? "" : "s") + ", " +
+							connectionAdapters + " connection adapter" + (connectionAdapters == 1 ? "" : "s") + ", " +
+							securityAdapters + " security adapter" + (securityAdapters == 1 ? "" : "s") + ", " +
+							forms + " form adapter" + (forms == 1 ? "" : "s") + ", " +
+							themes + " theme" + (themes == 1 ? "" : "s") + ", " +
+							devices + " device" + (devices == 1 ? "" : "s") + " reloaded"
+						);
 
-				// get the index
-				int index = jsonAction.getInt("index");
+					} else if ("RELOADPROCESSES".equals(action)) {
 
-				// remove the parameter
-				app.getParameters().remove(index);
+						int processes = 0;
 
-				// save the app
-				app.save(rapidServlet, rapidRequest, true);
+						processes = RapidServletContextListener.loadProcesses(servletContext);
 
-				// set the result message
-				result.put("message", "Parameter deleted");
+						// load processes and set the result message
+						result.put("message", processes + " process" + (processes == 1 ? "" : "es") + " reloaded");
 
-			} else if ("SAVEPARAM".equals(action)) {
+					} else if ("RELOADVERSION".equals(action)) {
 
-				int index = jsonAction.getInt("index");
-				String name = jsonAction.getString("name");
-				String description = jsonAction.getString("description");
-				String value = jsonAction.getString("value");
+						// look for an application file in the application folder
+						File applicationFile = new File(app.getConfigFolder(servletContext) + "/application.xml");
 
-				// fetch the parameter
-				Parameter parameter = app.getParameters().get(index);
+						// close the existing app
+						app.close(servletContext);
 
-				// update it
-				parameter.setName(name);
-				parameter.setDescription(description);
-				parameter.setValue(value);
+						// reload the application from file
+						Application reloadedApplication = Application.load(servletContext, applicationFile);
 
-				// save the app
-				app.save(rapidServlet, rapidRequest, true);
+						// replace it into the applications collection
+						rapidServlet.getApplications().put(reloadedApplication);
 
-				// set the result message
-				result.put("message", "Parameter details saved");
+						// load applications and set the result message
+						result.put("message", "Version reloaded");
 
-			} else if ("NEWRESOURCE".equals(action)) {
+					} else if ("REBUILDPAGES".equals(action)) {
 
-				// get the resources
-				Resources resources = app.getAppResources();
-				// if null (could be from a previous version)
-				if (resources == null) {
-					// instantiate here
-					resources = new Resources();
-					// assign to the application
-					app.setAppResources(resources);
-				}
+						// add the message to the response
+						result.put("message", "This feature is not supported");
 
-				// add a new parameter to the collection
-				resources.add(new Resource());
+					} else if ("NEWAPP".equals(action)) {
 
-			} else if ("DELRESOURCE".equals(action)) {
+						// retrieve the inputs from the json
+						String name = jsonAction.getString("name").trim();
+						String version = jsonAction.getString("newVersion").trim();
+						String title = jsonAction.optString("title").trim();
+						String type = jsonAction.optString("type");
+						String formAdapterType = jsonAction.optString("formAdapter", null);
+						boolean responsive = jsonAction.optBoolean("responsive");
+						String themeType = jsonAction.optString("themeType");
+						String description = jsonAction.optString("description").trim();
 
-				// get the index
-				int index = jsonAction.getInt("index");
+						// create a new application with our reusable, private method
+						Application newApp = createApplication(rapidServlet, rapidRequest, name, version, title, type, responsive, themeType, description);
 
-				// remove the parameter
-				app.getAppResources().remove(index);
+						// if this is a form, add the adapter
+						if ("F".equals(type)) newApp.setFormAdapter(servletContext, formAdapterType);
 
-				// save the app
-				app.save(rapidServlet, rapidRequest, true);
+						// set the result message
+						result.put("message", "Application " + newApp.getTitle() + " created");
 
-				// set the result message
-				result.put("message", "Resource deleted");
+						// set the result appId
+						result.put("appId", newApp.getId());
 
-			} else if ("SAVERESOURCE".equals(action)) {
+						// set the result version
+						result.put("version", newApp.getVersion());
 
-				int index = jsonAction.getInt("index");
-				String name = jsonAction.getString("name");
-				int type = jsonAction.getInt("type");
-				String value = jsonAction.getString("value");
+					} else if ("NEWWORKFLOW".equals(action)) {
 
-				// fetch the resource
-				Resource resource = app.getAppResources().get(index);
+						// retrieve the inputs from the json
+						String name = jsonAction.getString("name").trim();
+						String title = jsonAction.optString("title").trim();
+						String description = jsonAction.optString("description").trim();
 
-				// update it
-				resource.setName(name);
-				resource.setType(type);
-				resource.setContent(value);
+						// create a new workflow with our reusable, private method
+						Workflow newWorkflow = createWorkflow(rapidServlet, rapidRequest, name, title, description);
 
-				// save the app
-				app.save(rapidServlet, rapidRequest, true);
+						// set the result message
+						result.put("message", "Workflow " + app.getTitle() + " created");
 
-				// set the result message
-				result.put("message", "Resource details saved");
+						// set the result appId
+						result.put("wfId", newWorkflow.getId());
 
-			} else if ("NEWDEVICE".equals(action)) {
+					} else if ("DELWORKFLOW".equals(action)) {
 
-				// get the devices
-				Devices devices = rapidServlet.getDevices();
+						// get the id
+						String id = jsonAction.getString("id").trim();
+						// get the collection of workflows
+						Workflows workflows = rapidServlet.getWorkflows();
+						// get the workflow
+						Workflow workflow = workflows.get(id);
+						// delete it
+						workflow.delete(rapidServlet, rapidRequest);
+						// set the result message
+						result.put("message", "Work flow " + workflow.getName() + " deleted");
 
-				// add a new device to the collection
-				devices.add(new Device("New device", 500, 500, 200, 1d));
+					} else if ("NEWDEVICE".equals(action)) {
 
-				// save it
-				devices.save(servletContext);
+						// get the devices
+						Devices devices = rapidServlet.getDevices();
 
-			} else if ("DELDEVICE".equals(action)) {
+						// add a new device to the collection
+						devices.add(new Device("New device", 500, 500, 200, 1d));
 
-				// get the index
-				int index = jsonAction.getInt("index");
+						// save it
+						devices.save(servletContext);
 
-				// get the devices
-				Devices devices = rapidServlet.getDevices();
+					} else if ("DELDEVICE".equals(action)) {
 
-				// remove the device
-				devices.remove(index);
+						// get the index
+						int index = jsonAction.getInt("index");
 
-				// save the devices
-				devices.save(servletContext);
+						// get the devices
+						Devices devices = rapidServlet.getDevices();
 
-				// set the result message
-				result.put("message", "Device deleted");
+						// remove the device
+						devices.remove(index);
 
-			} else if ("SAVEDEVICE".equals(action)) {
+						// save the devices
+						devices.save(servletContext);
 
-				int index = jsonAction.getInt("index");
-				String name = jsonAction.getString("name");
-				int width = jsonAction.getInt("width");
-				int height = jsonAction.getInt("height");
-				int ppi = jsonAction.getInt("ppi");
-				double scale = jsonAction.getDouble("scale");
+						// set the result message
+						result.put("message", "Device deleted");
 
-				// fetch the devices
-				Devices devices = rapidServlet.getDevices();
-				// fetch the device
-				Device device = devices.get(index);
+					} else if ("SAVEDEVICE".equals(action)) {
 
-				// update the device
-				device.setName(name);
-				device.setWidth(width);
-				device.setHeight(height);
-				device.setPPI(ppi);
-				device.setScale(scale);
+						int index = jsonAction.getInt("index");
+						String name = jsonAction.getString("name");
+						int width = jsonAction.getInt("width");
+						int height = jsonAction.getInt("height");
+						int ppi = jsonAction.getInt("ppi");
+						double scale = jsonAction.getDouble("scale");
 
-				// save the devices
-				devices.save(servletContext);
+						// fetch the devices
+						Devices devices = rapidServlet.getDevices();
+						// fetch the device
+						Device device = devices.get(index);
 
-				// set the result message
-				result.put("message", "Device details saved");
+						// update the device
+						device.setName(name);
+						device.setWidth(width);
+						device.setHeight(height);
+						device.setPPI(ppi);
+						device.setScale(scale);
 
-			} else if ("TESTDBCONN".equals(action)) {
+						// save the devices
+						devices.save(servletContext);
 
-				// get the index
-				int index = jsonAction.getInt("index");
+						// set the result message
+						result.put("message", "Device details saved");
 
-				// get the database connections
-				List<DatabaseConnection> dbConns = app.getDatabaseConnections();
+					} else  if ("TESTEMAIL".equals(action)) {
 
-				// remember whether we found the connection
-				boolean foundConnection = false;
-
-				// check we have database connections
-				if (dbConns != null) {
-					// check the index we where given will retrieve a database connection
-					if (index > -1 && index < dbConns.size()) {
-
-						// retrieve the details from the json
-						String driverClass = jsonAction.getString("driver").trim();
-						String connectionString =app.insertParameters(servletContext, jsonAction.getString("connectionString").trim());
-						String connectionAdapterClass = jsonAction.getString("connectionAdapter").trim();
+						String host = jsonAction.getString("host").trim();
+						int port = jsonAction.getInt("port");
+						String sec = jsonAction.getString("security").trim();
 						String userName = jsonAction.getString("userName").trim();
 						String password = jsonAction.getString("password");
 
-						// if the password wasn't set retrieve it via the connection index
-						if ("********".equals(password)) password = dbConns.get(index).getPassword();
-
-						// instantiate a DatabaseConnection object for this test
-						DatabaseConnection dbconnection = new DatabaseConnection(
-							servletContext,
-							app,
-							"test",
-							driverClass,
-							connectionString,
-							connectionAdapterClass,
-							userName,
-							password
-						);
-						// get the adapter
-						ConnectionAdapter connectionAdapter = dbconnection.getConnectionAdapter(servletContext, app);
-						// get a data factory
-						DataFactory dataFactory = new DataFactory(connectionAdapter);
-						// get a connection
-						Connection connection = dataFactory.getConnection(rapidRequest);
-						// close it
-						dataFactory.close();
-
-						// add the application to the response
-						result.put("message", "Database connection OK");
-
-						// retain that a connection was found
-						foundConnection = true;
-
-					}
-				}
-
-				if (!foundConnection) result.put("message", "Database connection could not be found");
-
-			} else if ("TESTEMAIL".equals(action)) {
-
-				String host = jsonAction.getString("host").trim();
-				int port = jsonAction.getInt("port");
-				String sec = jsonAction.getString("security").trim();
-				String userName = jsonAction.getString("userName").trim();
-				String password = jsonAction.getString("password");
-
-				// if password is ********
-				if ("********".equals(password)) {
-					// get the current email settings
-					Email emailSettings = Email.getEmailSettings();
-					// if we got one use that password
-					if (emailSettings != null) password = emailSettings.getPassword();
-				}
-
-				// set the properties we've just received
-				Email.setProperties(host, port, sec, userName, password);
-
-				// assume to email is the constant
-				String from = TEST_EMAIL_FROM;
-				// look for a setting in the web.xml
-				String fromSetting = servletContext.getInitParameter("email.test.from");
-				// if we got one use this value
-				if (fromSetting != null) from = fromSetting;
-
-				// assume to email is the constant
-				String to = TEST_EMAIL_TO;
-				// look for a setting in the web.xml
-				String toSetting = servletContext.getInitParameter("email.test.to");
-				// if we got one use this value
-				if (toSetting != null) to = toSetting;
-
-				try {
-
-					// send a test email
-			        Email.send(from, to, "Rapid test email", "It's working!");
-
-				} catch (Exception ex) {
-
-					// reload the saved values
-			        Email.load(servletContext);
-
-			        // rethrow
-			        throw ex;
-
-				}
-
-		        // reload the saved values
-		        Email.load(servletContext);
-
-		        // add a meaningful response message which the success callback is expecting
-		        result.put("message", "Test email sent OK");
-
-			} else if ("SAVEEMAIL".equals(action)) {
-
-				// get whether enabled
-				boolean enabled = jsonAction.optBoolean("enabled");
-
-				// get any current email settings
-				Email email = Email.getEmailSettings();
-
-				// check whether enabled
-				if (enabled) {
-
-					String host = jsonAction.getString("host").trim();
-					int port = jsonAction.getInt("port");
-					String sec = jsonAction.getString("security").trim();
-					String userName = jsonAction.getString("userName").trim();
-					String password = jsonAction.getString("password");
-					// if we just got 8 *'s for the password
-					if ("********".equals(password)) {
-						// if we had an email object
-						if (email == null) {
-							// make it a blank space
-							password = "";
-						} else {
-							// set it back to stop being overridden with 8 *'s
-							password = email.getPassword();
+						// if password is ********
+						if ("********".equals(password)) {
+							// get the current email settings
+							Email emailSettings = Email.getEmailSettings();
+							// if we got one use that password
+							if (emailSettings != null) password = emailSettings.getPassword();
 						}
-					}
 
-					// set the properties we've just loaded
-		            Email.setProperties(host, port, sec, userName, password);
+						// set the properties we've just received
+						Email.setProperties(host, port, sec, userName, password);
 
-		            // construct a new object
-			        email = new Email(host, port, sec, userName, password);
+						// assume to email is the constant
+						String from = TEST_EMAIL_FROM;
+						// look for a setting in the web.xml
+						String fromSetting = servletContext.getInitParameter("email.test.from");
+						// if we got one use this value
+						if (fromSetting != null) from = fromSetting;
 
-			        // set enabled
-			        email.setEnabled(true);
+						// assume to email is the constant
+						String to = TEST_EMAIL_TO;
+						// look for a setting in the web.xml
+						String toSetting = servletContext.getInitParameter("email.test.to");
+						// if we got one use this value
+						if (toSetting != null) to = toSetting;
+
+						try {
+
+							// send a test email
+					        Email.send(from, to, "Rapid test email", "It's working!");
+
+						} catch (Exception ex) {
+
+							// reload the saved values
+					        Email.load(servletContext);
+
+					        // rethrow
+					        throw ex;
+
+						}
+
+				        // reload the saved values
+				        Email.load(servletContext);
+
+				        // add a meaningful response message which the success callback is expecting
+				        result.put("message", "Test email sent OK");
+
+					} else if ("SAVEEMAIL".equals(action)) {
+
+						// get whether enabled
+						boolean enabled = jsonAction.optBoolean("enabled");
+
+						// get any current email settings
+						Email email = Email.getEmailSettings();
+
+						// check whether enabled
+						if (enabled) {
+
+							String host = jsonAction.getString("host").trim();
+							int port = jsonAction.getInt("port");
+							String sec = jsonAction.getString("security").trim();
+							String userName = jsonAction.getString("userName").trim();
+							String password = jsonAction.getString("password");
+							// if we just got 8 *'s for the password
+							if ("********".equals(password)) {
+								// if we had an email object
+								if (email == null) {
+									// make it a blank space
+									password = "";
+								} else {
+									// set it back to stop being overridden with 8 *'s
+									password = email.getPassword();
+								}
+							}
+
+							// set the properties we've just loaded
+				            Email.setProperties(host, port, sec, userName, password);
+
+				            // construct a new object
+					        email = new Email(host, port, sec, userName, password);
+
+					        // set enabled
+					        email.setEnabled(true);
+
+						} else {
+
+							// for safety, make a new one if not yet set
+							if (email == null) email = new Email();
+
+							// set not enabled
+					        email.setEnabled(false);
+
+						}
+
+				        // save it
+				        email.save(servletContext);
+
+					} // action type check
+
+				}
+
+				// if rapid admin or rapid users //////////////////////////////// This isn't quite right yet - we need admin specific and app specific checking
+				if (rapidAdmin || rapidUsers) {
+
+					// check user app password, or master user
+					if (security.checkUserPassword(rapidActionRequest, rapidRequest.getUserName(), rapidRequest.getUserPassword()) || rapidMaster) {
+
+						// get whether user has the rapid master, or app admin role
+						boolean appAdmin = rapidMaster || security.checkUserRole(rapidActionRequest, com.rapid.server.Rapid.ADMIN_ROLE);
+						// get whether user has the app users role
+						boolean appUsers = security.checkUserRole(rapidActionRequest, com.rapid.server.Rapid.USERS_ROLE);
+						// get whether user has the app design role
+						boolean appDesign = security.checkUserRole(rapidActionRequest, com.rapid.server.Rapid.DESIGN_ROLE);
+
+						// check user app admin role
+						if (appAdmin) {
+
+							if ("GETDBCONN".equals(action)) {
+
+								// must have rapid admin
+								if (rapidAdmin) {
+
+									// get the index
+									int index = jsonAction.getInt("index");
+
+									// get the database connections
+									List<DatabaseConnection> dbConns = app.getDatabaseConnections();
+
+									// check we have database connections
+									if (dbConns != null) {
+										// check the index we where given will retieve a database connection
+										if (index > -1 && index < dbConns.size()) {
+											// get the database connection
+											DatabaseConnection dbConn = dbConns.get(index);
+											// add the name
+											result.put("name", dbConn.getName());
+											// add the driver type
+											result.put("driver", dbConn.getDriverClass());
+											// add the connection adapter class
+											result.put("connectionString", dbConn.getConnectionString());
+											// add the connection adapter class
+											result.put("connectionAdapter", dbConn.getConnectionAdapterClass());
+											// add the user name
+											result.put("userName", dbConn.getUserName());
+											// add the password
+											if ("".equals(dbConn.getPassword())) {
+												result.put("password", "");
+											} else {
+												result.put("password", "********");
+											}
+										}
+									}
+
+								}
+
+							} else if ("GETSOA".equals(action)) {
+
+								// retain the JSON object which we will return
+								JSONObject jsonWebservice;
+
+								// get the index
+								int index = jsonAction.getInt("index");
+
+								// get the database connections
+								List<Webservice> webservices = app.getWebservices();
+
+								// check we have database connections
+								if (webservices != null) {
+									// check the index we where given will retieve a database connection
+									if (index > -1 && index < webservices.size()) {
+										// get the webservice from the collection
+										Webservice webservice = webservices.get(index);
+										// convert it into a json object
+										jsonWebservice = new JSONObject(webservice);
+										// add the type
+										jsonWebservice.put("type", webservice.getClass().getSimpleName());
+										// add the user to the response
+										result.put("webservice", jsonWebservice);
+									}
+								}
+
+							} else  if ("GETPARAM".equals(action)) {
+
+								// retrieve the index
+								int index = jsonAction.getInt("index");
+
+								// create the json object
+								JSONObject jsonParameter = new JSONObject();
+
+								// check the parameters
+								if (app.getParameters() != null) {
+
+									// check we have the one requested
+									if (index >= 0 && index < app.getParameters().size()) {
+
+										// get the parameter
+										Parameter parameter = app.getParameters().get(index);
+
+										// add the name and value
+										jsonParameter.put("name", parameter.getName());
+										jsonParameter.put("description", parameter.getDescription());
+										jsonParameter.put("value", parameter.getValue());
+
+									}
+								}
+
+								// add the parameter to the result
+								result.put("parameter", jsonParameter);
+
+							} else if ("GETRESOURCE".equals(action)) {
+
+								// retrieve the index
+								int index = jsonAction.getInt("index");
+
+								// create the json object
+								JSONObject jsonParameter = new JSONObject();
+
+								// check the resources
+								if (app.getAppResources() != null) {
+
+									// check we have the one requested
+									if (index >= 0 && index < app.getAppResources().size()) {
+
+										// get the parameter
+										Resource resource = app.getAppResources().get(index);
+
+										// add the name and value
+										jsonParameter.put("name", resource.getName());
+										jsonParameter.put("type", resource.getType());
+										jsonParameter.put("value", resource.getContent());
+
+									}
+								}
+
+								// add the parameter to the result
+								result.put("resource", jsonParameter);
+
+							} else if ("SAVEAPP".equals(action)) {
+
+								// get the new values
+								String id = Files.safeName(jsonAction.getString("name")).toLowerCase();
+								String version = Files.safeName(jsonAction.getString("saveVersion"));
+								int status = jsonAction.optInt("status");
+								String name = jsonAction.getString("name");
+								String title = jsonAction.getString("title");
+								String description = jsonAction.getString("description");
+
+								boolean isForm = jsonAction.optBoolean("isForm");
+								String startPageId = jsonAction.optString("startPageId","");
+								boolean pageNameIds = jsonAction.optBoolean("pageNameIds");
+								boolean showControlIds = jsonAction.optBoolean("showControlIds");
+								boolean showActionIds = jsonAction.optBoolean("showActionIds");
+
+								String formAdapter = jsonAction.optString("formAdapter");
+								boolean formDisableAutoComplete = jsonAction.optBoolean("formDisableAutoComplete");
+
+								boolean formEmail = jsonAction.optBoolean("formEmail");
+								String formEmailFrom = jsonAction.optString("formEmailFrom");
+								String formEmailTo = jsonAction.optString("formEmailTo");
+								String formEmailAttachmentType = jsonAction.optString("formEmailAttachmentType");
+
+								boolean formEmailCustomer = jsonAction.optBoolean("formEmailCustomer");
+								String formEmailCustomerControlId = jsonAction.optString("formEmailCustomerControlId");
+								String formEmailCustomerSubject = jsonAction.optString("formEmailCustomerSubject");
+								String formEmailCustomerType = jsonAction.optString("formEmailCustomerType");
+								String formEmailCustomerBody = jsonAction.optString("formEmailCustomerBody");
+								String formEmailCustomerAttachmentType = jsonAction.optString("formEmailCustomerAttachmentType");
+
+								boolean formFile = jsonAction.optBoolean("formFile");
+								String formFileType = jsonAction.optString("formFileType");
+								String formFilePath = jsonAction.optString("formFilePath");
+								String formFileUserName = jsonAction.optString("formFileUserName");
+								String formFilePassword = jsonAction.optString("formFilePassword");
+
+								boolean formWebservice = jsonAction.optBoolean("formWebservice");
+								String formWebserviceURL = jsonAction.optString("formWebserviceURL");
+								String formWebserviceType = jsonAction.optString("formWebserviceType");
+								String formWebserviceSOAPAction = jsonAction.optString("formWebserviceSOAPAction");
+
+								// assume we do not need to update the applications drop down
+								boolean appUpdated = false;
+
+								// if the id or version is now different we need to move it, rebuilding all the resources as we go
+								if (!app.getId().equals(id) || !app.getVersion().equals(version)) {
+									// copy the app to the id/version, returning the new one for saving
+									app = app.copy(rapidServlet, rapidActionRequest, id, version, true, true);
+									// mark that it has been updated
+									appUpdated = true;
+								}
+
+								// update the values
+								app.setName(name);
+								app.setStatus(status);
+								app.setTitle(title);
+								app.setDescription(description);
+
+								app.setIsForm(isForm);
+								app.setStartPageId(startPageId);
+								app.setPageNameIds(pageNameIds);
+								app.setShowControlIds(showControlIds);
+								app.setShowActionIds(showActionIds);
+
+								app.setFormAdapterType(formAdapter);
+								app.setFormDisableAutoComplete(formDisableAutoComplete);
+
+								app.setFormEmail(formEmail);
+								app.setFormEmailFrom(formEmailFrom);
+								app.setFormEmailTo(formEmailTo);
+								app.setFormEmailAttachmentType(formEmailAttachmentType);
+
+								app.setFormEmailCustomer(formEmailCustomer);
+								app.setFormEmailCustomerControlId(formEmailCustomerControlId);
+								app.setFormEmailCustomerSubject(formEmailCustomerSubject);
+								app.setFormEmailCustomerType(formEmailCustomerType);
+								app.setFormEmailCustomerBody(formEmailCustomerBody);
+								app.setFormEmailCustomerAttachmentType(formEmailCustomerAttachmentType);
+
+								app.setFormFile(formFile);
+								app.setFormFileType(formFileType);
+								app.setFormFilePath(formFilePath);
+								app.setFormFileUserName(formFileUserName);
+								app.setFormFilePassword(formFilePassword);
+
+								app.setFormWebservice(formWebservice);
+								app.setFormWebserviceURL(formWebserviceURL);
+								app.setFormWebserviceType(formWebserviceType);
+								app.setFormWebserviceSOAPAction(formWebserviceSOAPAction);
+
+								// save
+								app.save(rapidServlet, rapidActionRequest, true);
+
+								// add the application to the response
+								result.put("message", "Application details saved");
+								result.put("update", appUpdated);
+
+							} else if ("SAVESTYLES".equals(action)) {
+
+								String themeType = jsonAction.getString("themeType");
+								String styles = jsonAction.getString("styles");
+								String statusBarColour = jsonAction.optString("statusBarColour");
+								String statusBarHighlightColour = jsonAction.optString("statusBarHighlightColour");
+								String statusBarTextColour = jsonAction.optString("statusBarTextColour");
+								String statusBarIconColour = jsonAction.optString("statusBarIconColour");
+
+								app.setThemeType(themeType);
+								app.setStyles(styles);
+								app.setStatusBarColour(statusBarColour);
+								app.setStatusBarHighlightColour(statusBarHighlightColour);
+								app.setStatusBarTextColour(statusBarTextColour);
+								app.setStatusBarIconColour(statusBarIconColour);
+
+								app.save(rapidServlet, rapidActionRequest, true);
+
+								// add the application to the response
+								result.put("message", "Styles saved");
+
+							} else if ("SAVEDBCONN".equals(action)) {
+
+								// get the index
+								int index = jsonAction.getInt("index");
+
+								// get the database connections
+								List<DatabaseConnection> dbConns = app.getDatabaseConnections();
+
+								// remeber whether we found the connection
+								boolean foundConnection = false;
+
+								// check we have database connections
+								if (dbConns != null) {
+									// check the index we where given will retieve a database connection
+									if (index > -1 && index < dbConns.size()) {
+										// get the database connection
+										DatabaseConnection dbConn = dbConns.get(index);
+
+										// set the databse connection properties
+										dbConn.setName(jsonAction.getString("name"));
+										dbConn.setDriverClass(jsonAction.getString("driver"));
+										dbConn.setConnectionString(jsonAction.getString("connectionString"));
+										dbConn.setConnectionAdapterClass(jsonAction.getString("connectionAdapter"));
+										dbConn.setUserName(jsonAction.getString("userName"));
+										String password = jsonAction.getString("password");
+										// only set the password if it's different from the default
+										if (!"********".equals(password)) dbConn.setPassword(password);
+
+										// reset the dbconn so the adapter is re-initialised with any changes
+										dbConn.reset();
+
+										// save the app
+										app.save(rapidServlet, rapidActionRequest, true);
+
+										foundConnection = true;
+
+										// add the application to the response
+										result.put("message", "Database connection saved");
+
+									}
+								}
+
+								if (!foundConnection) result.put("message", "Database connection could not be found");
+
+							} else if ("SAVESOASQL".equals(action)) {
+
+								// get the index
+								int index = jsonAction.getInt("index");
+
+								// get the webservices
+								List<Webservice> webservices = app.getWebservices();
+
+								// remeber whether we found the connection
+								boolean foundWebservice = false;
+
+								// check we have database connections
+								if (webservices != null) {
+									// check the index we where given will retieve a database connection
+									if (index > -1 && index < webservices.size()) {
+										// get the web service connection
+										Webservice webservice = webservices.get(index);
+										// check the type
+										if (webservice.getClass() == SQLWebservice.class) {
+											// cast to our type
+											SQLWebservice sqlWebservice = (SQLWebservice) webservice;
+
+											// set the webservice properties
+											sqlWebservice.setName(jsonAction.getString("name").trim());
+											sqlWebservice.setDatabaseConnectionIndex(jsonAction.getInt("databaseConnectionIndex"));
+
+											// get the rest of the complex details
+											JSONObject jsonDetails = jsonAction.getJSONObject("details");
+
+											// set the sql
+											sqlWebservice.setSQL(jsonDetails.getString("SQL").trim());
+
+											// get the json request
+											JSONObject jsonRequestSchmea = jsonDetails.optJSONObject("requestSchema");
+											// check it
+											if (jsonRequestSchmea != null) {
+												// get the root element
+												JSONObject jsonElement = jsonRequestSchmea.getJSONObject("rootElement");
+												// get its name
+												String elementName = jsonElement.optString("name").trim();
+												// create the schema
+												SOASchema requestSchema = new SOASchema(elementName);
+												// get any child elements
+												JSONArray jsonChildElements = jsonElement.optJSONArray("childElements");
+												// check
+												if (jsonChildElements != null) {
+													// loop
+													for (int i = 0; i < jsonChildElements.length(); i++) {
+														// get child element
+														JSONObject jsonChildElement = jsonChildElements.getJSONObject(i);
+														// get child element name
+														String childElementName = jsonChildElement.getString("name").trim();
+														// get its data type
+														int childElementDataType = jsonChildElement.optInt("dataType",1);
+														// add child element to schema (and get a reference)
+														SOASchemaElement soaChildElement = requestSchema.addChildElement(childElementName);
+														// set the data type
+														soaChildElement.setDataType(childElementDataType);
+														// add any restrictions
+														soaChildElement.setRestrictions(getRestrictions(jsonChildElement.optJSONArray("restrictions")));
+													}
+												}
+												// set the schema property
+												sqlWebservice.setRequestSchema(requestSchema);
+											}
+
+											// get the json response
+											JSONObject jsonResponseSchema = jsonDetails.optJSONObject("responseSchema");
+											// check it
+											if (jsonResponseSchema != null) {
+												// get the root element
+												JSONObject jsonElement = jsonResponseSchema.getJSONObject("rootElement");
+												// get its name
+												String elementName = jsonElement.optString("name");
+												// get if array
+												boolean isArray = Boolean.parseBoolean(jsonElement.optString("isArray"));
+												// create the schema
+												SOASchema responseSchema = new SOASchema(elementName, isArray);
+												// get any child elements
+												JSONArray jsonChildElements = jsonElement.optJSONArray("childElements");
+												// check
+												if (jsonChildElements != null) {
+													// loop
+													for (int i = 0; i < jsonChildElements.length(); i++) {
+														// get child element
+														JSONObject jsonChildElement = jsonChildElements.getJSONObject(i);
+														// get child element name
+														String childElementName = jsonChildElement.getString("name").trim();
+														// get child element field
+														String childElementField = jsonChildElement.optString("field","");
+														// get its data type
+														int childElementDataType = jsonChildElement.optInt("dataType",1);
+														// add child element to schema (and get reference)
+														SOASchemaElement soaChildElement = responseSchema.addChildElement(childElementName);
+														// set field
+														soaChildElement.setField(childElementField);
+														// set data type
+														soaChildElement.setDataType(childElementDataType);
+														// add any restrictions
+														soaChildElement.setRestrictions(getRestrictions(jsonChildElement.optJSONArray("restrictions")));
+													}
+												}
+												// set the schema property
+												sqlWebservice.setResponseSchema(responseSchema);
+											}
+
+											// save the app
+											app.save(rapidServlet, rapidActionRequest, true);
+
+											foundWebservice = true;
+
+											// add the application to the response
+											result.put("message", "SQL webservice saved");
+										}
+									}
+								}
+
+								if (!foundWebservice) result.put("message", "SQL webservice could not be found");
+
+							} else if ("SAVESOAJAVA".equals(action)) {
+
+								// get the index
+								int index = jsonAction.getInt("index");
+
+								// get the webservices
+								List<Webservice> webservices = app.getWebservices();
+
+								// remeber whether we found the connection
+								boolean foundWebservice = false;
+
+								// check we have database connections
+								if (webservices != null) {
+									// check the index we where given will retieve a database connection
+									if (index > -1 && index < webservices.size()) {
+										// get the web service connection
+										Webservice webservice = webservices.get(index);
+										// check the type
+										if (webservice.getClass() == JavaWebservice.class) {
+
+											// cast to our type
+											JavaWebservice javaWebservice = (JavaWebservice) webservice;
+
+											// set the webservice properties
+											javaWebservice.setName(jsonAction.getString("name").trim());
+											javaWebservice.setClassName(jsonAction.getString("className").trim());
+
+											// save the app
+											app.save(rapidServlet, rapidActionRequest, true);
+
+											foundWebservice = true;
+
+											// add the application to the response
+											result.put("message", "Java webservice saved");
+										}
+									}
+								}
+
+								if (!foundWebservice) result.put("message", "Java webservice could not be found");
+
+							} else if ("SAVESECURITYADAPT".equals(action)) {
+
+								String securityAdapter = jsonAction.getString("securityAdapter").trim();
+
+								boolean deviceSecurity = jsonAction.optBoolean("deviceSecurity");
+
+								String storePasswordDuration = jsonAction.optString("storePasswordDuration");
+
+								app.setSecurityAdapterType(securityAdapter);
+
+								app.setDeviceSecurity(deviceSecurity);
+
+								app.setStorePasswordDuration(storePasswordDuration);
+
+								app.save(rapidServlet, rapidActionRequest, true);
+
+								// add the application to the response
+								result.put("message", "Security adapter saved");
+
+							} else if ("SAVEACTIONS".equals(action)) {
+
+								JSONArray jsonActionTypes = jsonAction.getJSONArray("actionTypes");
+
+								ArrayList<String> actionTypes = new ArrayList<>();
+
+								for (int i = 0; i < jsonActionTypes.length(); i++) {
+									actionTypes.add(jsonActionTypes.getString(i).trim());
+								}
+
+								// make sure some required actions are there if this is the rapid app
+								if ("rapid".equals(appId)) {
+									String [] requiredActionTypes = {"rapid", "ajax", "control", "custom", "dataCopy", "existing", "validation"};
+									for (String actionType : requiredActionTypes) {
+										if (!actionTypes.contains(actionType)) actionTypes.add(actionType);
+									}
+								}
+
+								// sort the types
+								Collections.sort(actionTypes);
+
+								// put the list into the app
+								app.setActionTypes(actionTypes);
+
+								// save it
+								app.save(rapidServlet, rapidActionRequest, true);
+
+								// add the message to the response
+								result.put("message", actionTypes.size() + " actions");
+
+							} else if ("SAVECONTROLS".equals(action)) {
+
+								JSONArray jsonControlTypes = jsonAction.getJSONArray("controlTypes");
+
+								ArrayList<String> controlTypes = new ArrayList<>();
+
+								// loop the controls
+								for (int i = 0; i < jsonControlTypes.length(); i++) {
+									// get the control type
+									String controlType = jsonControlTypes.getString(i).trim();
+									// get the json for it
+									JSONObject jsonControl = rapidServlet.getJsonControl(controlType);
+									// if there was one
+									if (jsonControl != null) {
+										// add this type
+										controlTypes.add(controlType);
+										// look for any required action
+										String requiredActionType = jsonControl.optString("requiredActionType", null);
+										// if we got one
+										if (requiredActionType != null) {
+											// get the action types
+											List<String> actionTypes = app.getActionTypes();
+											// if it doesn't exist
+											if (!actionTypes.contains(requiredActionType)) {
+												// get the json for it
+												JSONObject jsonActionType = rapidServlet.getJsonControl(requiredActionType);
+												// if we got one
+												if (jsonActionType != null) {
+													// add it
+													actionTypes.add(requiredActionType);
+													// sort the list
+													Collections.sort(actionTypes);
+												}
+											}
+										}
+									}
+								}
+
+								// make sure some required controls are there if this is the rapid app
+								if ("rapid".equals(appId)) {
+									String [] requiredControlTypes = {"button", "dataStore", "dropdown", "grid", "image", "input", "page", "table", "tabGroup", "text"};
+									for (String controlType : requiredControlTypes) {
+										if (!controlTypes.contains(controlType)) controlTypes.add(controlType);
+									}
+								}
+
+								// sort the types
+								Collections.sort(controlTypes);
+
+								// add the controls to the app
+								app.setControlTypes(controlTypes);
+
+								// save
+								app.save(rapidServlet, rapidActionRequest, true);
+
+								// add the message to the response
+								result.put("message", controlTypes.size() + " controls");
+
+							} else if ("DELAPP".equals(action)) {
+
+								// check we have an app
+								if (app != null)  {
+									// get the collection of applications and versions
+									Applications applications = rapidServlet.getApplications();
+									// get all versions of this application
+									Versions versions = applications.getVersions(app.getId());
+									// get the number of version
+									int versionCount = versions.size();
+									// make a list of versions
+									ArrayList<String> versionNumbers = new ArrayList<>();
+									// loop the versions
+									for (String version : versions.keySet()) {
+										versionNumbers.add(version);
+									}
+									// loop the versionNumbers
+									for (String versionNumber: versionNumbers) {
+										// get this version
+										Application v = applications.get(app.getId(), versionNumber);
+										// delete it
+										v.delete(rapidServlet, rapidActionRequest, true);
+									}
+									// set the result message
+									result.put("message", versionCount + " application version" + (versionCount == 1 ? "" : "s") + " deleted for " + app.getName());
+								}
+
+							} else if ("DUPAPP".equals(action)) {
+
+								String version = jsonAction.getString("newVersion").trim();
+								String title = jsonAction.optString("title").trim();
+								String description = jsonAction.optString("description").trim();
+
+								// use the application.copy routine (this updates the status and created time)
+								Application dupApp = app.copy(rapidServlet, rapidActionRequest, app.getId(), version, false, false);
+
+								// set the new title into the duplicate
+								dupApp.setTitle(title);
+								// set the new description
+								dupApp.setDescription(description);
+
+								// save the duplicate
+								dupApp.save(rapidServlet, rapidActionRequest, false);
+
+								// set the result message
+								result.put("message", "Application " + app.getTitle() + " duplicated");
+								result.put("id", dupApp.getId());
+								result.put("version", dupApp.getVersion());
+
+							} else if ("NEWVERSION".equals(action)) {
+
+								// retrieve the inputs from the json
+								String id = jsonAction.getString("appId").trim();
+								String version = jsonAction.getString("newVersion").trim();
+								String title = jsonAction.optString("title").trim();
+								String description = jsonAction.optString("description").trim();
+
+								// create a new application with our reusable, private method
+								Application newApp = createApplication(rapidServlet, rapidActionRequest, id, version, title, "", false, "", description);
+
+								// set the result message
+								result.put("message", "Version " + newApp.getVersion() + " created for " + newApp.getTitle());
+
+								// set the result appId
+								result.put("appId", newApp.getId());
+
+								// set the result version
+								result.put("version", newApp.getVersion());
+
+								// set the result message
+								result.put("message", "Application " + app.getTitle() + " duplicated");
+								result.put("id", newApp.getId());
+								result.put("version", newApp.getVersion());
+
+							} else if ("DELVERSION".equals(action)) {
+
+								// delete the application version
+								if (app != null) app.delete(rapidServlet, rapidActionRequest, false);
+								// set the result message
+								result.put("message", "Version " + app.getVersion() + " deleted");
+
+							} else if ("NEWDBCONN".equals(action)) {
+
+								// get the database connections
+								List<DatabaseConnection> dbConns = app.getDatabaseConnections();
+								// instantiate if null
+								if (dbConns == null) dbConns = new ArrayList<>();
+
+								// make the new database connection
+								DatabaseConnection dbConn = new DatabaseConnection(
+									servletContext,
+									app,
+									jsonAction.getString("name").trim(),
+									jsonAction.getString("driver").trim(),
+									jsonAction.getString("connectionString").trim(),
+									jsonAction.getString("connectionAdapter").trim(),
+									jsonAction.getString("userName").trim(),
+									jsonAction.getString("password")
+								);
+
+								// add it to the collection
+								dbConns.add(dbConn);
+
+								// save the app
+								app.save(rapidServlet, rapidActionRequest, true);
+
+								// add the application to the response
+								result.put("message", "Database connection added");
+
+							} else if ("DELDBCONN".equals(action)) {
+
+								// get the index
+								int index = jsonAction.getInt("index");
+
+								// get the database connections
+								List<DatabaseConnection> dbConns = app.getDatabaseConnections();
+
+								// remeber whether we found the connection
+								boolean foundConnection = false;
+
+								// check we have database connections
+								if (dbConns != null) {
+									// check the index we where given will retieve a database connection
+									if (index > -1 && index < dbConns.size()) {
+
+										// remove the database connection
+										dbConns.remove(index);
+
+										// save the app
+										try { app.save(rapidServlet, rapidActionRequest, true); }
+										catch (Exception ex) { throw new JSONException(ex);	}
+
+										// add the application to the response
+										result.put("message", "Database connection deleted");
+
+									}
+								}
+
+								if (!foundConnection) result.put("message", "Database connection could not be found");
+
+							} else if ("NEWSOA".equals(action)) {
+
+								// the webservice we are about to make
+								Webservice webservice = null;
+
+								// get the type
+								String type = jsonAction.getString("type");
+
+								if ("SQLWebservice".equals(type)) {
+									// make the new SQL webservice
+									webservice = new SQLWebservice(
+										jsonAction.getString("name").trim()
+									);
+								} else if ("JavaWebservice".equals(type)) {
+									// make the new Java class webservice
+									webservice = new JavaWebservice(
+										jsonAction.getString("name").trim()
+									);
+								}
+
+								// if one was made
+								if (webservice != null) {
+
+									// add it to the collection
+									app.getWebservices().add(webservice);
+
+									// save the app
+									app.save(rapidServlet, rapidActionRequest, true);
+
+									// add the application to the response
+									result.put("message", "SOA webservice added");
+
+								} else {
+									// send message
+									result.put("message", "Webservice type not recognised");
+								}
+
+							} else if ("DELSOA".equals(action)) {
+
+								// get the index
+								int index = jsonAction.getInt("index");
+
+								// get the webservices
+								List<Webservice> webservices = app.getWebservices();
+
+								// remeber whether we found the webservice
+								boolean foundWebservice = false;
+
+								// check we have database connections
+								if (webservices != null) {
+									// check the index we where given will retieve a database connection
+									if (index > -1 && index < webservices.size()) {
+
+										// remove the database connection
+										webservices.remove(index);
+
+										// save the app
+										app.save(rapidServlet, rapidActionRequest, true);
+
+										// add the application to the response
+										result.put("message", "SOA webservice deleted");
+
+									}
+								}
+
+								if (!foundWebservice) result.put("message", "SOA webservice could not be found");
+
+							} else if ("NEWROLE".equals(action)) {
+
+								// get the role name
+								String roleName = jsonAction.getString("role").trim();
+								// get the role descrition
+								String description = jsonAction.getString("description").trim();
+
+								// add the role
+								security.addRole(rapidActionRequest, new Role(roleName, description));
+								// set the result message
+								result.put("message", "Role added");
+
+							} else if ("DELROLE".equals(action)) {
+
+								// get the role
+								String role = jsonAction.getString("role").trim();
+								// delete the role
+								security.deleteRole(rapidActionRequest, role);
+								// set the result message
+								result.put("message", "Role deleted");
+
+							} else if ("SAVEROLE".equals(action)) {
+
+								// get the role
+								String roleName = jsonAction.getString("role").trim();
+								// get the description
+								String roleDescription = jsonAction.getString("description").trim();
+								// update the role
+								security.updateRole(rapidActionRequest, new Role(roleName, roleDescription));
+								// set the result message
+								result.put("message", "Role details saved");
+
+							} else if ("NEWPARAM".equals(action)) {
+
+								// add a new parameter to the collection
+								app.getParameters().add(new Parameter());
+
+							} else if ("DELPARAM".equals(action)) {
+
+								// get the index
+								int index = jsonAction.getInt("index");
+
+								// remove the parameter
+								app.getParameters().remove(index);
+
+								// save the app
+								app.save(rapidServlet, rapidActionRequest, true);
+
+								// set the result message
+								result.put("message", "Parameter deleted");
+
+							} else if ("SAVEPARAM".equals(action)) {
+
+								int index = jsonAction.getInt("index");
+								String name = jsonAction.getString("name");
+								String description = jsonAction.getString("description");
+								String value = jsonAction.getString("value");
+
+								// fetch the parameter
+								Parameter parameter = app.getParameters().get(index);
+
+								// update it
+								parameter.setName(name);
+								parameter.setDescription(description);
+								parameter.setValue(value);
+
+								// save the app
+								app.save(rapidServlet, rapidActionRequest, true);
+
+								// set the result message
+								result.put("message", "Parameter details saved");
+
+							} else if ("NEWRESOURCE".equals(action)) {
+
+								// get the resources
+								Resources resources = app.getAppResources();
+								// if null (could be from a previous version)
+								if (resources == null) {
+									// instantiate here
+									resources = new Resources();
+									// assign to the application
+									app.setAppResources(resources);
+								}
+
+								// add a new parameter to the collection
+								resources.add(new Resource());
+
+							} else if ("DELRESOURCE".equals(action)) {
+
+								// get the index
+								int index = jsonAction.getInt("index");
+
+								// remove the parameter
+								app.getAppResources().remove(index);
+
+								// save the app
+								app.save(rapidServlet, rapidActionRequest, true);
+
+								// set the result message
+								result.put("message", "Resource deleted");
+
+							} else if ("SAVERESOURCE".equals(action)) {
+
+								int index = jsonAction.getInt("index");
+								String name = jsonAction.getString("name");
+								int type = jsonAction.getInt("type");
+								String value = jsonAction.getString("value");
+
+								// fetch the resource
+								Resource resource = app.getAppResources().get(index);
+
+								// update it
+								resource.setName(name);
+								resource.setType(type);
+								resource.setContent(value);
+
+								// save the app
+								app.save(rapidServlet, rapidActionRequest, true);
+
+								// set the result message
+								result.put("message", "Resource details saved");
+
+							} else if ("TESTDBCONN".equals(action)) {
+
+								// get the index
+								int index = jsonAction.getInt("index");
+
+								// get the database connections
+								List<DatabaseConnection> dbConns = app.getDatabaseConnections();
+
+								// remember whether we found the connection
+								boolean foundConnection = false;
+
+								// check we have database connections
+								if (dbConns != null) {
+									// check the index we where given will retrieve a database connection
+									if (index > -1 && index < dbConns.size()) {
+
+										// retrieve the details from the json
+										String driverClass = jsonAction.getString("driver").trim();
+										String connectionString =app.insertParameters(servletContext, jsonAction.getString("connectionString").trim());
+										String connectionAdapterClass = jsonAction.getString("connectionAdapter").trim();
+										String userName = jsonAction.getString("userName").trim();
+										String password = jsonAction.getString("password");
+
+										// if the password wasn't set retrieve it via the connection index
+										if ("********".equals(password)) password = dbConns.get(index).getPassword();
+
+										// instantiate a DatabaseConnection object for this test
+										DatabaseConnection dbconnection = new DatabaseConnection(
+											servletContext,
+											app,
+											"test",
+											driverClass,
+											connectionString,
+											connectionAdapterClass,
+											userName,
+											password
+										);
+										// get the adapter
+										ConnectionAdapter connectionAdapter = dbconnection.getConnectionAdapter(servletContext, app);
+										// get a data factory
+										DataFactory dataFactory = new DataFactory(connectionAdapter);
+										// get a connection
+										Connection connection = dataFactory.getConnection(rapidActionRequest);
+										// close it
+										dataFactory.close();
+
+										// add the application to the response
+										result.put("message", "Database connection OK");
+
+										// retain that a connection was found
+										foundConnection = true;
+
+									}
+								}
+
+								if (!foundConnection) result.put("message", "Database connection could not be found");
+
+							} else if ("DELAPPBACKUP".equals(action)) {
+
+								// get the id
+								String backupId = jsonAction.getString("backupId");
+
+								// get the folder into a file object
+								File backup = new File (app.getBackupFolder(servletContext, false) + "/" + backupId);
+								// delete it
+								Files.deleteRecurring(backup);
+
+								// set the result message
+								result.put("message", "Application backup " + appId + "/" + appVersion + "/" + backupId + " deleted");
+								// pass back a control id from in the dialogue with which to close it
+								result.put("controlId", "#rapid_P12_C13_");
+
+							} else if ("DELPAGEBACKUP".equals(action)) {
+
+								// get the id
+								String backupId = jsonAction.getString("backupId");
+
+								// get the folder into a file object
+								File backup = new File (app.getBackupFolder(servletContext, false) + "/" + backupId);
+								// delete it
+								Files.deleteRecurring(backup);
+
+								// set the result message
+								result.put("message", "Page backup " + appId + "/" + backupId + " deleted");
+								// pass back a control id from in  the dialogue with which to close it
+								result.put("controlId", "#rapid_P13_C13_");
+
+							} else if ("RESTOREAPPBACKUP".equals(action)) {
+
+								// get the id
+								String backupId = jsonAction.getString("backupId");
+
+								// get this backup folder
+								File backupFolder = new File(app.getBackupFolder(servletContext, false) + "/" + backupId);
+
+								// check it exists
+								if (backupFolder.exists()) {
+
+									// back up the current state of the application
+									app.backup(rapidServlet, rapidActionRequest, false);
+
+
+									// get the config folder
+									File configFolder = new File(app.getConfigFolder(servletContext));
+
+									// get the web folder
+									File webFolder = new File(app.getWebFolder(servletContext));
+
+									// get the backups folder
+									File backupsFolder = new File(app.getBackupFolder(servletContext, false));
+
+
+
+									// create a file object for restoring the config folder
+								 	File configRestoreFolder = new File(Application.getConfigFolder(servletContext, app.getId(), "_restore"));
+
+								 	List<String> ignoreList = new ArrayList<>();
+								 	ignoreList.add("WebContent");
+
+								 	// copy the backup into the application restore folder
+									Files.copyFolder(backupFolder, configRestoreFolder, ignoreList);
+
+
+
+								 	// create a file object for the web content backup folder (which is currently sitting under the application)
+									File webBackupFolder = new File(backupFolder + "/WebContent");
+
+									// create a file object for the web content restore folder
+									File webRestoreFolder = new File(Application.getWebFolder(servletContext, app.getId(), "_restore"));
+
+									// copy the web contents backup folder to the webcontent restore folder
+									Files.copyFolder(webBackupFolder, webRestoreFolder);
+
+
+
+									// get the backups destination folder
+									File backupsRestoreFolder = new File(Application.getBackupFolder(servletContext, app.getId(), "_restore", false));
+
+									// copy in the backups
+									Files.copyFolder(backupsFolder, backupsRestoreFolder);
+
+
+
+									// delete the application config folder (this removes the webcontent and backups too so we do it here)
+								 	Files.deleteRecurring(configFolder);
+
+								 	// rename the restore folder to the application folder
+								 	configRestoreFolder.renameTo(configFolder);
+
+
+									// delete the webcontent folder
+									Files.deleteRecurring(webFolder);
+
+									// rename the restore folder to the webconten folder
+									webRestoreFolder.renameTo(webFolder);
+
+
+
+									// get the application file
+									File applicationFile = new File(configFolder + "/application.xml");
+
+									// reload the application
+									app = Application.load(servletContext, applicationFile);
+
+									// add it back to the collection
+									rapidServlet.getApplications().put(app);
+
+
+									// set the result message
+									result.put("message", "Application " + backupId + " restored");
+									// pass back a control id from in  the dialogue with which to close it
+									result.put("controlId", "#rapid_P14_C13_");
+
+								} else {
+
+									// set the result message
+									result.put("message", "Application backup " + backupId + " not found");
+
+								}
+
+							} else if ("RESTOREPAGEBACKUP".equals(action)) {
+
+								// get the id
+								String backupId = jsonAction.getString("backupId");
+
+								// turn the id into parts
+								String[] idParts = backupId.split("_");
+
+								// start the page name
+								String pageName = idParts[0];
+								// loop the remaining parts and build
+								for (int i = 1; i < idParts.length - 3; i++) {
+									pageName += "_" + idParts[i];
+								}
+
+								// get the page
+								Page page = app.getPages().getPageByName(servletContext, pageName);
+
+								// create a file object for the page
+							 	File pageFile = new File(page.getFile(servletContext, app));
+
+							 	// create a backup for the current state
+								page.backup(rapidServlet, rapidActionRequest, app, pageFile, false);
+
+								// get this backup file
+								File backupFile = new File(app.getBackupFolder(servletContext, false) + "/" + backupId);
+
+								// copy it over the current page file
+								Files.copyFile(backupFile, pageFile);
+
+								// load the page from the backup
+								page = Page.load(servletContext, backupFile);
+
+								// replace the current entry
+								app.getPages().addPage(page, pageFile, app.getIsForm());
+
+								// set the result message
+								result.put("message", "Page backup " + appId + "/" + backupId + " restored");
+								// pass back a control id from in  the dialogue with which to close it
+								result.put("controlId", "#rapid_P15_C13_");
+
+							} else if ("SAVEAPPBACKUPSIZE".equals(action)) {
+
+								// get the max backup size
+								int backupMaxSize = jsonAction.getInt("backupMaxSize");
+
+								// pass it to the application
+								app.setApplicationBackupMaxSize(backupMaxSize);
+
+								// save the application
+								app.save(rapidServlet, rapidActionRequest, false);
+
+								// set the result message
+								result.put("message", "Application backup max size updated to " + backupMaxSize);
+
+							} else if ("SAVEPAGEBACKUPSIZE".equals(action)) {
+
+								// get the max backup size
+								int backupMaxSize = jsonAction.getInt("backupMaxSize");
+
+								// pass it to the application
+								app.setPageBackupsMaxSize(backupMaxSize);
+
+								// save the application
+								app.save(rapidServlet, rapidActionRequest, false);
+
+								// set the result message
+								result.put("message", "Page backup max size updated to " + backupMaxSize);
+
+							} // second action type check
+
+						} // user app admin role
+
+
+						// actions that require app admin or app user role
+						if (appAdmin || appUsers) {
+
+							// get the securityAdapter type from the jsonAction
+							String securityAdapterType = jsonAction.optString("securityAdapter", null);
+
+							// get all of the available security adapters
+							JSONArray jsonSecurityAdapters = rapidServlet.getJsonSecurityAdapters();
+
+							//  Users without Rapid Admin need adapterIndex setting in all user security action types!
+							if (!rapidAdmin) {
+
+								// check we have some security adapters
+								if (security != null && jsonSecurityAdapters != null) {
+									// loop what we have
+									for (int i = 0; i < jsonSecurityAdapters.length(); i++) {
+										// get the item
+										JSONObject jsonSecurityAdapter = jsonSecurityAdapters.getJSONObject(i);
+										// if this is the type that came in
+										if (security.getClass().getCanonicalName().equals(jsonSecurityAdapter.getString("class"))) {
+											// add the adapter index as we know we don't have a drop down
+											result.put("adapterIndex", i);
+											// we're done
+											break;
+										}
+									}
+								}
+
+							}
+
+							if ("GETSEC".equals(action)) {
+
+								// check we got one, might not have if drop down is not visible
+								if (securityAdapterType != null) {
+
+									// assume the current class has not been set
+									String securityAdapterClass = "";
+
+									// check we have some security adapters
+									if (jsonSecurityAdapters != null) {
+										// loop what we have
+										for (int i = 0; i < jsonSecurityAdapters.length(); i++) {
+											// get the item
+											JSONObject jsonSecurityAdapter = jsonSecurityAdapters.getJSONObject(i);
+											// if this is the type that came in
+											if (securityAdapterType.equals(jsonSecurityAdapter.getString("type"))) {
+												// retain the name
+												securityAdapterClass = jsonSecurityAdapter.getString("class");
+												// we're done
+												break;
+											}
+										}
+									}
+
+									// if it's different from what came in
+									if (!securityAdapterClass.equals(security.getClass().getCanonicalName())) {
+										// set the new security adapter
+										app.setSecurityAdapter(servletContext, securityAdapterType);
+										// read it back again
+										security = app.getSecurityAdapter();
+									}
+
+								} // got security adapter type
+
+								// if we got the security
+								if (security != null) {
+
+									// if we are a high-level Rapid Admin or high-level Rapid Users
+									if (rapidAdmin || rapidUsers) {
+
+										// get the roles
+										Roles roles = security.getRoles(rapidActionRequest);
+
+										// add the entire roles collection to the response
+										result.put("roles", roles);
+
+										// if we had some roles
+										if (roles != null) {
+											// prepapre a list of just the role names (not descriptions) - these go in the drop down for new roles that can be added
+											List<String> roleNames = new ArrayList<>();
+											// loop the roles
+											for (Role role : roles) {
+												// we need the RapidAdmin role to add RapidAdmin or RapidDesign
+												if ((!com.rapid.server.Rapid.ADMIN_ROLE.equals(role.getName()) && !com.rapid.server.Rapid.DESIGN_ROLE.equals(role.getName())) || security.checkUserRole(rapidActionRequest, com.rapid.server.Rapid.ADMIN_ROLE))
+													roleNames.add(role.getName());
+											}
+											// add the rolenames
+											result.put("roleNames", roleNames);
+										}
+
+									} // high-level Rapid Admin check
+
+									// get the users
+									Users users = security.getUsers(rapidActionRequest);
+
+									// if we got some add the users safely to the response (does not include password)
+									if (users != null) result.put("users", getSafeUsersJSON(rapidRequest, security, rapidAdmin, users));
+
+								} // got security
+
+							} else if ("GETUSER".equals(action)) {
+
+								// get the userName from the incoming json
+								String userName = jsonAction.getString("userName");
+
+								// derive whether this is the current user
+								boolean currentUser = userName.toLowerCase().equals(rapidRequest.getUserName().toLowerCase());
+
+								// now set the rapid request user to the user we want
+								rapidActionRequest.setUserName(userName);
+
+								// get the user
+								User user = security.getUser(rapidActionRequest);
+
+								// add the user name
+								result.put("userName", userName);
+
+								// add the user description
+								result.put("description", user.getDescription());
+
+								// add the user email
+								result.put("email", user.getEmail());
+
+								// set the default password mask
+								String password = "********";
+
+								// if the password is blank reflect this in what we send
+								if ("".equals(user.getPassword())) password = "";
+
+								// add a masked password
+								result.put("password", password);
+
+								// add isLocked status
+								result.put("isLocked", user.getIsLocked());
+
+								// add the device details
+								result.put("deviceDetails", user.getDeviceDetails());
+
+								// if we got one
+								if (security != null) {
+
+									// get the users roles
+									List<String> roles = security.getUser(rapidActionRequest).getRoles();
+
+									// add the users to the response
+									result.put("roles", roles);
+
+								} // got security
+
+								// if this user record is for the logged in user
+								result.put("currentUser", currentUser);
+
+							} else if ("GETUSERS".equals(action)) {
+
+								// add the current user
+								result.put("currentUser", rapidRequest.getUserName());
+
+								// if we got one
+								if (security != null) {
+
+									// get the users of the selected app
+									Users users = security.getUsers(rapidActionRequest);
+
+									// if we got some
+									if (users != null) {
+										// put the list of users
+										result.put("users", getSafeUsersJSON(rapidActionRequest, security, rapidAdmin, users));
+									}
+
+								} // got security
+
+							} else if ("NEWUSER".equals(action)) {
+
+								// get the userName
+								String userName = jsonAction.getString("userName").trim();
+								// get the userDescription
+								String description = jsonAction.optString("description","").trim();
+								// get the email
+								String email = jsonAction.optString("email");
+								// get the password
+								String password = jsonAction.getString("password");
+								// get locked status
+								boolean isLocked = jsonAction.isNull("isLocked")?false:"true".equalsIgnoreCase(jsonAction.getString("isLocked"));
+								// get the device details
+								String deviceDetails = jsonAction.optString("deviceDetails");
+								// check for useAdmin - must have Rapid Admin to grant
+								boolean useAdmin = jsonAction.optBoolean("useAdmin") && rapidAdmin;
+								// check for useAdmin - must have useAdmin and, Rapid Admin to grant
+								boolean useMaster = jsonAction.optBoolean("useMaster") && useAdmin && rapidAdmin;
+								// check for useDesign - must have Rapid Admin to grant
+								boolean useDesign = jsonAction.optBoolean("useDesign") && rapidAdmin;
+								// check for useUsers
+								boolean useUsers = jsonAction.optBoolean("useUsers");
+
+								// add the user
+								security.addUser(rapidActionRequest, new User(userName, description, email, password, isLocked, deviceDetails));
+
+								// update the Rapid Request to have the new user name
+								rapidActionRequest.setUserName(userName);
+
+								// add role if we were given one
+								if (useAdmin) security.addUserRole(rapidActionRequest, com.rapid.server.Rapid.ADMIN_ROLE);
+
+								// add role if we were given one
+								if (useMaster) security.addUserRole(rapidActionRequest, com.rapid.server.Rapid.MASTER_ROLE);
+
+								// add role if we were given one
+								if (useDesign) security.addUserRole(rapidActionRequest, com.rapid.server.Rapid.DESIGN_ROLE);
+
+								// add role if we were given one
+								if (useUsers) security.addUserRole(rapidActionRequest, com.rapid.server.Rapid.USERS_ROLE);
+
+								// set the result message
+								result.put("message", "User added");
+
+							} else if ("DELUSER".equals(action)) {
+
+								// get the userName
+								String userName = jsonAction.getString("userName").trim();
+								// override the standard request user
+								rapidActionRequest.setUserName(userName);
+								// delete the user
+								security.deleteUser(rapidActionRequest);
+								// remove any of their page locks
+								app.removeUserPageLocks(servletContext, userName);
+								// set the result message
+								result.put("message", "User deleted");
+
+							} else if ("NEWUSERROLE".equals(action)) {
+
+								// get the userName
+								String userName = jsonAction.getString("userName").trim();
+								// override the standard request user
+								rapidActionRequest.setUserName(userName);
+								// get the role
+								String role = jsonAction.getString("role").trim();
+								// add the user role - if RapidAdmin or RapidDesign, must have rapidAdmin
+								if ((!com.rapid.server.Rapid.ADMIN_ROLE.equals(role) && !com.rapid.server.Rapid.DESIGN_ROLE.equals(role)) || rapidAdmin) security.addUserRole(rapidActionRequest, role);
+								// set the result message
+								result.put("message", "User role added");
+
+							} else if ("DELUSERROLE".equals(action)) {
+
+								// get the userName
+								String userName = jsonAction.getString("userName").trim();
+								// override the standard request user
+								rapidActionRequest.setUserName(userName);
+								// get the role
+								String role = jsonAction.getString("role").trim();
+								// add the user role
+								security.deleteUserRole(rapidActionRequest, role);
+								// set the result message
+								result.put("message", "User role deleted");
+
+							} else if ("SAVEUSER".equals(action)) {
+
+								// get the userName of the user being changed
+								String userName = jsonAction.getString("userName").trim();
+								// override the standard request user
+								rapidActionRequest.setUserName(userName);
+								// get the description
+								String description = jsonAction.getString("description").trim();
+								// get the email
+								String email = jsonAction.optString("email");
+								// get the password
+								String password = jsonAction.getString("password");
+								// get locked status
+								String isLocked = jsonAction.isNull("isLocked")?"false":jsonAction.getString("isLocked");
+								// get the device details
+								String deviceDetails = jsonAction.getString("deviceDetails");
+
+								// get the user
+								User user = security.getUser(rapidActionRequest);
+								// update the email
+								user.setEmail(email);
+								// update the description
+								user.setDescription(description);
+								// update the device details
+								user.setDeviceDetails(deviceDetails);
+								// update the locked status
+								user.setIsLocked("true".equalsIgnoreCase(isLocked));
+
+								// if password is different from the mask
+								if ("********".equals(password)) {
+									// just update the user
+									security.updateUser(rapidActionRequest, user);
+								} else {
+									// get the old password
+									String oldPassword = user.getPassword();
+									// update the password
+									user.setPassword(password);
+									// update the user
+									security.updateUser(rapidActionRequest, user);
+									// update the session password as well if we are changing our own password (this is required especially when changing the rapid app password)
+									if (user.getName().equals(rapidActionRequest.getSessionAttribute(RapidFilter.SESSION_VARIABLE_USER_NAME))) rapidActionRequest.setUserPassword(password);
+									// if there is an old password - should always be
+									if (oldPassword != null) {
+										// only if the new password is different from the old one
+										if (!password.equals(oldPassword)) {
+											// get all applications
+											Applications applications = rapidActionRequest.getRapidServlet().getApplications();
+											// loop them
+											for (String id : applications.getIds()) {
+												// get their versions
+												Versions versions = applications.getVersions(id);
+												// loop the versions
+												for (String version : versions.keySet()) {
+													// get this version
+													Application v = applications.get(id, version);
+													// we have updated the password in the selected app already so no need to do it again
+													if (!(app.getId().equals(v.getId()) && app.getVersion().equals(v.getVersion()))) {
+														// get this app versions security adapter
+														SecurityAdapter s = v.getSecurityAdapter();
+														// recreate the rapidRequest with the selected version (so app parameters etc are available from the app in the rapidRequest)
+														rapidActionRequest = new RapidRequest(rapidServlet, rapidActionRequest.getRequest(), v);
+														// override the standard request user
+														rapidActionRequest.setUserName(userName);
+														// check the user had permission to the app with their old password
+														if (s.checkUserPassword(rapidActionRequest, userName, oldPassword)) {
+															// get this user
+															User u = s.getUser(rapidActionRequest);
+															// safety check for if we found one
+															if (u == null) {
+																// log that it passed password check but can't be found
+																rapidActionRequest.getRapidServlet().getLogger().debug("User " + userName + " passed password check for " + app.getId() + "/" + app.getVersion() + " but now can't be found for password update");
+															} else {
+																// set new user password
+																u.setPassword(password);
+																// update user
+																s.updateUser(rapidActionRequest, u);
+															}
+														} // password match check
+													} // ignore app version updated already
+												} // version loop
+											} // app id loop
+										} // old password different from new
+									} // old password null check
+								} // password provided
+
+								// if we are updating the rapid application we have used checkboxes for the Rapid Admin, Rapid Designer, and user manager roles
+								if ("rapid".equals(app.getId())) {
+									// get the value of rapidAdmin
+									boolean useAdmin = jsonAction.optBoolean("useAdmin");
+									// check the user was given the role
+									if (useAdmin) {
+										// add the role if the user doesn't have it already
+										if (!security.checkUserRole(rapidActionRequest, com.rapid.server.Rapid.ADMIN_ROLE))
+											security.addUserRole(rapidActionRequest, com.rapid.server.Rapid.ADMIN_ROLE);
+									} else {
+										// remove the role
+										security.deleteUserRole(rapidActionRequest, com.rapid.server.Rapid.ADMIN_ROLE);
+									}
+									// get the value of rapidAdmin
+									boolean useMaster = jsonAction.optBoolean("useMaster");
+									// check the user was given the role, can only be done by users who are masters already, unless they already have it
+									if (useMaster && useAdmin) {
+										// add the role if the user doesn't have it already
+										if (!security.checkUserRole(rapidActionRequest, com.rapid.server.Rapid.MASTER_ROLE))
+											security.addUserRole(rapidActionRequest, com.rapid.server.Rapid.MASTER_ROLE);
+									} else {
+										// remove the role
+										security.deleteUserRole(rapidActionRequest, com.rapid.server.Rapid.MASTER_ROLE);
+									}
+									// get the value of rapidDesign
+									boolean useDesign = jsonAction.optBoolean("useDesign");
+									// check the user was given the role
+									if (useDesign) {
+										// add the role if the user doesn't have it already
+										if (!security.checkUserRole(rapidActionRequest, com.rapid.server.Rapid.DESIGN_ROLE))
+											security.addUserRole(rapidActionRequest, com.rapid.server.Rapid.DESIGN_ROLE);
+									} else {
+										// remove the role
+										security.deleteUserRole(rapidActionRequest, com.rapid.server.Rapid.DESIGN_ROLE);
+									}
+									// get the value of rapidUsers
+									boolean useUsers = jsonAction.optBoolean("useUsers");
+									// check the user was given the role
+									if (useUsers) {
+										// add the role if the user doesn't have it already
+										if (!security.checkUserRole(rapidActionRequest, com.rapid.server.Rapid.USERS_ROLE))
+											security.addUserRole(rapidActionRequest, com.rapid.server.Rapid.USERS_ROLE);
+									} else {
+										// remove the role
+										security.deleteUserRole(rapidActionRequest, com.rapid.server.Rapid.USERS_ROLE);
+									}
+								}
+
+								// set the result message
+								result.put("message", "User details saved");
+
+							} else if ("CHECKPASSWORDCOMPLEXITY".equals(action)) {
+
+								// get the password
+								String password = jsonAction.getString("password");
+
+								// check complexity
+								boolean complexPass = security.checkPasswordComplexity(rapidActionRequest, password);
+
+								// add check result
+								result.put("complexPass", complexPass);
+								// add whether rapid app
+								result.put("rapidApp", "rapid".equals(app.getId()));
+
+								// check passed
+								if (complexPass) {
+
+									// set the result message
+									result.put("message", "Password is sufficiently complex");
+
+								} else {
+
+									// set the result message
+									result.put("message", security.getPasswordComplexityDescription(rapidActionRequest, password));
+
+								}
+
+							} // action type check
+
+						} // admin or users action type check
+
+						// actions that require app design role
+						if (appDesign) {
+
+							if ("NEWPAGE".equals(action)) {
+
+								String id = jsonAction.getString("id").trim();
+								String name = jsonAction.getString("name").trim();
+								String title = jsonAction.optString("title").trim();
+								String description = jsonAction.optString("description").trim();
+
+								// assume designer set id
+								boolean nameIds = false;
+
+								// this parameter existed against the entire system for just a single version of Rapid 2.4.1 before being moved to each application from 2.4.2
+								if (Boolean.parseBoolean(servletContext.getInitParameter("pageNameIds")) || rapidActionRequest.getApplication().getPageNameIds()) nameIds = true;
+
+								// check nameIds and set accordingly
+								if (nameIds) id = name;
+
+								Page newPage = new Page();
+								newPage.setId(id);
+								newPage.setName(name);
+								newPage.setTitle(title);
+								newPage.setDescription(description);
+								newPage.setCreatedBy(rapidRequest.getUserName());
+								newPage.setCreatedDate(new Date());
+
+								// save the page to file
+								newPage.save(rapidServlet, rapidActionRequest, app, false);
+
+								// put the id in the result
+								result.put("id", id);
+
+								// set the result message
+								result.put("message", "Page " + newPage.getTitle() + " created");
+
+							} else if ("DELPAGE".equals(action)) {
+
+								// get the id
+								String id = jsonAction.getString("id").trim();
+								// retrieve the page
+								Page delPage = app.getPages().getPage(rapidActionRequest.getRapidServlet().getServletContext(), id);
+								// delete it if we got one
+								if (delPage != null) delPage.delete(rapidServlet, rapidActionRequest, app);
+								// set the result message
+								result.put("message", "Page " + delPage.getName() + " delete");
+
+							} // action type check
+
+						} // design role check
+
+					} else {
+
+						throw new SecurityAdapaterException("User must have correct password for application");
+
+					} // user app password
 
 				} else {
 
-					// for safety, make a new one if not yet set
-					if (email == null) email = new Email();
+					throw new SecurityAdapaterException("User must have correct password for Rapid Admin");
 
-					// set not enabled
-			        email.setEnabled(false);
+				} // rapid admin role and password check
 
-				}
+			} // result check
 
-		        // save it
-		        email.save(servletContext);
-
-			} else if ("DELAPPBACKUP".equals(action)) {
-
-				// get the id
-				String backupId = jsonAction.getString("backupId");
-
-				// get the folder into a file object
-				File backup = new File (app.getBackupFolder(servletContext, false) + "/" + backupId);
-				// delete it
-				Files.deleteRecurring(backup);
-
-				// set the result message
-				result.put("message", "Application backup " + appId + "/" + appVersion + "/" + backupId + " deleted");
-				// pass back a control id from in the dialogue with which to close it
-				result.put("controlId", "#rapid_P12_C13_");
-
-			} else if ("DELPAGEBACKUP".equals(action)) {
-
-				// get the id
-				String backupId = jsonAction.getString("backupId");
-
-				// get the folder into a file object
-				File backup = new File (app.getBackupFolder(servletContext, false) + "/" + backupId);
-				// delete it
-				Files.deleteRecurring(backup);
-
-				// set the result message
-				result.put("message", "Page backup " + appId + "/" + backupId + " deleted");
-				// pass back a control id from in  the dialogue with which to close it
-				result.put("controlId", "#rapid_P13_C13_");
-
-			} else if ("RESTOREAPPBACKUP".equals(action)) {
-
-				// get the id
-				String backupId = jsonAction.getString("backupId");
-
-				// get this backup folder
-				File backupFolder = new File(app.getBackupFolder(servletContext, false) + "/" + backupId);
-
-				// check it exists
-				if (backupFolder.exists()) {
-
-					// back up the current state of the application
-					app.backup(rapidServlet, rapidRequest, false);
-
-
-					// get the config folder
-					File configFolder = new File(app.getConfigFolder(servletContext));
-
-					// get the web folder
-					File webFolder = new File(app.getWebFolder(servletContext));
-
-					// get the backups folder
-					File backupsFolder = new File(app.getBackupFolder(servletContext, false));
-
-
-
-					// create a file object for restoring the config folder
-				 	File configRestoreFolder = new File(Application.getConfigFolder(servletContext, app.getId(), "_restore"));
-
-				 	List<String> ignoreList = new ArrayList<>();
-				 	ignoreList.add("WebContent");
-
-				 	// copy the backup into the application restore folder
-					Files.copyFolder(backupFolder, configRestoreFolder, ignoreList);
-
-
-
-				 	// create a file object for the web content backup folder (which is currently sitting under the application)
-					File webBackupFolder = new File(backupFolder + "/WebContent");
-
-					// create a file object for the web content restore folder
-					File webRestoreFolder = new File(Application.getWebFolder(servletContext, app.getId(), "_restore"));
-
-					// copy the web contents backup folder to the webcontent restore folder
-					Files.copyFolder(webBackupFolder, webRestoreFolder);
-
-
-
-					// get the backups destination folder
-					File backupsRestoreFolder = new File(Application.getBackupFolder(servletContext, app.getId(), "_restore", false));
-
-					// copy in the backups
-					Files.copyFolder(backupsFolder, backupsRestoreFolder);
-
-
-
-					// delete the application config folder (this removes the webcontent and backups too so we do it here)
-				 	Files.deleteRecurring(configFolder);
-
-				 	// rename the restore folder to the application folder
-				 	configRestoreFolder.renameTo(configFolder);
-
-
-					// delete the webcontent folder
-					Files.deleteRecurring(webFolder);
-
-					// rename the restore folder to the webconten folder
-					webRestoreFolder.renameTo(webFolder);
-
-
-
-					// get the application file
-					File applicationFile = new File(configFolder + "/application.xml");
-
-					// reload the application
-					app = Application.load(servletContext, applicationFile);
-
-					// add it back to the collection
-					rapidServlet.getApplications().put(app);
-
-
-					// set the result message
-					result.put("message", "Application " + backupId + " restored");
-					// pass back a control id from in  the dialogue with which to close it
-					result.put("controlId", "#rapid_P14_C13_");
-
-				} else {
-
-					// set the result message
-					result.put("message", "Application backup " + backupId + " not found");
-
-				}
-
-			} else if ("RESTOREPAGEBACKUP".equals(action)) {
-
-				// get the id
-				String backupId = jsonAction.getString("backupId");
-
-				// turn the id into parts
-				String[] idParts = backupId.split("_");
-
-				// start the page name
-				String pageName = idParts[0];
-				// loop the remaining parts and build
-				for (int i = 1; i < idParts.length - 3; i++) {
-					pageName += "_" + idParts[i];
-				}
-
-				// get the page
-				Page page = app.getPages().getPageByName(servletContext, pageName);
-
-				// create a file object for the page
-			 	File pageFile = new File(page.getFile(servletContext, app));
-
-			 	// create a backup for the current state
-				page.backup(rapidServlet, rapidRequest, app, pageFile, false);
-
-				// get this backup file
-				File backupFile = new File(app.getBackupFolder(servletContext, false) + "/" + backupId);
-
-				// copy it over the current page file
-				Files.copyFile(backupFile, pageFile);
-
-				// load the page from the backup
-				page = Page.load(servletContext, backupFile);
-
-				// replace the current entry
-				app.getPages().addPage(page, pageFile, app.getIsForm());
-
-				// set the result message
-				result.put("message", "Page backup " + appId + "/" + backupId + " restored");
-				// pass back a control id from in  the dialogue with which to close it
-				result.put("controlId", "#rapid_P15_C13_");
-
-			} else if ("SAVEAPPBACKUPSIZE".equals(action)) {
-
-				// get the max backup size
-				int backupMaxSize = jsonAction.getInt("backupMaxSize");
-
-				// pass it to the application
-				app.setApplicationBackupMaxSize(backupMaxSize);
-
-				// save the application
-				app.save(rapidServlet, rapidRequest, false);
-
-				// set the result message
-				result.put("message", "Application backup max size updated to " + backupMaxSize);
-
-			} else if ("SAVEPAGEBACKUPSIZE".equals(action)) {
-
-				// get the max backup size
-				int backupMaxSize = jsonAction.getInt("backupMaxSize");
-
-				// pass it to the application
-				app.setPageBackupsMaxSize(backupMaxSize);
-
-				// save the application
-				app.save(rapidServlet, rapidRequest, false);
-
-				// set the result message
-				result.put("message", "Page backup max size updated to " + backupMaxSize);
-
-			}
-
-			// sent back the new app id for the callback load
+			// send back the new app id for the callback load
 			if (newAppId != null) result.put("id", newAppId);
 
 		} else {

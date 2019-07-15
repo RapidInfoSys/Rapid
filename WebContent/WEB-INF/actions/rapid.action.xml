@@ -617,6 +617,7 @@ function Action_rapid(ev, appId, pageId, controlId, actionId, actionType, rapidA
 					isLocked: getData_checkbox(ev, "rapid_P16_C100_"),
 					deviceDetails: $("#rapid_P16_C57_").val(),
 					useAdmin: getData_checkbox(ev, "rapid_P16_C38_"),
+					useMaster: getData_checkbox(ev, "rapid_P16_C118_"),
 					useDesign: getData_checkbox(ev, "rapid_P16_C39_"),
 					useUsers: getData_checkbox(ev, "rapid_P16_C70_")
 				};
@@ -635,6 +636,7 @@ function Action_rapid(ev, appId, pageId, controlId, actionId, actionType, rapidA
 					useUsers: getData_checkbox(ev, "rapid_P6_C90_")
 				 };
 				callback = function() {
+					// fire an adapter change
 					Event_change_rapid_P0_C81(ev);
 				};
 			}								
@@ -651,8 +653,8 @@ function Action_rapid(ev, appId, pageId, controlId, actionId, actionType, rapidA
 			} else {
 				data = { actionType: actionType, appId: $("#rapid_P0_C43").val(), version: $("#rapid_P0_C1044_").val(), userName: $(ev.target).closest("tr").find("td").first().html() };
 				callback = function() {
-					// fake an adapter change
-					$("#rapid_P0_C81").change(); 
+					// fire an adapter change
+					Event_change_rapid_P0_C81(ev);
 					// fake a tab click
 					$("#rapid_P0_C74").click();    
 				};
@@ -675,7 +677,8 @@ function Action_rapid(ev, appId, pageId, controlId, actionId, actionType, rapidA
 				data = { actionType: actionType, appId: "rapid", version: _appVersion, 
 					userName: $("#rapid_P0_C834_").text(), 	description: $("#rapid_P0_C838_").val(), email: $("#rapid_P0_C2061_").val(), 
 					password: $("#rapid_P0_C843_").val(), deviceDetails: $("#rapid_P0_C1453_").val(), isLocked: getData_checkbox(ev, "rapid_P0_C2915_"), 
-					useAdmin: getData_checkbox(ev, "rapid_P0_C879_"), 
+					useAdmin: getData_checkbox(ev, "rapid_P0_C879_"),
+					useMaster: getData_checkbox(ev, "rapid_P0_C3167_"),  
 					useDesign: getData_checkbox(ev, "rapid_P0_C880_"),
 					useUsers: getData_checkbox(ev, "rapid_P0_C2442_") 
 				}; 

@@ -77,11 +77,12 @@ public class Rapid extends RapidHttpServlet {
 	public static final String MOBILE_VERSION = "1"; // the mobile version. update it if you want all mobile devices to run app updates on their next version check
 	public static final String JQUERY = "jquery-3.3.1.js"; // the version of jquery we have which we write into the pages, jquery ui is in each control
 	public static final String JQUERYUI = "jquery-ui-1.12.1.js"; // the version of jquery ui we have which we write into the design.jsp page, amongst others
-	public static final String ADMIN_ROLE = "RapidAdmin";
-	public static final String DESIGN_ROLE = "RapidDesign";
-	public static final String WORKFLOW_ROLE = "RapidWorkflow";
-	public static final String USERS_ROLE = "RapidUsers";
-	public static final String SUPER_ROLE = "RapidSuper";
+	public static final String ADMIN_ROLE = "RapidAdmin"; // allows use the Rapid Admin tool
+	public static final String DESIGN_ROLE = "RapidDesign"; // allows use of the Rapid Design tool
+	public static final String WORKFLOW_ROLE = "RapidWorkflow"; // allows use of the Rapid Workflow tool
+	public static final String USERS_ROLE = "RapidUsers"; // allows user management in Rapid Admin
+	public static final String SUPER_ROLE = "RapidSuper"; // allows design of the Rapid Admin app
+	public static final String MASTER_ROLE = "RapidMaster"; // allows all apps to appear in Rapid Admin
 
 	//  helper methods for forms
 	private String getFirstPageForFormType(Application app, int formPageType) throws RapidLoadingException {
