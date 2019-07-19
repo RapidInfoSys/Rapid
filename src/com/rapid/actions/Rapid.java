@@ -572,18 +572,18 @@ public class Rapid extends Action {
 		boolean rapidMaster = false;
 
 		// get the rapid security for the current user
-		SecurityAdapter security = rapidRequest.getApplication().getSecurityAdapter();
+		SecurityAdapter rapidSecurity = rapidRequest.getApplication().getSecurityAdapter();
 
 		// if we got one
-		if (security != null) {
+		if (rapidSecurity != null) {
 			// check the admin role
-			rapidAdmin = security.checkUserRole(rapidRequest, com.rapid.server.Rapid.ADMIN_ROLE);
+			rapidAdmin = rapidSecurity.checkUserRole(rapidRequest, com.rapid.server.Rapid.ADMIN_ROLE);
 			// if no admin check designer
-			if (!rapidAdmin) rapidDesign = security.checkUserRole(rapidRequest, com.rapid.server.Rapid.DESIGN_ROLE);
+			if (!rapidAdmin) rapidDesign = rapidSecurity.checkUserRole(rapidRequest, com.rapid.server.Rapid.DESIGN_ROLE);
 			// if no admin check users
-			if (!rapidAdmin) rapidUsers = security.checkUserRole(rapidRequest, com.rapid.server.Rapid.USERS_ROLE);
+			if (!rapidAdmin) rapidUsers = rapidSecurity.checkUserRole(rapidRequest, com.rapid.server.Rapid.USERS_ROLE);
 			// if we have admin check admin master
-			if (rapidAdmin) rapidMaster = security.checkUserRole(rapidRequest, com.rapid.server.Rapid.MASTER_ROLE);
+			if (rapidAdmin) rapidMaster = rapidSecurity.checkUserRole(rapidRequest, com.rapid.server.Rapid.MASTER_ROLE);
 		}
 
 		// get the id of the app we're about to manipulate
@@ -603,7 +603,7 @@ public class Rapid extends Action {
 			RapidRequest rapidActionRequest = new RapidRequest(rapidServlet, rapidRequest.getRequest(), app);
 
 			// get the application security
-			security = app.getSecurityAdapter();
+			SecurityAdapter security = app.getSecurityAdapter();
 
 			// check the action
 			if ("GETAPPS".equals(action)) {
@@ -907,6 +907,9 @@ public class Rapid extends Action {
 						// add the security adapters to the result
 						result.put("securityAdapters", jsonAdapters);
 					}
+
+					// if we also have Rapid Master
+					if (rapidMaster) result.put("useMaster", true);
 
 				}
 
@@ -1788,11 +1791,11 @@ public class Rapid extends Action {
 
 				}
 
-				// if rapid admin or rapid users //////////////////////////////// This isn't quite right yet - we need admin specific and app specific checking
+				// if rapid admin or rapid users
 				if (rapidAdmin || rapidUsers) {
 
 					// check user app password, or master user
-					if (security.checkUserPassword(rapidActionRequest, rapidRequest.getUserName(), rapidRequest.getUserPassword()) || rapidMaster) {
+					if (rapidMaster || security.checkUserPassword(rapidActionRequest, rapidRequest.getUserName(), rapidRequest.getUserPassword())) {
 
 						// get whether user has the rapid master, or app admin role
 						boolean appAdmin = rapidMaster || security.checkUserRole(rapidActionRequest, com.rapid.server.Rapid.ADMIN_ROLE);
@@ -1803,6 +1806,27 @@ public class Rapid extends Action {
 
 						// check user app admin role
 						if (appAdmin) {
+
+							// if master too
+							if (rapidMaster) {
+
+								if ("ADDADMINUSER".equals(action)) {
+
+									// get the user name
+									String userName = jsonAction.getString("user");
+
+									// add this user name to the rapid request
+									rapidRequest.setUserName(userName);
+
+									// get user from Rapid security and add to app security
+									User user = rapidSecurity.getUser(rapidRequest);
+
+									// add the user to the app security
+									if (user != null) security.addUser(rapidActionRequest, user);
+
+								} // master action check
+
+							} // rapid master check
 
 							if ("GETDBCONN".equals(action)) {
 
@@ -3104,6 +3128,9 @@ public class Rapid extends Action {
 										// put the list of users
 										result.put("users", getSafeUsersJSON(rapidActionRequest, security, rapidAdmin, users));
 									}
+
+									// send Rapid Master for extra copy to Master Rapid Admin users drop down
+									if (rapidMaster) result.put("hasMaster", true);
 
 								} // got security
 

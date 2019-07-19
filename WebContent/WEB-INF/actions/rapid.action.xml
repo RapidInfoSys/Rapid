@@ -111,7 +111,8 @@ return [
  ["RESTOREAPPBACKUP","Restore application backup"],
  ["RESTOREPAGEBACKUP","Restore page backup"],
  ["SAVEAPPBACKUPSIZE","Save number of application backups"],
- ["SAVEPAGEBACKUPSIZE","Save number of page backups"]
+ ["SAVEPAGEBACKUPSIZE","Save number of page backups"],
+ ["ADDADMINUSER","Add Rapid Admin user to the app"]
 ];
 					]]>
 	            </getValuesFunction>  
@@ -233,8 +234,22 @@ function Action_rapid(ev, appId, pageId, controlId, actionId, actionType, rapidA
 		break;					
 		case "GETUSERS" :		
 			data = { actionType: actionType, appId: "rapid" };	
-			callback = function(data) {			    				
+			callback = function(data) {			
 				setData_grid(ev, 'rapid_P0_C823_', 'users', {"rowSelect":true,"columns":[{"field":"name","visible":true},{"field":"description","visible":true},{"cellFunction":"","field":"","visible":true,"style":""}]}, data);
+				if (data.hasMaster) {
+					var users = makeDataObject(data, 'users');
+					if (users && users.fields && users.rows && users.fields.length > 1 && users.rows.length > 1) {
+						var temp = users.fields[0];
+						users.fields[0] = users.fields[1];
+						users.fields[1] = temp;
+						for (var i in users.rows) {
+							temp = users.rows[i][0];
+							users.rows[i][0] = users.rows[i][1];
+							users.rows[i][1] = temp;
+						}
+						setData_dropdown(ev, 'rapid_P0_C3193_', null, null, users);
+					}
+				}
 				var rapidUserRows = $("#rapid_P0_C823_").find("tr.rowStyle1,tr.rowStyle2");
 				rapidUserRows.each( function() {
 				  var children = $(this).children("td");
@@ -883,6 +898,13 @@ function Action_rapid(ev, appId, pageId, controlId, actionId, actionType, rapidA
 				appId: $("#rapid_P0_C43").val(), 
 				version: $("#rapid_P0_C1044_").val(),
 				backupMaxSize: $("#rapid_P0_C686_").val()  
+			};
+		break;
+		case "ADDADMINUSER" :
+			data = { actionType: actionType, 
+				appId: $("#rapid_P0_C43").val(), 
+				version: $("#rapid_P0_C1044_").val(),
+				user: $("#rapid_P0_C3193_").val()  
 			};
 		break;
 		default :
