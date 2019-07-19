@@ -3150,12 +3150,12 @@ public class Rapid extends Action {
 								String deviceDetails = jsonAction.optString("deviceDetails");
 								// check for useAdmin - must have Rapid Admin to grant
 								boolean useAdmin = jsonAction.optBoolean("useAdmin") && rapidAdmin;
-								// check for useAdmin - must have useAdmin and, Rapid Admin to grant
-								boolean useMaster = jsonAction.optBoolean("useMaster") && useAdmin && rapidAdmin;
+								// check for useAdmin - must have useAdmin, Rapid Admin, and, Rapid Master to grant
+								boolean useMaster = jsonAction.optBoolean("useMaster") && useAdmin && rapidAdmin && rapidMaster;
 								// check for useDesign - must have Rapid Admin to grant
 								boolean useDesign = jsonAction.optBoolean("useDesign") && rapidAdmin;
-								// check for useUsers
-								boolean useUsers = jsonAction.optBoolean("useUsers");
+								// check for useUsers - must have Rapid Admin to grant
+								boolean useUsers = jsonAction.optBoolean("useUsers") && rapidAdmin;
 
 								// add the user
 								security.addUser(rapidActionRequest, new User(userName, description, email, password, isLocked, deviceDetails));
