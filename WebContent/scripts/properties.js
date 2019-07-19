@@ -2337,7 +2337,7 @@ function Property_childActionsForType(cell, propertyObject, property, details) {
 		if (actionClass) {
 			
 			// retrieve or create the dialogue
-			var dialogue = getDialogue(cell, propertyObject, property, details, 200, "Child " + actionClass.name + " actions", {sizeX: true});		
+			var dialogue = getDialogue(cell, propertyObject, property, details, 200, "Child " + actionClass.name.toLowerCase() + " actions", {sizeX: true});		
 			// grab a reference to the table
 			var table = dialogue.children().last().children().last();
 			// remove the dialogue class so it looks like the properties
@@ -2421,6 +2421,8 @@ function Property_childActionsForType(cell, propertyObject, property, details) {
 			for (var i in actions) {
 				// retrieve this action
 				var action = actions[i];
+				// add the parent
+				action._parent = propertyObject;
 				// show the action (in actions.js)
 				showAction(table, action, actions, function() { Property_childActionsForType(cell, propertyObject, property, details); });
 			}	
@@ -2553,7 +2555,7 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 			var inputs = ev.data.propertyObject.query.inputs;
 			// add a new one
 			inputs.push({itemId: inputs[0].itemId, field: ""});
-			// rebuild the dialgue
+			// rebuild the dialogue
 			Property_databaseQuery(ev.data.cell, ev.data.propertyObject, ev.data.property, ev.data.details);
 		}));
 	} else {
@@ -2644,8 +2646,21 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 		Property_databaseQuery(ev.data.cell, ev.data.propertyObject, ev.data.property, ev.data.details);	
 	}));
 	
+	// assume no database connection drop down in dialogue
+	var databaseConnection = "";
+		
+	// check there is a parent (database) property object
+	if (propertyObject._parent) {
+		// set this DatabaseConnectionIndex to the parent one
+		query.databaseConnectionIndex = propertyObject._parent.query.databaseConnectionIndex;
+	} else {
+		// build this databaseConnection html
+		databaseConnection = "Database connection <select style='width:auto;margin:0 10px 5px 0'>" + getDatabaseConnectionOptions(query.databaseConnectionIndex) + "</select>";
+	}
+	
+	// add the multi-row, database connection, and test button
 	table.append("<tr><td>Multi-row input data?&nbsp;<input class='multi' type='checkbox'" + (query.multiRow ? "checked='checked'" : "" ) + " style='vertical-align: middle;margin-top: -3px;'/></td>" +
-			"<td style='text-align: left;overflow:inherit;padding:0 10px;'>Database connection <select style='width:auto;margin:0 10px 5px 0'>" + getDatabaseConnectionOptions(query.databaseConnectionIndex) + "</select><button style='float:right;'>Test SQL</button></td></tr>");
+			"<td style='text-align: left;overflow:inherit;padding:0 10px;'>" + databaseConnection + "<button style='float:right;'>Test SQL</button></td></tr>");
 	
 	// get a reference to the multi-data check box
 	var multiRow = table.find("tr").last().find("input");
@@ -2689,7 +2704,7 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 	}));
 }
 
-//database child actions like success and fail do not go against child database actions
+// database child actions like success and fail do not go against child database actions
 function Property_databaseNotChildCheckbox(cell, propertyObject, property, details) {
 	// look for any dialogue header text
 	var dialogueId = cell.closest(".propertyDialogue").attr("id");
