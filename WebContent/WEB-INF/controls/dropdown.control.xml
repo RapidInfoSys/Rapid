@@ -138,6 +138,7 @@ if (data !== undefined) {
 	var control = $("#" + id);
 	if (data == null) {
 		if (!field) control.children().remove();
+		control.removeAttr("data-value");
 	} else {		
 		data = makeDataObject(data, field);
 		if (data.fields && data.rows && data.fields.length > 0 && data.rows.length > 0) {
@@ -146,12 +147,16 @@ if (data !== undefined) {
 				for (var i in data.fields) {
 					if (data.fields[i] && field.toLowerCase() == data.fields[i].toLowerCase()) {
 						control.val(data.rows[0][i]);
+						control.attr("data-value",data.rows[0][i]);
 						if (changeEvents) control.trigger("change");
 						foundField = true;
 						break;
 					}
 				}
-				if (!foundField) control.val(data.rows[0][0]);
+				if (!foundField) {
+					control.val(data.rows[0][0]);
+					control.attr("data-value",data.rows[0][0]);
+				}
 			} else {
 				// html we are creating
 				var html = "";
@@ -159,11 +164,15 @@ if (data !== undefined) {
 				var lastGroup = "";
 				// assume no group
 				var group = "";
+				// get any previously set value
+				var setValue = control.attr("data-value");
 				// loop rows
 				for (var i in data.rows) {
 					var row = data.rows[i];
 					var text = "";
 					var value = null;
+					// assume not selected
+					var selected = "";
 					if (data.fields) {
 						for (var j in data.fields) {
 							if (data.fields[j]) {
@@ -177,7 +186,12 @@ if (data !== undefined) {
 					if (value == null && row[1] != null) value = row[1];
 					if (value == null) {
 						value = "";
+						// if there is a previously set value and it matches this text, set selected
+						if (setValue && setValue == text) selected = " selected='true'";
 					} else {
+						// if there is a previously set value and it matches this value, set selected
+						if (setValue && setValue == value) selected = " selected='true'";
+						// wrap the value
 						value = "value='" + value + "'";
 					}
 					// check for group and/or change
@@ -190,7 +204,7 @@ if (data !== undefined) {
 					// remember last group
 					lastGroup = group;
 					// append option
-					html += "<option " + value + ">" + text + "</option>";
+					html += "<option " + value + selected + ">" + text + "</option>";
 				} // loop
 				// close last group if need be
 				if (lastGroup) html += "</optgroup>";
@@ -236,14 +250,19 @@ if (data && data.rows && data.rows.length > 0) {
 		for (var i in data.fields) {
 			if (data.fields[i] && field.toLowerCase() == data.fields[i].toLowerCase()) {
 				control.val(data.rows[0][i]);
+				control.attr("data-value",data.rows[0][i]);
 				foundField = true;
 				break;
 			}
 		}
 	}
-	if (!foundField) control.val(data.rows[0][0]);
+	if (!foundField) {
+		control.val(data.rows[0][0]);
+		control.attr("data-value",data.rows[0][0]);
+	}
 } else {
 	control.val("");
+	control.removeAttr("data-value");
 }	                
 if (changeEvents) control.trigger("change");
 	                ]]>

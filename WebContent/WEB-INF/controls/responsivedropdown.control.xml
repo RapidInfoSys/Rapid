@@ -311,6 +311,8 @@ if (data !== undefined) {
 		if (!field) control.children().remove();
 		// empty any jquery ui
 		$("#" + id).find("input").val("");
+		// remove any preset value
+		control.removeAttr("data-value");
 	} else {
 		data = makeDataObject(data, field);
 		if (data.rows && data.fields) {
@@ -319,6 +321,7 @@ if (data !== undefined) {
 				for (var i in data.fields) {
 					if (data.fields[i] && field.toLowerCase() == data.fields[i].toLowerCase()) {
 						value = data.rows[0][i];
+						control.attr("data-value",data.rows[0][i]);
 						break;
 					}
 				}
@@ -345,27 +348,58 @@ if (data !== undefined) {
 				}
 				if (changeEvents) control.trigger("change");
 			} else {
+				// html we are creating
+				var html = "";
+				// assume no last group
+				var lastGroup = "";
+				// assume no group
+				var group = "";
+				// get any previously set value
+				var setValue = control.attr("data-value");
+				// loop rows
 				for (var i in data.rows) {
 					var row = data.rows[i];
 					var text = "";
 					var value = null;
+					// assume not selected
+					var selected = "";
 					if (data.fields) {
 						for (var j in data.fields) {
 							if (data.fields[j]) {
 								if (data.fields[j].toLowerCase() == "text") text = data.rows[i][j];
 								if (data.fields[j].toLowerCase() == "value") value = data.rows[i][j];
+								if (data.fields[j].toLowerCase() == "group") group = data.rows[i][j];
 							}
 						}
 					}
 					if (!text && row[0] != null) text = row[0];
-					if (value == null && row[1] != null && typeof(row[1]) != "object") value = row[1];
+					if (value == null && row[1] != null) value = row[1];
 					if (value == null) {
 						value = "";
+						// if there is a previously set value and it matches this text, set selected
+						if (setValue && setValue == text) selected = " selected='true'";
 					} else {
+						// if there is a previously set value and it matches this value, set selected
+						if (setValue && setValue == value) selected = " selected='true'";
+						// wrap the value
 						value = "value='" + value + "'";
 					}
-					control.append("<option " + value + ">" + text + "</option>");
-				}
+					// check for group and/or change
+					if (group != lastGroup) {
+						// close last group if need be
+						if (lastGroup)html += "</optgroup>";	
+						// open group if there is one
+						if (group) html += "<optgroup label='" + group + "'>";						
+					}
+					// remember last group
+					lastGroup = group;
+					// append option
+					html += "<option " + value + selected + ">" + text + "</option>";
+				} // loop
+				// close last group if need be
+				if (lastGroup) html += "</optgroup>";
+				// add html if there was some
+				if (html) control.append(html);
 			}
 		}
 	}
@@ -578,6 +612,8 @@ if (data && data.rows && data.rows.length > 0) {
 	
 	// update the control value
 	control.val(value);
+	// also set the pre-set value in case the options arrive later
+	control.attr("data-value", value);
 	// look for jquery ui input
 	var input = $("#" + id).find("input");
 	// if we there was one
@@ -602,6 +638,8 @@ if (data && data.rows && data.rows.length > 0) {
 	control.val("");
 	// empty any jquery ui input
 	$("#" + id).find("input").val("");
+	// remove any pre-selected value
+	control.removeAttr("data-value");
 }
 if (changeEvents) control.trigger("change");
 	                ]]>
