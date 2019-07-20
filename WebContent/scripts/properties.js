@@ -2718,6 +2718,20 @@ function Property_databaseNotChildCheckbox(cell, propertyObject, property, detai
 	}	
 }
 
+//database child actions like success and fail do not go against child database actions
+function Property_databaseNoChildrenCheckbox(cell, propertyObject, property, details) {
+	// look for any dialogue header text
+	var dialogueId = cell.closest(".propertyDialogue").attr("id");
+	// only if this is not a child database action
+	if ((!dialogueId || dialogueId.indexOf("childDatabaseActions")) && propertyObject.childDatabaseActions && propertyObject.childDatabaseActions.length > 0) {
+		// use the standard child actions as anything is allowed
+		Property_checkbox(cell, propertyObject, property, details);
+	} else {
+		// remove this row
+		cell.closest("tr").remove();
+	}	
+}
+
 // reuse the generic childActionsForType but set the details with type = database
 function Property_databaseChildActions(cell, propertyObject, property, details) {
 	// look for any dialogue header text

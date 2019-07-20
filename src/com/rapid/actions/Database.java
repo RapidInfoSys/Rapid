@@ -101,7 +101,7 @@ public class Database extends Action {
 	// instance variables
 
 	private Query _query;
-	private boolean _showLoading;
+	private boolean _showLoading, _mergeChildren;
 	private List<Database> _childDatabaseActions;
 	private List<Action> _successActions, _errorActions, _childActions;
 
@@ -116,6 +116,9 @@ public class Database extends Action {
 	public List<Database> getChildDatabaseActions() { return _childDatabaseActions; }
 	public void setChildDatabaseActions(List<Database> childDatabaseActions) { _childDatabaseActions = childDatabaseActions; };
 
+	public boolean getMergeChildren() { return _mergeChildren; }
+	public void setMergeChildren(boolean mergeChildren) { _mergeChildren = mergeChildren; }
+
 	public List<Action> getSuccessActions() { return _successActions; }
 	public void setSuccessActions(List<Action> successActions) { _successActions = successActions; }
 
@@ -125,7 +128,12 @@ public class Database extends Action {
 	// constructors
 
 	// used by jaxb
-	public Database() { super(); }
+	public Database() {
+		// set the xml version, etc
+		super();
+		// default merge children to true for older applications - new ones will have it set to false by default by the designer
+		_mergeChildren = true;
+	}
 	// used by designer
 	public Database(RapidHttpServlet rapidServlet, JSONObject jsonAction) throws Exception {
 		// call the super parameterless constructor which sets the xml version
@@ -958,125 +966,143 @@ public class Database extends Action {
 									// get the resultant child data
 									JSONObject jsonChildData = childDatabaseAction.doQuery(rapidRequest, jsonChildAction, application, df);
 
-									// a map for indexes of matching fields between our parent and child
-									Map<Integer,Integer> fieldsMap = new HashMap<>();
-									// the child fields
-									JSONArray jsonChildFields = jsonChildData.getJSONArray("fields");
-									if (jsonChildFields != null) {
-										// loop the parent fields
-										for (int j = 0; j < jsonFields.length(); j++) {
-											// loop the child fields
-											for (int k = 0; k < jsonChildFields.length(); k++) {
-												// get parent field
-												String field = jsonFields.getString(j);
-												// get child field
-												String childField = jsonChildFields.getString(k);
-												// if both not null
-												if (field != null && childField != null) {
-													// check for match
-													if (field.toLowerCase().equals(childField.toLowerCase())) fieldsMap.put(j, k);
-												}
-											}
-										}
-									}
-
 									// add a field for the results of this child action
 									jsonFields.put("childAction" + (i + 1));
 
-									// if matching fields exists and not all columns are matched (stops simple queries like for drop down lookups merging)
-									if (fieldsMap.size() > 0 && fieldsMap.size() != jsonFields.length() - i - 1) {
-										// an object with a null value for when there is no match
-										Object nullObject = null;
-										// get the child rows
-										JSONArray jsonChildRows = jsonChildData.getJSONArray("rows");
-										// if we had some
-										if (jsonChildRows != null) {
-											// loop the parent rows
-											for (int j = 0; j < jsonRows.length(); j++) {
-												// get the parent row
-												JSONArray jsonRow = jsonRows.getJSONArray(j);
-												// make a new rows collection for the child subset
-												JSONArray jsonChildRowsSubset = new JSONArray();
-												// loop the child rows
-												for (int k =0; k < jsonChildRows.length(); k++) {
-													// get the child row
-													JSONArray jsonChildRow = jsonChildRows.getJSONArray(k);
-													// assume no matches
-													int matches = 0;
-													// loop the fields map
-													for (Integer l: fieldsMap.keySet()) {
-														// parent value
-														Object parentValue = null;
-														// get the value if there are enough
-														if (jsonRow.length() > l) parentValue = jsonRow.get(l);
-														// child value
-														Object childValue = null;
-														// get child value if present
-														if (jsonChildRow.length() > l) childValue= jsonChildRow.opt(fieldsMap.get(l));
-														// non null check
-														if (parentValue != null && childValue != null) {
-															// a string we will concert the child value to
-															String parentString = null;
-															// check the parent value type
-															if (parentValue.getClass() == String.class) {
-																parentString = (String) parentValue;
-															} else if (parentValue.getClass() == Integer.class) {
-																parentString = Integer.toString((Integer) parentValue);
-															} else if (parentValue.getClass() == Long.class) {
-																parentString = Long.toString((Long) parentValue);
-															} else if (parentValue.getClass() == Double.class) {
-																parentString = Double.toString((Double) parentValue);
-															} else if (parentValue.getClass() == Boolean.class) {
-																parentString = Boolean.toString((Boolean) parentValue);
-															}
-															// a string we will convert the child value to
-															String childString = null;
-															// check the parent value type
-															if (childValue.getClass() == String.class) {
-																childString = (String) childValue;
-															} else if (childValue.getClass() == Integer.class) {
-																childString = Integer.toString((Integer) childValue);
-															} else if (childValue.getClass() == Long.class) {
-																childString = Long.toString((Long) childValue);
-															} else if (childValue.getClass() == Double.class) {
-																childString = Double.toString((Double) childValue);
-															} else if (childValue.getClass() == Boolean.class) {
-																childString = Boolean.toString((Boolean) childValue);
-															}
-															// non null check
-															if (parentString != null && childString != null) {
-																// do the match!
-																if (parentString.equals(childString)) matches++;
-															}
-														} // values non null
-													} // field map loop
-													// if we got some matches for all the fields add this row to the subset
-													if (matches == fieldsMap.size()) jsonChildRowsSubset.put(jsonChildRow);
-												} // child row loop
-												// if our child subset has rows in it
-												if (jsonChildRowsSubset.length() > 0) {
-													// create a new childSubset object
-													JSONObject jsonChildDataSubset = new JSONObject();
-													// add the fields
-													jsonChildDataSubset.put("fields", jsonChildFields);
-													// add the subset of rows
-													jsonChildDataSubset.put("rows", jsonChildRowsSubset);
-													// add the child database action data subset
-													jsonRow.put(jsonChildDataSubset);
-												} else {
-													// add an empty cell
-													jsonRow.put(nullObject);
+									// if we are merging child data, which was the default before 2.4.4.1
+									if (_mergeChildren) {
+
+										// a map for indexes of matching fields between our parent and child
+										Map<Integer,Integer> fieldsMap = new HashMap<>();
+										// the child fields
+										JSONArray jsonChildFields = jsonChildData.getJSONArray("fields");
+										if (jsonChildFields != null) {
+											// loop the parent fields
+											for (int j = 0; j < jsonFields.length(); j++) {
+												// loop the child fields
+												for (int k = 0; k < jsonChildFields.length(); k++) {
+													// get parent field
+													String field = jsonFields.getString(j);
+													// get child field
+													String childField = jsonChildFields.getString(k);
+													// if both not null
+													if (field != null && childField != null) {
+														// check for match
+														if (field.toLowerCase().equals(childField.toLowerCase())) fieldsMap.put(j, k);
+													}
 												}
-											} // parent row loop
-										} // jsonChildRows null check
+											}
+										}
+
+										// if matching fields exists and not all columns are matched (stops simple queries like for drop down lookups merging)
+										if (fieldsMap.size() > 0 && fieldsMap.size() != jsonFields.length() - i - 1) {
+											// an object with a null value for when there is no match
+											Object nullObject = null;
+											// get the child rows
+											JSONArray jsonChildRows = jsonChildData.getJSONArray("rows");
+											// if we had some
+											if (jsonChildRows != null) {
+												// loop the parent rows
+												for (int j = 0; j < jsonRows.length(); j++) {
+													// get the parent row
+													JSONArray jsonRow = jsonRows.getJSONArray(j);
+													// make a new rows collection for the child subset
+													JSONArray jsonChildRowsSubset = new JSONArray();
+													// loop the child rows
+													for (int k =0; k < jsonChildRows.length(); k++) {
+														// get the child row
+														JSONArray jsonChildRow = jsonChildRows.getJSONArray(k);
+														// assume no matches
+														int matches = 0;
+														// loop the fields map
+														for (Integer l: fieldsMap.keySet()) {
+															// parent value
+															Object parentValue = null;
+															// get the value if there are enough
+															if (jsonRow.length() > l) parentValue = jsonRow.get(l);
+															// child value
+															Object childValue = null;
+															// get child value if present
+															if (jsonChildRow.length() > l) childValue= jsonChildRow.opt(fieldsMap.get(l));
+															// non null check
+															if (parentValue != null && childValue != null) {
+																// a string we will concert the child value to
+																String parentString = null;
+																// check the parent value type
+																if (parentValue.getClass() == String.class) {
+																	parentString = (String) parentValue;
+																} else if (parentValue.getClass() == Integer.class) {
+																	parentString = Integer.toString((Integer) parentValue);
+																} else if (parentValue.getClass() == Long.class) {
+																	parentString = Long.toString((Long) parentValue);
+																} else if (parentValue.getClass() == Double.class) {
+																	parentString = Double.toString((Double) parentValue);
+																} else if (parentValue.getClass() == Boolean.class) {
+																	parentString = Boolean.toString((Boolean) parentValue);
+																}
+																// a string we will convert the child value to
+																String childString = null;
+																// check the parent value type
+																if (childValue.getClass() == String.class) {
+																	childString = (String) childValue;
+																} else if (childValue.getClass() == Integer.class) {
+																	childString = Integer.toString((Integer) childValue);
+																} else if (childValue.getClass() == Long.class) {
+																	childString = Long.toString((Long) childValue);
+																} else if (childValue.getClass() == Double.class) {
+																	childString = Double.toString((Double) childValue);
+																} else if (childValue.getClass() == Boolean.class) {
+																	childString = Boolean.toString((Boolean) childValue);
+																}
+																// non null check
+																if (parentString != null && childString != null) {
+																	// do the match!
+																	if (parentString.equals(childString)) matches++;
+																}
+															} // values non null
+														} // field map loop
+														// if we got some matches for all the fields add this row to the subset
+														if (matches == fieldsMap.size()) jsonChildRowsSubset.put(jsonChildRow);
+													} // child row loop
+													// if our child subset has rows in it
+													if (jsonChildRowsSubset.length() > 0) {
+														// create a new childSubset object
+														JSONObject jsonChildDataSubset = new JSONObject();
+														// add the fields
+														jsonChildDataSubset.put("fields", jsonChildFields);
+														// add the subset of rows
+														jsonChildDataSubset.put("rows", jsonChildRowsSubset);
+														// add the child database action data subset
+														jsonRow.put(jsonChildDataSubset);
+													} else {
+														// add an empty cell
+														jsonRow.put(nullObject);
+													}
+												} // parent row loop
+											} // jsonChildRows null check
+
+										} else {
+
+											// add a top row if we need one
+											if (jsonRows.length() == 0) jsonRows.put(new JSONArray());
+											// get the top row - only this one is used when the child data is retrieved
+											JSONArray jsonRow = jsonRows.getJSONArray(0);
+											// add the child database action data
+											jsonRow.put(jsonChildData);
+
+										} // matching fields check
+
 									} else {
+
 										// add a top row if we need one
 										if (jsonRows.length() == 0) jsonRows.put(new JSONArray());
 										// get the top row - only this one is used when the child data is retrieved
 										JSONArray jsonRow = jsonRows.getJSONArray(0);
 										// add the child database action data
 										jsonRow.put(jsonChildData);
-									} // matching fields check
+
+									} // child merge check
+
 								} // jsonChildQueries loop
 							} // jsonChildQueries null check
 						} // _childDatabaseActions size > 0

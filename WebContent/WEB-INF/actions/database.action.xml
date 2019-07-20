@@ -52,15 +52,24 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <name>Loading animation</name>
 	            <changeValueJavaScript>databaseNotChildCheckbox</changeValueJavaScript>
 	            <helpHtml>Displays a loading animation on top of some output controls whilst the database query executes.</helpHtml>
-	        </property>	
+	        </property>
 	        
 	        <property>
 	            <key>childDatabaseActions</key>
 	            <name>Child actions</name>
 	            <changeValueJavaScript>databaseChildActions</changeValueJavaScript>
+	            <refreshProperties>true</refreshProperties>
 	            <workflowOutput>true</workflowOutput>
 	            <helpHtml>Further database queries that are run in the same transaction. Useful for populating child records.</helpHtml>
 	        </property>
+	        
+	        <property>
+	            <key>mergeChildren</key>
+	            <name>Merge child data</name>
+	            <changeValueJavaScript>databaseNoChildrenCheckbox</changeValueJavaScript>
+	            <getValuesFunction>return false;</getValuesFunction>
+	            <helpHtml>Whether to use values in columns with the same name in the parent and child queries to create child data objects for each matching parent row.</helpHtml>
+	        </property>	
 	        
 	        <property>
 	            <key>successActions</key>
