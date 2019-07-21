@@ -74,6 +74,7 @@ import com.rapid.security.SecurityAdapter.Role;
 import com.rapid.security.SecurityAdapter.Roles;
 import com.rapid.security.SecurityAdapter.SecurityAdapaterException;
 import com.rapid.security.SecurityAdapter.User;
+import com.rapid.security.SecurityAdapter.UserRoles;
 import com.rapid.security.SecurityAdapter.Users;
 import com.rapid.server.Monitor;
 import com.rapid.server.RapidHttpServlet;
@@ -1818,11 +1819,21 @@ public class Rapid extends Action {
 									// add this user name to the rapid request
 									rapidRequest.setUserName(userName);
 
-									// get user from Rapid security and add to app security
+									// get this user from Rapid security
 									User user = rapidSecurity.getUser(rapidRequest);
 
-									// add the user to the app security
-									if (user != null) security.addUser(rapidActionRequest, user);
+									// if we got one
+									if (user != null) {
+
+										// make a new user based on this one, but without any roles
+										User newUser = new User(user.getName(), user.getDescription(), user.getEmail(), user.getPassword(), user.getDeviceDetails(), new UserRoles());
+
+										// add the admin role to this user
+										newUser.getRoles().add(com.rapid.server.Rapid.ADMIN_ROLE);
+
+										// add this new user to the app
+										security.addUser(rapidActionRequest, newUser);
+									}
 
 								} // master action check
 
