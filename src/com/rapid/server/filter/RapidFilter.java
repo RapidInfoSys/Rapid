@@ -166,7 +166,7 @@ public class RapidFilter implements Filter {
 		// assume this request requires authentication
 		boolean requiresAuthentication = true;
 
-		// get the requested URI without the hostname -- gets servlet path
+		// get the requested URI without the hostname, port, or application context
 		String path = req.getServletPath();
 
 		// all webservice related requests got to the soa servelet
@@ -232,6 +232,15 @@ public class RapidFilter implements Filter {
 
 					// set forward to root
 					rapidForwardURL = "/" + lastPartPath;
+
+				// if user has provided at least 1 path part (i.e. part1/) and is requesting known resources like login.jsp
+				} else if (pathPart.length > 1 && (lastPartPath.endsWith("login.jsp") || lastPartPath.endsWith("logout.jsp") || lastPartPath.endsWith("index.jsp"))) {
+
+					// redirect to the root of the context - which is the root when seen from outside
+					res.sendRedirect(req.getContextPath() + "/" + lastPartPath);
+
+					// send redirect immediately
+					return;
 
 				// if user has provided at least 1 path part (i.e. part1/) and the first part is a known application
 				} else if (pathPart.length >= 1 && applications.get(pathPart[0]) != null) {
@@ -375,9 +384,9 @@ public class RapidFilter implements Filter {
 
 	}
 
-	public static boolean isAuthorised(ServletRequest servletRequest, String userName, String userPassword, String indexPath) {
+	public static boolean isAuthorised(ServletRequest servletRequest, String userName, String userPassword, String path) {
 
-		// remember whether we are authorised for at least one application
+		// assume we are not authorised for any applications
 		boolean authorised = false;
 
 		// get the applications collection
@@ -389,9 +398,9 @@ public class RapidFilter implements Filter {
 		// if there are some applications
 		if (applications != null) {
 			// if the index path is for a specific app
-			if (indexPath.contains("a=")) {
+			if (path.contains("a=")) {
 				// get the app id
-				String appId = indexPath.substring(indexPath.indexOf("a=") + 2);
+				String appId = path.substring(path.indexOf("a=") + 2);
 				// assume no version
 				String version = null;
 				// see if the user is known to this application
@@ -399,9 +408,9 @@ public class RapidFilter implements Filter {
 					// if other parameters clean to there
 					if (appId.indexOf("&") > 0) appId = appId.substring(0, appId.indexOf("&"));
 					// if version parameter
-					if (indexPath.contains("v=")) {
+					if (path.contains("v=")) {
 						// get the version
-						version = indexPath.substring(indexPath.indexOf("v=") + 2);
+						version = path.substring(path.indexOf("v=") + 2);
 						// if other parameters clean to there
 						if (version.indexOf("&") > 0) version = version.substring(0, version.indexOf("&"));
 					}
