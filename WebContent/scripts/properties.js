@@ -2667,7 +2667,7 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 	// add a listener for if it changes
 	addListener( multiRow.change( {cell: cell, propertyObject: propertyObject, property: property, details: details, query: query}, function(ev) {
 		// set the multiData value
-		ev.data[property.key].multiRow = $(ev.target).is(":checked");
+		ev.data.query.multiRow = $(ev.target).is(":checked");
 		// refresh the dialogue
 		Property_databaseQuery(ev.data.cell, ev.data.propertyObject, ev.data.property, ev.data.details);
 	}));
@@ -2677,7 +2677,7 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 	// add a listener for the database connection
 	addListener( dbConnection.change( {query: query}, function(ev) {
 		// set the index value
-		ev.data[property.key].databaseConnectionIndex = ev.target.selectedIndex;
+		ev.data.query.databaseConnectionIndex = ev.target.selectedIndex;
 	}));
 	
 	// get a reference to the test button
