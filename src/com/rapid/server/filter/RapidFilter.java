@@ -116,8 +116,10 @@ public class RapidFilter implements Filter {
 			if (noAuthResourcesParam != null) {
 				// split on ,
 				for (String noAuthResource : noAuthResourcesParam.split("\\,")) {
-					// trim and add to list
-					_noAuthResources.add(noAuthResource.trim());
+					// trim to remove any spaces
+					String noAuthResourceTrimmed = noAuthResource.trim();
+					// trim and add to list if's greater than 3 characters (for protection)
+					if (noAuthResourceTrimmed.length() > 3) _noAuthResources.add(noAuthResourceTrimmed);
 				}
 			}
 
@@ -200,8 +202,19 @@ public class RapidFilter implements Filter {
 		// safety doesn't need authentication
 		if ("/safety".equals(path)) requiresAuthentication = false;
 
-		// check any parameterises no authentication resources;
-		if (_noAuthResources.contains(path)) requiresAuthentication = false;
+		// if we have no auth resources
+		if (_noAuthResources.size() > 0) {
+			// loop them
+			for (String noAuthResource : _noAuthResources) {
+				// check any parameterises no authentication resources;
+				if (path.startsWith(noAuthResource)) {
+					// record we don't need authentication
+					requiresAuthentication = false;
+					// we're done
+					break;
+				}
+			}
+		}
 
 		// if this request requires authentication
 		if (requiresAuthentication) {
