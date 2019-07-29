@@ -801,6 +801,9 @@ public class Rapid extends Action {
 					// add the email settings
 					result.put("email", jsonEmail);
 
+					// add the version
+					result.put("version", com.rapid.server.Rapid.VERSION);
+
 				} // rapid admin check
 
 				// either rapidAdmin or rapidDesign
