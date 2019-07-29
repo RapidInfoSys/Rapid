@@ -2465,9 +2465,9 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 	table.parent().removeClass("dialogueTable");
 		
 	// initialise the query object if need be
-	if (!propertyObject.query) propertyObject.query = {inputs:[], sql:"select field1, field2\nfrom table\nwhere field3 = ?", databaseConnectionIndex: 0, outputs:[]};
+	if (!propertyObject[property.key]) propertyObject[property.key] = {inputs:[], databaseConnectionIndex: 0, outputs:[]};
 	// get the query
-	var query = propertyObject.query;
+	var query = propertyObject[property.key];
 	// get the sql into a variable
 	var text = query.SQL;
 	// change to message if not provided
@@ -2552,7 +2552,7 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 		// listener to add input
 		addListener( inputAdd.click( {cell: cell, propertyObject: propertyObject, property: property, details: details}, function(ev) {
 			// get the input parameters
-			var inputs = ev.data.propertyObject.query.inputs;
+			var inputs = ev.data.propertyObject[property.key].inputs;
 			// add a new one
 			inputs.push({itemId: inputs[0].itemId, field: ""});
 			// rebuild the dialogue
@@ -2566,9 +2566,9 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 		// listener to add input
 		addListener( inputAdd.change( {cell: cell, propertyObject: propertyObject, property: property, details: details}, function(ev) {
 			// initialise array if need be
-			if (!ev.data.propertyObject.query.inputs) ev.data.propertyObject.query.inputs = [];
+			if (!ev.data.propertyObject[property.key].inputs) ev.data.propertyObject[property.key].inputs = [];
 			// get the parameters (inputs or outputs)
-			var parameters = ev.data.propertyObject.query.inputs;
+			var parameters = ev.data.propertyObject[property.key].inputs;
 			// add a new one
 			parameters.push({itemId: $(ev.target).val(), field: ""});
 			// rebuild the dialgue
@@ -2637,9 +2637,9 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 	// listener to add output
 	addListener( outputAdd.change( {cell: cell, propertyObject: propertyObject, property: property, details: details}, function(ev) {
 		// initialise array if need be
-		if (!ev.data.propertyObject.query.outputs) ev.data.propertyObject.query.outputs = [];
+		if (!ev.data.propertyObject[property.key].outputs) ev.data.propertyObject[property.key].outputs = [];
 		// get the parameters (inputs or outputs)
-		var parameters = ev.data.propertyObject.query.outputs;
+		var parameters = ev.data.propertyObject[property.key].outputs;
 		// add a new one
 		parameters.push({itemId: $(ev.target).val(), field: ""});
 		// rebuild the dialgue
@@ -2652,7 +2652,7 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 	// check there is a parent (database) property object
 	if (propertyObject._parent) {
 		// set this DatabaseConnectionIndex to the parent one
-		query.databaseConnectionIndex = propertyObject._parent.query.databaseConnectionIndex;
+		query.databaseConnectionIndex = propertyObject._parent[property.key].databaseConnectionIndex;
 	} else {
 		// build this databaseConnection html
 		databaseConnection = "Database connection <select style='width:auto;margin:0 10px 5px 0'>" + getDatabaseConnectionOptions(query.databaseConnectionIndex) + "</select>";
@@ -2667,7 +2667,7 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 	// add a listener for if it changes
 	addListener( multiRow.change( {cell: cell, propertyObject: propertyObject, property: property, details: details, query: query}, function(ev) {
 		// set the multiData value
-		ev.data.query.multiRow = $(ev.target).is(":checked");
+		ev.data[property.key].multiRow = $(ev.target).is(":checked");
 		// refresh the dialogue
 		Property_databaseQuery(ev.data.cell, ev.data.propertyObject, ev.data.property, ev.data.details);
 	}));
@@ -2677,7 +2677,7 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 	// add a listener for the database connection
 	addListener( dbConnection.change( {query: query}, function(ev) {
 		// set the index value
-		ev.data.query.databaseConnectionIndex = ev.target.selectedIndex;
+		ev.data[property.key].databaseConnectionIndex = ev.target.selectedIndex;
 	}));
 	
 	// get a reference to the test button
