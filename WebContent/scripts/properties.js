@@ -587,8 +587,6 @@ function showProperties(control) {
 			// add the help listener
 			addHelp(control.id + "help",true,true,controlClass.helpHtml);
 		}
-		// add a small break
-		propertiesTable.append("<tr><td colspan='2'></td></tr>");
 		// show any conflict message
 		if (control._conflict) propertiesTable.append("<tr><td colspan='2' class='conflict propertyHeader'>Page \"" + control._conflict + "\" has a control with the same name</td></tr>");
 		// show the control id if requested
