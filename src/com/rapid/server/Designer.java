@@ -217,7 +217,7 @@ public class Designer extends RapidHttpServlet {
 
 		// get request as Rapid request
 		RapidRequest rapidRequest = new RapidRequest(this, request);
-		
+
 		// get a reference to our logger
 		Logger logger = getLogger();
 
@@ -970,7 +970,7 @@ public class Designer extends RapidHttpServlet {
 
 							}
 
-						} else if ("pages".equals(actionName) || "questions".equals(actionName) || "summary".equals(actionName) || "detail".equals(actionName)) {
+						} else if ("pages".equals(actionName) || "questions".equals(actionName) || "text".equals(actionName) || "summary".equals(actionName) || "detail".equals(actionName)) {
 
 							// set response as text
 							response.setContentType("text/text");
@@ -1047,16 +1047,21 @@ public class Designer extends RapidHttpServlet {
 										out.print(")");
 									}
 
+								} else if ("text".equals(actionName))  {
+									// print the page name with some space around it
+									out.print("\r\n" + page.getName() + label);
 								} else {
+									// print the page id
+									if (!"text".equals(actionName)) out.print(page.getId() + "\t");
 									// print the page name
-									out.print(page.getId() + "\t" + page.getName() + label);
+									 out.print(page.getName() + label);
 								}
 
 								// check questions, summary, detail
-								if ("questions".equals(actionName) || "summary".equals(actionName) || "detail".equals(actionName)) {
+								if ("questions".equals(actionName) || "text".equals(actionName) || "summary".equals(actionName) || "detail".equals(actionName)) {
 
 									// print the number of controls
-									if ("questions".equals(actionName)) {
+									if ("questions".equals(actionName) || "text".equals(actionName)) {
 										out.print("\r\n");
 									} else if("summary".equals(actionName)){
 										out.print("\t" + page.getTitle() + "\tnumber of controls: " + page.getAllControls().size() + "\r\n");
@@ -1074,108 +1079,192 @@ public class Designer extends RapidHttpServlet {
 										out.print("HideHeaderFooter\t" + page.getHideHeaderFooter() + "\r\n");
 									}
 
-									// not if questions
-									if (!"questions".equals(actionName)) printEventsDetails(page.getEvents(), out);
+									// not if questions or text
+									if (!"questions".equals(actionName) && !"text".equals(actionName)) printEventsDetails(page.getEvents(), out);
 
 									// get the controls
 									List<Control> controls = page.getAllControls();
 
 									// loop them
 									for (Control control : controls) {
+
 										// get the name
 										String name = control.getName();
+
 										// null check
-										if (name != null) {
-											if (name.trim().length() > 0) {
+										if ((name != null && name.trim().length() > 0) || "text".equals(actionName)) {
 
-												// get the label
-												label = control.getLabel();
-												// get the type
-												String type = control.getType();
+											// get the label
+											label = control.getLabel();
+											// get the type
+											String type = control.getType();
 
-												// exclude panels, hidden values (except for questions), and datastores for summary
-												if ("detail".equals(actionName) || (!type.contains("panel") && (!("hiddenvalue").equals(type) || "questions".equals(actionName)) && !("dataStore").equals(type))) {
+											// exclude panels, hidden values (except for questions), and datastores for summary
+											if ("detail".equals(actionName) || (!type.contains("panel") && (!("hiddenvalue").equals(type) || "questions".equals(actionName)) && !("dataStore").equals(type))) {
 
-													// if questions it's likely to be a form
-													if ("questions".equals(actionName))  {
+												// if questions it's likely to be a form
+												if ("questions".equals(actionName))  {
 
-														// look for a form object
-														String formObject = control.getProperty("formObject");
+													// look for a form object
+													String formObject = control.getProperty("formObject");
 
-														// if there is a label but not a button, but radios are allowed
-														if ((label != null && (!control.getType().contains("button") || control.getType().contains("radio"))) || formObject != null) {
+													// if there is a label but not a button, but radios are allowed
+													if ((label != null && (!control.getType().contains("button") || control.getType().contains("radio"))) || formObject != null) {
 
-															// use name if label null
-															if (label == null) label = name;
+														// use name if label null
+														if (label == null) label = name;
 
-															// print the label
-															out.print("\t" + label);
+														// print the label
+														out.print("\t" + label);
 
-															// if we got one
-															if (formObject != null) {
-																// Get form integration values
-																String formObjectAttribute = control.getProperty("formObjectAttribute");
-																String formObjectRole = control.getProperty("formObjectRole");
-																String formObjectType = control.getProperty("formObjectType");
-																String formObjectPartyNumber = control.getProperty("formObjectPartyNumber");
-																String formObjectQuestionNumber = control.getProperty("formObjectQuestionNumber");
-																String formObjectAddressNumber = control.getProperty("formObjectAddressNumber");
-																String formObjectText = control.getProperty("formObjectText");
+														// if we got one
+														if (formObject != null) {
+															// Get form integration values
+															String formObjectAttribute = control.getProperty("formObjectAttribute");
+															String formObjectRole = control.getProperty("formObjectRole");
+															String formObjectType = control.getProperty("formObjectType");
+															String formObjectPartyNumber = control.getProperty("formObjectPartyNumber");
+															String formObjectQuestionNumber = control.getProperty("formObjectQuestionNumber");
+															String formObjectAddressNumber = control.getProperty("formObjectAddressNumber");
+															String formObjectText = control.getProperty("formObjectText");
 
-																if (formObject != null && !formObject.equals("")) {
-																	out.print(" (");
-																	if (formObject != null) out.print(formObject);
-																	if (!"other".equalsIgnoreCase(formObject))
-																		if (formObjectRole != null) out.print(" - " + formObjectRole);
-																	if (formObjectPartyNumber != null) out.print(" - party: " + formObjectPartyNumber);
-																	if ("party".equals(formObject)) out.print(" " + formObjectAttribute);
-																	if ("contact".equals(formObject)) out.print(" " + formObjectType);
-																	if ("address".equals(formObject)) {
-																		if (formObjectAddressNumber != null) out.print(" - address: " + formObjectAddressNumber);
-																		if (formObjectType != null) out.print(" - " + formObjectType);
-																		if (formObjectAttribute != null) out.print(" - " + formObjectAttribute);
-																	}
-																	if ("question".equals(formObject) || "other".equals(formObject))
-																		if (formObjectQuestionNumber != null) out.print(" - question: " + formObjectQuestionNumber);
-																	if (formObjectText != null && formObjectText.length() > 0) out.print(" - '" + formObjectText + "'");
-																	out.print(")");
+															if (formObject != null && !formObject.equals("")) {
+																out.print(" (");
+																if (formObject != null) out.print(formObject);
+																if (!"other".equalsIgnoreCase(formObject))
+																	if (formObjectRole != null) out.print(" - " + formObjectRole);
+																if (formObjectPartyNumber != null) out.print(" - party: " + formObjectPartyNumber);
+																if ("party".equals(formObject)) out.print(" " + formObjectAttribute);
+																if ("contact".equals(formObject)) out.print(" " + formObjectType);
+																if ("address".equals(formObject)) {
+																	if (formObjectAddressNumber != null) out.print(" - address: " + formObjectAddressNumber);
+																	if (formObjectType != null) out.print(" - " + formObjectType);
+																	if (formObjectAttribute != null) out.print(" - " + formObjectAttribute);
 																}
+																if ("question".equals(formObject) || "other".equals(formObject))
+																	if (formObjectQuestionNumber != null) out.print(" - question: " + formObjectQuestionNumber);
+																if (formObjectText != null && formObjectText.length() > 0) out.print(" - '" + formObjectText + "'");
+																out.print(")");
 															}
-															out.print("\r\n");
 														}
-
-													} else {
-														// print the control details
-														out.print(control.getId() +"\t" + type + "\t" + name + "\t" + label + "\r\n");
+														out.print("\r\n");
 													}
 
-													// if details
-													if ("detail".equals(actionName)) {
+												} else if ("text".equals(actionName)) {
 
-														// get the properties
-														Map<String, String> properties = control.getProperties();
-														// get a list we'll sort for them
-														List<String> sortedKeys = new ArrayList<>();
-														// loop them
-														for (String key : properties.keySet()) {
-															// add to sorted list
-															sortedKeys.add(key);
-														}
-														// sort them
-														Collections.sort(sortedKeys);
-														// loop them
-														for (String key : sortedKeys) {
-															// print the properties
-															out.print(key + "\t" + properties.get(key) + "\r\n");
-														}
-														// print the event details
-														printEventsDetails(control.getEvents(), out);
+													// no buttons
+													if (!control.getType().endsWith("button")) {
 
-													} // detail check
+														// get the text
+														String text = control.getProperty("text");
+
+														// print the text if there was some
+														if (text != null) {
+															// trim it
+															text = text.trim();
+															// if we have some
+															if (text.length() > 0) out.print(text + "\r\n");
+														}
+
+														// try responsivelabel if we don't have one yet
+														if (label == null) label = control.getProperty("responsiveLabel");
+
+														// print the label if there was some
+														if (label != null && label.trim().length() > 0) out.print(label);
+
+														// if any options
+														String options = control.getProperty("options");
+
+														// if we got some
+														if (options != null) {
+
+															out.print(" (");
+
+															// read into JSON
+															JSONArray jsonOptions = new JSONArray(options);
+
+															// loop
+															for (int i = 0; i < jsonOptions.length(); i++) {
+
+																// get the option
+																JSONObject JSONOption = jsonOptions.getJSONObject(i);
+
+																// get the option's text
+																out.print(JSONOption.getString("text"));
+
+																// add a comma if one is required
+																if (i < jsonOptions.length() - 1) out.print(", ");
+
+															}
+
+															out.print(")");
+
+														}
+
+														// print the label if there was some
+														if (label != null && label.trim().length() > 0) out.print("\r\n");
+
+														// if this is a grid
+														if ("grid".equals(control.getType())) {
+
+															out.print(control.getName() + " (");
+
+															// get the columns
+															JSONArray jsonColumns = new JSONArray(control.getProperty("columns"));
+
+															// loop them
+															for (int i = 0; i < jsonColumns.length(); i++) {
+
+																// get the option
+																JSONObject JSONOption = jsonColumns.getJSONObject(i);
+
+																// get the option's text
+																out.print(JSONOption.getString("title"));
+
+																// add a comma if one is required
+																if (i < jsonColumns.length() - 1) out.print(", ");
+
+															}
+
+															out.print(")\r\n");
+
+														}
+
+													}
+
+												} else {
+
+													// print the control details
+													out.print(control.getId() +"\t" + type + "\t" + name + "\t" + label + "\r\n");
 												}
+
+												// if details
+												if ("detail".equals(actionName)) {
+
+													// get the properties
+													Map<String, String> properties = control.getProperties();
+													// get a list we'll sort for them
+													List<String> sortedKeys = new ArrayList<>();
+													// loop them
+													for (String key : properties.keySet()) {
+														// add to sorted list
+														sortedKeys.add(key);
+													}
+													// sort them
+													Collections.sort(sortedKeys);
+													// loop them
+													for (String key : sortedKeys) {
+														// print the properties
+														out.print(key + "\t" + properties.get(key) + "\r\n");
+													}
+													// print the event details
+													printEventsDetails(control.getEvents(), out);
+
+												} // detail check
 											}
 										}
 									}
+
 								} else {
 
 									out.print("\r\n");
@@ -1402,7 +1491,7 @@ public class Designer extends RapidHttpServlet {
 			} else {
 				logger.debug("Designer GET response : " + output.length() + " bytes");
 			}
-			
+
 			// add up the accumulated response data with the output
 			responseLength += output.length();
 
@@ -1462,7 +1551,7 @@ public class Designer extends RapidHttpServlet {
 
 		// get the rapid request
 		RapidRequest rapidRequest = new RapidRequest(this, request);
-		
+
 		// get a reference to our logger
 		Logger logger = getLogger();
 
