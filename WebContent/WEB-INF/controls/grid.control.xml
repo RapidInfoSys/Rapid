@@ -545,7 +545,7 @@ function getGridMutiSelectedRows(id, ev) {
 	    
 	    <getHtmlFunction>
 	        <![CDATA[ 
-var headerHtml = "<tr" + (this.columnHeadings ? "" : " style='display:none;'") + ">";
+var headerHtml = "<tr" + (this.columnHeadings ? "" : " style='display:none'") + ">";
 var rowHtml = "<tr><td>No columns</td></tr>";
 if (this.columns.length > 0) {
 	var rowHtml = "<tr>";
@@ -615,8 +615,14 @@ if (this.styles && this.styles.length > 0) {
 // get our object
 var table = this.object;
 if (!table.is("table")) table = table.find("table").last();
-// remove all sample rows, leaving the header row
-table.children().last().children(":not(:first)").remove();
+// check if columns have been defined
+if (this.columns && this.columns.length > 0) {
+	// remove all sample rows, leaving the header row
+	table.children().last().children(":not(:first)").remove();
+} else {
+	// if there are no columns, remove the header row as this will be populated by the fields
+	table.children().last().children().remove();
+}
 // if we have datastorage of type P, turn off canBeUsedFromOtherPages
 if (this.dataStorageType == "P") this.canBeUsedFromOtherPages = false;  
 	        ]]>
@@ -624,7 +630,7 @@ if (this.dataStorageType == "P") this.canBeUsedFromOtherPages = false;
 	    
 	    <getDetailsFunction>	        
 	        <![CDATA[
-var details = {type: this.type};
+var details = {type: this.type, columnHeadings:this.columnHeadings};
 if (this.columns && this.columns.length > 0) {
 	details.columns = [];
 	for (var i in this.columns) {
@@ -899,9 +905,19 @@ if (data !== undefined) {
 				});
 			
 			}
-				
+
 		} else {
-		
+
+			// start the row object with the styling
+			rowsHtml += "<tr class='rowStyle2'" + (details.columnHeadings == false ? " style='display:none'" : "") + ">";
+			// loop the fields				
+			for (var i in data.fields) {
+				// add cell with field to row
+				rowsHtml += "<td>" +data.fields[i] + "</td>";
+			}
+			// close the row
+			rowsHtml += "</tr>";
+
 			for (var i in data.rows) {
 				// start the row object with the styling
 				rowsHtml += "<tr class='rowStyle" + (i % 2 + 1) + "'>";
@@ -910,7 +926,7 @@ if (data !== undefined) {
 				// loop the row cells				
 				for (var j in row) {
 					// add cell with value to row
-					rowsHtml += "<td" + style + ">" + row[j] + "</td>";
+					rowsHtml += "<td>" + row[j] + "</td>";
 				}
 				// close the row
 				rowsHtml += "</tr>";
