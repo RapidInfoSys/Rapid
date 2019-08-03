@@ -482,10 +482,20 @@ public class DataFactory {
 
 		if (_preparedStatement != null) _preparedStatement.close();
 
-		_preparedStatement = _connection.prepareStatement(_sql);
+		try {
 
-		// don't check parameter numbers for exec queries
-		populateStatement(rapidRequest, _preparedStatement, parameters, 0, !_sql.startsWith("exec"));
+			_preparedStatement = _connection.prepareStatement(_sql);
+
+			// don't check parameter numbers for exec queries
+			populateStatement(rapidRequest, _preparedStatement, parameters, 0, !_sql.startsWith("exec"));
+
+		} catch (SQLException ex) {
+
+			close();
+
+			throw new RethrownSQLException(ex);
+
+		}
 
 		return _preparedStatement;
 
