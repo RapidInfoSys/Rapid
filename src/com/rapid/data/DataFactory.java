@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -25,6 +25,8 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 
 package com.rapid.data;
 
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.Date;
@@ -191,6 +193,113 @@ public class DataFactory {
 
 	}
 
+	// this class is useful for rethrowing Exceptions, say after cleaning up database connections
+	public static class RethrownSQLException extends SQLException {
+
+		private Exception _ex;
+
+		public RethrownSQLException(Exception ex) {
+			_ex = ex;
+		}
+
+		@Override
+		public synchronized Throwable fillInStackTrace() {
+			if (_ex == null) {
+				return null;
+			} else {
+				return _ex.fillInStackTrace();
+			}
+		}
+
+		@Override
+		public synchronized Throwable getCause() {
+			if (_ex == null) {
+				return null;
+			} else {
+				return _ex.getCause();
+			}
+		}
+
+		@Override
+		public String getLocalizedMessage() {
+			if (_ex == null) {
+				return null;
+			} else {
+				return _ex.getLocalizedMessage();
+			}
+		}
+
+		@Override
+		public String getMessage() {
+			if (_ex == null) {
+				return null;
+			} else {
+				return _ex.getMessage();
+			}
+		}
+
+		@Override
+		public StackTraceElement[] getStackTrace() {
+			if (_ex == null) {
+				return null;
+			} else {
+				return _ex.getStackTrace();
+			}
+		}
+
+		@Override
+		public synchronized Throwable initCause(Throwable arg0) {
+			if (_ex == null) {
+				return null;
+			} else {
+				return _ex.initCause(arg0);
+			}
+		}
+
+		@Override
+		public void printStackTrace() {
+			if (_ex != null) _ex.printStackTrace();
+		}
+
+		@Override
+		public void printStackTrace(PrintStream arg0) {
+			if (_ex != null) _ex.printStackTrace(arg0);
+		}
+
+		@Override
+		public void printStackTrace(PrintWriter arg0) {
+			if (_ex != null) _ex.printStackTrace(arg0);
+		}
+
+		@Override
+		public void setStackTrace(StackTraceElement[] arg0) {
+			if (_ex != null) _ex.setStackTrace(arg0);
+		}
+
+		@Override
+		public String toString() {
+			if (_ex == null) {
+				return null;
+			} else {
+				return _ex.toString();
+			}
+		}
+
+	}
+
+	// print an exception stack trace
+	public static String getStringStackTrace(Exception ex) {
+
+		String stackTrace = "\n\n";
+
+		stackTrace += ex.getClass().getName() + "\n\n";
+
+		if (ex.getStackTrace() != null) for (StackTraceElement element : ex.getStackTrace()) stackTrace += element + "\n";
+
+		return stackTrace;
+
+	}
+
 	// protected instance variables
 
 	protected ConnectionAdapter _connectionAdapter;
@@ -335,6 +444,7 @@ public class DataFactory {
 					statement.setLong(i, parameter.getLong());
 					break;
 				}
+
 			}
 
 		}
@@ -372,10 +482,20 @@ public class DataFactory {
 
 		if (_preparedStatement != null) _preparedStatement.close();
 
-		_preparedStatement = _connection.prepareStatement(_sql);
+		try {
 
-		// don't check parameter numbers for exec queries
-		populateStatement(rapidRequest, _preparedStatement, parameters, 0, !_sql.startsWith("exec"));
+			_preparedStatement = _connection.prepareStatement(_sql);
+
+			// don't check parameter numbers for exec queries
+			populateStatement(rapidRequest, _preparedStatement, parameters, 0, !_sql.startsWith("exec"));
+
+		} catch (SQLException ex) {
+
+			close();
+
+			throw new RethrownSQLException(ex);
+
+		}
 
 		return _preparedStatement;
 
@@ -407,19 +527,43 @@ public class DataFactory {
 
 			populateStatement(rapidRequest, cs, parameters, 0, false);
 
-			cs.execute();
+			try {
 
-			rows = cs.getUpdateCount();
+				cs.execute();
 
-			cs.close();
+				rows = cs.getUpdateCount();
+
+				cs.close();
+
+			} catch (SQLException ex) {
+
+				cs.close();
+
+				close();
+
+				throw new RethrownSQLException(ex);
+
+			}
 
 		} else {
 
 			PreparedStatement ps = getPreparedStatement(rapidRequest, sql, parameters);
 
-			rows = ps.executeUpdate();
+			try {
 
-			ps.close();
+				rows = ps.executeUpdate();
+
+				ps.close();
+
+			} catch (SQLException ex) {
+
+				ps.close();
+
+				close();
+
+				throw new RethrownSQLException(ex);
+
+			}
 
 		}
 
@@ -469,11 +613,23 @@ public class DataFactory {
 
 				st.registerOutParameter(1, Types.NVARCHAR);
 
-				st.execute();
+				try {
 
-				result = st.getString(1);
+					st.execute();
 
-				st.close();
+					result = st.getString(1);
+
+					st.close();
+
+				} catch (Exception ex) {
+
+					st.close();
+
+					close();
+
+					throw new RethrownSQLException(ex);
+
+				}
 
 			}
 
