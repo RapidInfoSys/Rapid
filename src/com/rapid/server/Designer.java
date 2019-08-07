@@ -2244,40 +2244,45 @@ public class Designer extends RapidHttpServlet {
 
 												// if we have one
 												if (security != null) {
+
+													// make a rapid request in the name of the import application
+													RapidRequest importRapidRequest = new RapidRequest(this, request, appNew);
+
 													// assume we don't have the user
 													boolean gotUser = false;
+
 													// get the current users record from the adapter
-													User user = security.getUser(rapidRequest);
+													User user = security.getUser(importRapidRequest);
+
 													// check the current user is present in the app's security adapter
 													if (user != null) {
-														// make a rapid request in the name of the import application
-														RapidRequest importRapidRequest = new RapidRequest(this, request, appNew);
 														// now check the current user password is correct too
 														if (security.checkUserPassword(importRapidRequest, userName, rapidRequest.getUserPassword())) {
 															// we have the right user with the right password
 															gotUser = true;
 														} else {
 															// remove this user in case there is one with the same name but the password does not match
-															security.deleteUser(rapidRequest);
+															security.deleteUser(importRapidRequest);
 														}
 													}
 
 													// if we don't have the user
 													if (!gotUser) {
 														// get the current user from the Rapid application
-														User rapidUser = rapidSecurity.getUser(rapidRequest);
+														User rapidUser = rapidSecurity.getUser(importRapidRequest);
 														// create a new user based on the Rapid user
 														user = new User(rapidUser);
 														// add the new user
-														security.addUser(rapidRequest, user);
+														security.addUser(importRapidRequest, user);
 													}
 
 													// add Admin and Design roles for the new user if required
-													if (!security.checkUserRole(rapidRequest, com.rapid.server.Rapid.ADMIN_ROLE))
-														security.addUserRole(rapidRequest, com.rapid.server.Rapid.ADMIN_ROLE);
+													if (!security.checkUserRole(importRapidRequest, com.rapid.server.Rapid.ADMIN_ROLE))
+														security.addUserRole(importRapidRequest, com.rapid.server.Rapid.ADMIN_ROLE);
 
-													if (!security.checkUserRole(rapidRequest, com.rapid.server.Rapid.DESIGN_ROLE))
-														security.addUserRole(rapidRequest, com.rapid.server.Rapid.DESIGN_ROLE);
+													if (!security.checkUserRole(importRapidRequest, com.rapid.server.Rapid.DESIGN_ROLE))
+														security.addUserRole(importRapidRequest, com.rapid.server.Rapid.DESIGN_ROLE);
+
 												}
 
 												// if any items were removed
