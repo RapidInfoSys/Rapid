@@ -246,6 +246,11 @@ function Action_rapid(ev, appId, pageId, controlId, actionId, actionType, rapidA
 							temp = users.rows[i][0];
 							users.rows[i][0] = users.rows[i][1];
 							users.rows[i][1] = temp;
+							if (users.rows[i][0]) {
+								users.rows[i][0] = users.rows[i][1] + " - " + users.rows[i][0];
+							} else {
+								users.rows[i][0] = users.rows[i][1];
+							}
 						}
 						setData_dropdown(ev, 'rapid_P0_C3193_', null, null, users);
 					}
