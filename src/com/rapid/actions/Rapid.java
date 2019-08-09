@@ -1037,6 +1037,8 @@ public class Rapid extends Action {
 					result.put("isForm", app.getIsForm());
 					// add the form adapter
 					result.put("formAdapterType", app.getFormAdapterType());
+					// add if we're showing the form summary
+					result.put("formShowSummary", app.getFormShowSummary());
 					// add if auto complete is disabled
 					result.put("formDisableAutoComplete", app.getFormDisableAutoComplete());
 
@@ -1979,6 +1981,7 @@ public class Rapid extends Action {
 								boolean showActionIds = jsonAction.optBoolean("showActionIds");
 
 								String formAdapter = jsonAction.optString("formAdapter");
+								boolean formShowSummary = jsonAction.optBoolean("formShowSummary");
 								boolean formDisableAutoComplete = jsonAction.optBoolean("formDisableAutoComplete");
 
 								boolean formEmail = jsonAction.optBoolean("formEmail");
@@ -2028,6 +2031,7 @@ public class Rapid extends Action {
 								app.setShowActionIds(showActionIds);
 
 								app.setFormAdapterType(formAdapter);
+								app.setFormShowSummary(formShowSummary);
 								app.setFormDisableAutoComplete(formDisableAutoComplete);
 
 								app.setFormEmail(formEmail);

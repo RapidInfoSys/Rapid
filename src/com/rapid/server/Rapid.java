@@ -211,8 +211,8 @@ public class Rapid extends RapidHttpServlet {
 										// if we have a max page some and this is the correct version of the form
 										if (app.getId().equals(formDetails.getAppId()) && app.getVersion().equals(formDetails.getVersion())) {
 
-											// if we have form summary labels
-											if (formAdapter.getHasSummaryLabels(rapidRequest, formDetails.getId())) {
+											// if we are showing the form summary and have form summary labels
+											if (app.getFormShowSummary() && formAdapter.getHasSummaryLabels(rapidRequest, formDetails.getId())) {
 												// summary is never cached
 												RapidFilter.noCache(response);
 												// write the form summary page
@@ -1265,6 +1265,8 @@ public class Rapid extends RapidHttpServlet {
 
 												} else {
 
+													// this is the submit being requested by the submit button in the summary page. Submit can also happen from forms that have no form summary labels, or showFormSummary = false
+
 													// do the submit (this will call the non-abstract submit, manage the form state, and retain the submit message)
 													if (csrfPass) formAdapter.doSubmitForm(rapidRequest);
 
@@ -1460,13 +1462,15 @@ public class Rapid extends RapidHttpServlet {
 														formAdapter.setFormComplete(rapidRequest, formDetails);
 													}
 
-													// if this form has labels
-													if (formAdapter.getHasSummaryLabels(rapidRequest, formDetails.getId())) {
+													// if this form has a summary page, and labels
+													if (app.getFormShowSummary() && formAdapter.getHasSummaryLabels(rapidRequest, formDetails.getId())) {
 
 														// send a redirect for the summary (this also avoids ERR_CACH_MISS issues on the back button )
 														response.sendRedirect("~?a=" + app.getId() + "&v=" + app.getVersion() + "&action=summary");
 
 													} else {
+
+														// this submit occurs as we have run out of pages and would have requested the summary but either formShowSummary is false, or there are no labels
 
 														// do the submit (this will call the non-abstract submit, manage the form state, and retain the submit message)
 														formAdapter.doSubmitForm(rapidRequest);

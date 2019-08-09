@@ -491,7 +491,7 @@ public class Application {
 	// instance variables
 	private int _xmlVersion, _status, _applicationBackupsMaxSize, _pageBackupsMaxSize;
 	private String _id, _version, _name, _title, _description, _startPageId, _formAdapterType, _formEmailFrom, _formEmailTo, _formEmailAttachmentType, _formEmailCustomerControlId, _formEmailCustomerSubject, _formEmailCustomerType, _formEmailCustomerBody, _formEmailCustomerAttachmentType, _formFileType, _formFilePath, _formFileUserName, _formFilePassword, _formWebserviceURL, _formWebserviceType, _formWebserviceSOAPAction, _themeType, _styles, _statusBarColour, _statusBarHighlightColour, _statusBarTextColour, _statusBarIconColour, _securityAdapterType, _storePasswordDuration, _functions, _createdBy, _modifiedBy;
-	private boolean _isForm, _pageNameIds, _showConrolIds, _showActionIds, _deviceSecurity, _formDisableAutoComplete, _formEmail, _formEmailCustomer, _formFile, _formWebservice;
+	private boolean _isForm, _pageNameIds, _showConrolIds, _showActionIds, _deviceSecurity, _formShowSummary, _formDisableAutoComplete, _formEmail, _formEmailCustomer, _formFile, _formWebservice;
 	private Date _createdDate, _modifiedDate;
 	private Map<String,Integer> _pageOrders;
 	private SecurityAdapter _securityAdapter;
@@ -579,6 +579,10 @@ public class Application {
 	// the type name of the form adapter this application uses (if any)
 	public String getFormAdapterType() { return _formAdapterType; }
 	public void setFormAdapterType(String formAdapterType) { _formAdapterType = formAdapterType; }
+
+	// whether to disable form autocomplete
+	public boolean getFormShowSummary() { return _formShowSummary; }
+	public void setFormShowSummary(boolean formShowSummary) { _formShowSummary = formShowSummary; }
 
 	// whether to disable form autocomplete
 	public boolean getFormDisableAutoComplete() { return _formDisableAutoComplete; }
@@ -742,6 +746,7 @@ public class Application {
 		_xmlVersion = XML_VERSION;
 		_pages = new Pages(this);
 		_pageOrders = new HashMap<>();
+		_formShowSummary = true;
 		_statusBarColour = "#aaaaaa";
 		_statusBarHighlightColour = "#999999";
 		_statusBarTextColour = "#ffffff";

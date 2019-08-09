@@ -333,6 +333,7 @@ function Action_rapid(ev, appId, pageId, controlId, actionId, actionType, rapidA
 				showActionIds: getData_checkbox(ev, "rapid_P0_C382_"),
 				
 				formAdapter: $("#rapid_P0_C1406_").val(),
+				formShowSummary: getData_checkbox(ev, "rapid_P0_C3202_"),
 				formDisableAutoComplete: getData_checkbox(ev, "rapid_P0_C3086_"),
 				
 				formEmail: getData_checkbox(ev, "rapid_P0_C1874_"),

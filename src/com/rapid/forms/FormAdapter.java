@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -1509,9 +1509,6 @@ public abstract class FormAdapter {
 
 			// perform any 3rd party submission first so if they fail the whole thing fails
 
-			// file
-			if (application.getFormFile()) saveFormFile(rapidRequest, formId);
-
 			// webservice
 			if (application.getFormWebservice()) sendFormWebservice(rapidRequest, formId);
 
@@ -1624,6 +1621,9 @@ public abstract class FormAdapter {
 				} // customer email check
 
 			} // email check
+
+			// file
+			if (application.getFormFile()) saveFormFile(rapidRequest, formId);
 
 			// retain the submitted date/time in the details
 			formDetails.setSubmittedDateTime(submissionDetails.getDateTime());
