@@ -64,12 +64,21 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	        </property>
 	        
 	        <property>
+	            <key>childDataFields</key>
+	            <name>Child data fields</name>
+	            <changeValueJavaScript>databaseNoChildrenText</changeValueJavaScript>
+	            <getValuesFunction>return "";</getValuesFunction>
+	            <helpHtml>An optional comma-separated list of field names to give to each child data object.</helpHtml>
+	        </property>
+	        
+	        <property>
 	            <key>mergeChildren</key>
 	            <name>Merge child data</name>
 	            <changeValueJavaScript>databaseNoChildrenCheckbox</changeValueJavaScript>
 	            <getValuesFunction>return false;</getValuesFunction>
+	            <refreshProperties>true</refreshProperties>
 	            <helpHtml>Whether to use values in columns with the same name in the parent and child queries to create child data objects for each matching parent row.</helpHtml>
-	        </property>	
+	        </property>
 	        
 	        <property>
 	            <key>successActions</key>

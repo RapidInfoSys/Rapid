@@ -951,6 +951,25 @@ public class Database extends Action {
 					if (_childDatabaseActions != null) {
 						// if there really are some
 						if (_childDatabaseActions.size() > 0) {
+
+
+							// a list of mergeChildrenFields
+							List<String> childFields = new ArrayList<>();
+							// look for any mergeChildrenFields
+							String childDataFields = getProperty("childDataFields");
+							// if we got some
+							if (childDataFields != null) {
+								// split them
+								String[] childDataFieldsParts = childDataFields.split(",");
+								// loop them
+								for (String childField : childDataFieldsParts) {
+									// trim
+									String childFieldTrim = childField.trim();
+									// add if we got something (avoid the blank)
+									childFields.add(childFieldTrim);
+								}
+							}
+
 							// get any child data
 							JSONArray jsonChildQueries = jsonAction.optJSONArray("childQueries");
 							// if there was some
@@ -966,8 +985,12 @@ public class Database extends Action {
 									// get the resultant child data
 									JSONObject jsonChildData = childDatabaseAction.doQuery(rapidRequest, jsonChildAction, application, df);
 
+									// prepare the merge child field name
+									String childFieldName = "childAction" + (i + 1);
+									// if we were given a child field name at this position, use that instead
+									if (childFields.size() > i) childFieldName = childFields.get(i);
 									// add a field for the results of this child action
-									jsonFields.put("childAction" + (i + 1));
+									jsonFields.put(childFieldName);
 
 									// if we are merging child data, which was the default before 2.4.4.1
 									if (_mergeChildren) {

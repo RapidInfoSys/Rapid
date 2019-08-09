@@ -2716,7 +2716,21 @@ function Property_databaseNotChildCheckbox(cell, propertyObject, property, detai
 	}	
 }
 
-//database child actions like success and fail do not go against child database actions
+// only show this text box if there are child database actions
+function Property_databaseNoChildrenText(cell, propertyObject, property, details) {
+	// look for any dialogue header text
+	var dialogueId = cell.closest(".propertyDialogue").attr("id");
+	// only if this is not a child database action
+	if ((!dialogueId || dialogueId.indexOf("childDatabaseActions")) && propertyObject.childDatabaseActions && propertyObject.childDatabaseActions.length > 0) {
+		// use the standard child actions as anything is allowed
+		Property_text(cell, propertyObject, property, details);
+	} else {
+		// remove this row
+		cell.closest("tr").remove();
+	}	
+}
+
+// only show this checkbox if there are child database actions
 function Property_databaseNoChildrenCheckbox(cell, propertyObject, property, details) {
 	// look for any dialogue header text
 	var dialogueId = cell.closest(".propertyDialogue").attr("id");
