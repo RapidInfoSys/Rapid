@@ -537,6 +537,13 @@ function getGridMutiSelectedRows(id, ev) {
 	// return
 	return rows;
 }
+
+// selectively un-escapes html escape sequences which are escaped for us in in the setter .html(value), but not unescaped in the getter .html()
+function getGridUnescapedValue(value) {
+	return value.replace(/&lt;/,"<")
+	            .replace(/&gt;/,">")
+	            .replace(/&amp;/,"&");
+}
            	
 	                ]]>
 	            </contents>
@@ -699,7 +706,7 @@ if (details) {
 			if (row[0]) {
 				for (var i in details.columns) {
 					if (details.columns[i].field && details.columns[i].field.toLowerCase() == field.toLowerCase()) {
-						data = row.children(":nth(" + i + ")").html();
+						data = getGridUnescapedValue(row.children(":nth(" + i + ")").html());
 						break;
 					}
 				}
@@ -731,7 +738,8 @@ if (details) {
 				var row = [];
 				$(this).children().each(function(i) {
 					if (details.multiSelect) i--;
-					if (i >= 0 && details.columns[i] && details.columns[i].field) row.push($(this).html());
+					var value = getGridUnescapedValue($(this).html());
+					if (i >= 0 && details.columns[i] && details.columns[i].field) row.push(value);
 				});
 				data.rows.push(row);
 			});
@@ -1376,8 +1384,12 @@ if (details.dataStorageType) {
 				for (var j = 0; j < details.columns.length; j++) {
 					// add fields once only
 					if (i == 0) data.fields.push(details.columns[j].field);
-					// add cell html to datarow - one over because of the checkbox
-					dataRow.push(row.children(":nth(" + (j + 1) + ")").html());
+					// get cell html  - one over because of the checkbox
+					// unescape
+					var value = getGridUnescapedValue(row.children(":nth(" + (j + 1) + ")").html());
+										
+					// add unescaped cell html to datarow
+					dataRow.push(value);
 				}
 				// add datarow to row
 				data.rows.push(dataRow);
@@ -1389,7 +1401,12 @@ if (details.dataStorageType) {
 			data = {fields:[],rows:[[]]};
 			for (var i in details.columns) {
 				data.fields.push(details.columns[i].field);
-				data.rows[0].push(row.children(":nth(" + i + ")").html());
+				// get cell html
+					// unescape
+				var value = getGridUnescapedValue(row.children(":nth(" + i + ")").html());
+				
+				// add unescaped cell html to datarow
+				data.rows[0].push(value);
 			}
 		}
 	}
