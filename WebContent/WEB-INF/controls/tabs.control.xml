@@ -360,9 +360,9 @@ tabOpeners.children("li").each( function(idx) {
 		tabOpener.click( function(ev, index) {
 
 			// remove selected from all tab header items
-			tabs.children("ul").children("li").removeClass("selected");
+			tabs.children("ul").children("li.selected").removeClass("selected");
 			// remove selected from all tab body items and hide
-			tabs.children("div").removeClass("selected").hide();
+			tabs.children("div.selected").removeClass("selected").hide();
 			// apply selected to the opener
 			tabOpener.addClass("selected");
 			// apply selected to the body
