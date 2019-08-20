@@ -2331,13 +2331,33 @@ $(document).ready( function() {
 		        	
 		        	try {
 		        		
+		        		// get the document
+		        		var doc = $(_pageIframe[0].contentWindow.document);
+		        		
 		        		// find the header section
-			    		var head = $(_pageIframe[0].contentWindow.document).find("head");
+			    		var head = doc.find("head");
 		        		
 		        		// remove any current app style sheets
 			    		head.find("link[rel=stylesheet][href$='/rapid.css']").remove();
 			    		// remove any current page style sheets
 			    		head.find("link[rel=stylesheet][href$='/" + _page.id + ".css']").remove();
+			    		
+			    		// get the body
+			    		var body = doc.find("body");
+			    		
+			    		// assume no body classes
+		    			var classes = "";
+			    		
+			    		// if there are style classes on the page
+			    		if (page.classes) {
+			    			// loop them
+			    			for (var i in page.classes) {
+			    				classes += page.classes[i] + " ";
+			    			}
+			    		}
+			    		
+			    		// set body classes
+		    			body.attr("class", classes);
 			    		
 			    		// retain any otherPages
 			    		var otherPages = page.otherPages;
@@ -2438,17 +2458,11 @@ $(document).ready( function() {
 		        		// enable all drop downs
 		        		$("select").enable();
 		        		
-		        		// update whether guidlines are visible
+		        		// update whether guidelines are visible
 		        		updateGuidelines();	
 		        		
 		        		// update which of page prev/next are usable
 		        		updatePrevNext();
-		        		
-			        	// show the page object
-			        	_page.object.show();	
-			        				        				        	
-			        	// make everything visible
-			        	showDesigner();
 			        				        				        	
 			        	// get the page lock object
 			        	var lock = _page.lock;
@@ -2481,6 +2495,12 @@ $(document).ready( function() {
 			        	
 			        	// refresh the page map to take the lock into account
 			        	buildPageMap();
+			        	
+			        	// show the page object
+			        	_page.object.show();	
+			        				        				        	
+			        	// make everything visible
+			        	showDesigner();
 			        	
 			        	// resize to set correct scroll bars - after a short delay
 			        	window.setTimeout(function() { windowResize("page loaded") }, 100);

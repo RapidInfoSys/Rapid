@@ -714,7 +714,7 @@ public class Designer extends RapidHttpServlet {
 								// turn it into json
 								JSONObject jsonPage = new JSONObject(page);
 
-								// remove the bodyHtml property as it in the designer
+								// remove the bodyHtml property as it is rebuilt in the designer
 								jsonPage.remove("htmlBody");
 								// remove the rolesHtml property as it is rebuilt in the designer
 								jsonPage.remove("rolesHtml");
@@ -722,6 +722,11 @@ public class Designer extends RapidHttpServlet {
 								jsonPage.remove("allControls");
 								// remove the otherPageControls property as it is sent with getPages
 								jsonPage.remove("otherPageControls");
+								// remove bodyStyleClasses property as it should be called classes
+								jsonPage.remove("bodyStyleClasses");
+
+								// add the bodyStyleClasses as classes array
+								if (page.getBodyStyleClasses() != null) jsonPage.put("classes", page.getBodyStyleClasses().split(" "));
 
 								// add a nicely formatted lock time
 								if (page.getLock() != null && jsonPage.optJSONObject("lock") != null) {
