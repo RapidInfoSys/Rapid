@@ -505,10 +505,7 @@ public class Database extends Action {
 			// if there is a working page
 			if (workingPage != null) {
 				// remove any working page dialogue
-				js += "    $('#" + workingPage + "dialogue').remove();\n";
-				// remove any working page dialogue cover
-				js += "    $('#" + workingPage + "cover').remove();\n";
-				// remove the working page so as not to affect actions further down the tree
+				js += "    $(" + workingPage + ").hideDialogue(false,'" + workingPage + "');\n";
 			}
 
 			// hide the loading javascript (if applicable)
@@ -609,9 +606,7 @@ public class Database extends Action {
 			// if there is a working page (from the details)
 			if (workingPage != null) {
 				// remove any working page dialogue
-				js += "    $('#" + workingPage + "dialogue').remove();\n";
-				// remove any working page dialogue cover
-				js += "    $('#" + workingPage + "cover').remove();\n";
+				js += "    $(" + workingPage + ").hideDialogue(false,'" + workingPage + "');\n";
 				// remove the working page so as not to affect actions further down the tree
 				jsonDetails.remove("workingPage");
 			}
