@@ -531,7 +531,7 @@ public class Control {
 						} else {
 
 							// pass the field as a string value
-							return "'" + (field == null ? "" : field.replace("'", "\\'")) + "'";
+							return "'" + (field == null ? "" : field.replace("\\", "\\\\").replace("'", "\\'")) + "'";
 
 						}
 
