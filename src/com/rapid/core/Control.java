@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2016 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -507,8 +507,8 @@ public class Control {
 
 					} else if ("online".equals(type)) {
 
-						// whether we are online (presumed true if no rapid mobile)
-						return "(typeof _rapidmobile == 'undefined' ? true : _rapidmobile.isOnline())";
+						// whether we are online (use navigator.online if no rapid mobile)
+						return "(typeof _rapidmobile == 'undefined' ? navigator.online : _rapidmobile.isOnline())";
 
 					} else if ("user".equals(type) || "user name".equals(type)) {
 
@@ -531,7 +531,7 @@ public class Control {
 						} else {
 
 							// pass the field as a string value
-							return "'" + (field == null ? "" : field.replace("\\", "\\\\").replace("'", "\\'")) + "'";
+							return "'" + (field == null ? "" : field.replace("'", "\\'")) + "'";
 
 						}
 
