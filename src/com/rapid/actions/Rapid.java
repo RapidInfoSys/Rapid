@@ -2416,7 +2416,7 @@ public class Rapid extends Action {
 										// get this version
 										Application v = applications.get(app.getId(), versionNumber);
 										// delete it
-										v.delete(rapidServlet, rapidActionRequest, true);
+										v.delete(rapidServlet, rapidActionRequest);
 									}
 									// set the result message
 									result.put("message", versionCount + " application version" + (versionCount == 1 ? "" : "s") + " deleted for " + app.getName());
@@ -2472,7 +2472,7 @@ public class Rapid extends Action {
 							} else if ("DELVERSION".equals(action)) {
 
 								// delete the application version
-								if (app != null) app.delete(rapidServlet, rapidActionRequest, false);
+								if (app != null) app.delete(rapidServlet, rapidActionRequest);
 								// set the result message
 								result.put("message", "Version " + app.getVersion() + " deleted");
 

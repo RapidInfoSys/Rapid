@@ -2272,7 +2272,7 @@ public class Application {
 			rapidServlet.getApplications().put(appCopy);
 
 			// delete this one
-			if (delete) delete(rapidServlet, rapidRequest, false);
+			if (delete) delete(rapidServlet, rapidRequest);
 
 			// return the copy
 			return appCopy;
@@ -2337,25 +2337,21 @@ public class Application {
 	    return fileSize;
 	}
 
-	public void delete(RapidHttpServlet rapidServlet, RapidRequest rapidRequest, boolean allVersions) throws JAXBException, IOException {
+	public void delete(RapidHttpServlet rapidServlet, RapidRequest rapidRequest) throws JAXBException, IOException {
 
 		// get the servlet context
 		ServletContext servletContext = rapidServlet.getServletContext();
 
 		// create a file object for the config folder
 		File appFolder = new File(getConfigFolder(servletContext));
-		// if this is all versions promote from version to app
-		if (allVersions) appFolder = appFolder.getParentFile();
 
 		// create a file object for the webcontent folder
 		File webFolder = new File (getWebFolder(servletContext));
-		// if this is all versions promote from version to app
-		if (allVersions) webFolder = webFolder.getParentFile();
 
 		// if the app folder exists
 		if (appFolder.exists()) {
 			// backup the application
-			backup(rapidServlet, rapidRequest, allVersions);
+			backup(rapidServlet, rapidRequest, true);
 			// delete the version app folder
 			Files.deleteRecurring(appFolder);
 			// if the parent is empty now delete too
@@ -2612,8 +2608,8 @@ public class Application {
 	}
 
 	// this is the backup folder
-	public static String getBackupFolder(ServletContext servletContext, String id, String version, boolean allVersions) {
-		if (allVersions) {
+	public static String getBackupFolder(ServletContext servletContext, String id, String version, boolean delete) {
+		if (delete) {
 			return servletContext.getRealPath("/") + "/WEB-INF/applications/" +  BACKUP_FOLDER + "/" + id + "/" + version;
 		} else {
 			return servletContext.getRealPath("/") + "/WEB-INF/applications/" + id + "/" + version + "/" + BACKUP_FOLDER;
