@@ -508,7 +508,7 @@ public class Control {
 					} else if ("online".equals(type)) {
 
 						// whether we are online (use navigator.online if no rapid mobile)
-						return "(typeof _rapidmobile == 'undefined' ? navigator.online : _rapidmobile.isOnline())";
+						return "(typeof _rapidmobile == 'undefined' ? navigator.onLine : _rapidmobile.isOnline())";
 
 					} else if ("user".equals(type) || "user name".equals(type)) {
 
