@@ -161,8 +161,8 @@ public class Rapid extends RapidHttpServlet {
 			// if not .gitignore print it (from the end of the root)
 			if (!".gitignore".equals(file.getName())) out.print(file.getPath().substring(rootLength) + "\t" + file.length() + "\t" + getLocalDateTimeFormatter().format(new Date(file.lastModified())) + checksum + "\r\n");
 
-			// if it is a directory, but not the applications nor logs one go iterative
-			if (file.isDirectory() && !"applications".equals(file.getName()) && !"logs".equals(file.getName())) printConfig(out, digest, rootLength, file);
+			// if it is a directory, but not the applications nor logs nor temp nor update nor uploads one go iterative
+			if (file.isDirectory() && !"applications".equals(file.getName()) && !"logs".equals(file.getName()) && !"temp".equals(file.getName()) && !"update".equals(file.getName()) && !"uploads".equals(file.getName())) printConfig(out, digest, rootLength, file);
 
 		}
 
