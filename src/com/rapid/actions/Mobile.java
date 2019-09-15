@@ -823,7 +823,7 @@ public class Mobile extends Action {
 							if (jsonDetails == null) jsonDetails = new JSONObject();
 
 							// add js online check
-							js += "  if (typeof _rapidmobile == 'undefined' ? navigator.online : _rapidmobile.isOnline()) {\n";
+							js += "  if (typeof _rapidmobile == 'undefined' ? navigator.onLine : _rapidmobile.isOnline()) {\n";
 
 							// get any working / loading page
 							String workingPage = getProperty("onlineWorking");

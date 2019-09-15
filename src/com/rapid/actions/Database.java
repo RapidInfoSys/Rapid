@@ -505,7 +505,7 @@ public class Database extends Action {
 			// if there is a working page
 			if (workingPage != null) {
 				// remove any working page dialogue
-				js += "    $(" + workingPage + ").hideDialogue(false,'" + workingPage + "');\n";
+				js += "    $('#" + workingPage + "').hideDialogue(false,'" + workingPage + "');\n";
 			}
 
 			// hide the loading javascript (if applicable)
@@ -522,7 +522,7 @@ public class Database extends Action {
 			// if we have an offline page
 			if (offlinePage != null) {
 				// update defaultErrorHandler to navigate to offline page
-				defaultErrorHandler = "if (Action_navigate && typeof _rapidmobile != 'undefined' && !_rapidmobile.isOnline()) {\n          Action_navigate('~?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + offlinePage + "&action=dialogue',true,'" + getId() + "');\n        } else {\n          " + defaultErrorHandler + "\n        }";
+				defaultErrorHandler = "if (Action_navigate && !(typeof _rapidmobile == 'undefined' ? navigator.onLine : _rapidmobile.isOnline())) {\n          Action_navigate('~?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + offlinePage + "&action=dialogue',true,'" + getId() + "');\n        } else {\n          " + defaultErrorHandler + "\n        }";
 				// remove the offline page so we don't interfere with actions down the three
 				jsonDetails.remove("offlinePage");
 			}
@@ -606,7 +606,7 @@ public class Database extends Action {
 			// if there is a working page (from the details)
 			if (workingPage != null) {
 				// remove any working page dialogue
-				js += "    $(" + workingPage + ").hideDialogue(false,'" + workingPage + "');\n";
+				js += "    $('#" + workingPage + "').hideDialogue(false,'" + workingPage + "');\n";
 				// remove the working page so as not to affect actions further down the tree
 				jsonDetails.remove("workingPage");
 			}

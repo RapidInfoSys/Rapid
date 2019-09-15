@@ -338,7 +338,7 @@ public class Webservice extends Action {
 			// if we have an offline page
 			if (offlinePage != null) {
 				// update defaultErrorHandler to navigate to offline page
-				defaultErrorHandler = "if (Action_navigate && typeof _rapidmobile != 'undefined' && !_rapidmobile.isOnline()) {\n        Action_navigate('~?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + offlinePage + "&action=dialogue',true,'" + getId() + "');\n      } else {\n         " + defaultErrorHandler + "\n      }";
+				defaultErrorHandler = "if (Action_navigate && !(typeof _rapidmobile == 'undefined' ? navigator.onLine : _rapidmobile.isOnline())) {\n        Action_navigate('~?a=" + application.getId() + "&v=" + application.getVersion() + "&p=" + offlinePage + "&action=dialogue',true,'" + getId() + "');\n      } else {\n         " + defaultErrorHandler + "\n      }";
 				// remove the offline page so we don't interfere with actions down the three
 				jsonDetails.remove("offlinePage");
 			}
