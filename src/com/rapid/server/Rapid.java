@@ -34,7 +34,10 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLConnection;
 import java.net.URLDecoder;
+import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
@@ -62,6 +65,7 @@ import com.rapid.forms.FormAdapter.ServerSideValidationException;
 import com.rapid.forms.FormAdapter.UserFormDetails;
 import com.rapid.forms.PaymentGateway;
 import com.rapid.security.SecurityAdapter;
+import com.rapid.security.SecurityAdapter.SecurityAdapaterException;
 import com.rapid.security.SecurityAdapter.User;
 import com.rapid.server.filter.RapidFilter;
 import com.rapid.utils.Bytes;
@@ -109,6 +113,59 @@ public class Rapid extends RapidHttpServlet {
 		}
 		// go to the start page
 		response.sendRedirect("~?a=" + app.getId() + "&v=" + app.getVersion());
+	}
+
+	// print the config information of a directory
+	private void printConfig(PrintWriter out, MessageDigest digest, int rootLength, File dir) throws IOException {
+
+		// get the dir contents
+		File[] files = dir.listFiles();
+
+		// sort the files, folder at the top
+		Arrays.sort(files, new Comparator<File>() {
+
+			@Override
+			public int compare(File file1, File file2) {
+
+				// get file name 1
+				String fileName1 = file1.getName();
+
+				// get file name 2
+				String fileName2 = file2.getName();
+
+				// if file 1 is a directory add zzz to get the files to the top
+				if (file1.isDirectory()) fileName1 = "zzz" + fileName1;
+
+				// if file 2 is a directory add zzz to get the files to the top
+				if (file2.isDirectory()) fileName2 = "zzz" + fileName2;
+
+				// get standard difference
+				int diff = com.rapid.utils.Comparators.AsciiCompare(fileName1, fileName2, false);
+
+				// return the difference
+				return diff;
+
+			}
+
+		});
+
+		// loop the files
+		for (File file : files) {
+
+			// assume no checksum
+			String checksum = "";
+
+			// if not a diretory, get checksum
+			if (!file.isDirectory()) checksum = "\t" + Files.getChecksum(digest, file);
+
+			// if not .gitignore print it (from the end of the root)
+			if (!".gitignore".equals(file.getName())) out.print(file.getPath().substring(rootLength) + "\t" + file.length() + "\t" + getLocalDateTimeFormatter().format(new Date(file.lastModified())) + checksum + "\r\n");
+
+			// if it is a directory, but not the applications nor logs one go iterative
+			if (file.isDirectory() && !"applications".equals(file.getName()) && !"logs".equals(file.getName())) printConfig(out, digest, rootLength, file);
+
+		}
+
 	}
 
 	@Override
@@ -292,6 +349,51 @@ public class Rapid extends RapidHttpServlet {
 
 							// append the file length for monitoring
 							responseLength += fileLength;
+						}
+
+					} else if ("config".equals(actionName)) {
+
+						// check this is the Rapid app
+						if ("rapid".equals(app.getId())) {
+
+							// check we have admin permission
+							if (security.checkUserRole(rapidRequest, ADMIN_ROLE)) {
+
+								// set response to text
+								response.setContentType("text/text;charset=UTF-8");
+
+								// get the root path
+								String rootPath = getServletContext().getRealPath("/");
+
+								// get the root file
+								File root = new File(rootPath);
+
+								// create a writer
+								PrintWriter out = response.getWriter();
+
+								// get the md5 digest
+								MessageDigest digest = MessageDigest.getInstance("MD5");
+
+								// start printing!
+								printConfig(out, digest, root.getAbsolutePath().length(), root);
+
+								// flush and close writer
+								out.flush();
+
+								out.close();
+
+							} else {
+
+								// tell user must be Rapid
+								sendMessage(response, 403, "No permission", "You must have the admin role for this request");
+
+							}
+
+						} else {
+
+							// tell user must be Rapid
+							sendMessage(response, 403, "Incorrect application", "You must use the Rapid application for this request");
+
 						}
 
 					} else {
@@ -709,6 +811,23 @@ public class Rapid extends RapidHttpServlet {
 
 	}
 
+	// writes a JSON string to the response and returns the string it used so this is only done once for logging and getting its length
+	private String writeJSONResponse(HttpServletResponse response, String jsonString) throws IOException {
+
+		// create a writer
+		PrintWriter out = response.getWriter();
+		// set response to json
+		response.setContentType("application/json");
+		// print the results
+		out.print(jsonString);
+		// close the writer
+		out.close();
+
+		// return the response length for logging
+		return jsonString;
+
+	}
+
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -848,23 +967,14 @@ public class Rapid extends RapidHttpServlet {
 
 				} // apps check
 
-				// set response to json
-				response.setContentType("application/json");
-
-				// create a writer
-				PrintWriter out = response.getWriter();
-
-				// print the results
-				out.print(jsonApps.toString());
-
-				// close the writer
-				out.close();
+				// write the json apps to the response and retain the string
+				String responseString = writeJSONResponse(response, jsonApps.toString());
 
 				// store the length
-				responseLength = jsonApps.toString().length();
+				responseLength = responseString.length();
 
 				// log response
-				logger.trace("Rapid POST response : " + jsonApps.toString());
+				logger.trace("Rapid POST response : " + responseString);
 
 			} else {
 
@@ -911,27 +1021,18 @@ public class Rapid extends RapidHttpServlet {
 								// fetch the action result
 								JSONObject jsonResult = rapidRequest.getAction().doAction(rapidRequest, jsonData);
 
-								// set response to json
-								response.setContentType("application/json");
-
-								// create a writer
-								PrintWriter out = response.getWriter();
-
-								// print the results
-								out.print(jsonResult.toString());
-
-								// close the writer
-								out.close();
+								// write the json string to the response and retain the length
+								String responseString = writeJSONResponse(response, jsonResult.toString());
 
 								// store the response length
-								responseLength = jsonResult.length();
+								responseLength = responseString.length();
 
 								// log response
 
 								if (logger.isTraceEnabled()) {
-									logger.trace("Rapid POST response : " + jsonResult.toString());
+									logger.trace("Rapid POST response : " + responseString);
 								} else {
-									logger.debug("Rapid POST response : length " + jsonResult.toString().length() + " bytes");
+									logger.debug("Rapid POST response : length " + responseString.length() + " bytes");
 								}
 
 							} // jsonData
@@ -944,20 +1045,73 @@ public class Rapid extends RapidHttpServlet {
 							// add the mobile version, followed by the app version
 							jsonVersion.put("version", MOBILE_VERSION + " - " + app.getVersion());
 
-							// create a writer
-							PrintWriter out = response.getWriter();
-
-							// print the results
-							out.print(jsonVersion.toString());
-
-							// close the writer
-							out.close();
+							// write the json string to the response and retain the length
+							String responseString = writeJSONResponse(response, jsonVersion.toString());
 
 							// store the response length
-							responseLength = jsonVersion.toString().length();
+							responseLength = responseString.length();
 
 							// log response
-							logger.debug("Rapid POST response : " + jsonVersion.toString());
+							logger.debug("Rapid POST response : " + responseString);
+
+						} else if ("getPages".equals(actionName)) {
+
+							// create a json version object
+							JSONArray jsonPages = new JSONArray();
+
+							// loop the application pages
+							for (PageHeader pageHeader : app.getPages().getSortedPages()) {
+
+								// get the page
+								Page page = app.getPages().getPage(pageHeader.getId());
+
+								// assume the user has permission to access the page
+								boolean gotPagePermission = true;
+
+								try {
+
+									// get any page roles
+									List<String> pageRoles = page.getRoles();
+
+									// if this page has roles
+									if (pageRoles != null && pageRoles.size() > 0) {
+										// check if the user has any of them
+										gotPagePermission = security.checkUserRole(rapidRequest, pageRoles);
+									}
+
+								} catch (SecurityAdapaterException ex) {
+
+									logger.error("Error checking for page roles", ex);
+
+								}
+
+								// if we have permission we can add the page
+								if (gotPagePermission) {
+
+									// a json object for the page
+									JSONObject jsonPage = new JSONObject();
+
+									// add the id
+									jsonPage.put("id", page.getId());
+
+									// ad the last modified date
+									jsonPage.put("modifiedDate", this.getXMLDateTimeFormatter().format(page.getModifiedDate()));
+
+									// add this page to the collection
+									jsonPages.put(jsonPage);
+
+								}
+
+							}
+
+							// write the json apps to the response and retain the length
+							String responseString = writeJSONResponse(response, jsonPages.toString());
+
+							// retain the length
+							responseLength = responseString.length();
+
+							// log response
+							logger.debug("Rapid POST response : " + responseString);
 
 						} else if ("uploadImage".equals(actionName)) {
 
