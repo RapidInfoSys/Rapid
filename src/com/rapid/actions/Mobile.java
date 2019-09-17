@@ -149,7 +149,7 @@ public class Mobile extends Action {
 			if (_successActions != null) {
 				js += "function " + id + "success(ev) {\n";
 				for (Action action : _successActions) {
-					js += "  " + action.getJavaScript(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n  ") + "\n";
+					js += "  " + action.getJavaScriptWithHeader(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n  ") + "\n";
 				}
 				js += "}\n";
 			}
@@ -157,7 +157,7 @@ public class Mobile extends Action {
 			if (_errorActions != null) {
 				js += "function " + id + "error(ev, server, status, message) {\n";
 				for (Action action : _errorActions) {
-					js += "  " + action.getJavaScript(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n  ") + "\n";
+					js += "  " + action.getJavaScriptWithHeader(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n  ") + "\n";
 				}
 				js += "}\n";
 			}
@@ -792,7 +792,7 @@ public class Mobile extends Action {
 							// loop actions
 							for (Action action : _onlineActions) {
 								// add action js
-								js += "			" + action.getJavaScript(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n			") + "\n";
+								js += "			" + action.getJavaScriptWithHeader(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n			") + "\n";
 							}
 
 							// close the functions
@@ -823,7 +823,7 @@ public class Mobile extends Action {
 							if (jsonDetails == null) jsonDetails = new JSONObject();
 
 							// add js online check
-							js += "  if (typeof _rapidmobile == 'undefined' ? navigator.onLine : _rapidmobile.isOnline()) {\n";
+							js += "if (typeof _rapidmobile == 'undefined' ? navigator.onLine : _rapidmobile.isOnline()) {\n";
 
 							// get any working / loading page
 							String workingPage = getProperty("onlineWorking");
@@ -844,7 +844,7 @@ public class Mobile extends Action {
 								// record that we have an offline page
 								jsonDetails.put("offlinePage", offlinePage);
 
-								js += "  " + action.getJavaScript(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n  ") + "\n";
+								js += "  " + action.getJavaScriptWithHeader(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n  ") + "\n";
 
 							}
 

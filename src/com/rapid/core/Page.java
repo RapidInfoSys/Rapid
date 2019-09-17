@@ -1218,7 +1218,7 @@ public class Page {
 
 					try {
 						// get the action client-side java script from the action object (it's generated there as it can contain values stored in the object on the server side)
-						String actionJavaScript = action.getJavaScript(rapidRequest, application, this, control, null);
+						String actionJavaScript = action.getJavaScriptWithHeader(rapidRequest, application, this, control, null);
 						// if non null
 						if (actionJavaScript != null) {
 							// trim it to avoid tabs and line breaks that might sneak in

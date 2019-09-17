@@ -76,7 +76,7 @@ public class Validation extends Action {
 		// if we had some
 		if (jsonControls != null) {
 			// instantiate our contols collection
-			_controls = new ArrayList<String>();
+			_controls = new ArrayList<>();
 			// loop the json Controls
 			for (int i = 0; i < jsonControls.length(); i++) {
 				// add into our collection
@@ -109,7 +109,7 @@ public class Validation extends Action {
 		// initialise and populate on first get
 		if (_childActions == null) {
 			// our list of all child actions
-			_childActions = new ArrayList<Action>();
+			_childActions = new ArrayList<>();
 			// add child success actions
 			if (_passActions != null) {
 				for (Action action : _passActions) _childActions.add(action);
@@ -179,7 +179,7 @@ public class Validation extends Action {
 												// if nulls not allowed
 												if (!controlValidation.getAllowNulls()) {
 													// list of arguments
-													List<String> arguments = new ArrayList<String>();
+													List<String> arguments = new ArrayList<>();
 													// loop the conditions
 													for (Condition condition : conditions) {
 														// check arg1 is a control
@@ -255,14 +255,14 @@ public class Validation extends Action {
 
 			// insert pass actions
 			if (_passActions != null) {
-				for (Action action : _passActions) js += "  " + action.getJavaScript(rapidRequest, application, page, control, jsonDetails) + "\n";
+				for (Action action : _passActions) js += "  " + action.getJavaScriptWithHeader(rapidRequest, application, page, control, jsonDetails) + "\n";
 			}
 
 			js += "} else {\n";
 
 			// insert fail actions
 			if (_failActions != null) {
-				for (Action action : _failActions) js += "  " + action.getJavaScript(rapidRequest, application, page, control, jsonDetails) + "\n";
+				for (Action action : _failActions) js += "  " + action.getJavaScriptWithHeader(rapidRequest, application, page, control, jsonDetails) + "\n";
 			}
 
 			// check whether to stop further actions

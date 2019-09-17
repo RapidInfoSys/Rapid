@@ -262,7 +262,7 @@ public class Logic extends Action {
 		}
 
 		// initialise list
-		_conditions = new ArrayList<Condition>();
+		_conditions = new ArrayList<>();
 		// grab conditions from json
 		JSONArray jsonConditions = jsonAction.optJSONArray("conditions");
 
@@ -302,7 +302,7 @@ public class Logic extends Action {
 		// initialise and populate on first get
 		if (_childActions == null) {
 			// our list of all child actions
-			_childActions = new ArrayList<Action>();
+			_childActions = new ArrayList<>();
 			// add child success actions
 			if (_trueActions != null) {
 				for (Action action : _trueActions) _childActions.add(action);
@@ -351,7 +351,7 @@ public class Logic extends Action {
 
 		// add any try actions
 		if (_trueActions != null) {
-			for (Action action : _trueActions) js += "  " + action.getJavaScript(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n  ") + "\n";
+			for (Action action : _trueActions) js += "  " + action.getJavaScriptWithHeader(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n  ") + "\n";
 		}
 
 		// close the if
@@ -369,7 +369,7 @@ public class Logic extends Action {
 		if (gotFalseActions) {
 			// add any false actions as an else
 			js += " else {\n";
-			for (Action action : _falseActions) js += "  " + action.getJavaScript(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n  ") + "\n";
+			for (Action action : _falseActions) js += "  " + action.getJavaScriptWithHeader(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n  ") + "\n";
 			js += "}";
 		} else {
 			// if we got some details

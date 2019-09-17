@@ -104,7 +104,7 @@ public class Form extends Action {
 		// if we got some
 		if (jsonInputs != null) {
 			// instantiate our array
-			_inputs = new ArrayList<Input>();
+			_inputs = new ArrayList<>();
 			// loop them
 			for (int i = 0; i < jsonInputs.length(); i++) {
 				// get the input
@@ -141,7 +141,7 @@ public class Form extends Action {
 		// initialise and populate on first get
 		if (_childActions == null) {
 			// our list of all child actions
-			_childActions = new ArrayList<Action>();
+			_childActions = new ArrayList<>();
 			// add child success actions
 			if (_successActions != null) {
 				for (Action action : _successActions) _childActions.add(action);
@@ -248,7 +248,7 @@ public class Form extends Action {
 						// if this is the last error action add in the default error handler
 						if (i == _errorActions.size() - 1) jsonDetails.put("defaultErrorHandler", defaultErrorHandler);
 						// add the js
-						js += "         " + action.getJavaScript(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n         ") + "\n";
+						js += "         " + action.getJavaScriptWithHeader(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n         ") + "\n";
 						// if this is the last error action and the default error handler is still present, remove it so it isn't sent down the success path
 						if (i == _errorActions.size() - 1 && jsonDetails.optString("defaultErrorHandler", null) != null) jsonDetails.remove("defaultErrorHandler");
 						// increase the count
@@ -273,7 +273,7 @@ public class Form extends Action {
 				// add any sucess actions
 				if (_successActions != null) {
 					for (Action action : _successActions) {
-						js += "       " + action.getJavaScript(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n       ") + "\n";
+						js += "       " + action.getJavaScriptWithHeader(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n       ") + "\n";
 					}
 				}
 

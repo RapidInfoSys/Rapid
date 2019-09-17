@@ -518,7 +518,7 @@ public class Database extends Action {
 			boolean errorActions = false;
 
 			// prepare a default error hander we'll show if no error actions, or pass to child actions for them to use
-			String defaultErrorHandler = "alert('Error with database action : ' + server.responseText||message);";
+			String defaultErrorHandler = "alert('Error with database action" + (control == null ? page.getId() : " for control " + control.getId()) + "\\n\\n' + server.responseText||message);";
 			// if we have an offline page
 			if (offlinePage != null) {
 				// update defaultErrorHandler to navigate to offline page
@@ -538,7 +538,7 @@ public class Database extends Action {
 					// if this is the last error action add in the default error handler
 					if (i == _errorActions.size() - 1) jsonDetails.put("defaultErrorHandler", defaultErrorHandler);
 					// add the js
-					js += "       " + action.getJavaScript(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n       ") + "\n";
+					js += "       " + action.getJavaScriptWithHeader(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n       ") + "\n";
 					// if this is the last error action and the default error handler is still present, remove it so it isn't sent down the success path
 					if (i == _errorActions.size() - 1 && jsonDetails.optString("defaultErrorHandler", null) != null) jsonDetails.remove("defaultErrorHandler");
 					// increase the count
@@ -614,7 +614,7 @@ public class Database extends Action {
 			// add any success actions
 			if (_successActions != null) {
 				for (Action action : _successActions) {
-					js += "     " + action.getJavaScript(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n       ") + "\n";
+					js += "     " + action.getJavaScriptWithHeader(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n       ") + "\n";
 				}
 			}
 

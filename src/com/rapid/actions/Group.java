@@ -86,7 +86,7 @@ public class Group extends Action {
 		// if the list is still null
 		if (_redundantActions == null) {
 			// instantiate if so
-			_redundantActions = new ArrayList<String>();
+			_redundantActions = new ArrayList<>();
 			// add our actionId which means the group will get it's own method
 			_redundantActions.add(getId());
 		}
@@ -101,7 +101,7 @@ public class Group extends Action {
 
 		// add any actions
 		if (_actions != null) {
-			for (Action action : _actions) js += action.getJavaScript(rapidRequest, application, page, control, jsonDetails).trim() + "\n";
+			for (Action action : _actions) js += action.getJavaScriptWithHeader(rapidRequest, application, page, control, jsonDetails).trim() + "\n";
 		}
 
 		// return what we built

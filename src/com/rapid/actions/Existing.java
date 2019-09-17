@@ -64,7 +64,7 @@ public class Existing extends Action {
 			// check it
 			if (actionId != null) {
 				// instantiate if so
-				_redundantActions = new ArrayList<String>();
+				_redundantActions = new ArrayList<>();
 				// add this actionId
 				_redundantActions.add(actionId);
 			}
@@ -103,7 +103,7 @@ public class Existing extends Action {
 					return "/* could not find action " + actionId + " */";
 				} else {
 					// get its JavaScript
-					String existingJavaScript = existingAction.getJavaScript(rapidRequest, application, page, actionControl, jsonDetails);
+					String existingJavaScript = existingAction.getJavaScriptWithHeader(rapidRequest, application, page, actionControl, jsonDetails);
 					// check we got some
 					if (existingJavaScript == null) {
 						return "/* JavaScript for action " + actionId + " is null */";

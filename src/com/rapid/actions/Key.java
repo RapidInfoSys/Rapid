@@ -130,7 +130,7 @@ public class Key extends Action {
 
 		// add any actions
 		if (_actions != null) {
-			for (Action action : _actions) js += "  " + action.getJavaScript(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n  ") + "\n";
+			for (Action action : _actions) js += "  " + action.getJavaScriptWithHeader(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n  ") + "\n";
 		}
 
 		// add any prevent default

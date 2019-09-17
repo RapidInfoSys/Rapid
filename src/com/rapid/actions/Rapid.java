@@ -469,7 +469,7 @@ public class Rapid extends Action {
 		if (_successActions != null) {
 			if (_successActions.size() > 0) {
 				for (Action action : _successActions) {
-					js += "    " + action.getJavaScript(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n    ") + "\n";
+					js += "    " + action.getJavaScriptWithHeader(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n    ") + "\n";
 				}
 			}
 		}
@@ -484,7 +484,7 @@ public class Rapid extends Action {
 			if (_errorActions.size() > 0) {
 				gotErrorHandler = true;
 				for (Action action : _errorActions) {
-					js += "    " + action.getJavaScript(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n    ") + "\n";
+					js += "    " + action.getJavaScriptWithHeader(rapidRequest, application, page, control, jsonDetails).trim().replace("\n", "\n    ") + "\n";
 				}
 			}
 		}
