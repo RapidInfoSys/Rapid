@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
 import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.security.MessageDigest;
@@ -159,7 +160,7 @@ public class Rapid extends RapidHttpServlet {
 			if (!file.isDirectory()) checksum = "\t" + Files.getChecksum(digest, file);
 
 			// if not .gitignore print it (from the end of the root)
-			if (!".gitignore".equals(file.getName())) out.print(file.getPath().substring(rootLength) + "\t" + file.length() + "\t" + getLocalDateTimeFormatter().format(new Date(file.lastModified())) + checksum + "\r\n");
+			if (!".gitignore".equals(file.getName())) out.print(file.getPath().substring(rootLength) + "\t" + file.length() + checksum + "\r\n");
 
 			// if it is a directory, but not the applications nor logs nor temp nor update nor uploads one go iterative
 			if (file.isDirectory() && !"applications".equals(file.getName()) && !"logs".equals(file.getName()) && !"temp".equals(file.getName()) && !"update".equals(file.getName()) && !"uploads".equals(file.getName())) printConfig(out, digest, rootLength, file);
@@ -370,6 +371,15 @@ public class Rapid extends RapidHttpServlet {
 
 								// create a writer
 								PrintWriter out = response.getWriter();
+
+								// write some useful things at the top
+								out.print("Server name " + InetAddress.getLocalHost().getHostName() + "\r\n");
+								out.print("Instance name " + root.getName() + "\r\n");
+								out.print("Rapid version " + VERSION + "\r\n");
+								out.print(getLocalDateTimeFormatter().format(new Date()) + "\r\n");
+								out.print("\r\n");
+								out.print("File\tsize\tMD5 hash\r\n");
+
 
 								// get the md5 digest
 								MessageDigest digest = MessageDigest.getInstance("MD5");
