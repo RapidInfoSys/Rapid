@@ -1246,7 +1246,7 @@ public class Page {
 					} catch (Exception ex) {
 
 						// print a commented message
-						eventStringBuilder.append("//    Error creating JavaScript for action " + action.getId() + " : " + ex.getMessage() + "\n");
+						eventStringBuilder.append("    // Error creating JavaScript for " + action.getType() + " action " + action.getId() + " : " + ex.getMessage() + "\n");
 
 					}
 

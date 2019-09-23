@@ -568,22 +568,34 @@ public class Mobile extends Action {
 
 					// start building the js
 					js += "var urls = '';\n";
+
+					// a collection of control id's we won't be using, as we can't find them in the page
+					List<String> removeControlIds = new ArrayList<>();
+
 					// get any urls from the gallery controls
 					for (String id : controlIds) {
 
-						//create a control object from its id
+						// get the control object from its id
 						Control imageControl = page.getControl(id);
-						//Check whether this control is a signature
-						if ("signature".equals(imageControl.getType())) {
-							js += "urls += getData_signature(ev, '" + id + "');\n";
+						// if we got one
+						if (imageControl == null) {
+							// retain that we will remove this control
+							removeControlIds.add(id);
 						} else {
-							js += "$('#" + id + "').find('img').each( function() { urls += $(this).attr('src') + ',' });\n";
+							// Check whether this control is a signature
+							if ("signature".equals(imageControl.getType())) {
+								js += "urls += getData_signature(ev, '" + id + "');\n";
+							} else {
+								js += "$('#" + id + "').find('img').each( function() { urls += $(this).attr('src') + ',' });\n";
+							}
 						}
 
 					}
 
-					// if we got any urls
-					// check whether request is from a mobile - upload the images
+					// remove any controls we couldn't find
+					controlIds.removeAll(removeControlIds);
+
+					// if we got any urls check whether request is from a mobile - upload the images
 					js += "if (urls) { \n"
 						+ "   if (typeof _rapidmobile == 'undefined') {\n"
 						+ "      uploadImages(" + new JSONArray(controlIds) + ", " + successCallback + ", " + errorCallback + ");\n"
