@@ -917,7 +917,7 @@ if (data !== undefined) {
 		} else {
 
 			// start the row object with the styling
-			rowsHtml += "<tr class='rowStyle2'" + (details.columnHeadings == false ? " style='display:none'" : "") + ">";
+			rowsHtml += "<tr" + (details.columnHeadings == false ? " style='display:none'" : "") + ">";
 			// loop the fields				
 			for (var i in data.fields) {
 				// add cell with field to row
