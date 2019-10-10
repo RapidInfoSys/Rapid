@@ -79,7 +79,7 @@ return ["false","true"];
 	            <setConstructValueFunction>return "true";</setConstructValueFunction>
 	            <changeValueJavaScript>text</changeValueJavaScript>
 	            <refreshHtml>true</refreshHtml>
-	            <helpHtml>Option that can be set to make validating on a checkbox easier.</helpHtml>
+	            <helpHtml>The value of this control when checked. If this box is blank the value when checked will be true.</helpHtml>
 	        </property>
 	        
 	         <property>
