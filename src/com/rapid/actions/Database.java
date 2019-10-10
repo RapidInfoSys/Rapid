@@ -142,6 +142,8 @@ public class Database extends Action {
 		for (String key : JSONObject.getNames(jsonAction)) {
 			// add all json properties to our properties, except for query
 			if (!"query".equals(key) && !"showLoading".equals(key) && !"childDatabaseActions".equals(key) && !"successActions".equals(key) && !"errorActions".equals(key)  && !"childActions".equals(key)) addProperty(key, jsonAction.get(key).toString());
+			// if this is mergeChildren we need to update our property variable too, to deal with legacy values
+			if ("mergeChildren".equals(key)) _mergeChildren = jsonAction.optBoolean(key);
 		}
 
 		// try and build the query object
