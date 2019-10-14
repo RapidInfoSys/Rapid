@@ -798,8 +798,14 @@ return data;
 var control = $("#" + id);
 // make sure it's a table
 if (!control.is("table")) control = control.find("table").last();
-// remove all rows except for the first one (the header)
-control.find("tr:not(:first-child)").remove();	        
+// if there are columns defined for this grid
+if (details.columns) {
+	// remove all rows except for the first one (the header)
+	control.find("tr:not(:first-child)").remove();
+} else {
+	// all rows as the header is dynamic
+	control.find("tr").remove();
+}
 // reset any sort indicators if not being used for sorting
 control.find("span.sort").html("&#xf0dc");
 // if we have data
