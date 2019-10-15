@@ -178,7 +178,10 @@ if (signature.points && signature.points.length > 0) {
 var signature = _signatureControls[id];
 var data = makeDataObject(data, field);
 if (data && data.rows) {
+	// call signature from data url method
 	signature.fromDataURL(data.rows[0][0]);
+	// put a point in points array so getData will not send null
+	signature.points = [0];
 } else {
 	signature.clear();
 }
