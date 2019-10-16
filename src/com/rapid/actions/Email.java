@@ -384,7 +384,7 @@ public class Email extends Action {
                 					subject += "?";
                 				} else {
                 					// add the input value
-                					subject += jsonInputs.getString(i);
+                					subject += jsonInputs.optString(i);
                 					// increment for next value
                 					i ++;
                 				}
