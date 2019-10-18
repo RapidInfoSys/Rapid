@@ -463,7 +463,7 @@ function showActions(control, eventType) {
 }
 
 // this renders a single action into a table (used by events and childActions)
-function showAction(actionsTable, action, collection, refreshFunction) {
+function showAction(actionsTable, action, collection, refreshFunction, details) {
 	
 	// add the action style class
 	actionsTable.parent().addClass("actionsPanelDiv");
@@ -513,8 +513,10 @@ function showAction(actionsTable, action, collection, refreshFunction) {
 	var copyImage = actionsTable.find("div.copyAction").last(); 
 	// add a click listener to the copy image
 	addListener( copyImage.click( { action: action }, function(ev) {
+		// get the action
+		var a = ev.data.action;
 		// copy the action
-		_copyAction = JSON.parse(JSON.stringify(ev.data.action));		
+		_copyAction = JSON.parse(JSON.stringify(a));		
 		// rebuild actions
 		showEvents(_selectedControl);
 	}));
@@ -567,7 +569,7 @@ function showAction(actionsTable, action, collection, refreshFunction) {
 					}
 				} else {
 					if (window["Property_" + property.changeValueJavaScript]) {
-						window["Property_" + property.changeValueJavaScript](cell, action, property);
+						window["Property_" + property.changeValueJavaScript](cell, action, property, details);
 					} else {
 						alert("Error - There is no known Property_" + property.changeValueJavaScript + " function");
 					}

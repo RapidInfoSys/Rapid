@@ -1953,7 +1953,7 @@ function Property_childActions(cell, propertyObject, property, details) {
 		// retrieve this action
 		var action = actions[i];
 		// show the action (in actions.js)
-		showAction(table, action, actions, function() { Property_childActions(cell, propertyObject, property); });
+		showAction(table, action, actions, function() { Property_childActions(cell, propertyObject, property); }, details);
 	}	
 	
 	// add reorder listeners
@@ -2419,10 +2419,10 @@ function Property_childActionsForType(cell, propertyObject, property, details) {
 			for (var i in actions) {
 				// retrieve this action
 				var action = actions[i];
-				// add the parent
-				action._parent = propertyObject;
+				// add the parent object to the details - adding it to the action objection directly results in a circular reference error when copying/pasting
+				details.parentObject = propertyObject;
 				// show the action (in actions.js)
-				showAction(table, action, actions, function() { Property_childActionsForType(cell, propertyObject, property, details); });
+				showAction(table, action, actions, function() { Property_childActionsForType(cell, propertyObject, property); }, details);
 			}	
 			
 			// add reorder listeners
@@ -2648,9 +2648,11 @@ function Property_databaseQuery(cell, propertyObject, property, details) {
 	var databaseConnection = "";
 		
 	// check there is a parent (database) property object
-	if (propertyObject._parent) {
+	if (details && details.parentObject) {
+		
 		// set this DatabaseConnectionIndex to the parent one
-		query.databaseConnectionIndex = propertyObject._parent[property.key].databaseConnectionIndex;
+		query.databaseConnectionIndex = details.parentObject.query.databaseConnectionIndex;
+		
 	} else {
 		// build this databaseConnection html
 		databaseConnection = "Database connection <select style='width:auto;margin:0 10px 5px 0'>" + getDatabaseConnectionOptions(query.databaseConnectionIndex) + "</select>";
