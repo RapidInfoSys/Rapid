@@ -110,8 +110,12 @@ public abstract class Action {
 
 	// this generates the clientside javascript header which has comments to help debugging - used in page and child actions
 	public String getJavaScriptWithHeader(RapidRequest rapidRequest, Application application, Page page, Control control, JSONObject jsonDetails) throws Exception {
+		// assume no comments
+		String comments = "";
+		// if we have comments
+		if (_properties.containsKey("comments")) comments = " - " + _properties.get("comments");
 		// add the header, then the regular JavaScript
-		return "// " + getType() + " action " + getId() + "\n" + getJavaScript(rapidRequest, application, page, control, jsonDetails);
+		return "/* " + getType() + " action " + getId() + comments + " */\n" + getJavaScript(rapidRequest, application, page, control, jsonDetails);
 	};
 
 	// this is where any serverside action happens! (some actions are client side only)
