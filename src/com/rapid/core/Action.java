@@ -112,8 +112,8 @@ public abstract class Action {
 	public String getJavaScriptWithHeader(RapidRequest rapidRequest, Application application, Page page, Control control, JSONObject jsonDetails) throws Exception {
 		// assume no comments
 		String comments = "";
-		// if we have comments
-		if (_properties.containsKey("comments")) comments = " - " + _properties.get("comments");
+		// if we have comments, add them and make it safe if they included a closer
+		if (_properties.containsKey("comments")) comments = " - " + _properties.get("comments").replace("*/", "*");
 		// add the header, then the regular JavaScript
 		return "/* " + getType() + " action " + getId() + comments + " */\n" + getJavaScript(rapidRequest, application, page, control, jsonDetails);
 	};
