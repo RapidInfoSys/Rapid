@@ -6523,7 +6523,19 @@ function Property_dropdownCustomValue(cell, propertyObject, property, details) {
 		// create the drop down, function for values is above.
 		Property_checkbox(cell, propertyObject, property, details);
 	} else {
-		// remove this row
+		// remove rows for custom value and its max length
+		cell.closest("tr").remove();
+	}
+}
+
+//allows users to enter their own custom value into the drop down if searching is on, and codes are off
+function Property_inputMaxLength(cell, propertyObject, property, details) {
+	// only if searching and custom is on
+	if (propertyObject.filter && propertyObject.customValue) {
+		// create the drop down, function for values is above.
+		Property_text(cell, propertyObject, property, details);
+	} else {
+		// remove rows for custom value and its max length
 		cell.closest("tr").remove();
 	}
 }

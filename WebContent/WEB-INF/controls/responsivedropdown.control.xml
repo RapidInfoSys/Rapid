@@ -106,7 +106,17 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <name>Custom value</name>
 	            <changeValueJavaScript>dropdownCustomValue</changeValueJavaScript>
 	            <refreshHtml>true</refreshHtml>
+	            <refreshProperties>true</refreshProperties>
 	            <helpHtml>Allows the user to provide their own value if searching is enabled and codes are not being used.</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>maxLength</key>
+	            <name>Character limit</name>
+	            <setConstructValueFunction>return "";</setConstructValueFunction>
+	            <changeValueJavaScript>inputMaxLength</changeValueJavaScript>
+	            <refreshHtml>true</refreshHtml>
+	            <helpHtml>Sets the character limit of the input box. Does not apply to the number input type.</helpHtml>
 	        </property>
 	        
 	        <property>
@@ -288,7 +298,7 @@ if (this.responsiveLabel) {
 	    
 	    <getDetailsFunction>
 	    	<![CDATA[
-if (this.filter) return {codes:this.codes,filter:this.filter,customValue:this.customValue};
+if (this.filter) return {codes:this.codes,filter:this.filter,customValue:this.customValue,maxLength:this.maxLength};
 			]]>
 	    </getDetailsFunction>
 	    
@@ -481,6 +491,7 @@ if (details && details.filter) {
           .appendTo( this.wrapper )
           .val( value )
           .attr( "title", "" )
+          .attr( "maxLength", details.maxLength || "524288")
           .addClass( "custom-combobox-input form-control" )
           .autocomplete({
             delay: 0,
