@@ -63,6 +63,8 @@ public String escapeValue(String value) {
 
 	String jsonData = request.getParameter("downloadData");
 	
+	if (jsonData == null) jsonData = request.getParameter("data");
+	
 	if (jsonData != null) {
 		
 		JSONObject data = new JSONObject(jsonData);
