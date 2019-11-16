@@ -56,22 +56,25 @@ String message = (String) session.getAttribute("message");
 <div class="body">
 
 		<div class="columnMiddle">
-			<form name="login" id="RapidLogin" method="post">	
+
+			<form name="login" id="RapidLogin" method="post">
+			
 				<div class="row">
 					<div class="columnUserInput">
 						<div class="columnUserIcon" style="">
 							<span class="fa fa-user" style=""></span>
 						</div>
-						<input type="text" placeholder="Username" name="userName" required>
+						<input type="text" placeholder="Username" name="userName" autocomplete="username" required="required">
 					</div>
 				</div>
 				
 				<div class="row">
 					<div class="columnUserIcon"><span class="fa fa-lock"></span></div>
-					<div class="columnUserInput"><input type="password" placeholder="Password" name="userPassword"></div>
+					<div class="columnUserInput"><input type="password" placeholder="Password" name="userPassword" autocomplete="current-password"></div>
 				</div>
 				 
-				<button type="submit"><i class="fa fa-sign-in"></i>  Log in</button>
+				<button type="submit"><i class="fa fa-sign-in"></i>Log in</button>
+				
 			</form>
 				
 			<% 
