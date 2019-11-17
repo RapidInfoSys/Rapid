@@ -50,7 +50,7 @@ if (Email.getEmailSettings() != null) {
 	<link rel="icon" href="favicon.ico"></link>
 	<link rel='stylesheet' type='text/css' href='styles/fonts/fontawesome/css/font-awesome.css'></link>
 	<link rel="stylesheet" type="text/css" href="styles/index.css"></link>
-	<script type="text/javascript" src="scripts/jquery-1.10.2.js"></script>
+	<script type="text/javascript" src="scripts/<%=com.rapid.server.Rapid.JQUERY %>"></script>
 	
 	<script type="text/javascript">
 	
