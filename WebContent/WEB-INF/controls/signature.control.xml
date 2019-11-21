@@ -111,7 +111,7 @@ $(document).ready( function() {
 					canvas.height = canvas.height * ratio;
 				}
 				context.scale(ratio, ratio);
-			    context.putImageData(data, 0, 0);
+			    if (data && data instanceof ImageData) context.putImageData(data, 0, 0);
 			 }
 			 
 	    }
