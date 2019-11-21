@@ -414,7 +414,7 @@ function textarea_autoheight_size(textarea, resetHeight) {
 		// max times
 		var i = 0;
 		// grow 
-		while(i < 1000 && textarea.outerHeight() < textarea[0].scrollHeight + parseFloat(textarea.css("borderTopWidth")) + parseFloat(textarea.css("borderBottomWidth"))) {
+		while(i < 1000 && Math.round(textarea.outerHeight()) < textarea[0].scrollHeight + parseFloat(textarea.css("borderTopWidth")) + parseFloat(textarea.css("borderBottomWidth"))) {
 			textarea.height(textarea.height() + 1);
 			i ++;
 	    };
