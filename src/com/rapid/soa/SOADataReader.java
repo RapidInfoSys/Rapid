@@ -1102,9 +1102,9 @@ public interface SOADataReader {
 							if (o.getClass().equals(SOAJSONObject.class)) {
 								SOAJSONObject soaJsonObject = (SOAJSONObject) o;
 								Iterator<String> keys = soaJsonObject.keys();
-								while(keys.hasNext()) {
+								while (keys.hasNext()) {
 									String key = keys.next();
-									_rootElement.addChildElement(new SOAElement(key, soaJsonObject.getString(key)));
+									_rootElement.addChildElement(new SOAElement(key, "" + soaJsonObject.get(key)));
 								}
 								_rootElement.closeArray();
 
