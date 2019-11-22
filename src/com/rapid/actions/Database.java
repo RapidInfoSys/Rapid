@@ -520,7 +520,7 @@ public class Database extends Action {
 			boolean errorActions = false;
 
 			// prepare a default error hander we'll show if no error actions, or pass to child actions for them to use
-			String defaultErrorHandler = "alert('Error with database action" + (control == null ? page.getId() : " for control " + control.getId()) + "\\n\\n' + server.responseText||message);";
+			String defaultErrorHandler = "alert('Error with database action " + (control == null ? page.getId() : "for control " + control.getId()) + "\\n\\n' + server.responseText||message);";
 			// if we have an offline page
 			if (offlinePage != null) {
 				// update defaultErrorHandler to navigate to offline page
