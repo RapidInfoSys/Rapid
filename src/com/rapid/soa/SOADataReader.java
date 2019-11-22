@@ -913,15 +913,20 @@ public interface SOADataReader {
 			@Override
 			public JSONObject putOnce(String key, Object value) throws JSONException {
 
-				//System.out.println(key + " : " + value.getClass().getSimpleName());
+				// System.out.println(key + " : " + value.getClass().getSimpleName());
 
+				// this line added for our purposes
 				if (value.getClass().equals(String.class)) _currentElement.setValue((String) value);
 
 		        if (key != null && value != null) {
-		            if (this.opt(key) != null) {
-		                throw new JSONException("Duplicate key \"" + key + "\"");
+
+		        	// this modified to accept just the first value of a key - to be ok with Manifest
+		            if (this.opt(key) == null) {
+		            	this.put(key, value);
+		            } else {
+		            	//throw new JSONException("Duplicate key \"" + key + "\"");
 		            }
-		            this.put(key, value);
+
 		        }
 		        return this;
 		    }
