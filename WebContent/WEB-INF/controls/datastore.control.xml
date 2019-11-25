@@ -300,8 +300,13 @@ if (dataStoreData) {
 	   	        <name>Row count</name>
 	   	        <getPropertyFunction>
 			        <![CDATA[
-var dataStoreData = getDataStoreData(id, details);
-if (dataStoreData && dataStoreData.rows) return dataStoreData.rows.length;
+var rows = -1;
+var data = getDataStoreData(id, details);
+if (data && data.rows && data.fields) {
+  rows = data.rows.length;
+  if (rows > 0 && data.fields < 1) rows = 0;
+}
+return rows;
 			        ]]>	  	   	            
 	   	        </getPropertyFunction>	   	        
 	   	    </runtimeProperty>
