@@ -227,13 +227,18 @@ return [{value:"", text:"Please select..."}, {value:"lg-1", text:"1/12"}, {value
   padding: 0 10px;
 }
 
+.ui-menu-item > div {
+	border: 1px solid rgba(0,0,0,0);
+}
+
 .ui-helper-hidden-accessible {
   display:none;
 }
 
 .ui-menu-item-wrapper {
   min-height: 1.5em;
-}			
+}
+
 				</contents>
 			</resource>
 			
