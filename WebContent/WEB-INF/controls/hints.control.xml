@@ -102,8 +102,8 @@ function addControlHint(id, style, type, text) {
 					hint.show();
 					var left = ev.pageX + 5;
 					var top = ev.pageY + 5;
-					if (ev.pageX + 5 + hint.outerWidth(true) > $(window).width()) left = ev.pageX - hint.outerWidth(true) - 5;
-					if (ev.pageY + 5 + hint.outerHeight(true) > $(window).height()) top = ev.pageY - hint.outerHeight(true) - 5;
+					if (ev.pageX + 5 + hint.outerWidth(true) > $(window).width() + $(window).scrollLeft()) left = ev.pageX - hint.outerWidth(true) - 5;
+					if (ev.pageY + 5 + hint.outerHeight(true) > $(window).height() + $(window).scrollTop()) top = ev.pageY - hint.outerHeight(true) - 5;
 					hint.css({
 						left: left,
 						top: top
@@ -116,8 +116,8 @@ function addControlHint(id, style, type, text) {
 					hint.show();
 					var left = ev.pageX + 5;
 					var top = ev.pageY + 5;
-					if (ev.pageX + 5 + hint.outerWidth(true) > $(window).width()) left = ev.pageX - hint.outerWidth(true) - 5;
-					if (ev.pageY + 5 + hint.outerHeight(true) > $(window).height()) top = ev.pageY - hint.outerHeight(true) - 5;
+					if (ev.pageX + 5 + hint.outerWidth(true) > $(window).width() + $(window).scrollLeft()) left = ev.pageX - hint.outerWidth(true) - 5;
+					if (ev.pageY + 5 + hint.outerHeight(true) > $(window).height() + $(window).scrollTop()) top = ev.pageY - hint.outerHeight(true) - 5;
 					hint.css({
 						left: left,
 						top: top
