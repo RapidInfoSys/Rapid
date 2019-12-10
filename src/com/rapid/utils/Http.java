@@ -51,11 +51,17 @@ public class Http {
 			_value = value;
 		}
 
+		// override
+		@Override
+		public String toString() {
+			return _name + ":" + _value;
+		}
+
 	}
 
 	// helper method
 	public static List<Header> getHeaders(Header... headers) {
-		List<Header> headersList = new ArrayList<Header>();
+		List<Header> headersList = new ArrayList<>();
 		if (headers != null) {
 			for (Header header : headers) {
 				headersList.add(header);
