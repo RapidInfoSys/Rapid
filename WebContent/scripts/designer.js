@@ -83,8 +83,10 @@ var _mouseDownYOffset = 0;
 var _sizes = {};
 // track whether we've moused down on the control panel resize
 var _controlPanelSize = false;
+var _controlPanelSizeLeft = false;
 // track whether we've moused down on the properties panel resize
 var _propertiesPanelSize = false;
+var _propertiesPanelSizeRight = false;
 // track whether we've moused down on the dialogue resize
 var _dialogueSize = false;
 // the dialogue's id
@@ -995,7 +997,7 @@ function selectControl(control) {
 		body.scrollLeft(scrolLeft);
 						
 		// resize
-		windowResize("selectControl");
+		if ($("#controlPanel").offset().left <= 0) windowResize("selectControl");
 		
 	} else {
 		
@@ -1016,7 +1018,7 @@ function selectControl(control) {
 		showStyles(null);
 		
 		// resize the window
-		windowResize("mousedone-nocontrol");
+		if ($("#controlPanel").offset().left <= 0) windowResize("mousedone-nocontrol");
 		
 	}	
 	
@@ -1027,7 +1029,7 @@ function showDesigner() {
 	// hide the loading message
 	$("#loading").hide();
 	// set the background colour for large dialogues not to see the grey when properties panel is fixed and the dialogue is really tall
-	$("body").css({"background-color":"#202326"});
+	$("body").css({"background-color":"#000"});
 	// show the control panel and properties panel
 	$("#designerTools").show();
 	// show the page
@@ -2101,7 +2103,28 @@ function updateGuidelines() {
 		// remove the guidlines css
 		css.remove();
 	}
+}
 
+function updateScrollbars() {
+	
+	// assume we don't want the scrollbar
+	var showScrollbars = false;
+	// if we have local storage
+	if (typeof(localStorage) !== "undefined") {
+		// if we have a local storage item for this
+		if (localStorage.getItem("_scrollbars")) {
+			// parse it to a boolean
+			showScrollbars = JSON.parse(localStorage.getItem("_scrollbars"));
+		} 
+	}
+	
+	if (showScrollbars) {
+		$("#propertiesPanel").removeClass("hideScrollbars");
+		$("#controlPanel").removeClass("hideScrollbars");
+	} else {
+		$("#propertiesPanel").addClass("hideScrollbars");
+		$("#controlPanel").addClass("hideScrollbars");
+	}
 }
 
 // a function for which of page prev / next are usable
@@ -2158,13 +2181,6 @@ $(document).ready( function() {
 	
 	// prevent any dragging and ghost images 
 	_window.on("dragstart", function(ev) { ev.preventDefault(); });
-	
-	_window.scroll( function() {
-		// adjust the control panel left / right
-		controlPanelInner.css("left",-$(this).scrollLeft() + 10);
-		// adjust the properties panel left/right
-		propertiesPanel.css("right",-$(this).scrollLeft());
-	});
 	
 	// the iframe in which we load the page
 	_pageIframe = $("#page");		
@@ -2461,6 +2477,9 @@ $(document).ready( function() {
 		        		// update whether guidelines are visible
 		        		updateGuidelines();	
 		        		
+		        		// update whether the scroll bar is visible
+		        		updateScrollbars();
+		        		
 		        		// update which of page prev/next are usable
 		        		updatePrevNext();
 			        				        				        	
@@ -2576,6 +2595,14 @@ $(document).ready( function() {
 		// retain the mouse offset
 		_mouseDownXOffset = ev.pageX - parseInt($("#controlPanel").css("width"));
 	});
+		
+	// control panel resize
+	$("#controlPanelSizeLeft").on("mousedown", function(ev) {
+		// retain that we are resizing the control panel
+		_controlPanelSizeLeft = true;
+		// retain the mouse offset
+		_mouseDownXOffset = ev.pageX - parseInt($("#controlPanel").css("width"));
+	});
 	
 	// property panel resize
 	$("#propertiesPanelSize").on("mousedown", function(ev) {
@@ -2584,9 +2611,26 @@ $(document).ready( function() {
 		// retain the mouse offset
 		_mouseDownXOffset = ev.pageX - $("#propertiesPanel").offset().left;
 	});
+	
+	// property panel resize
+	$("#propertiesPanelSizeRight").on("mousedown", function(ev) {
+		// retain that we are resizing the control panel
+		_propertiesPanelSizeRight = true;
+		// retain the mouse offset
+		_mouseDownXOffset = ev.pageX - $("#propertiesPanel").offset().left;
+	});
+	
+	$("#controlPanelPin").mousedown( function(ev) {
+		ev.stopPropagation();
+	});
+	
+	$("#controlPanelPin").mouseup( function(ev) {
+		ev.stopPropagation();
+	});
 		
 	// panel pin
 	$("#controlPanelPin").click( function(ev) {
+		
 		// check pinned
 		if (_panelPinned) {
 			_panelPinned = false;			
@@ -2599,16 +2643,20 @@ $(document).ready( function() {
 			selectControl(_selectedControl);
 			// hide control panel
 			hideControlPanel();
+			
 		} else {
 			_panelPinned = true;
 			_panelPinnedOffset = $("#controlPanel").width() + 21; // add the padding and border
 			$("#controlPanelPin").html("<img src='images/left.light.svg' title='unpin panel'>");
-			// resize the window
-			windowResize("unpin");
-			// arrange the non visible controls due to the shift in the panel
-			arrangeNonVisibleControls();
+			
+			if ($("#controlPanel").offset().left <= 0) {
+				// resize the window
+				windowResize("unpin");
+				// arrange the non visible controls due to the shift in the panel
+				arrangeNonVisibleControls();
+			}
 			// reselect control
-			selectControl(_selectedControl);			
+			selectControl(_selectedControl);
 		}
 	});
 	
@@ -2625,9 +2673,12 @@ $(document).ready( function() {
 	});
 	
 	// panel slide in
-	$("#controlPanel").mouseleave( function(ev){		
+	$("#controlPanel").mouseleave( function(ev){
+		
+		ev.stopPropagation();
+		
 		// if the panel isn't pinned and this not the selected control
-		if (!_panelPinned && !$(ev.target).is("select")) {
+		if (!_panelPinned && !$(ev.target).is("select") && !mouseDownOnHeader) {
 			// slide the control panel back in
 			hideControlPanel(true);	
 		}
@@ -2901,6 +2952,14 @@ $(document).ready( function() {
 	// control highlight
 	$("#pageMapHighlight").click( function(ev){
 		scrollMapToSelectedControl(true);
+	});
+	
+	$("#propertiesPanelPin").mousedown( function(ev) {
+		ev.stopPropagation();
+	});
+	
+	$("#propertiesPanelPin").mouseup( function(ev) {
+		ev.stopPropagation();
 	});
 	
 	// properties panel pin (for now just hide)
@@ -3317,6 +3376,201 @@ $(document).ready( function() {
 		
 		
 	});
+	
+	// properties panel to be moved
+	var propertiesPanel = document.querySelector("#propertiesPanel");
+	// part of the properties panel to move it by
+	var propertiesHeader = document.querySelector("#propertiesTitlebar");
+
+	// properties panel to be moved
+	var controlPanel = document.querySelector("#controlPanel");
+	// part of the properties panel to move it by
+	var controlHeader = document.querySelector("#controlPanelTitlebar");
+	
+	var header
+	var draggable;
+	
+	// is the mouse button down
+	var mouseDownOnHeader = false;
+
+	// last known cursor position on the window
+	var cursorX = 0;
+	var cursorY = 0;
+
+	propertiesHeader.addEventListener("mousedown", function(event) {
+		// get the cursors position before drag starts
+	    cursorX = event.clientX;
+	    cursorY = event.clientY;
+	    
+	    header = propertiesHeader;
+	    draggable = propertiesPanel;
+	    
+	    draggable.style.transition = "none";
+	    // store state of mouse button
+	    mouseDownOnHeader = true;
+	    
+	    controlPanel.style.zIndex = "10011"
+	    propertiesPanel.style.zIndex = "10012"
+	});
+
+	controlHeader.addEventListener("mousedown", function(event) {
+		// get the cursors position before drag starts
+	    cursorX = event.clientX;
+	    cursorY = event.clientY;
+	    
+	    header = controlHeader;
+	    draggable = controlPanel;
+	    
+	    draggable.style.transition = "none";
+	    // store state of mouse button
+	    mouseDownOnHeader = true;
+	    
+	    propertiesPanel.style.zIndex = "10011"
+	    controlPanel.style.zIndex = "10012"
+	});
+
+	// position the properties panel after a drag has ended
+	function rescueDraggable() {
+		
+		// if drag ended (not just mouse leaving window)
+	    if (mouseDownOnHeader) {
+	    	// store state of mouse button
+	        mouseDownOnHeader = false;
+	        // limit Y-position to top of screen (0) and 120px above bottom of screen
+	        var draggableTop = Math.min(Math.max(
+	            draggable.offsetTop + event.clientY - cursorY,
+	            0), window.innerHeight - 120);
+	        // limit X-position to left and right sides of screen
+	        var draggableLeft = Math.min(Math.max(
+	            draggable.offsetLeft + event.clientX - cursorX,
+	            0), document.body.offsetWidth - draggable.offsetWidth);
+	        // is the panel on the right edge of the screen
+	        var draggableOnRight = draggableLeft === document.body.offsetWidth - draggable.offsetWidth;
+
+	        draggable.style.transition =
+	            "top 0.15s ease-out, left 0.15s ease-out, height 0.15s ease-out";
+	        // if snapped to an edge
+	        if (draggableLeft === 0 || draggableOnRight) {
+	        	// fill height of screen
+	        	draggableTop = 0;
+		        draggable.style.height = window.innerHeight + "px";
+		        
+	        } else {
+	        	// prevent overflowing bottom of window
+		        draggable.style.height = (window.innerHeight - draggableTop) + "px";
+	        }
+	        
+	        draggable.style.top = draggableTop + "px";
+	        
+	        draggable.style.right = "unset";
+	        draggable.style.left = draggableLeft + "px";
+	            
+	        setTimeout(function() {
+	        	// remove animation after animations have ended
+	        	draggable.style.transition = "none";
+	        	// if now on right edge
+	        	if (draggableOnRight) {
+	        		// pin to right edge
+	        		draggable.style.left = "unset";
+	        		draggable.style.right = "0px";
+	        		
+		    	    if (draggable == controlPanel) {
+		    	    	$("#controlPanelSize").hide();
+		    	    }
+
+		    	    if (draggable == propertiesPanel) {
+		    	    	$("#propertiesPanelSizeRight").hide();
+		    	    }
+	        	} else {
+	        		
+	        		$("#controlPanelSize").show();
+	        		$("#propertiesPanelSizeRight").show();
+		        	
+		    	    if (controlPanel.offsetLeft <= 0) {
+		    	    	$("#controlPanelSizeLeft").hide();
+		    	    } else {
+		    	    	$("#controlPanelSizeLeft").show();
+		    	    }
+		    	    
+		    	    if (propertiesPanel.offsetLeft <= 0) {
+		    	    	$("#propertiesPanelSize").hide();
+		    	    } else {
+		    	    	$("#propertiesPanelSize").show();
+		    	    }
+	        	}
+	            	
+	        }, 150); // same duration as css transitions
+	        
+		    // blow up page if no panel is docked
+		    if ((controlPanel.offsetLeft != 0 || controlPanel.style.display == "none")
+					&& (propertiesPanel.offsetLeft != 0 || propertiesPanel.style.display == "none")
+					&& $("#page").offset().left != 0)
+		    {
+		    	$("#page").css({width:"100%", left:"0"});
+		    	_panelPinnedOffset = 0;
+		    }
+		    // crush page if panel is docking
+		    if (draggable.offsetLeft <= 0 && $("#page").offset().left <= 0) {
+		    		
+		    	$("#page").css({width:($(window).width() - draggable.offsetWidth) + "px", left:draggable.offsetWidth});
+		    	_panelPinnedOffset = draggable.offsetWidth;
+		    }
+	    	arrangeNonVisibleControls();
+	    }
+	};
+	
+	// listen for end of drags
+	window.addEventListener("mouseup", rescueDraggable);
+	document.body.addEventListener("mouseleave", rescueDraggable);
+
+	// if window is resized, keep the panel on screen
+	window.addEventListener("resize", function() {
+	    
+		[propertiesPanel, controlPanel].forEach(function(draggable) {
+		
+			// limit Y-position to 120px above bottom of screen
+			draggable.style.top = (Math.min(
+	    		draggable.offsetTop,
+	        	window.innerHeight - 120)
+	    	) + "px";
+	    	// limit X-position to right side of screen
+	    	if (draggable.style.right === "unset") {
+	        	
+	        	draggable.style.left = (Math.min(
+	        		draggable.offsetLeft,
+	            	document.body.offsetWidth - draggable.offsetWidth)
+	        	) + "px";
+	    	}
+	    	// prevent overflowing bottom of window
+	    	draggable.style.height = window.innerHeight - draggable.offsetTop;
+		})
+	});
+
+	// listen for mouse dragging panel header
+	document.addEventListener("mousemove", function(event) {
+	    // if drag started (not just mouse moving over header)
+	    if (mouseDownOnHeader) {
+	        // move panel according to mouse
+	        draggable.style.top = (draggable.offsetTop + event.clientY - cursorY) + "px";
+	        draggable.style.left = (draggable.offsetLeft + event.clientX - cursorX) + "px";
+	        // prevent overflowing bottom of window
+	        draggable.style.height = (window.innerHeight - draggable.offsetTop) + "px";
+	    }
+	    // store that last mouse position
+	    cursorX = event.clientX;
+	    cursorY = event.clientY;
+		
+	    // blow up page if no panel is docked
+		if (mouseDownOnHeader
+				&& (controlPanel.offsetLeft != 0 || controlPanel.style.display == "none")
+				&& (propertiesPanel.offsetLeft != 0 || propertiesPanel.style.display == "none")
+				&& $("#page").offset().left != 0)
+		{
+			$("#page").css({width:"100%", left:"0"});
+			_panelPinnedOffset = 0;
+	    	arrangeNonVisibleControls();
+		}
+	});
 							
 });
 
@@ -3432,7 +3686,7 @@ $(document).on("mousemove", function(ev) {
 		// get the min-width
 		var minWidth = parseInt(panel.css("min-width"));
 		// calculate the new width less offset and padding
-		var width = ev.pageX - _mouseDownXOffset;
+		var width = ev.pageX - panel.offset().left + 5;
 		// if width is between max and min
 		if (width >= minWidth && width < _window.width() - _scrollBarWidth - 21) {
 			// size the controls list
@@ -3440,7 +3694,27 @@ $(document).on("mousemove", function(ev) {
 			// retain this width in the sizes object
 			_sizes["controlPanelWidth"] = width;
 		}
-				
+		
+	} else if (_controlPanelSizeLeft) {
+	
+		// get the control panel
+		var panel = $("#controlPanel");
+		// get the min-width
+		var minWidth = parseInt(panel.css("min-width"));
+		// calculate the new width less offset and padding
+		var offsetLeft = ev.pageX - 5;
+		var offsetRight = ($(window).width() - (panel.offset().left + panel.outerWidth()));
+		var width = _window.width() - offsetLeft - offsetRight;
+		// if width is between max and min
+		if (width >= minWidth && width <  _window.width() - _scrollBarWidth - 21) {
+			// size the properties panel
+			panel.css("width", width);
+			// retain this width in the sizes object
+			_sizes["controlPanelWidth"] = width;
+			
+			$(panel).css("left", offsetLeft);
+		}
+		
 	} else if (_propertiesPanelSize) {
 	
 		// get the control panel
@@ -3448,17 +3722,35 @@ $(document).on("mousemove", function(ev) {
 		// get the min-width
 		var minWidth = parseInt(panel.css("min-width"));
 		// calculate the new width less offset and padding
-		var width = _window.width() - ev.pageX - 21 + _mouseDownXOffset;
+		var offsetLeft = ev.pageX - 5;
+		var offsetRight = ($(window).width() - (panel.offset().left + panel.outerWidth()));
+		var width = _window.width() - offsetLeft - offsetRight;
 		// if width is between max and min
 		if (width >= minWidth && width <  _window.width() - _scrollBarWidth - 21) {
 			// size the properties panel
 			panel.css("width", width);
-			// size the inner panel
-			$("#propertiesPanelInner").width(width);
+			// retain this width in the sizes object
+			_sizes["propertiesPanelWidth"] = width;
+			
+			$(panel).css("left", offsetLeft);
+		}
+		
+	} else if (_propertiesPanelSizeRight) {
+	
+		// get the control panel
+		var panel = $("#propertiesPanel");
+		// get the min-width
+		var minWidth = parseInt(panel.css("min-width"));
+		var width = ev.pageX - panel.offset().left + 5;
+		// if width is between max and min
+		if (width >= minWidth && width <  _window.width() - _scrollBarWidth - 21) {
+			//panel.right("unset");
+			// size the properties panel
+			panel.css({"width":width, left:panel.offset().left});
 			// retain this width in the sizes object
 			_sizes["propertiesPanelWidth"] = width;
 		}
-				
+		
 	} else if (_dialogueSize) {
 		
 		// get the dialogue
@@ -3611,13 +3903,12 @@ $(document).on("mouseup", function(ev) {
 	_mouseDownYOffset = 0;	
 	_addedControl = false;
 	_reorderDetails = null;
-	_propertiesPanelSize = false;
 	_dialogueSize = false;
 	
-	if (_controlPanelSize) {
+	if (_controlPanelSize || _controlPanelSizeLeft) {
 		
 		// only if the panel is pinned
-		if (_panelPinnedOffset > 0) {
+		if ($("#controlPanel").offset().left <= 0) {
 			// set the latest panel pinned offset (plus padding and border)
 			_panelPinnedOffset = $("#controlPanel").width() + 21;
 			// size the window
@@ -3625,6 +3916,23 @@ $(document).on("mouseup", function(ev) {
 		}
 		// set to false
 		_controlPanelSize = false;
+		_controlPanelSizeLeft = false;
+		// arrange controls as  the left reference has changed
+		arrangeNonVisibleControls();
+		
+	} else if (_propertiesPanelSize || _propertiesPanelSizeRight) {
+		
+		// only if the panel is pinned
+		if ($("#propertiesPanel").offset().left <= 0) {
+			_panelPinned = true;
+			// set the latest panel pinned offset (plus padding and border)
+			_panelPinnedOffset = $("#propertiesPanel").width() + 21;
+			// size the window
+			windowResize("propertiesPanelSize");			
+		}
+		// set to false
+		_propertiesPanelSize = false;
+		_propertiesPanelSizeRight = false;
 		// arrange controls as  the left reference has changed
 		arrangeNonVisibleControls();
 		
@@ -3831,12 +4139,13 @@ function showPropertiesPanel() {
 		propertiesDialogues.find("img").off("mousedown");
 	}
 
-	// size the panel (less padding) and show - note the .stop(true, true) which clears any current animation queue and sets the final settings immediately 
-	$("#propertiesPanel").css("height",getHeight() - 20).stop(true, true).show("slide", {direction: "right"}, 200, function(){
+	// size the panel (less padding) and show - note the .stop(true, true) which clears any current animation queue and sets the final settings immediately
+	//.css("height",getHeight() - 20)
+	$("#propertiesPanel").stop(true, true).show("slide", {direction: "right"}, 200, function(){
 		// show the inner 
 		$("#propertiesPanelInner").show()
 		// resize in case the properties panel is not tall enough
-		windowResize("showProperties");
+		//windowResize("showProperties");
 	});
 
 }
@@ -3849,7 +4158,9 @@ function hideControlPanel(resetOffset) {
 		// set the panel pin offset
 		if (resetOffset) _panelPinnedOffset = 0;
 		// resize the window
-		windowResize("pin");		
+		windowResize("pin");
+		
+		$("#controlPanel").css({"top":0, "left":0});
 	});
 	// hide the inner
 	$("#controlPanelInner").hide();
@@ -3859,7 +4170,7 @@ function hidePropertiesPanel() {
 	// hide the inner
 	$("#propertiesPanelInner").hide();
 	// slide in the panel - note the .stop(true, true) which clears any current animation queue and sets the final settings immediately 
-	$("#propertiesPanel").stop(true, true).hide("slide", {direction: "right"}, 200);
+	$("#propertiesPanel").stop(true, true).hide();
 }
 
 // called whenever the page is resized
@@ -3894,10 +4205,10 @@ function windowResize(ev) {
 	var height = getHeight();
 				
 	// adjust controlPanel height, less it's padding
-	controlPanel.css({height: height - 20});
+	controlPanel.css({height: height});
 	
 	// adjust propertiesPanel height, less it's padding
-	propertiesPanel.css({height: height - 20});
+	propertiesPanel.css({height: height});
 			
 	// get the device
 	var device = _devices[_device];

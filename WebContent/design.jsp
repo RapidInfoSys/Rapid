@@ -154,16 +154,22 @@ if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRe
 		<div id="controlPanelShow" style="z-index:10010"></div>
 		
 		<div id="controlPanel" style="z-index:10011; width: 205px; border: none;">
+			
+			<div id="controlPanelTitlebar">
+				
+				<div id="controlPanelPin">
+					<img src='images/left.light.svg' title='unpin panel'>
+				</div>
+				
+			</div>
+		
+			<div id="controlPanelSizeLeft" ></div>
 		
 			<div id="controlPanelSize" ></div>
 															
 			<div id="controlPanelInner">
-			
-				<div id="controlPanelPin">
-					<img src='images/left.light.svg' title='unpin panel'>
-				</div>
 																
-				<div class="buttons">					
+				<div id="adminButtons" class="buttons">					
 					<button id="appAdmin" class="buttonLeft" title="Open the Rapid Admin screen">Rapid Admin</button>
 					<button id="appAdminNewTab" class="buttonRight buttonImage" title="Open the Rapid Admin screen in a new tab"></button>
 					
@@ -235,13 +241,17 @@ if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRe
 		</div>
 		
 		<div id="propertiesPanel" style="z-index:10011">
-		
+			
+			<div id="propertiesTitlebar">
+			
+				<div id="propertiesPanelPin"></div>
+				
+			</div>
+			
 			<div id="propertiesPanelSize" ></div>
 																					
 			<div id="propertiesPanelInner">
 			
-				<div id="propertiesPanelPin"></div>
-										
 				<div class="untilsPanelDiv">
 							
 					<i id="helpPropertiesPanel" class="headerHelp glyph fa hintIcon" style="color:white; font-size:15px;"></i>
@@ -292,7 +302,9 @@ if (security.checkUserPassword(rapidRequest, rapidRequest.getUserName(), rapidRe
 				<div id="stylesPanelDiv" data-dialogueId="stylesPanel"></div>		
 			
 			</div>
-																			
+			
+			<div id="propertiesPanelSizeRight" ></div>
+			
 		</div>
 		
 		<div id="propertiesDialogues" data-dialogueId="propertiesDialogues"></div>
