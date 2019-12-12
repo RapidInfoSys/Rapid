@@ -1403,13 +1403,23 @@ function Property_fields(cell, action, property, details) {
 	
 }
 
-function Property_inputMaxLength(cell, input, property, details) {
+function Property_inputControlType(cell, input, property, details) {
 	// default to a 100 if undefined (for backwards population)
 	if (input.maxLength === undefined) input.maxLength = 100;
-	// if this is a large and is at the regular default, default to 1000
-	if (input.controlType == "L" && input.maxLength == 100) input.maxLength = 1000;
-	// now use a regular text
-	Property_text(cell, input, property);
+	// now use a regular select
+	Property_select(cell, input, property);
+	// make a listener for the select to update the maxLength
+	addListener( cell.find("select").change( input, function(ev) {
+		if (ev.data) {
+			if (ev.data.controlType == "L" && ev.data.maxLength == 100) {
+				ev.data.maxLength = 1000;
+			} else if (ev.data.maxLength == 1000) {
+				ev.data.maxLength = 100;
+			}
+			// update the properties
+			showProperties(_selectedControl);
+		}
+	}));
 }
 
 function Property_inputAutoHeight(cell, input, property, details) {
