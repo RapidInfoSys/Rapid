@@ -5462,6 +5462,38 @@ function Property_guidelines(cell, propertyObject, property, details) {
 	updateGuidelines();	
 }
 
+//this function controls whether the panel scroll bar is visible
+function Property_scrollbars(cell, propertyObject, property, details) {
+	// assume we want them
+	var showScrollbars = true;
+	// if we have local storage
+	if (typeof(localStorage) !== "undefined") {
+		// if we have a local storage item for this
+		if (localStorage.getItem("_scrollbars")) {
+			// parse it to a boolean
+			showScrollbars = JSON.parse(localStorage.getItem("_scrollbars"));
+		} 
+	}
+	// add the checkbox
+	cell.html("<input type='checkbox' />");
+	// get the check box
+	var checkbox =  cell.find("input");
+	// set the checked value
+	checkbox.prop("checked", showScrollbars);
+	// add a listener for it to update local storage
+	addListener(checkbox.change( function(ev) {
+		// if we have local storage
+		if (typeof(localStorage) !== "undefined") {
+			// retain the new value
+			localStorage.setItem("_scrollbars", JSON.stringify($(ev.target).prop("checked"))); 
+			// update
+			Property_scrollbars(cell, propertyObject, property, details);
+		}
+	}));
+	// (desginer.js)
+	updateScrollbars();
+}
+
 // possible mobileActionType values used by the mobileActionType property
 var _mobileActionTypes = [["dial","Dial number"],["sms","Send text/sms message"],["email","Send email"],["url","Open url"],["addImage","Get image"],["uploadImages","Upload images"],["addBarcode","Scan barcode"],["navigate","Navigate to"],["sendGPS","Send GPS position"],["stopGPS","Stop GPS updates"],["message","Status bar message"],["disableBackButton","Disable back button"],["swipe","Swipe"],["online","Online actions"]];
 

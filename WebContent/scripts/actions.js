@@ -385,7 +385,9 @@ function showEvents(control) {
 	} // page simple check
 	
 	// check size and if need be resize property panel
-	windowResize("Show events");
+	if ($("#controlPanel").offset().left <= 0) {
+		windowResize("Show events");
+	}
 	
 }
 

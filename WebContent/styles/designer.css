@@ -51,6 +51,7 @@ hr {
 }
 
 #page {
+	transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
 	margin: -1px;
 	position: absolute;
 	overflow: hidden;
@@ -83,18 +84,34 @@ hr {
 	width: 10px;
 }
 
+#adminButtons {
+	margin-top: 5px;
+}
+
 #controlPanelPin {
 	position: absolute;
-	right: 0;
-	top: 0;
+	right: 23px !important;
+	top: 3px !important;
 	cursor: pointer;
-	width: 14px;
-	height: 14px;
-	z-index: 1;
+	width: 24px;
+	height: 24px;
+}
+
+.hideScrollbars #controlPanelPin {
+	right: 3px !important;
+}
+
+#controlPanelPin:hover {
+	background-color: #494949;
 }
 
 #controlPanel {
-	position: absolute;
+	transition: left 0.2s ease-in-out;
+	position: fixed;
+	overflow-y: scroll !important;
+    max-height: 100vh;
+    padding: 0px 10px 20px 10px;
+    box-sizing: border-box;
 	left: 0px;
 	top: 0px;
 	width: 195px; 
@@ -103,7 +120,6 @@ hr {
 	background: #dedede;
 	overflow: hidden;
 	outline: none;
-	padding: 10px;
 	text-align: center;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
@@ -116,17 +132,8 @@ hr {
 	-ms-user-drag: none;
 }
 
-#controlPanelSize {
-	background-color: red;
-	opacity: 0;
-	float: right;
-	position: relative;
-	top: 0;
-	right: 0;
-	width: 4px;
-	height: 100%;
-	margin-right: -10px;
-	cursor: ew-resize;
+#controlPanelInner {
+	position: relative !important;
 }
 
 #controlPanel h2 {
@@ -138,6 +145,7 @@ hr {
 	border-top: 1px solid #777;
 	text-transform: uppercase;
 	color: #FFF;
+	letter-spacing: 0.5px;
 }
 
 #controlPanel select {
@@ -193,7 +201,7 @@ table.stylesPanelTable select.propertiesPanelTable:focus {
 	clear: left;
 	text-transform: uppercase;
     font-size: 12px;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
 	margin-top: 5px;
 	margin-bottom: 3px;
 }
@@ -418,14 +426,16 @@ img.conflictimgage {
 }
 
 div#propertiesPanel {
-	position: absolute;
+	position: fixed;
+	overflow-y: scroll !important;
+	max-height: 100vh;
 	right: 0px;
 	top: 0px;
 	width: 200px;	
 	min-width: 200px;
 	overflow: hidden;
 	padding: 0px 10px 20px 10px;
-	text-align: center;
+	box-sizing: border-box;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
@@ -434,25 +444,48 @@ div#propertiesPanel {
 	user-select: none;
 }
 
-div#propertiesPanelInner {
+div#propertiesPanel.hideScrollbars, div#controlPanel.hideScrollbars {
+    -ms-overflow-style: none;
+}
+
+div#propertiesPanel.hideScrollbars::-webkit-scrollbar,
+div#controlPanel.hideScrollbars::-webkit-scrollbar {
+    display: none;
+}
+
+div#propertiesPanelInner, div#controlPanelInner {
 	right: 10px;
+	margin: 30px 0 30px;
+	position: absolute !important;
+	width: calc(100% - 20px) !important;
+	text-align: center;
 }
 
 .propertiesPanelDiv {
 	padding-top:0px;
 }
 
-#propertiesPanelSize {
+#propertiesPanelSize, #propertiesPanelSizeRight,
+#controlPanelSizeLeft, #controlPanelSize {
   	background-color: red;
   	opacity: 0;
-  	float: left;
-  	position: relative;
-  	top: 0;
-  	left: 0;
-  	width: 4px;
+  	width: 10px;
   	height: 100%;
+  	margin-top: 30px;
   	margin-left: -10px;
   	cursor: ew-resize;
+}
+
+#controlPanelSizeLeft, #propertiesPanelSize {
+	float: left;
+    margin-left: -10px;
+    position: relative;
+}
+
+#controlPanelSize, #propertiesPanelSizeRight {
+	float: right;
+    margin-right: -10px;
+    position: relative;
 }
 
 .untilsPanelDiv .headerHelp {
@@ -461,15 +494,19 @@ div#propertiesPanelInner {
 
 #propertiesPanelPin {
 	position: absolute;
-	left: 0;
-	top: 0;
+	left: 3px !important;
+    top: 3px !important;
 	cursor: pointer;
-	width: 14px;
-	height: 14px;
+	width: 24px;
+	height: 24px;
 	z-index: 1;
- 	background-image: url("../images/right.light.svg");
+ 	background-image: url("../images/close.light.svg");
  	background-repeat: no-repeat;
- 	background-position: left -2px center;
+ 	background-position: left 0px center;
+}
+
+#propertiesPanelPin:hover {
+	background-color: #494949;
 }
 
 div#propertiesPanel h2 {
@@ -484,6 +521,7 @@ div#propertiesPanel h2 {
 	text-transform: uppercase;
 	cursor: pointer;
 	color: #FFF;
+	letter-spacing: 0.5px;
 }
 
 .propertiesPanelDiv h3 {
@@ -929,6 +967,7 @@ Hint style
 	opacity: 0.9;
 	box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
 	z-index:10100;
+	pointer-events: none;
 }
 
 .hint span {
@@ -1063,6 +1102,17 @@ select optgroup {
 #propertiesPanel #propertiesPanelInner .untilsPanelDiv .buttons button {
     padding: 0 6px;
     height: 24px;
+}
+
+#propertiesTitlebar, #controlPanelTitlebar {
+	height: 30px;
+	width: inherit;
+	position: fixed;
+	margin-left: -10px;
+	background: #202326;
+	border-bottom: 1px solid #777;
+	z-index: 1;
+	cursor: move;
 }
 
 .untilsPanelDiv {
@@ -1388,3 +1438,4 @@ div.CodeMirror-scroll {
 @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
 	
 }
+

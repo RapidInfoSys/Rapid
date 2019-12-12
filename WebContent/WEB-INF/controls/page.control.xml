@@ -166,6 +166,14 @@ return [[0,"Normal"],[1,"Submission confirmation"],[2,"Submission error"],[3,"Sa
 	        </property>
 	        
 	         <property>
+	            <key>scrollbars</key>
+	            <name>Show scroll bars</name>
+	            <setConstructValueFunction>return true;</setConstructValueFunction>
+	            <changeValueJavaScript>scrollbars</changeValueJavaScript>
+	            <helpHtml>Shows the scroll bars on panels.</helpHtml>
+	        </property>
+	        
+	         <property>
 	            <key>pageOrder</key>
 	            <name>Page order</name>
 	            <changeValueJavaScript>pageOrder</changeValueJavaScript>
