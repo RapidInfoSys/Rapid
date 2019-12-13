@@ -349,15 +349,7 @@ return "<option value=''>Please select...</option><option value ='html'" + (this
 	            </getValuesFunction>
 	            <helpHtml>The control the swipe is performed on</helpHtml>
 	        </property>
-	        
-	        <property>
-	            <key>onlineActions</key>
-	            <name>Actions</name>
-	            <visible>false</visible>
-	            <changeValueJavaScript>childActions</changeValueJavaScript>
-	            <helpHtml>Allows you to define actions to be carried out applicable to the type. For example if the mobile device was swiped, or has an established internet connection.</helpHtml>
-	        </property>
-	        
+	        	        	        
 	        <property>
 	            <key>onlineWorking</key>
 	            <name>Working dialogue</name>
@@ -372,6 +364,14 @@ return "<option value=''>Please select...</option><option value ='html'" + (this
 	            <visible>false</visible>
 	            <changeValueJavaScript>navigationPage</changeValueJavaScript>
 	            <helpHtml>Sets a page to appear as dialogue if the mobile device is not connected to the Internet.</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>onlineActions</key>
+	            <name>Actions</name>
+	            <visible>false</visible>
+	            <changeValueJavaScript>childActions</changeValueJavaScript>
+	            <helpHtml>Allows you to define actions to be carried out applicable to the type. For example if the mobile device was swiped, or has an established internet connection.</helpHtml>
 	        </property>
 	        
 	    </properties>
