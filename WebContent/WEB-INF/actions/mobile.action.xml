@@ -688,7 +688,7 @@ function base64toBlob(base64Data, contentType) {
     
 }
 
-function uploadImages(controlIds, successCallback, errorCallback) {
+function uploadImages(controlIds, ev, successCallback, errorCallback) {
 
 	// If we have one
 	if (controlIds && controlIds.length > 0) {
@@ -713,7 +713,9 @@ function uploadImages(controlIds, successCallback, errorCallback) {
 					
 					let img = $(this);
 					
-					images.push({url:"~?a=" + _appId + "&action=uploadImage&name=" + img.attr("data-filename"),dataURL:img.attr("src")});
+					let src = img.attr("src");
+					
+					if (src.indexOf("data") == 0) images.push({url:"~?a=" + _appId + "&action=uploadImage&name=" + img.attr("data-filename"), dataURL:src});
 										
 				});
 			
@@ -730,7 +732,7 @@ function uploadImages(controlIds, successCallback, errorCallback) {
 				var dateString = date.getFullYear() + "" + padNumberWithZeros(date.getMonth() + 1,2) + "" + padNumberWithZeros(date.getDate(),2) + "_" + padNumberWithZeros(date.getHours(),2) + "" + padNumberWithZeros(date.getMinutes(),2) + "" + padNumberWithZeros(date.getSeconds(),2) + "" + padNumberWithZeros(date.getMilliseconds(),3);
 				let fileName = 	dateString + ".png";
 
-				images.push({url:"~?a=" + _appId + "&action=uploadImage&name=" + fileName,dataURL:signature.toDataURL()});
+				images.push({url:"~?a=" + _appId + "&action=uploadImage&name=" + fileName, dataURL:signature.toDataURL()});
 							
 			}
 			
@@ -752,7 +754,7 @@ function uploadImages(controlIds, successCallback, errorCallback) {
 				// get the image
 				var image = images[i];
 				// send it for uploading
-				uploadImage(image.url, image.dataURL, progress, successCallback, errorCallback);
+				uploadImage(image.url, image.dataURL, progress, ev, successCallback, errorCallback);
 			}
 			
 		}
@@ -761,42 +763,54 @@ function uploadImages(controlIds, successCallback, errorCallback) {
 	
 }
 
-function uploadImage(url, dataSource, progress, successCallback, errorCallBack) {
+function uploadImage(url, dataSource, progress, ev, successCallback, errorCallBack) {
 
-	var sourceParts = dataSource.split(",");
-	var dataString = "data:";
-	var contentType = "";
-	
-	if(sourceParts && sourceParts.length && sourceParts[0].indexOf(dataString) > -1) {
-	
-		// If dataSource starts with data: dig out contentType
-		let dataParts = sourceParts[0].split(";");
-		
-		contentType = dataParts[0].substring(dataString.length);
-		
-		dataSource = sourceParts[1];
-	}
-	
-	var data = base64toBlob(dataSource, contentType);
+	try {
 
-	// POST
-	$.ajax({
-		url:url,
-		type:"POST",
-		processData: false,  	// tell jQuery not to process the data
-   		contentType: false,  	// tell jQuery not to set contentType
-		data: data,
-		success: function(ev) {
-			progress.totalUploaded ++;
-			if (progress.totalUploaded == progress.totalUploads && successCallback) window[successCallback](ev);
-		},
-		error: function(ev) {
-			if (!errored) {
-				errored = true;
-				if (errorCallBack) window[errorCallback](ev);
-			}
+		var sourceParts = dataSource.split(",");
+		var dataString = "data:";
+		var contentType = "";
+		
+		if (sourceParts && sourceParts.length && sourceParts[0].indexOf(dataString) > -1) {
+		
+			// If dataSource starts with data: dig out contentType
+			let dataParts = sourceParts[0].split(";");
+			
+			contentType = dataParts[0].substring(dataString.length);
+			
+			dataSource = sourceParts[1];
 		}
-	});
+		
+		var data = base64toBlob(dataSource, contentType);
+	
+		// POST
+		$.ajax({
+			url:url,
+			type:"POST",
+			processData: false,  	// tell jQuery not to process the data
+	   		contentType: false,  	// tell jQuery not to set contentType
+			data: data,
+			success: function(ev) {
+				progress.totalUploaded ++;
+				if (progress.totalUploaded == progress.totalUploads && successCallback) window[successCallback](ev);
+			},
+			error: function(ev) {
+				if (!errored) {
+					errored = true;
+					if (errorCallBack) window[errorCallback](ev);
+				}
+			}
+		});
+		
+	} catch(ex) {
+	
+		if (errorCallBack) {
+			window[errorCallback](ev);
+		} else {
+			throw ex;
+		}
+	
+	}
 
 }
 

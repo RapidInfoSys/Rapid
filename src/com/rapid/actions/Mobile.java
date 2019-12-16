@@ -598,7 +598,7 @@ public class Mobile extends Action {
 					// if we got any urls check whether request is from a mobile - upload the images
 					js += "if (urls) { \n"
 						+ "   if (typeof _rapidmobile == 'undefined') {\n"
-						+ "      uploadImages(" + new JSONArray(controlIds) + ", " + successCallback + ", " + errorCallback + ");\n"
+						+ "      uploadImages(" + new JSONArray(controlIds) + ", ev, " + successCallback + ", " + errorCallback + ");\n"
 						+ "   } else {\n"
 						+ "      _rapidmobile.uploadImages('" + getId() + "', urls, " + successCallback + ", " + errorCallback + ");\n"
 						+ "   }\n"

@@ -167,7 +167,7 @@ function Gallery_removeImage(ev, id) {
 
 function Gallery_removeImageFromStorage(id, filename) {
 	// get the gallery images
-	var galImages = sessionStorage.getItem(id + "images");
+	var galImages = sessionStorage.getItem(_appId + "_" + "images");
 	// if there was anything
 	if (galImages) {
 		// convert to JSON
@@ -175,7 +175,7 @@ function Gallery_removeImageFromStorage(id, filename) {
 		// remove from session storage
 		delete galImages[filename];
 		// save back
-		sessionStorage.setItem(id + "images",JSON.stringify(galImages));
+		sessionStorage.setItem(_appId + "_" + "images", JSON.stringify(galImages));
 	}
 } 
 
@@ -469,7 +469,7 @@ if (data == null || data === undefined) {
 					if (typeof _rapidmobile == "undefined") {
 					
 						// get the gallery images
-						var galImages = sessionStorage.getItem(id + "images");
+						var galImages = sessionStorage.getItem(_appId + "_" + "images");
 						// make object if we need one
 						if (galImages) {
 							galImages = JSON.parse(galImages);
@@ -532,8 +532,13 @@ if (data == null || data === undefined) {
 							fileNameAttr = " data-filename='" + fileName + "'";
 							// store the url in session storage
 							galImages[fileName] = url;
-							// store!
-							sessionStorage.setItem(id + "images", JSON.stringify(galImages));
+							try {
+								// store!
+								sessionStorage.setItem(_appId + "_" + "images", JSON.stringify(galImages));
+							} catch(ex) {
+								// alert message
+								alert(ex);
+							}
 						}
 					
 					} else {
