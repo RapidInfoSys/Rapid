@@ -3522,7 +3522,23 @@ $(document).ready( function() {
 	// listen for end of drags
 	window.addEventListener("mouseup", rescueDraggable);
 	document.body.addEventListener("mouseleave", rescueDraggable);
-	document.getElementById("controlPanelShow").addEventListener("mouseenter", rescueDraggable);
+	
+	function rescueThenDockLeft() {
+		
+		rescueDraggable();
+		
+		setTimeout(function() {
+			// crush page if panel is docking
+		    if (draggable.offsetLeft <= 0 && $("#page").offset().left <= 0) {
+		    		
+		    	$("#page").css({width:($(window).width() - draggable.offsetWidth) + "px", left:draggable.offsetWidth});
+		    	_panelPinnedOffset = draggable.offsetWidth;
+		    }
+	    	arrangeNonVisibleControls();
+		}, 150);
+	}
+	
+	document.getElementById("controlPanelShow").addEventListener("mouseenter", rescueThenDockLeft);
 
 	// if window is resized, keep the panel on screen
 	window.addEventListener("resize", function() {
