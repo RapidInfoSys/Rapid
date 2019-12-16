@@ -3522,6 +3522,7 @@ $(document).ready( function() {
 	// listen for end of drags
 	window.addEventListener("mouseup", rescueDraggable);
 	document.body.addEventListener("mouseleave", rescueDraggable);
+	document.getElementById("controlPanelShow").addEventListener("mouseenter", rescueDraggable);
 
 	// if window is resized, keep the panel on screen
 	window.addEventListener("resize", function() {

@@ -55,7 +55,7 @@ table.propertiesPanelTable  {
 	display: inline-block;
 	margin: auto;
 	font-size: 12px;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
 }
 
 .propertiesPanelTable input {

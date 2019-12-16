@@ -82,6 +82,7 @@ hr {
 	top: 0px;
 	height: 100%;
 	width: 10px;
+	z-index: 10111 !important;
 }
 
 #adminButtons {
