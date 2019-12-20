@@ -2591,6 +2591,7 @@ $(document).ready( function() {
 	// control panel resize
 	$("#controlPanelSize").on("mousedown", function(ev) {
 		// retain that we are resizing the control panel
+		_mouseDown = true;
 		_controlPanelSize = true;
 		// retain the mouse offset
 		_mouseDownXOffset = ev.pageX - parseInt($("#controlPanel").css("width"));
@@ -2599,6 +2600,7 @@ $(document).ready( function() {
 	// control panel resize
 	$("#controlPanelSizeLeft").on("mousedown", function(ev) {
 		// retain that we are resizing the control panel
+		_mouseDown = true;
 		_controlPanelSizeLeft = true;
 		// retain the mouse offset
 		_mouseDownXOffset = ev.pageX - parseInt($("#controlPanel").css("width"));
@@ -2607,6 +2609,7 @@ $(document).ready( function() {
 	// property panel resize
 	$("#propertiesPanelSize").on("mousedown", function(ev) {
 		// retain that we are resizing the control panel
+		_mouseDown = true;
 		_propertiesPanelSize = true;
 		// retain the mouse offset
 		_mouseDownXOffset = ev.pageX - $("#propertiesPanel").offset().left;
@@ -2615,6 +2618,7 @@ $(document).ready( function() {
 	// property panel resize
 	$("#propertiesPanelSizeRight").on("mousedown", function(ev) {
 		// retain that we are resizing the control panel
+		_mouseDown = true;
 		_propertiesPanelSizeRight = true;
 		// retain the mouse offset
 		_mouseDownXOffset = ev.pageX - $("#propertiesPanel").offset().left;
@@ -2668,7 +2672,12 @@ $(document).ready( function() {
 			$("#controlPanel").stop(true, true).show("slide", {direction: "left"}, 200, function() {
 				// show the inner when the animation has finished
 				$("#controlPanelInner").show();
-			});			
+			});
+			
+			if (!mouseDownOnHeader) {
+				propertiesPanel.style.zIndex = "10011";
+			    controlPanel.style.zIndex = "10012";
+			}
 		}
 	});
 	
@@ -2782,7 +2791,10 @@ $(document).ready( function() {
 		// hide any selection border
 		_selectionBorder.hide();
 		// set the selected control to the page
-		selectControl(_page);		
+		selectControl(_page);
+		
+	    controlPanel.style.zIndex = "10011";
+	    propertiesPanel.style.zIndex = "10012";
 	});
 	
 	// new page
@@ -3396,6 +3408,16 @@ $(document).ready( function() {
 	// last known cursor position on the window
 	var cursorX = 0;
 	var cursorY = 0;
+	
+	propertiesPanel.addEventListener("mousedown", function(event) {
+	    controlPanel.style.zIndex = "10011";
+	    propertiesPanel.style.zIndex = "10012";
+	});
+	
+	controlPanel.addEventListener("mousedown", function(event) {
+	    propertiesPanel.style.zIndex = "10011";
+	    controlPanel.style.zIndex = "10012";
+	});
 
 	propertiesHeader.addEventListener("mousedown", function(event) {
 		// get the cursors position before drag starts
@@ -3408,9 +3430,6 @@ $(document).ready( function() {
 	    draggable.style.transition = "none";
 	    // store state of mouse button
 	    mouseDownOnHeader = true;
-	    
-	    controlPanel.style.zIndex = "10011"
-	    propertiesPanel.style.zIndex = "10012"
 	});
 
 	controlHeader.addEventListener("mousedown", function(event) {
@@ -3424,9 +3443,6 @@ $(document).ready( function() {
 	    draggable.style.transition = "none";
 	    // store state of mouse button
 	    mouseDownOnHeader = true;
-	    
-	    propertiesPanel.style.zIndex = "10011"
-	    controlPanel.style.zIndex = "10012"
 	});
 
 	// position the properties panel after a drag has ended
@@ -3498,6 +3514,8 @@ $(document).ready( function() {
 		    	    	$("#propertiesPanelSize").show();
 		    	    }
 	        	}
+	    	    
+	    	    dockLeft();
 	            	
 	        }, 150); // same duration as css transitions
 	        
@@ -3509,13 +3527,6 @@ $(document).ready( function() {
 		    	$("#page").css({width:"100%", left:"0"});
 		    	_panelPinnedOffset = 0;
 		    }
-		    // crush page if panel is docking
-		    if (draggable.offsetLeft <= 0 && $("#page").offset().left <= 0) {
-		    		
-		    	$("#page").css({width:($(window).width() - draggable.offsetWidth) + "px", left:draggable.offsetWidth});
-		    	_panelPinnedOffset = draggable.offsetWidth;
-		    }
-	    	arrangeNonVisibleControls();
 	    }
 	};
 	
@@ -3528,14 +3539,36 @@ $(document).ready( function() {
 		rescueDraggable();
 		
 		setTimeout(function() {
-			// crush page if panel is docking
-		    if (draggable.offsetLeft <= 0 && $("#page").offset().left <= 0) {
-		    		
-		    	$("#page").css({width:($(window).width() - draggable.offsetWidth) + "px", left:draggable.offsetWidth});
-		    	_panelPinnedOffset = draggable.offsetWidth;
-		    }
-	    	arrangeNonVisibleControls();
+			dockLeft();
 		}, 150);
+	}
+	
+	function dockLeft() {
+	    
+		var controlPanel = $("#controlPanel");
+		var propertiesPanel = $("#propertiesPanel");
+		
+		if (controlPanel.offset().left <= 0 && propertiesPanel.offset().left <= 0 && propertiesPanel.css("display") !== "none") {
+			_panelPinned = true;
+			// set the latest panel pinned offset (plus padding and border)
+			_panelPinnedOffset = Math.max(controlPanel.width() + 21, propertiesPanel.width() + 21);
+			// size the window
+			windowResize("controlPanelSize");	
+		} else if (controlPanel.offset().left <= 0) {
+			_panelPinned = true;
+			// set the latest panel pinned offset (plus padding and border)
+			_panelPinnedOffset = controlPanel.width() + 21;
+			// size the window
+			windowResize("controlPanelSize");			
+		} else if (propertiesPanel.offset().left <= 0 && propertiesPanel.css("display") !== "none") {
+			_panelPinned = true;
+			var propertiesPanelWidth = propertiesPanel.width() + 21;
+			// set the latest panel pinned offset (plus padding and border)
+			_panelPinnedOffset = propertiesPanelWidth;
+			// size the window
+			windowResize("propertiesPanelSize");
+		}
+    	arrangeNonVisibleControls();
 	}
 	
 	document.getElementById("controlPanelShow").addEventListener("mouseenter", rescueThenDockLeft);
@@ -3696,7 +3729,7 @@ function sizeControlsList(width) {
 //if the mouse moves anywhere
 $(document).on("mousemove", function(ev) {
 	
-	if (_controlPanelSize) {
+	if (_mouseDown && _controlPanelSize) {
 	
 		// get the control panel
 		var panel = $("#controlPanel");
@@ -3712,7 +3745,7 @@ $(document).on("mousemove", function(ev) {
 			_sizes["controlPanelWidth"] = width;
 		}
 		
-	} else if (_controlPanelSizeLeft) {
+	} else if (_mouseDown && _controlPanelSizeLeft) {
 	
 		// get the control panel
 		var panel = $("#controlPanel");
@@ -3732,7 +3765,7 @@ $(document).on("mousemove", function(ev) {
 			$(panel).css("left", offsetLeft);
 		}
 		
-	} else if (_propertiesPanelSize) {
+	} else if (_mouseDown && _propertiesPanelSize) {
 	
 		// get the control panel
 		var panel = $("#propertiesPanel");
@@ -3752,7 +3785,7 @@ $(document).on("mousemove", function(ev) {
 			$(panel).css("left", offsetLeft);
 		}
 		
-	} else if (_propertiesPanelSizeRight) {
+	} else if (_mouseDown && _propertiesPanelSizeRight) {
 	
 		// get the control panel
 		var panel = $("#propertiesPanel");
@@ -3922,15 +3955,30 @@ $(document).on("mouseup", function(ev) {
 	_reorderDetails = null;
 	_dialogueSize = false;
 	
+	var controlPanel = $("#controlPanel");
+	var propertiesPanel = $("#propertiesPanel");
+	
 	if (_controlPanelSize || _controlPanelSizeLeft) {
 		
-		// only if the panel is pinned
-		if ($("#controlPanel").offset().left <= 0) {
+		// only if the panel is docked
+		if (controlPanel.offset().left <= 0) {
+			_panelPinned = true;
 			// set the latest panel pinned offset (plus padding and border)
 			_panelPinnedOffset = $("#controlPanel").width() + 21;
 			// size the window
 			windowResize("controlPanelSize");			
 		}
+		if (propertiesPanel.offset().left <= 0 && propertiesPanel.css("display") !== "none") {
+			_panelPinned = true;
+			var propertiesPanelWidth = propertiesPanel.width() + 21;
+			if (propertiesPanelWidth > _panelPinnedOffset) {
+				// set the latest panel pinned offset (plus padding and border)
+				_panelPinnedOffset = propertiesPanelWidth;
+				// size the window
+				windowResize("propertiesPanelSize");
+			}		
+		}
+		
 		// set to false
 		_controlPanelSize = false;
 		_controlPanelSizeLeft = false;
@@ -3939,14 +3987,22 @@ $(document).on("mouseup", function(ev) {
 		
 	} else if (_propertiesPanelSize || _propertiesPanelSizeRight) {
 		
-		// only if the panel is pinned
-		if ($("#propertiesPanel").offset().left <= 0) {
+		// only if the panel is docked
+		if (propertiesPanel.offset().left <= 0) {
 			_panelPinned = true;
 			// set the latest panel pinned offset (plus padding and border)
 			_panelPinnedOffset = $("#propertiesPanel").width() + 21;
 			// size the window
 			windowResize("propertiesPanelSize");			
 		}
+		if (controlPanel.offset().left <= 0) {
+			_panelPinned = true;
+			// set the latest panel pinned offset (plus padding and border)
+			_panelPinnedOffset = Math.max(_panelPinnedOffset, $("#controlPanel").width() + 21);
+			// size the window
+			windowResize("controlPanelSize");			
+		}
+		
 		// set to false
 		_propertiesPanelSize = false;
 		_propertiesPanelSizeRight = false;
