@@ -2209,6 +2209,8 @@ public class Designer extends RapidHttpServlet {
 																Attr a = (Attr) nl.item(i);
 																// get the value of the type
 																String type = a.getTextContent().toLowerCase();
+																// remove any namespace
+																if (type.contains(":")) type = type.substring(type.indexOf(":") + 1);
 																// get the element the attribute is in
 																Node n = a.getOwnerElement();
 																// if we don't know about this action type
