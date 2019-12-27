@@ -702,9 +702,6 @@ function makeDataObject(data, field) {
 			rows.push(row);
 		}
 		data = { fields: fields, rows: rows};
-	} else if (data === null) {
-		
-		data = { fields: [field], rows: [[null]]};
 	}
 	return data;
 }
@@ -735,7 +732,7 @@ function mergeDataObjects(data1, data2, mergeType, field, maxRows, details) {
 	var data = null;
 	if (data1) {
 		data1 = makeDataObject(data1);
-		if (data2 !== undefined) {
+		if (data2) {
 			data2 = makeDataObject(data2);
 			switch (mergeType) {
 				case "append" : case "row" :
