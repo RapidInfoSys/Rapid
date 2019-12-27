@@ -240,11 +240,29 @@ public class RapidFilter implements Filter {
 				// get the list of applications to try to find any in the parts
 				Applications applications = (Applications) request.getServletContext().getAttribute("applications");
 
-				// if favicon
-				if (lastPartPath.equals("favicon.ico")) {
+				// if assets that we know are in the root
+				if ("favicon.ico".equals(lastPartPath)) {
 
 					// set forward to root
 					rapidForwardURL = "/" + lastPartPath;
+
+					// if assets that we know are in the root
+				} else if (pathPart.length > 2 && "index.css".equals(lastPartPath)) {
+
+					// redirect to the root of the context - which is the root when seen from outside
+					res.sendRedirect(req.getContextPath() + "/styles/" + lastPartPath);
+
+					// send redirect immediately
+					return;
+
+				} else if (pathPart.length > 2 && "RapidLogo.svg".equals(lastPartPath)) {
+
+					// redirect to the root of the context - which is the root when seen from outside
+					res.sendRedirect(req.getContextPath() + "/images/" + lastPartPath);
+
+					// send redirect immediately
+					return;
+
 
 				// if user has provided at least 1 path part (i.e. part1/) and is requesting known resources like login.jsp
 				} else if (pathPart.length > 1 && (lastPartPath.endsWith("login.jsp") || lastPartPath.endsWith("logout.jsp") || lastPartPath.endsWith("index.jsp"))) {
@@ -256,7 +274,7 @@ public class RapidFilter implements Filter {
 					return;
 
 				// if user has provided at least 1 path part (i.e. part1/) and the first part is a known application
-				} else if (pathPart.length >= 1 && applications.get(pathPart[0]) != null) {
+				} else if (pathPart.length > 0 && applications.get(pathPart[0]) != null) {
 
 					// get the resource filenames only once
 					if (_resourceDirs == null) setResourceDirs(req);
@@ -325,6 +343,12 @@ public class RapidFilter implements Filter {
 					RequestDispatcher dispatcher = filteredRequest.getRequestDispatcher(rapidForwardURL);
 					dispatcher.forward(filteredRequest, response);
 
+					// if user has provided uploads and a known application
+				} else if (pathPart.length > 0 && "uploads".equals(pathPart[0])) {
+
+					// there must be a known app and a file requested
+					if (pathPart.length < 3 || applications.get(pathPart[1]) == null) return;
+
 				} else {
 
 					// for regular rapid url formats
@@ -335,9 +359,12 @@ public class RapidFilter implements Filter {
 			}
 
 		} else {// for requests not requiring authentication
+
 			// continue the rest of the chain
 			filterChain.doFilter(request, response);
+
 		}
+
 	}
 
 	// setter method
