@@ -666,11 +666,7 @@ images.each( function(i) {
 		if (i < images.length - 1) urls += ",";
 	}
 });
-if (urls) {
-	return urls;
-} else {
-	return null;
-}    
+return urls; 
 			        ]]>	  	   	            
 	   	        </getPropertyFunction>
 	   	    </runtimeProperty>
