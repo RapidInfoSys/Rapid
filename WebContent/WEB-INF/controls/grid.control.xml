@@ -796,8 +796,8 @@ return data;
 	        <![CDATA[
 // get the grid control	        
 var control = $("#" + id);
-// make sure it's a table
-if (!control.is("table")) control = control.find("table").last();
+// make sure it's the tables
+if (!control.is("table")) control = control.find("table");
 // if there are columns defined for this grid
 if (details.columns) {
 	// remove all rows except for the first one (the header)
