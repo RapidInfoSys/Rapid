@@ -143,20 +143,19 @@ div.gallery img {
 	                <![CDATA[
 var _swipeHandlers = {};
        
-function Gallery_removeImage(ev, id, filename) {
+function Gallery_removeImage(ev, id) {
 	// confirm
 	if (confirm("Remove image?")) {
 		// get the image
-		var img = $(ev.target);
-		var filename = filename || img.attr("data-filename");
-		var src = filename || img.attr("src");
+		var img = $(".bigGallery img:visible");
+		if (img.length === 0) img = $(ev.target);
 		// check if Rapid Mobile is present
 		if (typeof _rapidmobile == "undefined") {
 			// remove from storage
-			Gallery_removeImageFromStorage(id, filename);
+			Gallery_removeImageFromStorage(id, img.attr("data-filename"));
 		} else {
 			// remove from Rapid Mobile
-			_rapidmobile.removeImage(id, src);
+			_rapidmobile.removeImage(id, img.attr("src"));
 		} 
 		// remove it
 		img.remove();
@@ -296,7 +295,7 @@ function Gallery_showImage(ev, id) {
 					// remove the image
 					img.remove();
 					// remove from storage
-					Gallery_removeImage(ev, id, img.attr("data-filename"));
+					Gallery_removeImage(ev, id);
 					gallery.hide();
 					return false;
 				}
