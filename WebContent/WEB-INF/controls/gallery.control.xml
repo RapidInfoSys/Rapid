@@ -143,18 +143,20 @@ div.gallery img {
 	                <![CDATA[
 var _swipeHandlers = {};
        
-function Gallery_removeImage(ev, id) {
+function Gallery_removeImage(ev, id, filename) {
 	// confirm
 	if (confirm("Remove image?")) {
 		// get the image
 		var img = $(ev.target);
+		var filename = filename || img.attr("data-filename");
+		var src = filename || img.attr("src");
 		// check if Rapid Mobile is present
 		if (typeof _rapidmobile == "undefined") {
 			// remove from storage
-			Gallery_removeImageFromStorage(id, img.attr("data-filename"));
+			Gallery_removeImageFromStorage(id, filename);
 		} else {
 			// remove from Rapid Mobile
-			_rapidmobile.removeImage(id, img.attr("src"));
+			_rapidmobile.removeImage(id, src);
 		} 
 		// remove it
 		img.remove();
@@ -283,7 +285,7 @@ function Gallery_showImage(ev, id) {
 			
 		});
 		
-		btnDelete.click(function(){
+		btnDelete.click(function(ev){
 		
 			// Loop through only the images in the gallery, and get the currently shown img object in the big gallery
 			let currentImage = gallery.children("img").each(function(index, element){
@@ -291,10 +293,10 @@ function Gallery_showImage(ev, id) {
 				if(self.is(":visible")) {
 					// Find and delete this image 
 					var img = mainGallery.children("img").eq(index);
-					// remove from storage
-					Gallery_removeImageFromStorage(id, img.attr("data-filename"));
 					// remove the image
 					img.remove();
+					// remove from storage
+					Gallery_removeImage(ev, id, img.attr("data-filename"));
 					gallery.hide();
 					return false;
 				}
