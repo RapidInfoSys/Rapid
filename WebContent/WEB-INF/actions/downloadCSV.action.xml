@@ -69,7 +69,7 @@ function Action_downloadCSV(ev, actionId, gridId, fileName) {
     var data = {rows:[],headers:[]};
     // an array for the column headers
     // loop the rows
-    $("#" + gridId).find('tr').each( function(idx) {
+    $("#" + gridId).find('table').last().find('tr').each( function(idx) {
 	    // add a rows collection if not header row
 	    if (idx > 0) data.rows.push([]);
 		    // loop the cells
