@@ -4,14 +4,16 @@
 
 How to use this facility in Rapid
 
-1) Use a panel or other control to add the following HTML into a Rapid page (the filename input is optional):
+1) Use the downloadCSV action, or
+
+2.1) Use a panel or other control to add the following HTML into a Rapid page (the filename input is optional):
 	
 	<form id="downloadForm" action="downloadCSV.jsp" method="post" target="_blank" style="display:none;">
 	<input id="downloadFileName" name="downloadFileName" value="filename.csv"/>
 	<input id="downloadData" name="downloadData"/>
 	</form>
 	
-2) Use a custom action to populate the form inputs and submit the form:
+2.2) Use a custom action to populate the form inputs and submit the form:
 	
 	// create an object for the data with rows and headers
 	var data = {rows:[],headers:[]};
