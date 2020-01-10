@@ -1131,7 +1131,7 @@ public class Rapid extends RapidHttpServlet {
 							String contentType = request.getHeader("content-type");
 
 							// if octet stream (from iOS Rapid Mobile client), update content type from file name
-							if ("application/octet-stream".equals(contentType) && imageName != null) contentType = URLConnection.guessContentTypeFromName(imageName);
+							if ((contentType == null || "application/octet-stream".equals(contentType))  && imageName != null) contentType = URLConnection.guessContentTypeFromName(imageName);
 
 							// assume bytes offset is 0
 							int bytesOffset = 0;
