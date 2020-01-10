@@ -523,6 +523,19 @@ public class Mobile extends Action {
 					js += "}\n";
 				}
 
+			} else if ("selectImage".equals(type)) {
+
+				// get the output control Id
+				String galleryControlId = getProperty("galleryControlId");
+				// get the control
+				Control galleryControl = page.getControl(galleryControlId);
+				// check if we got one
+				if (galleryControl == null) {
+					js += "  //output control " + galleryControlId + " not found\n";
+				} else {
+					js += "selectImage('" + galleryControlId + "');\n";
+				}
+
 			} else if ("uploadImages".equals(type)) {
 
 				// make a list of control ids

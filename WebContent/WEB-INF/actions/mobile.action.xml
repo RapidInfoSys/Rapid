@@ -570,8 +570,7 @@ function turnOnCamera(galleryControlId, size, quality) {
 	} else {
 	
 		//alert("getUserMedia() is not supported by your browser");
-		uploadPicture(galleryControlId);
-		
+		selectImage(galleryControlId);
 	}
 	
 }
@@ -601,30 +600,32 @@ function stopCameraStream () {
 	
 }
 
-function uploadPicture(galleryControlId) {
+function selectImage(galleryControlId) {
 	
 	var galleryDetails = window[galleryControlId + "details"];
+	var inputHtml = "<input type='file' id='inputImage' style='display:none;'>"
+		+ "<label for='inputImage' class='r-button button btn col-xs-12' style='margin-top:1em;'>Choose from my files</label>";
+	var closeButtonHtml = "<button id='closeInputPage' class='r-button button btn col-xs-12' style='min-width:200px; margin-top:1em; background:none; color:black;'>Cancel</button>";
 	
-	var inputHtml = "<input type='file' id='inputImage'>";
-	
-	var closeHtml = "<button id='closeinputPage'>Cancel</button>";
-	
-	var inputPageHtml = "<div id='inputImagePage' style='position:fixed;width:100vw;height:100vh;top:0;left:0;z-index:1010;background:white;'>"
-		+ "<h1>Select an image</h1>"
-		+ "<h4>My Computer</h4>"
+	var inputPageHtml = "<div class='inputImagePage dialogueCover' style='position:absolute; left:0px; top:0px; z-index:1001; width:100vw; height:100vh;'>"
+		+ "</div>"
+		+ "<div class='inputImagePage dialogue' style='position:fixed; visibility:visible; z-index:1001;'>"
+		+ "<h2 class='r-text col-xs-12'>Select an image</h2>"
 		+ inputHtml
-		+ closeHtml
-		+ "</div>";
+		+ closeButtonHtml
+		+ "</div>"
 	
 	$("body").append(inputPageHtml);
 	
-	$("#closeinputPage").on("click", function() {
-		$("#inputImagePage").remove();
+	$(window).resize();
+	
+	$("#closeInputPage, .inputImagePage.dialogueCover").on("click", function() {
+		$(".inputImagePage").remove();
 	});
 	
 	$("#inputImage").on("change", function(changeEvent) {
 		
-		var fileReader= new FileReader();
+		var fileReader = new FileReader();
 		
 		$(fileReader).on("load", function(loadEvent) {
 			
@@ -633,7 +634,7 @@ function uploadPicture(galleryControlId) {
 			// call gallery set data to display image
 			setData_gallery(loadEvent, galleryControlId, "url", galleryDetails, dataURL);
 			
-			$("#inputImagePage").remove();
+			$(".inputImagePage").remove();
 		});
 		
 		fileReader.readAsDataURL(this.files[0]);
