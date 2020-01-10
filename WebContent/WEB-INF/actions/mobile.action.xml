@@ -568,8 +568,9 @@ function turnOnCamera(galleryControlId, size, quality) {
 		});
 		
 	} else {
-		
-		alert("getUserMedia() is not supported by your browser");
+	
+		//alert("getUserMedia() is not supported by your browser");
+		uploadPicture(galleryControlId);
 		
 	}
 	
@@ -600,6 +601,44 @@ function stopCameraStream () {
 	
 }
 
+function uploadPicture(galleryControlId) {
+	
+	var galleryDetails = window[galleryControlId + "details"];
+	
+	var inputHtml = "<input type='file' id='inputImage'>";
+	
+	var closeHtml = "<button id='closeinputPage'>Cancel</button>";
+	
+	var inputPageHtml = "<div id='inputImagePage' style='position:fixed;width:100vw;height:100vh;top:0;left:0;z-index:1010;background:white;'>"
+		+ "<h1>Select an image</h1>"
+		+ "<h4>My Computer</h4>"
+		+ inputHtml
+		+ closeHtml
+		+ "</div>";
+	
+	$("body").append(inputPageHtml);
+	
+	$("#closeinputPage").on("click", function() {
+		$("#inputImagePage").remove();
+	});
+	
+	$("#inputImage").on("change", function(changeEvent) {
+		
+		var fileReader= new FileReader();
+		
+		$(fileReader).on("load", function(loadEvent) {
+			
+			var dataURL = loadEvent.target.result;
+			
+			// call gallery set data to display image
+			setData_gallery(loadEvent, galleryControlId, "url", galleryDetails, dataURL);
+			
+			$("#inputImagePage").remove();
+		});
+		
+		fileReader.readAsDataURL(this.files[0]);
+	});
+}
 
 function takePicture (ev) {
 	
