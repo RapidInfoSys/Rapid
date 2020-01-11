@@ -132,7 +132,7 @@ div.gallery img {
 
 .bigGallery {
 	background: #111;
-	z-index: 10;
+	z-index: 1010;
 }
 	                ]]>
 	            </contents>
