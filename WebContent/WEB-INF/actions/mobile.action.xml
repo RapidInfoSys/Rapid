@@ -442,7 +442,7 @@ return "<option value=''>Please select...</option><option value ='html'" + (this
 	    
 		<actionJavaScript>
 	        <![CDATA[ 
-	          
+     
 function Action_mobile(actionId, type) {
 	// action callback
 	alert("Callback for " + actionId + "." + type);
@@ -655,8 +655,8 @@ function takePicture (ev) {
 		
 		// Set the width and height of the canvas, before drawing
 		// Get the intrinsic width and height of the videoplayer
-		let vWidth = _cameraPlayer.videoWidth;
-		let vHeight = _cameraPlayer.videoHeight;	
+		var vWidth = _cameraPlayer.videoWidth;
+		var vHeight = _cameraPlayer.videoHeight;	
 		
 		// Find the longest side of the videoplayer
 		if (vHeight > vWidth) {
@@ -747,9 +747,9 @@ function uploadImages(controlIds, ev, successCallback, errorCallback) {
 		
 		for (var idx in controlIds) {
 		
-			let controlId = controlIds[idx];
+			var controlId = controlIds[idx];
 		
-			let control = $("#" + controlId);
+			var control = $("#" + controlId);
 			
 			// Check if this is a gallery control or signature
 			if (control.hasClass("gallery")) {
@@ -757,9 +757,9 @@ function uploadImages(controlIds, ev, successCallback, errorCallback) {
 				// Get all the images from the control
 				control.find("img").each(function(){
 					
-					let img = $(this);
+					var img = $(this);
 					
-					let src = img.attr("src");
+					var src = img.attr("src");
 					
 					if (src.indexOf("data") == 0) images.push({url:"~?a=" + _appId + "&action=uploadImage&name=" + img.attr("data-filename"), dataURL:src});
 										
@@ -771,12 +771,12 @@ function uploadImages(controlIds, ev, successCallback, errorCallback) {
 				// Get a data url of the canvas, containing a representation of the image
 				// Default format type is image/png
 				
-				let signature = _signatureControls[controlId];
+				var signature = _signatureControls[controlId];
 
 				// Get the current date
 				var date = new Date();
 				var dateString = date.getFullYear() + "" + padNumberWithZeros(date.getMonth() + 1,2) + "" + padNumberWithZeros(date.getDate(),2) + "_" + padNumberWithZeros(date.getHours(),2) + "" + padNumberWithZeros(date.getMinutes(),2) + "" + padNumberWithZeros(date.getSeconds(),2) + "" + padNumberWithZeros(date.getMilliseconds(),3);
-				let fileName = 	dateString + ".png";
+				var fileName = 	dateString + ".png";
 
 				images.push({url:"~?a=" + _appId + "&action=uploadImage&name=" + fileName, dataURL:signature.toDataURL()});
 							
@@ -820,7 +820,7 @@ function uploadImage(url, dataSource, progress, ev, successCallback, errorCallBa
 		if (sourceParts && sourceParts.length && sourceParts[0].indexOf(dataString) > -1) {
 		
 			// If dataSource starts with data: dig out contentType
-			let dataParts = sourceParts[0].split(";");
+			var dataParts = sourceParts[0].split(";");
 			
 			contentType = dataParts[0].substring(dataString.length);
 			
@@ -856,9 +856,9 @@ function uploadImage(url, dataSource, progress, ev, successCallback, errorCallBa
 							// parse to object
 							var imageStorage = JSON.parse(imageStorageString);
 							// loop uploaded image names
-							for (let i in _uploadedImageNames) {
+							for (var i in _uploadedImageNames) {
 								// get uploaded name
-								let uploadedName = _uploadedImageNames[i];
+								var uploadedName = _uploadedImageNames[i];
 								// delete if present
 								if (imageStorage[uploadedName]) delete imageStorage[uploadedName];
 							}
@@ -891,7 +891,6 @@ function uploadImage(url, dataSource, progress, ev, successCallback, errorCallBa
 	}
 
 }
-
 			]]>
 	    </actionJavaScript>
 	  

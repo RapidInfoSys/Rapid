@@ -141,6 +141,8 @@ div.gallery img {
 	            <type>javascript</type>
 	            <contents>
 	                <![CDATA[
+/*	                
+	                
 var _swipeHandlers = {};
        
 function Gallery_removeImage(ev, id) {
@@ -378,6 +380,9 @@ function Gallery_showImage(ev, id) {
 	// Initialise the next/prev button - depending on whether there are more than one img in the gallery
 	setNextPrevButton(img, $("#btnPrev"), $("#btnNext"));
 }
+
+*/
+
 	                ]]>
 	            </contents>
 	        </resource>
@@ -456,9 +461,10 @@ if (data == null || data === undefined) {
 		}			
 		// loop the rows
 		for (var i in data.rows) {
+		
 			// make sure there is something to set
 			if (data.rows[i][urlIndex]) {
-				
+
 				// get the urls
 				var urls = data.rows[i][urlIndex];
 				
@@ -474,7 +480,7 @@ if (data == null || data === undefined) {
 				
 					// get the url
 					var url = urls[j];
-					
+
 					// check if Rapid Mobile is present
 					if (typeof _rapidmobile == "undefined") {
 					
@@ -486,24 +492,27 @@ if (data == null || data === undefined) {
 						} else {
 							galImages = {};
 						}
-					
+						
 						// assume not in storage already
 						var inStorage = false;
 						// assume no filename attribute required
 						var fileNameAttr = "";
-						
+
 						// if it doesn't start with http or data look for it in storage
 						if (url.indexOf("http") != 0 && url.indexOf("data:") != 0) {
+
 							// if we have this image in session storage
 							if (galImages[url]) {
+								
 								// retain url in fileNameAttr
 								fileNameAttr = " data-filename='" + url + "'";
 								// retrieve from session storage
 								url = galImages[url];
 								// remember it was in storage
 								inStorage = true;
-							} else {					
 								
+							} else {
+
 								// add the path to this url from our app - check for ~, if not is pretty url use _appId
 								if (window.location.pathname.indexOf("~") > -1) {
 								
@@ -512,15 +521,16 @@ if (data == null || data === undefined) {
 								} else {
 								
 									// This is the pretty url request
-									let context = window.location.pathname.substring(0, window.location.pathname.toLowerCase().indexOf(_appId.toLowerCase()));
+									var context = window.location.pathname.substring(0, window.location.pathname.toLowerCase().indexOf(_appId.toLowerCase()));
 									if(!context || context.length < 1) context = "/";
 									url = window.location.origin + context + "uploads/" + _appId + "/" + url;
 								
 								}
-								
+
 							}
+
 						}
-						
+
 						// assume no image data
 						var dataString = "data:";
 						// if this url is data, make a filename, unless in storage already
@@ -551,7 +561,7 @@ if (data == null || data === undefined) {
 								console.info(ex);
 							}
 						}
-					
+
 					} else {
 					
 						// if it doesn't start with http or data
@@ -561,7 +571,7 @@ if (data == null || data === undefined) {
 						}
 					
 					}
-					
+
 					// if we got a url - images which we no longer have in storage will empty this
 					if (url) {
 					
@@ -645,12 +655,13 @@ if (data == null || data === undefined) {
 						} // image already there check
 						
 					} // url check
-					
+
 				} // urls loop
 				
 			} // url index check
 			
-		}
+		} // row loop
+		
 		// remove the no pictures message if set
 		if (imageSet) control.find("span").remove();
 	} 
