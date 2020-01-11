@@ -3,7 +3,7 @@
 
 <!-- 
 
-Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2020 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -522,7 +522,7 @@ function turnOnCamera(galleryControlId, size, quality) {
 								  + "<video id='cameraPlayer' autoplay></video>"
 								  + "<button id='btnToggleCamera' class='cameraControlBasic' style='position:absolute; left:0;'><i class='fa fa-retweet cameraIcon' style='margin-left:-2px;'></i></button>"
 								  + "<button id ='btnCloseCamera' class='cameraControlBasic' style='position:absolute; right:0;'><i class='fa fa-times cameraIcon'></i></button>"
-								  + "<button id ='btnTakePicture' class='cameraControl' style='position:absolute; left:50%; right:0; bottom:0; transform:translateX(-50%); margin:20px auto;'><i class='fa fa-camera cameraIcon'></i></button>"
+								  + "<div style='position:fixed; bottom:0; width:100%; text-align:center; padding:20px;'><button id ='btnTakePicture' class='cameraControl'><i class='fa fa-camera cameraIcon'></i></button></div>"
 								  + "</div>"
 								  + "<canvas id='mobileaction_canvas' style='display:none;'></canvas>";
 								 
@@ -563,13 +563,15 @@ function turnOnCamera(galleryControlId, size, quality) {
 		})
 		.catch(function(err) {
 			// Handle the error
+			//alert("Not allowed: " + err);
 			console.log(err.name + ": " + err.message);
-			alert("Not allowed: " + err);
+			selectImage(galleryControlId);
 		});
 		
 	} else {
 	
 		//alert("getUserMedia() is not supported by your browser");
+		console.log("getUserMedia() is not supported by your browser");
 		selectImage(galleryControlId);
 	}
 	
@@ -728,14 +730,18 @@ function base64toBlob(base64Data, contentType) {
     
 }
 
+var _uploadedImageNames;
+
 function uploadImages(controlIds, ev, successCallback, errorCallback) {
+
+	// reset uploaded images - we'll use this later to empty the session once all images are uploaded
+	_uploadedImageNames = [];
 
 	// If we have one
 	if (controlIds && controlIds.length > 0) {
 		
 		// Loop the control ids, will be gallery or a signature, for gallery get all images, upload use data-filename attribute as file name, on success
 		
-
 		// images we are going to upload
 		var images = [];
 		
@@ -822,7 +828,11 @@ function uploadImage(url, dataSource, progress, ev, successCallback, errorCallBa
 		}
 		
 		var data = base64toBlob(dataSource, contentType);
-	
+		
+		var namePos = url.indexOf("name=");
+		
+		var name = url.slice(namePos + 5);
+		
 		// POST
 		$.ajax({
 			url:url,
@@ -831,8 +841,36 @@ function uploadImage(url, dataSource, progress, ev, successCallback, errorCallBa
 	   		contentType: false,  	// tell jQuery not to set contentType
 			data: data,
 			success: function(ev) {
+				// in total uploaded
 				progress.totalUploaded ++;
-				if (progress.totalUploaded == progress.totalUploads && successCallback) window[successCallback](ev);
+				// if name and session storage
+				if (name && sessionStorage) _uploadedImageNames.push(name);
+				// if all uploaded
+				if (progress.totalUploaded == progress.totalUploads) {
+					// if session storage
+					if (sessionStorage) {
+						// get app images storage string
+						var imageStorageString = sessionStorage[_appId + "_images"];
+						// if there was one
+						if (imageStorageString) {
+							// parse to object
+							var imageStorage = JSON.parse(imageStorageString);
+							// loop uploaded image names
+							for (let i in _uploadedImageNames) {
+								// get uploaded name
+								let uploadedName = _uploadedImageNames[i];
+								// delete if present
+								if (imageStorage[uploadedName]) delete imageStorage[uploadedName];
+							}
+						    // re-stringify image storage object
+						    imageStorageString = JSON.stringify(imageStorage);
+						    // save it back to session
+						    sessionStorage[_appId + "_images"] = imageStorageString;
+						}
+					}
+					// call callback if there is one
+					if (successCallback) window[successCallback](ev);
+				}
 			},
 			error: function(ev) {
 				if (!errored) {

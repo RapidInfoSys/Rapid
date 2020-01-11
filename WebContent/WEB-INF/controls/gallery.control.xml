@@ -3,7 +3,7 @@
 
 <!-- 
 
-Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2020 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -287,16 +287,22 @@ function Gallery_showImage(ev, id) {
 		btnDelete.click(function(ev){
 		
 			// Loop through only the images in the gallery, and get the currently shown img object in the big gallery
-			let currentImage = gallery.children("img").each(function(index, element){
+			gallery.children("img").each(function(index, element) {
+				// get this image
 				let self = $(this);
-				if(self.is(":visible")) {
-					// Find and delete this image 
-					var img = mainGallery.children("img").eq(index);
+				// if it is the one showing
+				if (self.is(":visible")) {
+					// get the source gallery
+					let sourceGallery = $("#" + gallery.attr("data-gallery"));
+					// Find  and delete this image 
+					var img = sourceGallery.children("img").eq(index);
 					// remove the image
 					img.remove();
 					// remove from storage
 					Gallery_removeImage(ev, id);
+					// hide the gallery
 					gallery.hide();
+					// we're done
 					return false;
 				}
 			});
@@ -340,6 +346,9 @@ function Gallery_showImage(ev, id) {
 	
 	// Get a reference of the main gallery
 	var mainGallery = img.parent();
+	
+	// set an attribute for the source gallery
+	gallery.attr("data-gallery", mainGallery.attr("id"));
 	
 	// Get all the siblings of the clicked img in the main gallery including itself, and put it in the bigGallery
     mainGallery.children().each(function(){
@@ -555,36 +564,92 @@ if (data == null || data === undefined) {
 					
 					// if we got a url - images which we no longer have in storage will empty this
 					if (url) {
-										
-						// add an image element with the url
-						control.append("<img src='" + url  + "'" + fileNameAttr + "></img>");
-	
-						// remember we set an image in the gallery
-						imageSet = true;
-						// find the image element and add a click handler
-						control.find("img").last().click( function(ev) {
-							if (!details) details = window[id + "details"];
-							if (details) {
-								if (details.onImageClick == "preview") {
-									Gallery_showImage(ev,id);
-								} else if (details.onImageClick == "caption") {
-									var index = $(ev.target).index();
-									if (details.captions && details.captions[index]) alert(details.captions[index]);
-								} else if (details.onImageClick != "nothing") {
-									Gallery_removeImage(ev, id);			
-								}
-							} else {
-								Gallery_removeImage(ev, id);
-							}				
-						});
-						// look for our custom imageAddedEvent handler for this control
-						var imageAdded = window["Event_imageAdded_" + id];
-						// fire it if we found it
-						if (imageAdded) window["Event_imageAdded_" + id]();
+					
+						// assume we're adding the image
+						var addImage = true;
 						
-					}
-				}
-			}
+						// loop existing images
+						control.find("img").each( function() {
+						
+							// get image
+							var img = $(this);
+						
+							// get this image filename attr
+							var fileNameAttr = img.attr("data-filename");
+							
+							// if its the same as the filename
+							if (fileNameAttr && fileNameAttr == fileName) {
+							
+								// don't add this image
+								addImage = false;
+								
+								// we're done
+								return false;
+							
+							} // fileName check
+						
+							// get this image src
+							var src = img.attr("src");
+							
+							// if there was a src
+							if (src) {
+							
+								// get position of source within url
+								var pos = url.indexOf(src);
+								
+								// if it was found at the end
+								if (pos >= 0 && pos == url.length - src.length) {
+								
+									// don't add this image
+									addImage = false;
+									
+									// we're done
+									return false;
+								
+								} // pos check
+								
+							} // src check
+							
+						});
+					
+						// only if we don't have the image alreay in there
+						if (addImage) {
+										
+							// add an image element with the url
+							control.append("<img src='" + url  + "'" + fileNameAttr + "></img>");
+		
+							// remember we set an image in the gallery
+							imageSet = true;
+							
+							// find the image element and add a click handler
+							control.find("img").last().click( function(ev) {
+								if (!details) details = window[id + "details"];
+								if (details) {
+									if (details.onImageClick == "preview") {
+										Gallery_showImage(ev,id);
+									} else if (details.onImageClick == "caption") {
+										var index = $(ev.target).index();
+										if (details.captions && details.captions[index]) alert(details.captions[index]);
+									} else if (details.onImageClick != "nothing") {
+										Gallery_removeImage(ev, id);			
+									}
+								} else {
+									Gallery_removeImage(ev, id);
+								}				
+							});
+							// look for our custom imageAddedEvent handler for this control
+							var imageAdded = window["Event_imageAdded_" + id];
+							// fire it if we found it
+							if (imageAdded) window["Event_imageAdded_" + id]();
+							
+						} // image already there check
+						
+					} // url check
+					
+				} // urls loop
+				
+			} // url index check
+			
 		}
 		// remove the no pictures message if set
 		if (imageSet) control.find("span").remove();
