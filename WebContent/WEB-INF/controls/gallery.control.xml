@@ -538,7 +538,8 @@ if (data == null || data === undefined) {
 								sessionStorage.setItem(_appId + "_" + "images", JSON.stringify(galImages));
 							} catch(ex) {
 								// alert message
-								alert(ex);
+								//alert(ex);
+								console.info(ex);
 							}
 						}
 					
