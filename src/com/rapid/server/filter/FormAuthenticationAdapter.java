@@ -54,10 +54,12 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 
 	public static final String SESSION_VARIABLE_LOGIN_PATH = "login";
 	public static final String SESSION_VARIABLE_PASSWORDRESET_PATH = "passwordreset";
+	public static final String SESSION_VARIABLE_PASSWORDUPDATE_PATH = "passwordupdate";
 
 	public static final String LOGIN_PATH = "login.jsp";
 	public static final String INDEX_PATH = "index.jsp";
 	public static final String RESET_PATH = "reset.jsp";
+	public static final String UPDATE_PATH = "update.jsp";
 
 	private static Logger _logger = LogManager.getLogger(RapidAuthenticationAdapter.class);
 
@@ -188,6 +190,8 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 			String indexPath = INDEX_PATH;
 			// assume default password reset path
 			String resetPath = RESET_PATH;
+			// assume default password reset path
+			String updatePath = UPDATE_PATH;
 
 			// assume no userName
 			String userName = null;
@@ -207,6 +211,11 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 			String sessionResetPath = (String) session.getAttribute(SESSION_VARIABLE_PASSWORDRESET_PATH);
 			// if we got one use it
 			if (sessionResetPath != null) resetPath = sessionResetPath;
+
+			// look in the session for the password reset path
+			String sessionUpdatePath = (String) session.getAttribute(SESSION_VARIABLE_PASSWORDUPDATE_PATH);
+			// if we got one use it
+			if (sessionUpdatePath != null) updatePath = sessionUpdatePath;
 
 			// if email is enabled and we requested the password reset
 			if ((Email.getEmailSettings() != null && requestPath.endsWith(resetPath)))  {

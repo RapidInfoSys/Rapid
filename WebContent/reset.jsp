@@ -1,7 +1,4 @@
-<!DOCTYPE html>
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.rapid.core.Email" %>
-<%@ page import="com.rapid.security.SecurityAdapter" %>
+<!DOCTYPE html><%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%><%@ page import="com.rapid.core.Email" %><%@ page import="com.rapid.security.SecurityAdapter" %><%@ page import="com.rapid.server.RapidRequest" %>
 <%
 
 /*
@@ -35,10 +32,25 @@ String message = (String) session.getAttribute("message");
 // assume password reset is not supported
 Boolean hasPasswordReset = false;
 
-//if email is configured
+// assume no token
+String csrf = null;
+		
+// if email is configured
 if (Email.getEmailSettings() != null) {
 	// if any app has password reset
 	hasPasswordReset = SecurityAdapter.hasPasswordReset(getServletContext());
+	// if so
+	if (hasPasswordReset) {
+		// look for token
+		csrf = (String) session.getAttribute("csrf");
+		// if we didn't get one
+		if (csrf == null) {
+			// make a new one
+			csrf = RapidRequest.generateCSRFToken();
+		     // store it
+		    session.setAttribute("csrf", csrf);
+		}
+	}
 }
 
 %>
@@ -89,24 +101,28 @@ if (Email.getEmailSettings() != null) {
 		if (hasPasswordReset) {
 		%>
 			<form name="reset" id="RapidReset" method="post" onsubmit="return validateEmail()">
+			
 				<div class="row">
 					<div class="columnUserInput">
 						<div class="columnUserIcon" style="">
 							<span class="fa fa-at" style=""></span>
 						</div>
-						<input type="text" placeholder="Email" name="email" required>
+						<input type="text" placeholder="Email" name="email" required/>
 					</div>
 				</div>
+				
+				<input type="hidden" name="csrfToken" value="<%=csrf%>" />
 			
 				<button class="resetButton" type="submit"><i class="fa fa-sign-in"></i>  Reset password</button>
+				
 			</form>
 			
 		<% 
 			// if there is a message
 			if (message != null) {
-					// print the message into the page
+				// print the message into the page
 		%>
-					<p class="message"><%=message %></p>
+				<p class="message"><%=message %></p>
 		<%
 				// empty the message
 				session.setAttribute("message", null);

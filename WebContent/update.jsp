@@ -1,10 +1,9 @@
-<!DOCTYPE html>
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html><%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%><%@ page import="com.rapid.security.SecurityAdapter" %><%@ page import="com.rapid.server.RapidRequest" %>
 <%
 
 /*
 
-Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2020 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -29,6 +28,25 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 
 String message = (String) session.getAttribute("message");
 
+// assume password reset is not supported
+Boolean hasPasswordUpdate = SecurityAdapter.hasPasswordUpdate(getServletContext());
+
+// assume no token
+String csrf = null;
+
+// if he have password update
+if (hasPasswordUpdate) {
+	// look for token
+	csrf = (String) session.getAttribute("csrf");
+	// if we didn't get one
+	if (csrf == null) {
+		// make a new one
+		csrf = RapidRequest.generateCSRFToken();
+	     // store it
+	    session.setAttribute("csrf", csrf);
+	}
+}
+
 %>
 <html>
 <head>
@@ -44,11 +62,17 @@ String message = (String) session.getAttribute("message");
 	
 		function validatePassword() {
 			
+			var password = $("input[name='password']").val();
 			var passwordNew = $("input[name='passwordNew']").val();
 			var passwordConfirm = $("input[name='passwordConfirm']").val();
+			
+			if (!password || !passwordNew || !passwordConfirm) {
+				$(".message").text("Old, new, and confirmation passwords must be provided");	
+				return false;
+			}
 
 			if (passwordNew != passwordConfirm) {
-				alert("New and confirmation passwords must match.");	
+				$(".message").text("New and confirmation passwords must match.");	
 				return false;
 			}
 			
@@ -58,7 +82,7 @@ String message = (String) session.getAttribute("message");
 	
 </head>
 
-<body onload="document.login.password.focus();">
+<body onload="document.update.password.focus();">
 
 <div class="image">
 	<a href="http://www.rapid-is.co.uk"><img title="Rapid Information Systems" src="images/RapidLogo.svg" /></a>	
@@ -74,15 +98,19 @@ String message = (String) session.getAttribute("message");
 <div class="body">
 
 		<div class="columnMiddle">
+		
+		<%
+		if (hasPasswordUpdate) {
+		%>
 
-			<form name="login" id="RapidLogin" method="post" onsubmit="return validatePassword()">
+			<form name="update" id="RapidUpdate" method="post" onsubmit="return validatePassword()">
 			
 				<div class="row">
 					<div class="columnUserInput">
 						<div class="columnUserIcon" style="">
 							<span class="fa fa-unlock-alt" style=""></span>
 						</div>
-						<input type="password" placeholder="Current password" name="password" required>
+						<input type="password" placeholder="Current password" name="password" required/>
 					</div>
 				</div>
 				
@@ -91,7 +119,7 @@ String message = (String) session.getAttribute("message");
 						<div class="columnUserIcon" style="">
 							<span class="fa fa-lock" style=""></span>
 						</div>
-						<input type="password" placeholder="New password" name="passwordNew" required>
+						<input type="password" placeholder="New password" name="passwordNew" required/>
 					</div>
 				</div>
 				
@@ -100,22 +128,31 @@ String message = (String) session.getAttribute("message");
 						<div class="columnUserIcon" style="">
 							<span class="fa fa-question-circle" style=""></span>
 						</div>
-						<input type="password" placeholder="Confirm new password" name="passwordConfirm" required>
+						<input type="password" placeholder="Confirm new password" name="passwordConfirm" required/>
 					</div>
 				</div>
+				
+				<input type="hidden" name="csrfToken" value="<%=csrf%>" />
 			
 				<button class="resetButton" type="submit"><i class="fa fa-sign-out"></i>  Update password</button>
 
 			</form>
 				
-			<% 
+		<% 
 			if (message != null) {
-			%>
-				<p class="message"><%=message %></p>
-			<%	
+				// print the message into the page
+		%>
+				<p class="message"><%=message%></p>
+		<%
+				// remove the message from the session
 				session.setAttribute("message", null);
 			}
-			%>
+		} else {
+		%>
+			<p>Password change is not currently enabled</p>
+		<%
+		}
+		%>
 		</div>	
 	
 </div>

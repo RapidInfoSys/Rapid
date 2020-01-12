@@ -100,7 +100,7 @@ public class RapidRequest {
 			return _session.getAttribute(name);
 		}
 	}
-	
+
 	// set a specified session attribute
 	public void setSessionAttribute(String name, Object object) {
 		if (_session != null) {
@@ -185,7 +185,7 @@ public class RapidRequest {
 					// get the start page
 					_page = _application.getStartPage(rapidServlet.getServletContext());
 				} else {
-					// look for the page by id 
+					// look for the page by id
 					_page = _application.getPages().getPage(rapidServlet.getServletContext(), pageId);
 					// if still no page found, look for the page by name
 					if (_page == null) _page = _application.getPages().getPageByName(rapidServlet.getServletContext(), pageId);
@@ -353,30 +353,44 @@ public class RapidRequest {
 		return details;
 
 	}
-	
+
 	public String getCSRFToken() throws UnsupportedEncodingException {
-		if (_session == null) {
+		return getCSRFToken(_session);
+	}
+
+
+	// public static methods
+
+	public static String getCSRFToken(HttpSession session) throws UnsupportedEncodingException {
+		if (session == null) {
 			return null;
 		} else {
 			// look for token
-			String token = (String) _session.getAttribute("csrf");
+			String token = (String) session.getAttribute("csrf");
 			// if we didn't get one
 			if (token == null) {
-				// new random number generator
-				Random r = new Random();
-				// array of 56 bytes
-		        byte[] bytes = new byte[100];
-		        // populate the array with random bytes
-		        r.nextBytes(bytes);
-		        // base 64 as token
-		        token = Encryption.base64Encode(bytes);
-		        // make url safe
-		        token = URLEncoder.encode(token,"UTF-8");
+				// make a new one
+				token = generateCSRFToken();
 		        // store it
-		        _session.setAttribute("csrf", token);
+		        session.setAttribute("csrf", token);
 			}
 			return token;
 		}
+	}
+
+	public static String generateCSRFToken() throws UnsupportedEncodingException {
+		// new random number generator
+		Random r = new Random();
+		// array of 56 bytes
+        byte[] bytes = new byte[100];
+        // populate the array with random bytes
+        r.nextBytes(bytes);
+        // base 64 as token
+        String token = Encryption.base64Encode(bytes);
+        // make url safe
+        token = URLEncoder.encode(token,"UTF-8");
+		// return
+        return token;
 	}
 
 }

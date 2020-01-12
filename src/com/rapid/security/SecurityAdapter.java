@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2020 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -549,11 +549,16 @@ public abstract class SecurityAdapter {
 		return false;
 	}
 
-	// public static methods
+	// overridden in certain adapters
+	public boolean checkUserLocked(RapidRequest rapidRequest, String userName) {
+		return false;
+	}
 
-	public static boolean hasPasswordReset(ServletContext servletContext) {
-		// assume no app has password reset
-		boolean gotPasswordReset = false;
+	// private static methods
+
+	private static boolean getAdaptersValue(ServletContext servletContext, String setting) {
+		// assume setting is false
+		boolean value = false;
 		// fetch the security adapters
 		JSONArray jsonSecurityAdapters = (JSONArray) servletContext.getAttribute("jsonSecurityAdapters");
 		// check we have some security adapters
@@ -565,9 +570,9 @@ public abstract class SecurityAdapter {
 				// if we got one
 				if (jsonSecurityAdapter != null) {
 					// if this has a password reset
-					if (jsonSecurityAdapter.optBoolean("canResetPassword")) {
+					if (jsonSecurityAdapter.optBoolean(setting)) {
 						// password reset
-						gotPasswordReset = true;
+						value = true;
 						// we're done
 						break;
 					}
@@ -575,10 +580,23 @@ public abstract class SecurityAdapter {
 			}
 		}
 		// return
+		return value;
+	}
+
+	// public static methods
+
+	public static boolean hasPasswordReset(ServletContext servletContext) {
+		// assume no app has password reset
+		boolean gotPasswordReset = getAdaptersValue(servletContext, "canResetPassword");
+		// return
 		return gotPasswordReset;
 	}
 
-	public boolean checkUserLocked(RapidRequest rapidRequest, String userName) {
-		return false;
+	public static boolean hasPasswordUpdate(ServletContext servletContext) {
+		// assume no app has password reset
+		boolean gotPasswordUpdate = getAdaptersValue(servletContext, "canUpdatePassword");
+		// return
+		return gotPasswordUpdate;
 	}
+
 }

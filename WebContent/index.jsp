@@ -2,7 +2,7 @@
 
 /*
 
-Copyright (C) 2017 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2020 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -44,10 +44,13 @@ RapidRequest rapidRequest = new RapidRequest(request, rapid);
 		<script type='text/javascript' src='scripts/<%=com.rapid.server.Rapid.JQUERY%>'></script>
 		<script type="text/javascript">
 	
-function loadApps() {
+// JQuery is ready! 
+$(document).ready( function() {	
 	
+	// find the div we're going to put the apps in
 	var appsDiv = $("#apps");
 	
+	// load the apps
 	$.ajax({
     	url: "~?action=getApps",
     	type: "POST",          
@@ -58,6 +61,7 @@ function loadApps() {
         },
         success: function(data) {
         	if (data && data.length > 0) {
+        		
         		// build a list with links that the user has access to
         		var appHtml = "<ul>";
         		for (var i in data) {
@@ -66,17 +70,13 @@ function loadApps() {
         		}
         		appHtml += "</ul>";
         		appsDiv.html(appHtml);
+
         	} else {
         		appsDiv.html("<b>You do not have permission to use any applications</b>"); 
         	}   		       	
         }
 	});
-	
-}	
-
-//JQuery is ready! 
-$(document).ready( function() {	
-	loadApps();
+		
 });
 	
 		</script>	
@@ -92,7 +92,8 @@ $(document).ready( function() {
 			<span style="">Rapid</span>
 		</div>
 		<div class="subBar">
-			<span class="link"><a href="logout.jsp">LOG OUT</a></span>
+			<span class="link"><a href="logout.jsp">LOG OUT</a></span><% if (com.rapid.security.SecurityAdapter.hasPasswordUpdate(getServletContext())) { %>			
+			<span class="link"><a href="update.jsp">CHANGE PASSWORD</a></span><%} %>
 			<span class="versionColumn"><%=com.rapid.server.Rapid.VERSION %></span>
 		</div>
 
