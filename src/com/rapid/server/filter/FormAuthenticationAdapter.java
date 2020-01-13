@@ -46,7 +46,9 @@ import org.json.JSONObject;
 import com.rapid.core.Application;
 import com.rapid.core.Applications;
 import com.rapid.core.Email;
+import com.rapid.security.RapidSecurityAdapter;
 import com.rapid.security.SecurityAdapter;
+import com.rapid.security.SecurityAdapter.User;
 import com.rapid.server.RapidHttpServlet;
 import com.rapid.server.RapidRequest;
 
@@ -217,48 +219,79 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 			// if we got one use it
 			if (sessionUpdatePath != null) updatePath = sessionUpdatePath;
 
-			// if email is enabled and we requested the password reset
-			if ((Email.getEmailSettings() != null && requestPath.endsWith(resetPath)))  {
+			// if email is enabled, reset is present, and we requested the password reset
+			if ((Email.getEmailSettings() != null && requestPath.endsWith(resetPath))) {
 
-				// look in the request for the username
+				// look in the request for the email
 				String email = request.getParameter("email");
 
-				// if we got one
-				if (email != null) {
+				// log that we are requesting a password update
+				_logger.info("FormAuthenticationAdapter requesting password reset for " + email);
 
-					try {
+				// if password reset is present
+				if (RapidSecurityAdapter.hasPasswordReset(getServletContext())) {
 
-						// get the applications collection
-						Applications applications = (Applications) getServletContext().getAttribute("applications");
+					// look in the request for the crsf token
+					String crsfToken = request.getParameter("csrfToken");
 
-						// if there are some applications
-						if (applications != null) {
+					// check we have what we need
+					if (email == null || crsfToken == null) {
 
-							// loop all applications
-							for (Application application : applications.get()) {
+						// log the error
+						_logger.error("FormAuthenticationAdapter error resetting password - required items not present");
 
-								// get a Rapid request
-								RapidRequest rapidRequest = new RapidRequest(request, application);
+					} else {
 
-								// have the security reset this email and break once done
-								if (application.getSecurityAdapter().resetUserPassword(rapidRequest, email)) break;
+						// check the token
+						if (RapidRequest.getCSRFToken(session).equals(crsfToken)) {
 
+							try {
+
+								// get the applications collection
+								Applications applications = (Applications) getServletContext().getAttribute("applications");
+
+								// if there are some applications
+								if (applications != null) {
+
+									// loop all applications
+									for (Application application : applications.get()) {
+
+										// get a Rapid request
+										RapidRequest rapidRequest = new RapidRequest(request, application);
+
+										// have the security reset this email and break once done
+										if (application.getSecurityAdapter().resetUserPassword(rapidRequest, email)) break;
+
+									}
+
+								}
+
+							} catch (Exception ex) {
+								// log the error
+								_logger.error("FormAuthenticationAdapter error resetting password for " + email, ex);
 							}
 
-						}
+							// Get the stored login path from session
+							loginPath = (String) session.getAttribute(SESSION_VARIABLE_LOGIN_PATH);
+							// if null set to default
+							if (loginPath == null) loginPath = LOGIN_PATH;
 
-					} catch (Exception ex) {
-						// log the error
-						_logger.error("FormAuthenticationAdapter error resetting password", ex);
-					}
+							// send a message to display
+							session.setAttribute("message", "A new password has been emailed - click <a href='" + loginPath + "'>here</a> to log in");
 
-					// Get the stored login path from session
-					loginPath = (String) session.getAttribute(SESSION_VARIABLE_LOGIN_PATH);
-					// if null set to default
-					if (loginPath == null) loginPath = LOGIN_PATH;
+						} else {
 
-					// send a message to display
-					session.setAttribute("message", "A new password has been emailed - click <a href='" + loginPath + "'>here</a> to log in");
+							// log the error
+							_logger.error("FormAuthenticationAdapter error resetting password - csrf failed, email is " + email);
+
+						} // csrf check
+
+					} // items check
+
+				} else {
+
+					// log the error
+					_logger.error("FormAuthenticationAdapter error resetting password - password reset is not supported, email is " + email);
 
 				}
 
@@ -551,6 +584,169 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 				return null;
 
 			}
+
+			// if we are updating our password
+			if (requestPath.endsWith(updatePath) && "POST".equals(request.getMethod())) {
+
+				// log that we are requesting a password update
+				_logger.info("FormAuthenticationAdapter requesting password update for " + userName);
+
+				// if password reset is present
+				if (RapidSecurityAdapter.hasPasswordUpdate(getServletContext())) {
+
+					// default message
+					String message = "Your current password is not correct";
+
+					// assume no updates performed
+					boolean updatedPassword = false;
+
+					// get csrf token
+					String csrfToken = request.getParameter("csrfToken");
+
+					// check the token
+					if (RapidRequest.getCSRFToken(session).equals(csrfToken)) {
+
+						// get the old password
+						String passwordOld = request.getParameter("password");
+
+						// get new password
+						String passwordNew = request.getParameter("passwordNew");
+
+						// get new password check
+						String passwordConfirm = request.getParameter("passwordConfirm");
+
+						// check nothing is missing
+						if (csrfToken == null || passwordOld == null || passwordNew == null || passwordConfirm == null) {
+
+							// log issue
+							_logger.error("FormAuthenticationAdapter requesting password update failure, required items not present");
+
+						} else {
+
+							// this is supposed to be caught by the front end but we'll do it here as well
+							if (passwordNew.equals(passwordConfirm)) {
+
+								try {
+
+									// get the applications collection
+									Applications applications = (Applications) getServletContext().getAttribute("applications");
+
+									// if there are some applications
+									if (applications != null) {
+
+										// remember if complexity is ok
+										boolean complexityCheck = true;
+
+										// loop all applications
+										for (Application application : applications.get()) {
+
+											// get a Rapid request for this application
+											RapidRequest rapidRequest = new RapidRequest(request, application);
+
+											// get the security adapter
+											SecurityAdapter securityAdapter = application.getSecurityAdapter();
+
+											// check password complexity
+											if (!securityAdapter.checkPasswordComplexity(rapidRequest, passwordNew)) {
+
+												// retain failed complexity
+												complexityCheck = false;
+
+												// update the message
+												message = securityAdapter.getPasswordComplexityDescription(rapidRequest, passwordNew);
+
+												// log password not complex enough
+												_logger.error("FormAuthenticationAdapter password not complex enough for " + application.getId() + "/" + application.getVersion());
+
+												// we're done
+												break;
+
+											} // password complexity check
+
+										} // applications loop
+
+										// if we password complexity check
+										if (complexityCheck) {
+
+											// loop all applications
+											for (Application application : applications.get()) {
+
+												// get a Rapid request for this application
+												RapidRequest rapidRequest = new RapidRequest(request, application);
+
+												// get the security adapter
+												SecurityAdapter securityAdapter = application.getSecurityAdapter();
+
+												// if the old password passes
+												if (securityAdapter.checkUserPassword(rapidRequest, userName, passwordOld)) {
+
+													// get the user
+													User user = securityAdapter.getUser(rapidRequest);
+
+													// update the user password
+													user.setPassword(passwordNew);
+
+													// update the password
+													securityAdapter.updateUser(rapidRequest, user);
+
+													// update session password
+													rapidRequest.setUserPassword(passwordNew);
+
+													// set updated password
+													updatedPassword = true;
+
+												} // password check
+
+											} // applications loop
+
+										} // password complexity check
+
+									} // applications check
+
+								} catch (Exception ex) {
+									// log the error
+									_logger.error("FormAuthenticationAdapter error updating password for user " + userName, ex);
+								}
+
+							} else {
+
+								_logger.error("FormAuthenticationAdapter requesting password update failure, new and confirm passwords do not match");
+
+							} // confirm password
+
+						} // required items check
+
+						if (updatedPassword) {
+
+							// Get the stored login path from session
+							indexPath = (String) session.getAttribute(RapidFilter.SESSION_VARIABLE_INDEX_PATH);
+							// if null set to default
+							if (indexPath == null) indexPath = INDEX_PATH;
+
+							// send a message to display
+							session.setAttribute("message", "Your password has been updated - click <a href='" + indexPath + "'>here</a> for your applications");
+
+						} else {
+
+							// send a message to display
+							session.setAttribute("message", message);
+
+						} // updated password check
+
+
+					} else {
+
+						_logger.error("FormAuthenticationAdapter requesting password update failure, failed csrf");
+
+					} // csrf check
+
+				} else {
+
+					_logger.error("FormAuthenticationAdapter requesting password update failure, password update is not supported");
+
+				}
+
+			} // update check
 
 			// return the request which will process the chain
 			// hold a reference to the original request
