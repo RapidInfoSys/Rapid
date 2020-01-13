@@ -423,14 +423,18 @@ public class Rapid extends RapidHttpServlet {
 							}
 						}
 
-						// get resources
+						// get app resources
 						Resources resources = app.getAppResources();
 
 						// if we had some
 						if (resources != null) {
 							// loop application resources and add to JSON array
 							for (Resource resource : resources) {
-								jsonResources.put(resource.getName());
+								// check they're any of our file types
+								if (resource.getType() == Resource.JAVASCRIPTFILE || resource.getType() == Resource.CSSFILE || resource.getType() == Resource.JAVASCRIPTLINK || resource.getType() == Resource.CSSLINK || resource.getType() == Resource.FILE) {
+									// add resource
+									jsonResources.put(resource.getContent());
+								}
 							}
 						}
 
