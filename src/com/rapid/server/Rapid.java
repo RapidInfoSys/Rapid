@@ -417,9 +417,10 @@ public class Rapid extends RapidHttpServlet {
 
 						// if we got some
 						if (pages != null) {
-							// loop and add to resources
+							// loop page ids
 							for (String pageId : pages.getPageIds()) {
-								jsonResources.put(pageId);
+								// add url to retrieve page to resources
+								jsonResources.put("~?a=" + app.getId() + "&v=" + app.getVersion() + "&p=" + pageId);
 							}
 						}
 
