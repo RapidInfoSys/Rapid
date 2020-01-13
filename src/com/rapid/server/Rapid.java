@@ -56,7 +56,10 @@ import org.json.JSONObject;
 
 import com.rapid.core.Application;
 import com.rapid.core.Application.RapidLoadingException;
+import com.rapid.core.Application.Resource;
+import com.rapid.core.Application.Resources;
 import com.rapid.core.Page;
+import com.rapid.core.Pages;
 import com.rapid.core.Pages.PageHeader;
 import com.rapid.core.Pages.PageHeaders;
 import com.rapid.forms.FormAdapter;
@@ -380,7 +383,6 @@ public class Rapid extends RapidHttpServlet {
 								out.print("\r\n");
 								out.print("File\tsize\tMD5 hash\r\n");
 
-
 								// get the md5 digest
 								MessageDigest digest = MessageDigest.getInstance("MD5");
 
@@ -389,7 +391,6 @@ public class Rapid extends RapidHttpServlet {
 
 								// flush and close writer
 								out.flush();
-
 								out.close();
 
 							} else {
@@ -405,6 +406,46 @@ public class Rapid extends RapidHttpServlet {
 							sendMessage(response, 403, "Incorrect application", "You must use the Rapid application for this request");
 
 						}
+
+					} else if ("resources".equals(actionName)) {
+
+						// start a JSON array
+						JSONArray jsonResources = new JSONArray();
+
+						// get pages
+						Pages pages = app.getPages();
+
+						// if we got some
+						if (pages != null) {
+							// loop and add to resources
+							for (String pageId : pages.getPageIds()) {
+								jsonResources.put(pageId);
+							}
+						}
+
+						// get resources
+						Resources resources = app.getAppResources();
+
+						// if we had some
+						if (resources != null) {
+							// loop application resources and add to JSON array
+							for (Resource resource : resources) {
+								jsonResources.put(resource.getName());
+							}
+						}
+
+						// set response to text
+						response.setContentType("application/json;charset=UTF-8");
+
+						// create a writer
+						PrintWriter out = response.getWriter();
+
+						// output the array
+						out.print(jsonResources.toString());
+
+						// flush and close writer
+						out.flush();
+						out.close();
 
 					} else {
 
