@@ -52,15 +52,19 @@ public abstract class RapidAuthenticationAdapter {
 		 // look for whether public access is allowed
 		 _publicAccess = Boolean.parseBoolean(filterConfig.getInitParameter(INIT_PARAM_PUBLIC_ACCESS));
 		 // look for any resources that will be given public authentication
-		 String publicresources = filterConfig.getInitParameter(INIT_PARAM_PUBLIC_ACCESS_RESOURCES);
+		 String publicResources = filterConfig.getInitParameter(INIT_PARAM_PUBLIC_ACCESS_RESOURCES);
 		 // make our list
 		 _publicResources = new ArrayList<String>();
 		 // if we got some
-		 if (publicresources != null) {
+		 if (publicResources != null) {
 			 // split and loop
-			 for (String publicresource : publicresources.split(",")) {
+			 for (String publicResource : publicResources.split(",")) {
+				// trim to remove any spaces
+				String publicResourceTrimmed = publicResource.trim();
+				// trim and add to list if's greater than 3 characters (for protection)
+				if (publicResourceTrimmed.length() > 3) _publicResources.add(publicResourceTrimmed);
 				 // add to our list
-				 _publicResources.add(publicresource);
+				 _publicResources.add(publicResourceTrimmed);
 			 }
 		 }
 		 // add this to the context
