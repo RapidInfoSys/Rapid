@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2015 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2020 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -26,6 +26,8 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 package com.rapid.server.filter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
@@ -37,17 +39,30 @@ public abstract class RapidAuthenticationAdapter {
 
 	public static final String INIT_PARAM_IP_CHECK = "ipcheck";
 	public static final String INIT_PARAM_PUBLIC_ACCESS = "public";
+	public static final String INIT_PARAM_PUBLIC_ACCESS_RESOURCES = "publicResources";
 	public static final String PUBLIC_ACCESS_USER = "public";
 
 	protected ServletContext _servletContext;
 	protected boolean _publicAccess = false;
-
+	protected List<String> _publicResources;
 	public ServletContext getServletContext() { return _servletContext; }
 
 	public RapidAuthenticationAdapter(FilterConfig filterConfig) {
 		_servletContext = filterConfig.getServletContext();
 		 // look for whether public access is allowed
-		 _publicAccess  = Boolean.parseBoolean(filterConfig.getInitParameter(INIT_PARAM_PUBLIC_ACCESS));
+		 _publicAccess = Boolean.parseBoolean(filterConfig.getInitParameter(INIT_PARAM_PUBLIC_ACCESS));
+		 // look for any resources that will be given public authentication
+		 String publicresources = filterConfig.getInitParameter(INIT_PARAM_PUBLIC_ACCESS_RESOURCES);
+		 // make our list
+		 _publicResources = new ArrayList<String>();
+		 // if we got some
+		 if (publicresources != null) {
+			 // split and loop
+			 for (String publicresource : publicresources.split(",")) {
+				 // add to our list
+				 _publicResources.add(publicresource);
+			 }
+		 }
 		 // add this to the context
 		 filterConfig.getServletContext().setAttribute(INIT_PARAM_PUBLIC_ACCESS, _publicAccess);
 	}

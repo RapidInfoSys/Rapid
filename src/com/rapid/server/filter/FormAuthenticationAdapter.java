@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2020 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -397,8 +397,25 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 
 					} else {
 
+						// local public access
+						boolean publicAccess = _publicAccess;
+
+						// if we have public resources to check further
+						if (!publicAccess && _publicResources.size() > 0) {
+							// loop the public resources
+							for (String publicResource : _publicResources) {
+								// check it
+								if (requestPath.startsWith(publicResource)) {
+									// set local public access
+									publicAccess = true;
+									// we're done
+									break;
+								}
+							}
+						}
+
 						// if we're allowing public access, but not if this is the login page, nor RapidMobile
-						if (_publicAccess && !requestPath.endsWith(loginPath) && request.getHeader("User-Agent") != null && !request.getHeader("User-Agent").contains("RapidMobile")) {
+						if (publicAccess && !requestPath.endsWith(loginPath) && request.getHeader("User-Agent") != null && !request.getHeader("User-Agent").contains("RapidMobile")) {
 
 							// set the user name to public
 							session.setAttribute(RapidFilter.SESSION_VARIABLE_USER_NAME, PUBLIC_ACCESS_USER);
