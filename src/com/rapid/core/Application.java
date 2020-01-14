@@ -491,7 +491,7 @@ public class Application {
 	// instance variables
 	private int _xmlVersion, _status, _applicationBackupsMaxSize, _pageBackupsMaxSize;
 	private String _id, _version, _name, _title, _description, _startPageId, _formAdapterType, _formEmailFrom, _formEmailTo, _formEmailAttachmentType, _formEmailCustomerControlId, _formEmailCustomerSubject, _formEmailCustomerType, _formEmailCustomerBody, _formEmailCustomerAttachmentType, _formFileType, _formFilePath, _formFileUserName, _formFilePassword, _formWebserviceURL, _formWebserviceType, _formWebserviceSOAPAction, _themeType, _styles, _statusBarColour, _statusBarHighlightColour, _statusBarTextColour, _statusBarIconColour, _securityAdapterType, _storePasswordDuration, _functions, _createdBy, _modifiedBy;
-	private boolean _isForm, _pageNameIds, _showConrolIds, _showActionIds, _deviceSecurity, _formShowSummary, _formDisableAutoComplete, _formEmail, _formEmailCustomer, _formFile, _formWebservice;
+	private boolean _isForm, _pageNameIds, _showConrolIds, _showActionIds, _isHidden, _deviceSecurity, _formShowSummary, _formDisableAutoComplete, _formEmail, _formEmailCustomer, _formFile, _formWebservice;
 	private Date _createdDate, _modifiedDate;
 	private Map<String,Integer> _pageOrders;
 	private SecurityAdapter _securityAdapter;
@@ -556,13 +556,9 @@ public class Application {
 	public Map<String,Integer> getPageOrders() { return _pageOrders; }
 	public void setPageOrders(Map<String,Integer> pageOrders) { _pageOrders = pageOrders; _pages.clearCachedOrder(); }
 
-	// whether form settings checkbox has been ticked or not
+	// whether form settings checkbox has been ticked or not - implies app has form support
 	public boolean getIsForm() { return _isForm; }
 	public void setIsForm(boolean isForm) { _isForm = isForm; }
-
-	// whether page id's are sequential numbers (the traditional way) or the page name (for more complex apps with page naming conventions)
-	public boolean getPageNameIds() { return _pageNameIds; }
-	public void setPageNameIds(boolean pageNameIds) { _pageNameIds = pageNameIds; }
 
 	// whether control ids should be shown when designing this app
 	public boolean getShowControlIds() { return _showConrolIds; }
@@ -571,6 +567,14 @@ public class Application {
 	// whether action ids should be shown when designing this app
 	public boolean getShowActionIds() { return _showActionIds; }
 	public void setShowActionIds(boolean showActionIds) { _showActionIds = showActionIds; }
+
+	// whether page id's are sequential numbers (the traditional way) or the page name (for more complex apps with page naming conventions)
+	public boolean getPageNameIds() { return _pageNameIds; }
+	public void setPageNameIds(boolean pageNameIds) { _pageNameIds = pageNameIds; }
+
+	// whether the hidden settings checkbox is ticked or not - stops app showing in lists of apps
+	public boolean getIsHidden() { return _isHidden; }
+	public void setIsHidden(boolean isHidden) { _isHidden = isHidden; }
 
 	// the application start page which will be supplied if no page is explicitly provided
 	public String getStartPageId() { return _startPageId; }
@@ -743,6 +747,7 @@ public class Application {
 	// constructors
 
 	public Application() throws ParserConfigurationException, XPathExpressionException, RapidLoadingException, SAXException, IOException {
+		// set defaults
 		_xmlVersion = XML_VERSION;
 		_pages = new Pages(this);
 		_pageOrders = new HashMap<>();

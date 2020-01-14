@@ -3,7 +3,7 @@
 
 <!-- 
 
-Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2020 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -325,12 +325,13 @@ function Action_rapid(ev, appId, pageId, controlId, actionId, actionType, rapidA
 				saveVersion: $("#rapid_P0_C1077_").val(),
 				title: $("#rapid_P0_C394_").val(),
 				description: $("#rapid_P0_C393_").val(),
-						
+
 				isForm: getData_checkbox(ev, "rapid_P0_C1826_"), 
-				startPageId: $("#rapid_P0_C644_").val(),				
-				pageNameIds: getData_checkbox(ev, "rapid_P0_C2409_"),
+				startPageId: $("#rapid_P0_C644_").val(),
 				showControlIds: getData_checkbox(ev, "rapid_P0_C381_"),
-				showActionIds: getData_checkbox(ev, "rapid_P0_C382_"),
+				showActionIds: getData_checkbox(ev, "rapid_P0_C382_"),		
+				pageNameIds: getData_checkbox(ev, "rapid_P0_C2409_"),
+				isHidden: getData_checkbox(ev, "rapid_P0_C3209_"), 
 				
 				formAdapter: $("#rapid_P0_C1406_").val(),
 				formShowSummary: getData_checkbox(ev, "rapid_P0_C3202_"),

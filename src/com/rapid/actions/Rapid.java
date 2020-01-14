@@ -1026,12 +1026,15 @@ public class Rapid extends Action {
 					result.put("title", app.getTitle());
 					// add the description
 					result.put("description", app.getDescription());
+
 					// add whether to show control ids
 					result.put("pageNameIds", app.getPageNameIds());
 					// add whether to show control ids
 					result.put("showControlIds", app.getShowControlIds());
 					// add whether to show action ids
 					result.put("showActionIds", app.getShowActionIds());
+					// add the is hidden
+					result.put("isHidden", app.getIsHidden());
 
 					// add the form settings
 					result.put("isForm", app.getIsForm());
@@ -1976,6 +1979,7 @@ public class Rapid extends Action {
 
 								boolean isForm = jsonAction.optBoolean("isForm");
 								String startPageId = jsonAction.optString("startPageId","");
+								boolean isHidden = jsonAction.optBoolean("isHidden");
 								boolean pageNameIds = jsonAction.optBoolean("pageNameIds");
 								boolean showControlIds = jsonAction.optBoolean("showControlIds");
 								boolean showActionIds = jsonAction.optBoolean("showActionIds");
@@ -2024,6 +2028,7 @@ public class Rapid extends Action {
 								app.setTitle(title);
 								app.setDescription(description);
 
+								app.setIsHidden(isHidden);
 								app.setIsForm(isForm);
 								app.setStartPageId(startPageId);
 								app.setPageNameIds(pageNameIds);
