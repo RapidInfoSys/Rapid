@@ -3097,43 +3097,48 @@ public class Rapid extends Action {
 								// get the user
 								User user = security.getUser(rapidActionRequest);
 
-								// add the user name
-								result.put("userName", userName);
+								// check user
+								if (user != null) {
 
-								// add the user description
-								result.put("description", user.getDescription());
+									// add the user name
+									result.put("userName", userName);
 
-								// add the user email
-								result.put("email", user.getEmail());
+									// add the user description
+									result.put("description", user.getDescription());
 
-								// set the default password mask
-								String password = "********";
+									// add the user email
+									result.put("email", user.getEmail());
 
-								// if the password is blank reflect this in what we send
-								if ("".equals(user.getPassword())) password = "";
+									// set the default password mask
+									String password = "********";
 
-								// add a masked password
-								result.put("password", password);
+									// if the password is blank reflect this in what we send
+									if ("".equals(user.getPassword())) password = "";
 
-								// add isLocked status
-								result.put("isLocked", user.getIsLocked());
+									// add a masked password
+									result.put("password", password);
 
-								// add the device details
-								result.put("deviceDetails", user.getDeviceDetails());
+									// add isLocked status
+									result.put("isLocked", user.getIsLocked());
 
-								// if we got one
-								if (security != null) {
+									// add the device details
+									result.put("deviceDetails", user.getDeviceDetails());
 
-									// get the users roles
-									List<String> roles = security.getUser(rapidActionRequest).getRoles();
+									// if we got one
+									if (security != null) {
 
-									// add the users to the response
-									result.put("roles", roles);
+										// get the users roles
+										List<String> roles = security.getUser(rapidActionRequest).getRoles();
 
-								} // got security
+										// add the users to the response
+										result.put("roles", roles);
 
-								// if this user record is for the logged in user
-								result.put("currentUser", currentUser);
+									} // got security
+
+									// if this user record is for the logged in user
+									result.put("currentUser", currentUser);
+
+								} // user check
 
 							} else if ("GETUSERS".equals(action)) {
 
@@ -3259,122 +3264,137 @@ public class Rapid extends Action {
 
 								// get the user
 								User user = security.getUser(rapidActionRequest);
-								// update the email
-								user.setEmail(email);
-								// update the description
-								user.setDescription(description);
-								// update the device details
-								user.setDeviceDetails(deviceDetails);
-								// update the locked status
-								user.setIsLocked("true".equalsIgnoreCase(isLocked));
+								// if there was one
+								if (user == null) {
 
-								// if password is different from the mask
-								if ("********".equals(password)) {
-									// just update the user
-									security.updateUser(rapidActionRequest, user);
+									// set the result message
+									result.put("message", "User not found");
+
 								} else {
-									// get the old password
-									String oldPassword = user.getPassword();
-									// update the password
-									user.setPassword(password);
-									// update the user
-									security.updateUser(rapidActionRequest, user);
-									// update the session password as well if we are changing our own password (this is required especially when changing the rapid app password)
-									if (user.getName().equals(rapidActionRequest.getSessionAttribute(RapidFilter.SESSION_VARIABLE_USER_NAME))) rapidActionRequest.setUserPassword(password);
-									// if there is an old password - should always be
-									if (oldPassword != null) {
-										// only if the new password is different from the old one
-										if (!password.equals(oldPassword)) {
-											// get all applications
-											Applications applications = rapidActionRequest.getRapidServlet().getApplications();
-											// loop them
-											for (String id : applications.getIds()) {
-												// get their versions
-												Versions versions = applications.getVersions(id);
-												// loop the versions
-												for (String version : versions.keySet()) {
-													// get this version
-													Application v = applications.get(id, version);
-													// we have updated the password in the selected app already so no need to do it again
-													if (!(app.getId().equals(v.getId()) && app.getVersion().equals(v.getVersion()))) {
-														// get this app versions security adapter
-														SecurityAdapter s = v.getSecurityAdapter();
-														// recreate the rapidRequest with the selected version (so app parameters etc are available from the app in the rapidRequest)
-														rapidActionRequest = new RapidRequest(rapidServlet, rapidActionRequest.getRequest(), v);
-														// override the standard request user
-														rapidActionRequest.setUserName(userName);
-														// check the user had permission to the app with their old password
-														if (s.checkUserPassword(rapidActionRequest, userName, oldPassword)) {
-															// get this user
-															User u = s.getUser(rapidActionRequest);
-															// safety check for if we found one
-															if (u == null) {
-																// log that it passed password check but can't be found
-																rapidActionRequest.getRapidServlet().getLogger().debug("User " + userName + " passed password check for " + app.getId() + "/" + app.getVersion() + " but now can't be found for password update");
-															} else {
-																// set new user password
-																u.setPassword(password);
-																// update user
-																s.updateUser(rapidActionRequest, u);
-															}
-														} // password match check
-													} // ignore app version updated already
-												} // version loop
-											} // app id loop
-										} // old password different from new
-									} // old password null check
-								} // password provided
 
-								// if we are updating the rapid application we have used checkboxes for the Rapid Admin, Rapid Designer, and user manager roles
-								if ("rapid".equals(app.getId())) {
-									// get the value of rapidAdmin
-									boolean useAdmin = jsonAction.optBoolean("useAdmin");
-									// check the user was given the role
-									if (useAdmin) {
-										// add the role if the user doesn't have it already
-										if (!security.checkUserRole(rapidActionRequest, com.rapid.server.Rapid.ADMIN_ROLE))
-											security.addUserRole(rapidActionRequest, com.rapid.server.Rapid.ADMIN_ROLE);
-									} else {
-										// remove the role
-										security.deleteUserRole(rapidActionRequest, com.rapid.server.Rapid.ADMIN_ROLE);
-									}
-									// get the value of rapidAdmin
-									boolean useMaster = jsonAction.optBoolean("useMaster");
-									// check the user was given the role, can only be done by users who are masters already, unless they already have it
-									if (useMaster && useAdmin) {
-										// add the role if the user doesn't have it already
-										if (!security.checkUserRole(rapidActionRequest, com.rapid.server.Rapid.MASTER_ROLE))
-											security.addUserRole(rapidActionRequest, com.rapid.server.Rapid.MASTER_ROLE);
-									} else {
-										// remove the role
-										security.deleteUserRole(rapidActionRequest, com.rapid.server.Rapid.MASTER_ROLE);
-									}
-									// get the value of rapidDesign
-									boolean useDesign = jsonAction.optBoolean("useDesign");
-									// check the user was given the role
-									if (useDesign) {
-										// add the role if the user doesn't have it already
-										if (!security.checkUserRole(rapidActionRequest, com.rapid.server.Rapid.DESIGN_ROLE))
-											security.addUserRole(rapidActionRequest, com.rapid.server.Rapid.DESIGN_ROLE);
-									} else {
-										// remove the role
-										security.deleteUserRole(rapidActionRequest, com.rapid.server.Rapid.DESIGN_ROLE);
-									}
-									// get the value of rapidUsers
-									boolean useUsers = jsonAction.optBoolean("useUsers");
-									// check the user was given the role
-									if (useUsers) {
-										// add the role if the user doesn't have it already
-										if (!security.checkUserRole(rapidActionRequest, com.rapid.server.Rapid.USERS_ROLE))
-											security.addUserRole(rapidActionRequest, com.rapid.server.Rapid.USERS_ROLE);
-									} else {
-										// remove the role
-										security.deleteUserRole(rapidActionRequest, com.rapid.server.Rapid.USERS_ROLE);
-									}
-								}
+									// update the email
+									user.setEmail(email);
+									// update the description
+									user.setDescription(description);
+									// update the device details
+									user.setDeviceDetails(deviceDetails);
 
-								// set the result message
-								result.put("message", "User details saved");
+									// update the locked status
+									user.setIsLocked("true".equalsIgnoreCase(isLocked));
+
+									// if password is different from the mask
+									if ("********".equals(password)) {
+										// just update the user
+										security.updateUser(rapidActionRequest, user);
+									} else {
+										// get the old password
+										String oldPassword = user.getPassword();
+										// update the password
+										user.setPassword(password);
+										// update the user
+										security.updateUser(rapidActionRequest, user);
+										// update the session password as well if we are changing our own password (this is required especially when changing the rapid app password)
+										if (user.getName().equals(rapidActionRequest.getSessionAttribute(RapidFilter.SESSION_VARIABLE_USER_NAME))) rapidActionRequest.setUserPassword(password);
+										// if there is an old password - should always be
+										if (oldPassword != null) {
+											// only if the new password is different from the old one
+											if (!password.equals(oldPassword)) {
+												// unlock user in this app
+												user.setIsLocked(false);
+												// get all applications
+												Applications applications = rapidActionRequest.getRapidServlet().getApplications();
+												// loop them
+												for (String id : applications.getIds()) {
+													// get their versions
+													Versions versions = applications.getVersions(id);
+													// loop the versions
+													for (String version : versions.keySet()) {
+														// get this version
+														Application v = applications.get(id, version);
+														// we have updated the password in the selected app already so no need to do it again
+														if (!(app.getId().equals(v.getId()) && app.getVersion().equals(v.getVersion()))) {
+															// get this app versions security adapter
+															SecurityAdapter s = v.getSecurityAdapter();
+															// recreate the rapidRequest with the selected version (so app parameters etc are available from the app in the rapidRequest)
+															rapidActionRequest = new RapidRequest(rapidServlet, rapidActionRequest.getRequest(), v);
+															// override the standard request user
+															rapidActionRequest.setUserName(userName);
+															// check the user had permission to the app with their old password
+															if (s.checkUserPassword(rapidActionRequest, userName, oldPassword)) {
+																// get this user
+																User u = s.getUser(rapidActionRequest);
+																// safety check for if we found one
+																if (u == null) {
+																	// log that it passed password check but can't be found
+																	rapidActionRequest.getRapidServlet().getLogger().debug("User " + userName + " passed password check for " + app.getId() + "/" + app.getVersion() + " but now can't be found for password update");
+																} else {
+																	// set new user password
+																	u.setPassword(password);
+																	// unlock user in this app
+																	u.setIsLocked(false);
+																	// update user
+																	s.updateUser(rapidActionRequest, u);
+																}
+															} // password match check
+														} // ignore app version updated already
+													} // version loop
+												} // app id loop
+											} // old password different from new
+										} // old password null check
+									} // password provided
+
+									// if we are updating the rapid application we have used checkboxes for the Rapid Admin, Rapid Designer, and user manager roles
+									if ("rapid".equals(app.getId())) {
+										// get the value of rapidAdmin
+										boolean useAdmin = jsonAction.optBoolean("useAdmin");
+										// check the user was given the role
+										if (useAdmin) {
+											// add the role if the user doesn't have it already
+											if (!security.checkUserRole(rapidActionRequest, com.rapid.server.Rapid.ADMIN_ROLE))
+												security.addUserRole(rapidActionRequest, com.rapid.server.Rapid.ADMIN_ROLE);
+										} else {
+											// remove the role
+											security.deleteUserRole(rapidActionRequest, com.rapid.server.Rapid.ADMIN_ROLE);
+										}
+										// get the value of rapidAdmin
+										boolean useMaster = jsonAction.optBoolean("useMaster");
+										// check the user was given the role, can only be done by users who are masters already, unless they already have it
+										if (useMaster && useAdmin) {
+											// add the role if the user doesn't have it already
+											if (!security.checkUserRole(rapidActionRequest, com.rapid.server.Rapid.MASTER_ROLE))
+												security.addUserRole(rapidActionRequest, com.rapid.server.Rapid.MASTER_ROLE);
+										} else {
+											// remove the role
+											security.deleteUserRole(rapidActionRequest, com.rapid.server.Rapid.MASTER_ROLE);
+										}
+										// get the value of rapidDesign
+										boolean useDesign = jsonAction.optBoolean("useDesign");
+										// check the user was given the role
+										if (useDesign) {
+											// add the role if the user doesn't have it already
+											if (!security.checkUserRole(rapidActionRequest, com.rapid.server.Rapid.DESIGN_ROLE))
+												security.addUserRole(rapidActionRequest, com.rapid.server.Rapid.DESIGN_ROLE);
+										} else {
+											// remove the role
+											security.deleteUserRole(rapidActionRequest, com.rapid.server.Rapid.DESIGN_ROLE);
+										}
+										// get the value of rapidUsers
+										boolean useUsers = jsonAction.optBoolean("useUsers");
+										// check the user was given the role
+										if (useUsers) {
+											// add the role if the user doesn't have it already
+											if (!security.checkUserRole(rapidActionRequest, com.rapid.server.Rapid.USERS_ROLE))
+												security.addUserRole(rapidActionRequest, com.rapid.server.Rapid.USERS_ROLE);
+										} else {
+											// remove the role
+											security.deleteUserRole(rapidActionRequest, com.rapid.server.Rapid.USERS_ROLE);
+										}
+									}
+
+									// set the result message
+									result.put("message", "User details saved");
+
+								} // user check
 
 							} else if ("CHECKPASSWORDCOMPLEXITY".equals(action)) {
 

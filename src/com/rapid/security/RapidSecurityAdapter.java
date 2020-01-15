@@ -264,7 +264,7 @@ public class RapidSecurityAdapter extends SecurityAdapter {
 	public User getUser(RapidRequest rapidRequest) throws SecurityAdapaterException {
 		for (User user : _security.getUsers()) {
 			if (user.getName() != null && rapidRequest.getUserName() != null) {
-				if (user.getName().toLowerCase().equals(rapidRequest.getUserName().toLowerCase())) return user;
+				if (user.getName().toLowerCase().equalsIgnoreCase(rapidRequest.getUserName().toLowerCase())) return user;
 			}
 		}
 		return null;
@@ -311,7 +311,7 @@ public class RapidSecurityAdapter extends SecurityAdapter {
 
 	@Override
 	public boolean deleteUser(RapidRequest rapidRequest) throws SecurityAdapaterException {
-		for (User user : _security.getUsers()) if (user.getName().equals(rapidRequest.getUserName())){
+		for (User user : _security.getUsers()) if (user.getName().equalsIgnoreCase(rapidRequest.getUserName())) {
 			boolean removed = _security.getUsers().remove(user);
 			if (removed) {
 				_security.getUsers().sort();
@@ -373,10 +373,21 @@ public class RapidSecurityAdapter extends SecurityAdapter {
 
 	@Override
 	public void updateUser(RapidRequest rapidRequest, User user) throws SecurityAdapaterException {
-		// the form adapter will return true to any password check so it looks like any user is in the app, only save if delete returns true meaning user was really in the app
-		if (deleteUser(rapidRequest)) {
-			_security.getUsers().add(user);
-			_security.getUsers().sort();
+		// get all users
+		Users users = _security.getUsers();
+		// assume the user was not removed
+		boolean removed = false;
+		// loop all old users, looking for this user
+		for (User oldUser : users) if (oldUser.getName().equalsIgnoreCase(rapidRequest.getUserName())) {
+			// retain removed
+			removed = users.remove(oldUser);
+			// we're done
+			break;
+		}
+		// the form security adapter will return true to any password check so it looks like any user is in the app, only save if user was really in the app
+		if (removed) {
+			users.add(user);
+			users.sort();
 			save();
 		}
 	}
@@ -394,7 +405,7 @@ public class RapidSecurityAdapter extends SecurityAdapter {
 
 		// loop users
 		for (User u : _security.getUsers()) {
-			if (u.getName().toLowerCase().equals(userName)) {
+			if (u.getName().toLowerCase().equalsIgnoreCase(userName)) {
 				user = u;
 				break;
 			}
