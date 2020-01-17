@@ -255,23 +255,25 @@ function Action_rapid(ev, appId, pageId, controlId, actionId, actionType, rapidA
 						setData_dropdown(ev, 'rapid_P0_C3193_', null, null, users);
 					}
 				}
-				var rapidUserRows = $("#rapid_P0_C823_").find("tr.rowStyle1,tr.rowStyle2");
-				rapidUserRows.each( function() {
-				  var children = $(this).children("td");
-				  var user = children.first().html();
-				  if (data.currentUser.toLowerCase() != user.toLowerCase()) {
-					  var cell = children.last();
-					  cell.html("<button>delete...</button>");
-					  cell.find("button").click( function(ev) {
-					    // confirm
-					    if (confirm("Are you sure?")) {    
-					      Action_rapid(ev, 'rapid', 'P0', null, 'P0_A904_', 'DELUSER', true);					      
-					    }
-					    // stop bubbling
-					    ev.stopPropagation();
-					  });
-				   }
-				});
+				if (getData_dataStore(null, "rapid_P0_C210", "canManageUsers", rapid_P0_C210details)) {
+					var rapidUserRows = $("#rapid_P0_C823_").find("tr.rowStyle1,tr.rowStyle2");
+					rapidUserRows.each( function() {
+					  var children = $(this).children("td");
+					  var user = children.first().html();
+					  if (data.currentUser.toLowerCase() != user.toLowerCase()) {
+						  var cell = children.last();
+						  cell.html("<button>delete...</button>");
+						  cell.find("button").click( function(ev) {
+						    // confirm
+						    if (confirm("Are you sure?")) {    
+						      Action_rapid(ev, 'rapid', 'P0', null, 'P0_A904_', 'DELUSER', true);					      
+						    }
+						    // stop bubbling
+						    ev.stopPropagation();
+						  });
+					   }
+					});
+				}
 			};
 		break;
 		case "GETUSER" :	
