@@ -412,32 +412,51 @@ public class Rapid extends RapidHttpServlet {
 						// start a JSON array
 						JSONArray jsonResources = new JSONArray();
 
-						// get pages
-						Pages pages = app.getPages();
+						// assume no mobile action
+						boolean hasMobileAction = false;
 
-						// if we got some
-						if (pages != null) {
-							// loop page ids
-							for (String pageId : pages.getPageIds()) {
-								// add url to retrieve page to resources
-								jsonResources.put("~?a=" + app.getId() + "&v=" + app.getVersion() + "&p=" + pageId);
+						// loop app actions
+						for (String actionType : app.getActionTypes()) {
+							// if it's mobile
+							if ("mobile".equals(actionType)) {
+								// set has mobile action
+								hasMobileAction = true;
+								// we're done
+								break;
 							}
 						}
 
-						// get app resources
-						Resources resources = app.getAppResources();
+						// only if we have the mobile action as this is how offline support is provided
+						if (hasMobileAction) {
 
-						// if we had some
-						if (resources != null) {
-							// loop application resources and add to JSON array
-							for (Resource resource : resources) {
-								// check they're any of our file types
-								if (resource.getType() == Resource.JAVASCRIPTFILE || resource.getType() == Resource.CSSFILE || resource.getType() == Resource.JAVASCRIPTLINK || resource.getType() == Resource.CSSLINK || resource.getType() == Resource.FILE) {
-									// add resource
-									jsonResources.put(resource.getContent());
+							// get pages
+							Pages pages = app.getPages();
+
+							// if we got some
+							if (pages != null) {
+								// loop page ids
+								for (String pageId : pages.getPageIds()) {
+									// add url to retrieve page to resources
+									jsonResources.put("~?a=" + app.getId() + "&v=" + app.getVersion() + "&p=" + pageId);
 								}
 							}
-						}
+
+							// get app resources
+							Resources resources = app.getAppResources();
+
+							// if we had some
+							if (resources != null) {
+								// loop application resources and add to JSON array
+								for (Resource resource : resources) {
+									// check they're any of our file types
+									if (resource.getType() == Resource.JAVASCRIPTFILE || resource.getType() == Resource.CSSFILE || resource.getType() == Resource.JAVASCRIPTLINK || resource.getType() == Resource.CSSLINK || resource.getType() == Resource.FILE) {
+										// add resource
+										jsonResources.put(resource.getContent());
+									}
+								}
+							}
+
+						} // has mobile action check
 
 						// set response to text
 						response.setContentType("application/json;charset=UTF-8");
