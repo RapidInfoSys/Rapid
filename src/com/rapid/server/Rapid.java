@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2020 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -408,6 +408,9 @@ public class Rapid extends RapidHttpServlet {
 						}
 
 					} else if ("resources".equals(actionName)) {
+						
+						// start a JSON response
+						JSONObject jsonResponse = new JSONObject();
 
 						// start a JSON array
 						JSONArray jsonResources = new JSONArray();
@@ -428,6 +431,28 @@ public class Rapid extends RapidHttpServlet {
 
 						// only if we have the mobile action as this is how offline support is provided
 						if (hasMobileAction) {
+							
+							// add app id
+							jsonResponse.put("id", app.getId());
+							
+							// add version
+							jsonResponse.put("version", app.getVersion());
+							
+							// add start page
+							jsonResponse.put("startPageId", app.getStartPageId());
+							
+							// assume status is development
+							String status = "development";
+							// update to live
+							if (app.getStatus() == Application.STATUS_LIVE) status = "live";
+							// update to in maintenance
+							if (app.getStatus() == Application.STATUS_MAINTENANCE) status = "maintenance";
+							
+							// add status
+							jsonResponse.put("status", status);
+							
+							// put whether latest version
+							jsonResponse.put("latest", app.getVersion().equals(rapidRequest.getRapidServlet().getApplications().get(app.getId()).getVersion()));
 
 							// get pages
 							Pages pages = app.getPages();
@@ -455,6 +480,9 @@ public class Rapid extends RapidHttpServlet {
 									}
 								}
 							}
+							
+							// add resources to response
+							jsonResponse.put("resources", jsonResources);
 
 						} // has mobile action check
 
@@ -465,7 +493,7 @@ public class Rapid extends RapidHttpServlet {
 						PrintWriter out = response.getWriter();
 
 						// output the array
-						out.print(jsonResources.toString());
+						out.print(jsonResponse.toString());
 
 						// flush and close writer
 						out.flush();
