@@ -408,7 +408,7 @@ public class Rapid extends RapidHttpServlet {
 						}
 
 					} else if ("resources".equals(actionName)) {
-						
+
 						// start a JSON response
 						JSONObject jsonResponse = new JSONObject();
 
@@ -431,26 +431,26 @@ public class Rapid extends RapidHttpServlet {
 
 						// only if we have the mobile action as this is how offline support is provided
 						if (hasMobileAction) {
-							
+
 							// add app id
 							jsonResponse.put("id", app.getId());
-							
+
 							// add version
 							jsonResponse.put("version", app.getVersion());
-							
+
 							// add start page
 							jsonResponse.put("startPageId", app.getStartPageId());
-							
+
 							// assume status is development
 							String status = "development";
 							// update to live
 							if (app.getStatus() == Application.STATUS_LIVE) status = "live";
 							// update to in maintenance
 							if (app.getStatus() == Application.STATUS_MAINTENANCE) status = "maintenance";
-							
+
 							// add status
 							jsonResponse.put("status", status);
-							
+
 							// put whether latest version
 							jsonResponse.put("latest", app.getVersion().equals(rapidRequest.getRapidServlet().getApplications().get(app.getId()).getVersion()));
 
@@ -480,7 +480,7 @@ public class Rapid extends RapidHttpServlet {
 									}
 								}
 							}
-							
+
 							// add resources to response
 							jsonResponse.put("resources", jsonResources);
 
@@ -1327,7 +1327,7 @@ public class Rapid extends RapidHttpServlet {
 								sendMessage(response, 400, "Name required", "Image name must be provided");
 
 								// log
-								logger.debug("Rapid POST response (400) : Image name must be provided");
+								logger.error("Rapid POST response (400) : Image name must be provided");
 
 							} else {
 
@@ -1384,12 +1384,16 @@ public class Rapid extends RapidHttpServlet {
 													} catch (Exception ex) {
 
 														// log
-														logger.error("Error saving uploaded file : " + ex.getMessage(), ex);
+														logger.error("Error saving uploaded file " + imageName + " of type " + contentType + " size " + bodyBytes.length + " : " + ex.getMessage(), ex);
 
 														// rethrow
 														throw new Exception("Error uploading file");
 
 													}
+
+												} else {
+
+													logger.error("Error uploading file " + imageName + " of type " + contentType + " size " + bodyBytes.length + ", did not match file type byte signature");
 
 												} // signature check
 
