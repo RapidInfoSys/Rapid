@@ -483,35 +483,55 @@ if (data == null || data === undefined) {
 
 					// check if Rapid Mobile is present
 					if (typeof _rapidmobile == "undefined") {
-					
-						// get the gallery images
-						var galImages = sessionStorage.getItem(_appId + "_" + "images");
-						// make object if we need one
-						if (galImages) {
-							galImages = JSON.parse(galImages);
-						} else {
-							galImages = {};
-						}
 						
 						// assume not in storage already
 						var inStorage = false;
 						// assume no filename attribute required
 						var fileNameAttr = "";
 
-						// if it doesn't start with http or data look for it in storage
-						if (url.indexOf("http") != 0 && url.indexOf("data:") != 0) {
+						// get the gallery images - we will use this later to store the image anyway
+						var galImages = sessionStorage.getItem(_appId + "_" + "images");
 
+						// make object if we need one
+						if (galImages) {
+							galImages = JSON.parse(galImages);
+						} else {
+							galImages = {};
+						}
+
+						// if it doesn't start with http or data look for it in the page, or storage
+						if (url.indexOf("http") != 0 && url.indexOf("data:") != 0) {
+						
 							// if we have this image in session storage
 							if (galImages[url]) {
-								
+							
 								// retain url in fileNameAttr
 								fileNameAttr = " data-filename='" + url + "'";
 								// retrieve from session storage
 								url = galImages[url];
 								// remember it was in storage
 								inStorage = true;
-								
+							
 							} else {
+
+								// look for an image with the filename attribute
+								var fileNameImage = $("img[data-filename='" + url + "']");
+	
+								// if we got one
+								if (fileNameImage.length > 0) {
+	
+									// retain url in fileNameAttr
+									fileNameAttr = " data-filename='" + url + "'";
+									// update the url to the data in the src attribute
+									url = fileNameImage.attr("src");
+									// remember it was in storage
+									inStorage = true;
+									
+								}
+
+							}
+
+							if (!inStorage) {
 
 								// add the path to this url from our app - check for ~, if not is pretty url use _appId
 								if (window.location.pathname.indexOf("~") > -1) {
