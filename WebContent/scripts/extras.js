@@ -751,7 +751,7 @@ function mergeDataObjects(data1, data2, mergeType, field, maxRows, details) {
 					data = {};
 					data.fields = fields;
 					if (mergeType == "append") {						
-						if (data1.rows.length == 1 && data1.fields.length == 1 && data2.rows.length == 1 && data2.fields.length == 1 && !(details && details.type == "grid")) {
+						if (data1.rows.length == 1 && data1.fields.length == 1 && data2.rows.length == 1 && data2.fields.length == 1 && !(details && (details.type == "grid" || details.type == "gallery" ))) {
 							data = data1.rows[0][0] + data2.rows[0][0]; 
 						} else {
 							data.rows = data1.rows;

@@ -409,7 +409,7 @@ return html;
 	    
 	    <getDetailsFunction>
 	        <![CDATA[
-var details = {onImageClick: this.onImageClick, emptyText: this.emptyText};
+var details = {type:"gallery", onImageClick: this.onImageClick, emptyText: this.emptyText};
 if (this.images && this.gotCaptions) {
 	details.captions = [];
 	for (var i in this.images) {
