@@ -760,7 +760,7 @@ images.each( function(i) {
 	var url = $(this).attr("data-filename");
 	if (!url) url = $(this).attr("src");
 	if (url) {
-		if (url.indexOf("_images") > 0) url = url.substr(url.indexOf("_images") + 7);
+		if (url.indexOf("_images/") > 0) url = url.substr(url.indexOf("_images/") + 8);
 		urls += url.replace("http://cache/","").replace("http://images/","");
 		if (i < images.length - 1) urls += ",";
 	}
