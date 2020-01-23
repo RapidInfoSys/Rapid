@@ -501,10 +501,10 @@ if (data == null || data === undefined) {
 
 						// if it doesn't start with http or data look for it in the page, or storage
 						if (url.indexOf("http") != 0 && url.indexOf("data:") != 0) {
-						
+
 							// if we have this image in session storage
 							if (galImages[url]) {
-							
+								
 								// retain url in fileNameAttr
 								fileNameAttr = " data-filename='" + url + "'";
 								// retrieve from session storage
@@ -516,17 +516,17 @@ if (data == null || data === undefined) {
 
 								// look for an image with the filename attribute
 								var fileNameImage = $("img[data-filename='" + url + "']");
-	
+
 								// if we got one
 								if (fileNameImage.length > 0) {
-	
+
 									// retain url in fileNameAttr
 									fileNameAttr = " data-filename='" + url + "'";
 									// update the url to the data in the src attribute
 									url = fileNameImage.attr("src");
 									// remember it was in storage
-									inStorage = true;
-									
+									inStorage = true;						
+								
 								}
 
 							}
@@ -760,6 +760,7 @@ images.each( function(i) {
 	var url = $(this).attr("data-filename");
 	if (!url) url = $(this).attr("src");
 	if (url) {
+		if (url.indexOf("_images") > 0) url = url.substr(url.indexOf("_images") + 7);
 		urls += url.replace("http://cache/","").replace("http://images/","");
 		if (i < images.length - 1) urls += ",";
 	}
