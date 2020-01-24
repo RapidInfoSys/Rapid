@@ -141,7 +141,7 @@ div.gallery img {
 	            <type>javascript</type>
 	            <contents>
 	                <![CDATA[
-/*	                
+	                
 	                
 var _swipeHandlers = {};
        
@@ -381,7 +381,7 @@ function Gallery_showImage(ev, id) {
 	setNextPrevButton(img, $("#btnPrev"), $("#btnNext"));
 }
 
-*/
+
 
 	                ]]>
 	            </contents>

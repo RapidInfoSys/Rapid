@@ -5578,6 +5578,7 @@ function Property_mobileActionType(cell, mobileAction, property, details) {
 		break;
 		case "selectImage" :
 			setPropertyVisibilty(mobileAction, "galleryControlId", true);
+			setPropertyVisibilty(mobileAction, "imageMaxSize", true);
 		break;
 		case "uploadImages" :
 			setPropertyVisibilty(mobileAction, "galleryControlIds", true);

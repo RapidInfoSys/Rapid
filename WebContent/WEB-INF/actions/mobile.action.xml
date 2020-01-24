@@ -508,10 +508,11 @@ function getAvailableCameras() {
 
 function turnOnCamera(galleryControlId, size, quality) {
 	
+	_size = size;
+	
 	if (hasGetUserMedia()) {
 		
 		_galleryControlId = galleryControlId;
-		_size = size;
 		_quality = quality;
 		_cameraPlayer = document.getElementById("cameraPlayer");
 		
@@ -523,8 +524,7 @@ function turnOnCamera(galleryControlId, size, quality) {
 								  + "<button id='btnToggleCamera' class='cameraControlBasic' style='position:absolute; left:0;'><i class='fa fa-retweet cameraIcon' style='margin-left:-2px;'></i></button>"
 								  + "<button id ='btnCloseCamera' class='cameraControlBasic' style='position:absolute; right:0;'><i class='fa fa-times cameraIcon'></i></button>"
 								  + "<div style='position:fixed; bottom:0; width:100%; text-align:center; padding:20px;'><button id ='btnTakePicture' class='cameraControl'><i class='fa fa-camera cameraIcon'></i></button></div>"
-								  + "</div>"
-								  + "<canvas id='mobileaction_canvas' style='display:none;'></canvas>";
+								  + "</div>";
 								 
 			$("body").append(cameraPreviewHtml);
 			
@@ -565,14 +565,14 @@ function turnOnCamera(galleryControlId, size, quality) {
 			// Handle the error
 			//alert("Not allowed: " + err);
 			console.log(err.name + ": " + err.message);
-			selectImage(galleryControlId);
+			selectImage(galleryControlId, _size);
 		});
 		
 	} else {
 	
 		//alert("getUserMedia() is not supported by your browser");
 		console.log("getUserMedia() is not supported by your browser");
-		selectImage(galleryControlId);
+		selectImage(galleryControlId, _size);
 	}
 	
 }
@@ -602,7 +602,46 @@ function stopCameraStream () {
 	
 }
 
-function selectImage(galleryControlId) {
+function scaleImageToDataURL(image, imageWidth, imageHeight) {
+	
+	if (hasGetUserMedia()) {
+		
+		var maxSize = _size;
+		
+		if ($("#mobileaction_canvas").length === 0) {
+			$("body").append("<canvas id='mobileaction_canvas' style='display:none;'></canvas>");
+		}
+		
+		var canvas = document.getElementById("mobileaction_canvas");
+		var canvasContext = canvas.getContext("2d");
+		
+		// Set the width and height of the canvas, before drawing
+		// Find the longest side of the videoplayer
+		if (imageHeight > imageWidth) {
+			
+			canvas.height = maxSize;
+			canvas.width = (imageWidth / imageHeight) * maxSize;
+			
+		} else {
+		
+			canvas.height = (imageHeight / imageWidth) * maxSize;
+			canvas.width = maxSize;
+			
+		}
+		
+		// Draw a single video frame in the player to the canvas
+		canvasContext.drawImage(image, 0, 0, canvas.width, canvas.height);
+		
+		// Get a data url of the canvas, containing a representation of the image
+		// Default format type is image/png
+		return canvas.toDataURL();
+		
+	}
+}
+
+function selectImage(galleryControlId, size) {
+
+	_size = size;
 	
 	var galleryDetails = window[galleryControlId + "details"];
 	var inputHtml = "<input type='file' id='inputImage' style='display:none;'>"
@@ -631,12 +670,23 @@ function selectImage(galleryControlId) {
 		
 		$(fileReader).on("load", function(loadEvent) {
 			
-			var dataURL = loadEvent.target.result;
+			var image = new Image();
+			image.src = loadEvent.target.result;
 			
-			// call gallery set data to display image
-			setData_gallery(loadEvent, galleryControlId, "url", galleryDetails, dataURL);
-			
-			$(".inputImagePage").remove();
+			$(image).on("load", function(loadEvent) {
+				
+				var imageWidth = loadEvent.target.width;
+				var imageHeight = loadEvent.target.height;
+				
+				// Get a data url of the canvas, containing a representation of the image
+				// Default format type is image/png
+				var dataURL = scaleImageToDataURL(image, image.width, image.height) || image.src;
+		
+				// call gallery set data to display image
+				setData_gallery(loadEvent, galleryControlId, "url", galleryDetails, dataURL);
+				
+				$(".inputImagePage").remove();
+			});
 		});
 		
 		fileReader.readAsDataURL(this.files[0]);
@@ -650,36 +700,16 @@ function takePicture (ev) {
 		var galleryControlId = _cameraPlayer.getAttribute("data-galleryId");
 		var galleryDetails = window[galleryControlId + "details"];
 		
-		var canvas = document.getElementById("mobileaction_canvas");
-		var canvasContext = canvas.getContext("2d");
-		
-		// Set the width and height of the canvas, before drawing
 		// Get the intrinsic width and height of the videoplayer
 		var vWidth = _cameraPlayer.videoWidth;
-		var vHeight = _cameraPlayer.videoHeight;	
-		
-		// Find the longest side of the videoplayer
-		if (vHeight > vWidth) {
-			
-			canvas.height = _size;
-			canvas.width = (vWidth / vHeight) * _size;
-			
-		} else {
-		
-			canvas.height = (vHeight / vWidth) * _size;
-			canvas.width = _size;
-			
-		}
-		
-		// Draw a single video frame in the player to the canvas
-		canvasContext.drawImage(_cameraPlayer, 0, 0, canvas.width, canvas.height);
-		
-		// Turn-off the camera
-		turnOffCamera();
+		var vHeight = _cameraPlayer.videoHeight;
 		
 		// Get a data url of the canvas, containing a representation of the image
 		// Default format type is image/png
-		var dataURL = canvas.toDataURL();
+		var dataURL = scaleImageToDataURL(_cameraPlayer, _cameraPlayer.videoWidth, _cameraPlayer.videoHeight);
+		
+		// Turn-off the camera
+		turnOffCamera();
 		
 		// call gallery set data to display image
 		setData_gallery(ev, galleryControlId, "url", galleryDetails, dataURL);
