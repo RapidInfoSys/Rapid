@@ -761,6 +761,8 @@ images.each( function(i) {
 	if (!url) url = $(this).attr("src");
 	if (url) {
 		if (url.indexOf("_images/") > 0) url = url.substr(url.indexOf("_images/") + 8);
+		var uploadPath = "/uploads/" + _appId + "/";
+		if (url.indexOf(uploadPath) > 0) url = url.substr(url.indexOf(uploadPath) + uploadPath.length);
 		urls += url.replace("http://cache/","").replace("http://images/","");
 		if (i < images.length - 1) urls += ",";
 	}
