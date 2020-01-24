@@ -533,7 +533,8 @@ public class Mobile extends Action {
 				if (galleryControl == null) {
 					js += "  //output control " + galleryControlId + " not found\n";
 				} else {
-					js += "selectImage('" + galleryControlId + "');\n";
+					int maxSize = Integer.parseInt(getProperty("imageMaxSize"));
+					js += "selectImage('" + galleryControlId + "', " + maxSize + ");\n";
 				}
 
 			} else if ("uploadImages".equals(type)) {
