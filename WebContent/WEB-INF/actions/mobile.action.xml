@@ -608,11 +608,7 @@ function scaleImageToDataURL(image, imageWidth, imageHeight) {
 		
 		var maxSize = _size;
 		
-		if ($("#mobileaction_canvas").length === 0) {
-			$("body").append("<canvas id='mobileaction_canvas' style='display:none;'></canvas>");
-		}
-		
-		var canvas = document.getElementById("mobileaction_canvas");
+		var canvas = document.createElement("canvas");
 		var canvasContext = canvas.getContext("2d");
 		
 		// Set the width and height of the canvas, before drawing
