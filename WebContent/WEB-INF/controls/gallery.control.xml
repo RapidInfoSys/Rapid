@@ -586,8 +586,19 @@ if (data == null || data === undefined) {
 					
 						// if it doesn't start with http or data
 						if (url.indexOf("http") != 0 && url.indexOf("data:") != 0) {
-							// add a psuedo host for Rapid Mobile
-							url = "http://images/" + url;
+						
+							if (navigator.userAgent.indexOf(" Apple") > 0) {
+							
+								// add a psuedo host for Rapid Mobile on iOS
+								url = window.location.origin + "/_images/" + url;
+							
+							} else {
+							
+								// add a psuedo host for Rapid Mobile on Android
+								url = "http://images/" + url;
+							
+							}							
+							
 						}
 					
 					}
