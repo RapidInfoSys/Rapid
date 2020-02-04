@@ -825,7 +825,7 @@ public class Mobile extends Action {
 							js += "		};\n";
 
 							// add this handler
-							js += "		_swipeHandlers['" + target + "'].push({direction:'" + direction + "',fingers:" + fingers + ",function:f});\n"
+							js += "		_swipeHandlers['" + target + "'].push({'direction':'" + direction + "','fingers':" + fingers + ",'function':f});\n"
 								+ "}\n";
 
 						} catch (Exception ex) {

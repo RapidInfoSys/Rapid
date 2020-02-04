@@ -237,8 +237,10 @@ function Gallery_showImage(ev, id) {
 
 	// get the image
 	var img = $(ev.target);
+	
 	// look for the big gallery div
 	var gallery = $("div.bigGallery");
+	
 	// if we couldn't find one create
 	if (!gallery[0]) {
 		
@@ -311,14 +313,18 @@ function Gallery_showImage(ev, id) {
 			
 		});
 		
-		// Include swipe actions, only if this is a mobile browser
-		if(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)){
+		// Include swipe actions, only if global has been set by mobile action and this is a mobile browser
+		if (_swipeHandlers && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+		
 			var direction = "left";
 			var fingers = 1;
 			var target = gallery;
 			
-			target.swipe( { swipe:function(event, direction, distance, duration, fingers, fingerData) { 
-				handleSwipe(event, direction, distance, duration, fingers, fingerData, target, ev); },fingers:'all'});
+			target.swipe({ 
+				swipe:function(event, direction, distance, duration, fingers, fingerData) { 
+					handleSwipe(event, direction, distance, duration, fingers, fingerData, target, ev); 
+				},fingers:'all'
+			});
 		  	
 		  	_swipeHandlers[target] = [];
 		  	
@@ -332,8 +338,8 @@ function Gallery_showImage(ev, id) {
 		  	};
 		  	
 		  	// Add the handlers to the map
-		  	_swipeHandlers[target].push({direction:"left",fingers:1,function:swipeLeftHandler});
-			_swipeHandlers[target].push({direction:"right",fingers:1,function:swipeRightHandler});
+		  	_swipeHandlers[target].push({direction:"left", fingers:1, "function":swipeLeftHandler});
+			_swipeHandlers[target].push({direction:"right", fingers:1, "function":swipeRightHandler});
 		
 		}
 		
