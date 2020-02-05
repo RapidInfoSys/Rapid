@@ -514,9 +514,10 @@ public class Mobile extends Action {
 				} else {
 					int maxSize = Integer.parseInt(getProperty("imageMaxSize"));
 					int quality = Integer.parseInt(getProperty("imageQuality"));
+					Boolean cameraSelectImage = Boolean.parseBoolean(getProperty("cameraSelectImage"));
 					// mobile check, use
 					js += "if (typeof _rapidmobile == 'undefined') {\n"
-						+ "  turnOnCamera('" + galleryControlId + "'," + maxSize + "," + quality + ");\n"
+						+ "  turnOnCamera('" + galleryControlId + "'," + maxSize + "," + quality + "," + cameraSelectImage + ");\n"
 						+ "} else {\n";
 					js += "  _rapidmobile.addImage('" + galleryControlId + "'," + maxSize + "," + quality + ");\n";
 					// close mobile check

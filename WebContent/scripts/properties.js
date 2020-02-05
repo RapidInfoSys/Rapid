@@ -5529,6 +5529,7 @@ function Property_mobileActionType(cell, mobileAction, property, details) {
 	setPropertyVisibilty(mobileAction, "galleryControlId", false);
 	setPropertyVisibilty(mobileAction, "imageMaxSize", false);
 	setPropertyVisibilty(mobileAction, "imageQuality", false);
+	setPropertyVisibilty(mobileAction, "cameraSelectImage", false);
 	setPropertyVisibilty(mobileAction, "galleryControlIds", false);
 	setPropertyVisibilty(mobileAction, "barcodeDestinations", false);
 	setPropertyVisibilty(mobileAction, "successActions", false);
@@ -5575,6 +5576,7 @@ function Property_mobileActionType(cell, mobileAction, property, details) {
 			setPropertyVisibilty(mobileAction, "galleryControlId", true);
 			setPropertyVisibilty(mobileAction, "imageMaxSize", true);
 			setPropertyVisibilty(mobileAction, "imageQuality", true);
+			setPropertyVisibilty(mobileAction, "cameraSelectImage", true);
 		break;
 		case "selectImage" :
 			setPropertyVisibilty(mobileAction, "galleryControlId", true);

@@ -203,6 +203,15 @@ return "<option value=''>Please select...</option>" + getControlOptions(this.gal
 	            <helpHtml>Sets the quality of the image, in percentages. By default it sets the quality to 50% of that of the original.</helpHtml>
 	        </property>
 	        
+	        <property>
+	            <key>cameraSelectImage</key>
+	            <name>Option to select</name>
+	            <visible>false</visible>
+	            <setConstructValueFunction>return true;</setConstructValueFunction>
+	            <changeValueJavaScript>checkbox</changeValueJavaScript>
+	            <helpHtml>Sets whether or not to offer the option of selecting an image from the device.</helpHtml>
+	        </property>
+	        
 	         <property>
 	            <key>galleryControlIds</key>
 	            <name>Controls</name>
@@ -401,6 +410,7 @@ return "<option value=''>Please select...</option><option value ='html'" + (this
 	border-radius: 50%;
 	width: 60px;
 	text-align: center;
+	border: none;
 }
 
 .cameraControl {
@@ -506,9 +516,10 @@ function getAvailableCameras() {
 	
 }
 
-function turnOnCamera(galleryControlId, size, quality) {
+function turnOnCamera(galleryControlId, size, quality, cameraSelectImage) {
 	
 	_size = size;
+	_cameraSelectImage = cameraSelectImage;
 	
 	if (hasGetUserMedia()) {
 		
@@ -518,10 +529,14 @@ function turnOnCamera(galleryControlId, size, quality) {
 		
 		if (!_cameraPlayer) {
 		
+		    var inputImageHtml = _cameraSelectImage ? "<label id='btnInputImage' for='inputImage' class='cameraControlBasic' style='position:absolute; left:0; margin: 30px calc(50% - 30px);'><i class='fa fa-folder-open cameraIcon' style='margin-left: 4px;'></i></label>"
+								  + "<input type='file' id='inputImage' style='display:none;'>" : "";
+		
 			// Add the divs
 			var cameraPreviewHtml = "<div id='cameraVideoContainer'>"
 								  + "<video id='cameraPlayer' autoplay></video>"
 								  + "<button id='btnToggleCamera' class='cameraControlBasic' style='position:absolute; left:0;'><i class='fa fa-retweet cameraIcon' style='margin-left:-2px;'></i></button>"
+								  + inputImageHtml
 								  + "<button id ='btnCloseCamera' class='cameraControlBasic' style='position:absolute; right:0;'><i class='fa fa-times cameraIcon'></i></button>"
 								  + "<div style='position:fixed; bottom:0; width:100%; text-align:center; padding:20px;'><button id ='btnTakePicture' class='cameraControl'><i class='fa fa-camera cameraIcon'></i></button></div>"
 								  + "</div>";
@@ -533,6 +548,38 @@ function turnOnCamera(galleryControlId, size, quality) {
 			$("#btnToggleCamera").click(toggleCameraFacing);
 			
 			$("#btnCloseCamera").click(turnOffCamera);
+			
+			$("#btnInputImage").click(turnOffCamera);
+			
+			$("#inputImage").on("change", function(changeEvent) {
+			
+				var galleryDetails = window[galleryControlId + "details"];
+					
+				var fileReader = new FileReader();
+				
+				$(fileReader).on("load", function(loadEvent) {
+					
+					var image = new Image();
+					image.src = loadEvent.target.result;
+					
+					$(image).on("load", function(loadEvent) {
+						
+						var imageWidth = loadEvent.target.width;
+						var imageHeight = loadEvent.target.height;
+						
+						// Get a data url of the canvas, containing a representation of the image
+						// Default format type is image/png
+						var dataURL = scaleImageToDataURL(image, image.width, image.height) || image.src;
+				
+						// call gallery set data to display image
+						setData_gallery(loadEvent, galleryControlId, "url", galleryDetails, dataURL);
+						
+						$(".inputImagePage").remove();
+					});
+				});
+				
+				fileReader.readAsDataURL(this.files[0]);
+			});
 				
 			_cameraPlayer = document.getElementById("cameraPlayer");
 		
