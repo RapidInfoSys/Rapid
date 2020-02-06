@@ -487,7 +487,7 @@ if (data == null || data === undefined) {
 					// get the url
 					var url = urls[j];
 
-					// check if Rapid Mobile is present
+					// check if Rapid Mobile is present - for some reason iOS client doesn't think so at page load
 					if (typeof _rapidmobile == "undefined") {
 						
 						// assume not in storage already
@@ -539,17 +539,25 @@ if (data == null || data === undefined) {
 
 							if (!inStorage) {
 
-								// add the path to this url from our app - check for ~, if not is pretty url use _appId
-								if (window.location.pathname.indexOf("~") > -1) {
-								
-									url = window.location.origin + window.location.pathname.replace("~","") + "uploads/" + _appId + "/" + url;
-								
+								if (navigator.userAgent.indexOf(" Apple") > 0) {
+							
+									// add a psuedo host for Rapid Mobile on iOS
+									url = window.location.origin + "/_images/" + url;
+							
 								} else {
+
+									// add the path to this url from our app - check for ~, if not is pretty url use _appId
+									if (window.location.pathname.indexOf("~") > -1) {
 								
-									// This is the pretty url request
-									var context = window.location.pathname.substring(0, window.location.pathname.toLowerCase().indexOf(_appId.toLowerCase()));
-									if(!context || context.length < 1) context = "/";
-									url = window.location.origin + context + "uploads/" + _appId + "/" + url;
+										url = window.location.origin + window.location.pathname.replace("~","") + "uploads/" + _appId + "/" + url;
+								
+									} else {
+								
+										// This is the pretty url request
+										var context = window.location.pathname.substring(0, window.location.pathname.toLowerCase().indexOf(_appId.toLowerCase()));
+										if(!context || context.length < 1) context = "/";
+										url = window.location.origin + context + "uploads/" + _appId + "/" + url;
+									}
 								
 								}
 
@@ -592,16 +600,16 @@ if (data == null || data === undefined) {
 					
 						// if it doesn't start with http or data
 						if (url.indexOf("http") != 0 && url.indexOf("data:") != 0) {
-						
-							if (navigator.userAgent.indexOf(" Apple") > 0) {
+
+							if (navigator.userAgent.indexOf("Android") > 0) {
+
+								// add a psuedo host for Rapid Mobile on Android
+								url = "http://images/" + url;
+														
+							} else {
 							
 								// add a psuedo host for Rapid Mobile on iOS
 								url = window.location.origin + "/_images/" + url;
-							
-							} else {
-							
-								// add a psuedo host for Rapid Mobile on Android
-								url = "http://images/" + url;
 							
 							}							
 							
@@ -678,7 +686,7 @@ if (data == null || data === undefined) {
 										var index = $(ev.target).index();
 										if (details.captions && details.captions[index]) alert(details.captions[index]);
 									} else if (details.onImageClick != "nothing") {
-										Gallery_removeImage(ev, id, img);
+										Gallery_removeImage(ev, id, img);			
 									}
 								} else {
 									Gallery_removeImage(ev, id, img);
