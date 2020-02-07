@@ -805,6 +805,8 @@ if (details.columns) {
 } else {
 	// all rows as the header is dynamic
 	control.find("tr").remove();
+	//
+	details.dynamicColumns = data.fields.map(function(field) { return { visible: true, field: field }; });
 }
 // reset any sort indicators if not being used for sorting
 control.find("span.sort").html("&#xf0dc");
@@ -1349,6 +1351,7 @@ if (details) {
 	   	        <getPropertyFunction>
 			        <![CDATA[
 var data = null;
+var columns = details.columns || details.dynamicColumns;
 if (details.dataStorageType) {
 	data = getGridDataStoreData(id, details);	
 	var grid = $("#" + id);
@@ -1387,9 +1390,9 @@ if (details.dataStorageType) {
 				// prepare a data row
 				var dataRow = [];
 				// loop the columns
-				for (var j = 0; j < details.columns.length; j++) {
+				for (var j = 0; j < columns.length; j++) {
 					// add fields once only
-					if (i == 0) data.fields.push(details.columns[j].field);
+					if (i == 0) data.fields.push(columns[j].field);
 					// get cell html  - one over because of the checkbox
 					// unescape
 					var value = getGridUnescapedValue(row.children(":nth(" + (j + 1) + ")").html());
@@ -1405,8 +1408,8 @@ if (details.dataStorageType) {
 		var row = getGridSelectedRow(id, ev);
 		if (row[0]) {
 			data = {fields:[],rows:[[]]};
-			for (var i in details.columns) {
-				data.fields.push(details.columns[i].field);
+			for (var i in columns) {
+				data.fields.push(columns[i].field);
 				// get cell html
 					// unescape
 				var value = getGridUnescapedValue(row.children(":nth(" + i + ")").html());
