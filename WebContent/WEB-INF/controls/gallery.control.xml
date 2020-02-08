@@ -686,7 +686,7 @@ if (data == null || data === undefined) {
 										var index = $(ev.target).index();
 										if (details.captions && details.captions[index]) alert(details.captions[index]);
 									} else if (details.onImageClick != "nothing") {
-										Gallery_removeImage(ev, id, img);			
+										Gallery_removeImage(ev, id, img);
 									}
 								} else {
 									Gallery_removeImage(ev, id, img);
