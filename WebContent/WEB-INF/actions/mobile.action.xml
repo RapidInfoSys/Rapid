@@ -804,11 +804,14 @@ function base64toBlob(base64Data, contentType) {
 }
 
 var _uploadedImageNames;
+var _uploadedImageErrored;
 
 function uploadImages(controlIds, ev, successCallback, errorCallback) {
 
 	// reset uploaded images - we'll use this later to empty the session once all images are uploaded
 	_uploadedImageNames = [];
+	// reset uploaded image error to false - we'll use this to ensure only the first error is shown/handled
+	_uploadedImageErrored = false;
 
 	// If we have one
 	if (controlIds && controlIds.length > 0) {
@@ -882,7 +885,7 @@ function uploadImages(controlIds, ev, successCallback, errorCallback) {
 	
 }
 
-function uploadImage(url, dataSource, progress, ev, successCallback, errorCallBack) {
+function uploadImage(url, dataSource, progress, ev, successCallback, errorCallback) {
 
 	try {
 
@@ -945,17 +948,26 @@ function uploadImage(url, dataSource, progress, ev, successCallback, errorCallBa
 					if (successCallback) window[successCallback](ev);
 				}
 			},
-			error: function(ev) {
-				if (!errored) {
-					errored = true;
-					if (errorCallBack) window[errorCallback](ev);
+			error: function(server, status, message) {
+				// if we have not had an error yet
+				if (!_uploadedImageErrored) {
+					// remember this one
+					_uploadedImageErrored = true;
+					// if there is an error call back 
+					if (errorCallback) {
+						// call it
+						window[errorCallback](ev, server, status, message);
+					} else {
+						// otherwise show an alert
+						alert("Error uploading images: " + server.statusText||message);
+					}
 				}
 			}
 		});
 		
 	} catch(ex) {
 	
-		if (errorCallBack) {
+		if (errorCallback) {
 			window[errorCallback](ev);
 		} else {
 			throw ex;
