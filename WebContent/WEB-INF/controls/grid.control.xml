@@ -3,7 +3,7 @@
 
 <!-- 
 
-Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2020 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -1146,14 +1146,18 @@ if (data !== undefined) {
 		if (details.multiSelect) {
 			// get the target
 			var target = $(ev.target);
+			// get the grid id
+			var id = row.closest("[id]").attr("id");
+			// get any table row click handler
+			var handler = window["Event_click_" + id];
 			// if we're here because we clicked the gridMultiSelect checkbox - in this case row selection is done in the input click listener, above, also do nothing is cell around the multiselect clicked
 			if (!target.is("input.gridMultiSelect") && !target.children("input.gridMultiSelect")[0]) {
 				// remove rowSelect class from all rows in the table
 				row.parent().find("tr.rowSelect").removeClass("rowSelect");
 				// add rowSelect to this row
 				row.addClass("rowSelect");
-				// uncheck all inputs
-				$("#" + id).find("input.gridMultiSelectHeader, input.gridMultiSelect").prop("checked",false);
+				// if there is a hanlder uncheck all inputs, what happens next is the handler fires and the select row is just this one
+				if (handler) $("#" + id).find("input.gridMultiSelectHeader, input.gridMultiSelect").prop("checked",false);
 			}
 		} else {
 			// remove rowSelect class from all rows in the table
