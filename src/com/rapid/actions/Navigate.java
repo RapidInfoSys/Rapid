@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2015 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2020 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -166,9 +166,10 @@ public class Navigate extends Action {
 				// check if this is a dialogue
 				boolean dialogue = Boolean.parseBoolean(getProperty("dialogue"));
 				// if so add the action parameter to the url
+				boolean dismissibleDialogue = Boolean.parseBoolean(getProperty("dismissibleDialogue"));
 				if (dialogue) js += "&action=dialogue";
 				// now add the other parameters
-				js += sessionVariables + "'," + dialogue + ",'" + pageId + "'," + popup + ");\n";
+				js += sessionVariables + "'," + dialogue + "," + dismissibleDialogue + ",'" + pageId + "'," + popup + ");\n";
 				// replace any unnecessary characters
 				js = js.replace(" + ''", "");
 

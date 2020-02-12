@@ -1,7 +1,7 @@
 /*
 
 
-Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2020 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -6586,4 +6586,8 @@ function Property_inputMaxLength(cell, propertyObject, property, details) {
 		// remove rows for custom value and its max length
 		cell.closest("tr").remove();
 	}
+}
+
+function Property_dismissibleDialogue(cell, propertyObject, property, details) {
+	if (propertyObject.dialogue) Property_checkbox(cell, propertyObject, property, details);
 }

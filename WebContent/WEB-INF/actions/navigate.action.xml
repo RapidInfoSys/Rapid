@@ -3,7 +3,7 @@
  
  <!-- 
 
-Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2020 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -84,6 +84,14 @@ return [["P","Page"],["U","URL"]];
 	        </property>
 	        
 	        <property>
+	            <key>dismissibleDialogue</key>
+	            <name>Dismissible dialogue</name>
+	            <changeValueJavaScript>dismissibleDialogue</changeValueJavaScript>
+	            <refreshProperties>false</refreshProperties>
+	            <helpHtml>Sets whether to allow the user to hide the dialogue when they click the background page.</helpHtml>
+	        </property>
+	        
+	        <property>
 	            <key>stopActions</key>
 	            <name>Stop further actions</name>
 	            <changeValueJavaScript>navigationStopActions</changeValueJavaScript>
@@ -160,8 +168,8 @@ $(document).ready( function() {
 	
 });		        
 	        
-function Action_navigate(url, dialogue, id, popup) {
-
+function Action_navigate(url, dialogue, dismissibleDialogue, id, popup) {
+	
 	if (dialogue) {
 	
 		var bodyHtml = "<div><h1 style='margin-left:auto;margin-right:auto;'>Page</h1></div>";
@@ -256,6 +264,7 @@ function Action_navigate(url, dialogue, id, popup) {
 		           	
 		           	// remove any existing dialogue cover for this action
 		           	$("#" + id + "cover").remove();
+		           	
 		           	// add the cover and return reference
 		           	dialogueCover = body.append("<div id='" + id + "cover' class='dialogueCover' style='position:absolute;left:0px;top:0px;z-index:1001;'></div>").children().last();
 		           			      		           			           		            	
@@ -263,6 +272,13 @@ function Action_navigate(url, dialogue, id, popup) {
 		           	$("#" + id).remove();
 		           	// add the dialogue container and remove the reference
 		           	dialogue = body.append("<div id='" + id + "' class='dialogue' style='position:fixed;z-index:1001;'></div>").children().last(); 
+		           	
+		           	if (dismissibleDialogue) {
+		           	    dialogueCover.on("click", function() {
+		           	        dialogue.remove();
+		           	        dialogueCover.remove();
+		           	    })
+		           	}
 		           	
 		           	// make sure it's hidden
 		           	dialogue.css("visibility","hidden");
