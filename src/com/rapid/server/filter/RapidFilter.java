@@ -70,6 +70,15 @@ public class RapidFilter implements Filter {
 	private Set<String> _resourceDirs = null;
 	private int _contextIdx = 1; // keep track of the context position of the URL
 
+	// private methods
+	private void forwardRequest(ServletRequest filteredRequest, ServletResponse response, String uri) throws ServletException, IOException {
+
+		// forward the newly reconstructed URL
+		RequestDispatcher dispatcher = filteredRequest.getRequestDispatcher(uri);
+		dispatcher.forward(filteredRequest, response);
+
+	}
+
 	// overrides
 
 	@Override
@@ -235,40 +244,34 @@ public class RapidFilter implements Filter {
 				String[] pathPart = (path.replaceFirst("/", "")).split("/");
 
 				// get the last path part
-				String lastPartPath = pathPart[pathPart.length - 1];
+				String lastPathPart = pathPart[pathPart.length - 1];
+
+				// assume no second last path part
+				String secondLastPathPart = null;
+
+				// set second last path part if there was one
+				if (pathPart.length > 1) secondLastPathPart = pathPart[pathPart.length - 2];
 
 				// get the list of applications to try to find any in the parts
 				Applications applications = (Applications) request.getServletContext().getAttribute("applications");
 
-				// if assets that we know are in the root
-				if ("favicon.ico".equals(lastPartPath)) {
+				// assets that we know are in the root
+				if (pathPart.length > 1 && "favicon.ico".equals(lastPathPart)) {
 
-					// set forward to root
-					rapidForwardURL = "/" + lastPartPath;
+					// forward to off the root
+					forwardRequest(filteredRequest, response, "/" + lastPathPart);
 
-					// if assets that we know are in the root
-				} else if (pathPart.length > 2 && "index.css".equals(lastPartPath)) {
+				// assets that we know are one folder off the root
+				} else if (pathPart.length > 2 && ("images".equals(secondLastPathPart) || "scripts".equals(secondLastPathPart) || "scripts_min".equals(secondLastPathPart) || "styles".equals(secondLastPathPart) || "styles_min".equals(secondLastPathPart))) {
 
-					// redirect to the root of the context - which is the root when seen from outside
-					res.sendRedirect(req.getContextPath() + "/styles/" + lastPartPath);
-
-					// send redirect immediately
-					return;
-
-				} else if (pathPart.length > 2 && "RapidLogo.svg".equals(lastPartPath)) {
-
-					// redirect to the root of the context - which is the root when seen from outside
-					res.sendRedirect(req.getContextPath() + "/images/" + lastPartPath);
-
-					// send redirect immediately
-					return;
-
+					// forward to it in its folder
+					forwardRequest(filteredRequest, response, "/" + secondLastPathPart + "/" + lastPathPart);
 
 				// if user has provided at least 1 path part (i.e. part1/) and is requesting known resources like login.jsp
-				} else if (pathPart.length > 1 && (lastPartPath.endsWith("login.jsp") || lastPartPath.endsWith("logout.jsp") || lastPartPath.endsWith("index.jsp"))) {
+				} else if (pathPart.length > 1 && (lastPathPart.endsWith("login.jsp") || lastPathPart.endsWith("logout.jsp") || lastPathPart.endsWith("index.jsp"))) {
 
 					// redirect to the root of the context - which is the root when seen from outside
-					res.sendRedirect(req.getContextPath() + "/" + lastPartPath);
+					res.sendRedirect(req.getContextPath() + "/" + lastPathPart);
 
 					// send redirect immediately
 					return;
@@ -282,7 +285,7 @@ public class RapidFilter implements Filter {
 					String appID = pathPart[0];
 					rapidForwardURL = "/~?a=" + appID;
 
-					if ("POST".equals(req.getMethod()) || ("GET".equals(req.getMethod()) && "~".equals(lastPartPath))) {
+					if ("POST".equals(req.getMethod()) || ("GET".equals(req.getMethod()) && "~".equals(lastPathPart))) {
 
 						rapidForwardURL = "/~?" + req.getQueryString();
 
@@ -340,8 +343,7 @@ public class RapidFilter implements Filter {
 					}// end of if
 
 					// forward the newly reconstructed URL
-					RequestDispatcher dispatcher = filteredRequest.getRequestDispatcher(rapidForwardURL);
-					dispatcher.forward(filteredRequest, response);
+					forwardRequest(filteredRequest, response, rapidForwardURL);
 
 					// if user has provided uploads and a known application
 				} else if (pathPart.length > 0 && "uploads".equals(pathPart[0])) {
