@@ -3367,6 +3367,18 @@ function Property_navigationStopActions(cell, navigation, property, details) {
 	
 }
 
+
+function addRadioNext(ev, input, cell, property, details) {
+	var input = $(ev.target);
+	var rowIndex = input.parent().parent().index();
+	// add a blank option
+	ev.data.control.buttons.splice(rowIndex, 0, {label: "", value: ""});
+	details = details || {};
+	details.rowToFocus = rowIndex;
+	// refresh
+	Property_radiobuttons(cell, ev.data.control, property, details);
+}
+
 //this is a dialogue to define radio buttons for the radio buttons control
 function Property_radiobuttons(cell, control, property, details) {
 	
@@ -3419,24 +3431,35 @@ function Property_radiobuttons(cell, control, property, details) {
 			var valueEdit = table.find("input.value").last();
 			// add a listener
 			addListener( valueEdit.keyup( {control : control, buttons: buttons}, function(ev) {
-				// get the input
-				var input = $(ev.target);
-				// update value
-				ev.data.buttons[input.parent().parent().index()-1].value = input.val();
-				// update html 
-				rebuildHtml(ev.data.control);
+				if (ev.keyCode == 13) { // if enter key pressed
+					addRadioNext(ev, input, cell, property, details);
+				} else {
+					// get the input
+					var input = $(ev.target);
+					// update value
+					ev.data.buttons[input.parent().parent().index()-1].value = input.val();
+					// update html 
+					rebuildHtml(ev.data.control);
+				}
 			}));
 			
 			// find the label
 			var textEdit = table.find("input.label").last();
+			
+			if (details && details.rowToFocus && details.rowToFocus == i) textEdit.focus();
+			
 			// add a listener
 			addListener( textEdit.keyup( {control : control, buttons: buttons}, function(ev) {
-				// get the input
-				var input = $(ev.target);
-				// update text
-				ev.data.buttons[input.parent().parent().index()-1].label = input.val();
-				// update html 
-				rebuildHtml(ev.data.control);
+				if (ev.keyCode == 13) { // if enter key pressed
+					addRadioNext(ev, input, cell, property, details);
+				} else {
+					// get the input
+					var input = $(ev.target);
+					// update text
+					ev.data.buttons[input.parent().parent().index()-1].label = input.val();
+					// update html 
+					rebuildHtml(ev.data.control);
+				}
 			}));
 			
 		}
@@ -3781,6 +3804,17 @@ function Property_visibilityConditions(cell, control, property, details) {
 	}
 }
 
+function addOptionNext(ev, input, cell, property, details) {
+	var input = $(ev.target);
+	var rowIndex = input.parent().parent().index();
+	// add a blank option
+	ev.data.control.options.splice(rowIndex, 0, {value: "", text: ""});
+	details = details || {};
+	details.rowToFocus = rowIndex;
+	// refresh
+	Property_options(cell, ev.data.control, property, details);
+}
+
 // this is a dialogue to refine the options available in dropdown and list controls
 function Property_options(cell, control, property, details) {
 	
@@ -3828,27 +3862,38 @@ function Property_options(cell, control, property, details) {
 					"<div class='reorder fa-stack fa-sm' title='Drag to change order'><i class='fa fa-arrow-up fa-stack-1x'></i><i class='fa fa-arrow-down fa-stack-1x'></i></div>" +
 					"<div class='delete fa-stack fa-sm'><i class='delete fa fa-trash' title='Click to delete'></i></div>" +
 					"</div></td></tr>");
-							
+			
 			// find the text
 			var textEdit = table.find("input.text").last();
+			
+			if (details && details.rowToFocus && details.rowToFocus == i) textEdit.focus();
+			
 			// add a listener
-			addListener( textEdit.keyup( {control : control, options: options}, function(ev) {
-				// get the input
-				var input = $(ev.target);
-				// update text
-				ev.data.options[input.parent().parent().index()-1].text = input.val();
-				// update html if top row
-				if (input.parent().parent().index() == 1 || control.type != "dropdown") rebuildHtml(control);
+			addListener( textEdit.keyup( {control: control, options: options}, function(ev) {
+				if (ev.keyCode == 13) { // if enter key pressed
+					addOptionNext(ev, input, cell, property, details);
+				} else {
+					// get the input
+					var input = $(ev.target);
+					// update text
+					ev.data.options[input.parent().parent().index()-1].text = input.val();
+					// update html if top row
+					if (input.parent().parent().index() == 1 || control.type != "dropdown") rebuildHtml(control);
+				}
 			}));
 			
 			// find the code
 			var valueEdit = table.find("input.value").last();
 			// add a listener
-			addListener( valueEdit.keyup( {options: options}, function(ev) {
-				// get the input
-				var input = $(ev.target);
-				// update value
-				ev.data.options[input.parent().parent().index()-1].value = input.val();
+			addListener( valueEdit.keyup( {control: control, options: options}, function(ev) {
+				if (ev.keyCode == 13) { // if enter key pressed
+					addOptionNext(ev, input, cell, property, details);
+				} else {
+					// get the input
+					var input = $(ev.target);
+					// update value
+					ev.data.options[input.parent().parent().index()-1].value = input.val();
+				}
 			}));
 					
 		}
