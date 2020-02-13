@@ -402,15 +402,18 @@ return "<option value=''>Please select...</option><option value ='html'" + (this
 	        <resource>
 	        	<type>css</type>
 	        	<contents>
+
 .cameraControlBasic {
 	background: black;
+	border: 2px solid #ccc;
 	outline: none;
 	padding: 10px;
 	margin: 20px;
 	border-radius: 50%;
 	width: 60px;
 	text-align: center;
-	border: none;
+	display: inline-block;
+	cursor: pointer;
 }
 
 .cameraControl {
@@ -529,14 +532,14 @@ function turnOnCamera(galleryControlId, size, quality, cameraSelectImage) {
 		
 		if (!_cameraPlayer) {
 		
-		    var inputImageHtml = _cameraSelectImage ? "<label id='btnInputImage' for='inputImage' class='cameraControlBasic' style='position:absolute; left:0; margin: 30px calc(50% - 30px);'><i class='fa fa-folder-open cameraIcon' style='margin-left: 4px;'></i></label>"
-								  + "<input type='file' id='inputImage' style='display:none;'>" : "";
+		    var inputImageHtml = _cameraSelectImage ? "<div style='position:fixed; top:0; width:100%; text-align:center;'><label id='btnInputImage' for='inputImage' class='cameraControlBasic'><i class='fa fa-folder-open cameraIcon' style='margin-left: 2px;'></i></label>"
+								  + "<input type='file' id='inputImage' style='display:none;'></div>" : "";
 		
 			// Add the divs
 			var cameraPreviewHtml = "<div id='cameraVideoContainer'>"
 								  + "<video id='cameraPlayer' autoplay></video>"
-								  + "<button id='btnToggleCamera' class='cameraControlBasic' style='position:absolute; left:0;'><i class='fa fa-retweet cameraIcon' style='margin-left:-2px;'></i></button>"
 								  + inputImageHtml
+								  + "<button id='btnToggleCamera' class='cameraControlBasic' style='position:absolute; left:0;'><i class='fa fa-retweet cameraIcon' style='margin-left:-2px;'></i></button>"								  
 								  + "<button id ='btnCloseCamera' class='cameraControlBasic' style='position:absolute; right:0;'><i class='fa fa-times cameraIcon'></i></button>"
 								  + "<div style='position:fixed; bottom:0; width:100%; text-align:center; padding:20px;'><button id ='btnTakePicture' class='cameraControl'><i class='fa fa-camera cameraIcon'></i></button></div>"
 								  + "</div>";
