@@ -246,6 +246,9 @@ public class RapidFilter implements Filter {
 				// get the last path part
 				String lastPathPart = pathPart[pathPart.length - 1];
 
+				// get a lower case version of it for case insensitive checking
+				String lastPathPartLower = lastPathPart.toLowerCase();
+
 				// assume no second last path part
 				String secondLastPathPart = null;
 
@@ -261,14 +264,14 @@ public class RapidFilter implements Filter {
 					// forward to off the root
 					forwardRequest(filteredRequest, response, "/" + lastPathPart);
 
-				// assets that we know are one folder off the root
-				} else if (pathPart.length > 2 && ("images".equals(secondLastPathPart) || "scripts".equals(secondLastPathPart) || "scripts_min".equals(secondLastPathPart) || "styles".equals(secondLastPathPart) || "styles_min".equals(secondLastPathPart))) {
+				// assets that we know are one folder off the root - also avoiding the common scenario of an images folder in the styles
+				} else if (pathPart.length > 2 && pathPart.length < 5 && (("images".equals(secondLastPathPart) && !"styles".equals(pathPart[0])) || "scripts".equals(secondLastPathPart) || "scripts_min".equals(secondLastPathPart) || "styles".equals(secondLastPathPart) || "styles_min".equals(secondLastPathPart))) {
 
 					// forward to it in its folder
 					forwardRequest(filteredRequest, response, "/" + secondLastPathPart + "/" + lastPathPart);
 
 				// if user has provided at least 1 path part (i.e. part1/) and is requesting known resources like login.jsp
-				} else if (pathPart.length > 1 && (lastPathPart.endsWith("login.jsp") || lastPathPart.endsWith("logout.jsp") || lastPathPart.endsWith("index.jsp"))) {
+				} else if (pathPart.length > 1 && (lastPathPartLower.endsWith("login.jsp") || lastPathPartLower.endsWith("logout.jsp") || lastPathPartLower.endsWith("index.jsp") || lastPathPartLower.endsWith("reset.jsp") || lastPathPartLower.endsWith("update.jsp"))) {
 
 					// redirect to the root of the context - which is the root when seen from outside
 					res.sendRedirect(req.getContextPath() + "/" + lastPathPart);
