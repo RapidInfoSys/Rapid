@@ -144,7 +144,16 @@ function Action(actionType, jsonAction, paste, undo) {
 					// get the property
 					var p = jsonAction.properties[i];
 					// if it looks like an array parse it with JSON
-					if (p && p.length >= 2 && p.substr(0,1) == "[" && p.substr(p.length-1,1) == "]") p = JSON.parse(p);						
+					if (p && p.length >= 2 && p.substr(0,1) == "[" && p.substr(p.length-1,1) == "]") {
+						// silently fail and revert to raw value if need be
+						try { p = JSON.parse(p); } catch(ex) {}
+					} else if (p == "true") {
+						// convert true literals to booleans
+						p = true;
+					} else if (p == "false") {
+						// convert false literals to booleans
+						p = false;
+					}
 					// retain the property in the control class
 					this[i] = p;
 					// make sure the id's are always unique 
