@@ -41,12 +41,14 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.rapid.core.Application;
 import com.rapid.core.Applications;
+import com.rapid.security.SecurityAdapter;
 import com.rapid.security.SecurityAdapter.SecurityAdapaterException;
 import com.rapid.server.RapidRequest;
 import com.rapid.utils.Classes;
@@ -340,25 +342,52 @@ public class RapidFilter implements Filter {
 								_contextIdx = 2;
 							}
 							break;
-						}//end of switch
+						} // pathPart length check
 
-
-					}// end of if
+					} // method check
 
 					// forward the newly reconstructed URL
 					forwardRequest(filteredRequest, response, rapidForwardURL);
 
-					// if user has provided uploads and a known application
-				} else if (pathPart.length > 0 && "uploads".equals(pathPart[0])) {
+				} else { 
 
-					// there must be a known app and a file requested
-					if (pathPart.length < 3 || applications.get(pathPart[1]) == null) return;
-
-				} else {
+					// for uploads there must be a known app and a file requested
+					if (pathPart.length > 1 && "uploads".equals(pathPart[0])) {
+						
+						// assume we won't pass
+						boolean pass = false;
+						
+						// get the app
+						Application app = applications.get(pathPart[1]);
+						
+						// get the user session without making a new one
+						HttpSession session = req.getSession(false);
+						
+						// if there is an app and an existing session
+						if (app != null && session != null) {
+							
+							// get the security adapter
+							SecurityAdapter security = app.getSecurityAdapter();
+							
+							// create a rapid request
+							RapidRequest rapidRequest = new RapidRequest(req, app);
+							
+							// set the user name
+							rapidRequest.setUserName((String) session.getAttribute(SESSION_VARIABLE_USER_NAME));
+							
+							// check the security for this user and password
+							pass = security.checkPasswordComplexity(rapidRequest, (String) session.getAttribute(SESSION_VARIABLE_USER_PASSWORD));
+							
+						}
+						
+						// return an empty response if we didn't pass
+						if (!pass) return;
+						
+					}
 
 					// for regular rapid url formats
 					filterChain.doFilter(filteredRequest, response);
-
+						
 				}
 
 			}
