@@ -459,7 +459,7 @@ if (data == null || data === undefined) {
 		var urlIndex = 0;
 		if (data.fields) {
 			for (var i in data.fields) {
-				if (data.fields[i] == "url" || data.fields[i] == "urls") {
+				if ((field && data.fields[i] == field) || data.fields[i] == "url" || data.fields[i] == "urls") {
 					urlIndex = i;
 					break;
 				}
