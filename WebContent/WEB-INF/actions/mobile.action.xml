@@ -867,7 +867,7 @@ function uploadImages(controlIds, ev, successCallback, errorCallback) {
 		if (images.length == 0) {
 			
 			// call the success immediately, if there is one
-			if (window[successCallback]) window[successCallback](ev);
+			if (successCallback) window[successCallback](ev);
 			
 		} else {
 		
