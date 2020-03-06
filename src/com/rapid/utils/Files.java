@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2020 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -30,8 +30,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
 import java.security.MessageDigest;
 import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class Files {
 
@@ -242,6 +251,103 @@ public class Files {
 
 	    //return complete hash
 	   return sb.toString();
+	}
+	
+	// a file watcher on it's own thread to copy new files from one location to another - use with new Files.Watcher(from, to).start();
+	public static class Watcher extends Thread {
+		
+		private Logger _logger;
+		private Path _from, _to;
+		private WatchService _watchService;
+		private Boolean _running;
+		
+		public Watcher(Path from, Path to) {
+			_from = from;
+			_to = to;
+			_running = true;
+			// get a logger for this class
+			_logger = LogManager.getLogger(this.getClass());
+		}
+		
+		@Override
+		public void run() {
+						
+			try {
+			
+				// get a new watch service
+				_watchService = FileSystems.getDefault().newWatchService();
+				
+				// register watch service on the from path for created files
+				_from.register(_watchService, StandardWatchEventKinds.ENTRY_CREATE);
+				
+			} catch (IOException ex) {
+				
+				_logger.error("Error registering Watcher for " + _from, ex);
+				
+			}
+			
+			// if we got a watch service
+			if (_watchService != null) {
+				
+				// loop until interrupted
+				while (_running) {
+					
+					try {
+					
+						// this blocks until an event occurs
+						WatchKey key = _watchService.take();
+						
+						// retrieve all the accumulated events
+						for (WatchEvent<?> event : key.pollEvents()) {
+							
+							// get the kind of event
+							WatchEvent.Kind<?> kind = event.kind();               
+	
+							// if this was the create that we are watching for
+							if (kind.equals(StandardWatchEventKinds.ENTRY_CREATE)) {
+								
+								// get the file name 
+								Path fileName = (Path) event.context();
+								
+								_logger.debug("Watcher event for " + fileName);
+								
+								// copy the file 
+								Files.copyFile(new File(_from + "/" + fileName), new File(_to + "/" + fileName));
+								
+							}
+							
+						}             
+						// resetting the key goes back ready state
+						key.reset();
+						
+					} catch (Exception ex) {
+						
+						_logger.error("Error with Watcher for " + _from + " / " + _to, ex);
+						
+					}
+					
+				} // loop forever
+					
+			} // watcher null check
+
+		}
+		
+		@Override
+		public void interrupt() {
+			// set running to false to exit loop
+			_running = false;
+			// if there was a watch service
+			if (_watchService != null) {
+				// close it
+				try {
+					_watchService.close();
+				} catch (IOException ex) {
+					_logger.error("Error closing Watch service for " + _from, ex);
+				}
+			}
+			super.interrupt();
+		}
+		
 	}
 
 }
