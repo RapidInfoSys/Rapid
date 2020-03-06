@@ -259,14 +259,20 @@ public class Files {
 		private Logger _logger;
 		private Path _from, _to;
 		private WatchService _watchService;
-		private Boolean _running;
+		private boolean _running, _delete;
 		
 		public Watcher(Path from, Path to) {
 			_from = from;
 			_to = to;
 			_running = true;
+			_delete = true;
 			// get a logger for this class
 			_logger = LogManager.getLogger(this.getClass());
+		}
+		
+		public Watcher(Path from, Path to, boolean delete) {
+			this(from, to);
+			_delete = delete;			
 		}
 		
 		@Override
@@ -309,10 +315,20 @@ public class Files {
 								// get the file name 
 								Path fileName = (Path) event.context();
 								
+								// log
 								_logger.debug("Watcher event for " + fileName);
 								
-								// copy the file 
-								Files.copyFile(new File(_from + "/" + fileName), new File(_to + "/" + fileName));
+								// get from file
+								File fromFile = new File(_from + "/" + fileName);
+								
+								// get to file
+								File toFile = new File(_to + "/" + fileName);
+																
+								// copy the from file to the to file 
+								Files.copyFile(fromFile, toFile);
+								
+								// delete the from file if set to
+								if (_delete) Files.deleteRecurring(fromFile);
 								
 							}
 							
