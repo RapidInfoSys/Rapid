@@ -805,8 +805,8 @@ if (details.columns) {
 } else {
 	// all rows as the header is dynamic
 	control.find("tr").remove();
-	//
-	details.dynamicColumns = data.fields.map(function(field) { return { visible: true, field: field }; });
+	// if there is data and fields map them to dynamic coumns collections
+	if (data && data.fields) details.dynamicColumns = data.fields.map(function(field) { return { visible: true, field: field }; });
 }
 // reset any sort indicators if not being used for sorting
 control.find("span.sort").html("&#xf0dc");
@@ -887,7 +887,7 @@ if (data !== undefined) {
 				
 				// close the row
 				rowsHtml += "</tr>";
-				
+
 			}
 			
 			// append all of the new rows in bulk - much faster!
@@ -946,6 +946,7 @@ if (data !== undefined) {
 				}
 				// close the row
 				rowsHtml += "</tr>";
+
 			}
 			
 			// append all of the new rows in bulk - much faster!
@@ -1355,7 +1356,7 @@ if (details) {
 	   	        <getPropertyFunction>
 			        <![CDATA[
 var data = null;
-var columns = details.columns || details.dynamicColumns;
+var columns = details.columns || details.dynamicColumns || [];
 if (details.dataStorageType) {
 	data = getGridDataStoreData(id, details);
 	if (data && data.fields && data.rows) {
