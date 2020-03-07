@@ -1357,32 +1357,34 @@ if (details) {
 var data = null;
 var columns = details.columns || details.dynamicColumns;
 if (details.dataStorageType) {
-	data = getGridDataStoreData(id, details);	
-	var grid = $("#" + id);
-	if (!grid.is("table")) grid = grid.find("table").last();
-	if (grid[0]) {
-		var rowNumber = null;
-		if (details.multiSelect) {
-			rowNumber = getGridMultiSelectedRowNumber(id, ev, details);
-		} else {
-			rowNumber = getGridSelectedRowNumber(id, ev, details);
-		}
-		if (data && rowNumber != data.selectedRowNumber) {
-			data.selectedRowNumber = rowNumber;
-			saveGridDataStoreData(id, details, data);
-		}
-	}
-	rows = [];
-	if (data && data.selectedRowNumber) {
-		if (details.multiSelect && $.isArray(data.selectedRowNumber)) {
-			for (var i in data.selectedRowNumber) {
-				rows.push(data.rows[data.selectedRowNumber[i] - 1]);
+	data = getGridDataStoreData(id, details);
+	if (data && data.fields && data.rows) {
+		var grid = $("#" + id);
+		if (!grid.is("table")) grid = grid.find("table").last();
+		if (grid[0]) {
+			var rowNumber = null;
+			if (details.multiSelect) {
+				rowNumber = getGridMultiSelectedRowNumber(id, ev, details);
+			} else {
+				rowNumber = getGridSelectedRowNumber(id, ev, details);
 			}
-		} else {
-			if (data.selectedRowNumber > -1) rows.push(data.rows[data.selectedRowNumber - 1]);
-		}		
+			if (data && rowNumber != data.selectedRowNumber) {
+				data.selectedRowNumber = rowNumber;
+				saveGridDataStoreData(id, details, data);
+			}
+		}
+		rows = [];
+		if (data && data.selectedRowNumber) {
+			if (details.multiSelect && $.isArray(data.selectedRowNumber)) {
+				for (var i in data.selectedRowNumber) {
+					rows.push(data.rows[data.selectedRowNumber[i] - 1]);
+				}
+			} else {
+				if (data.selectedRowNumber > -1) rows.push(data.rows[data.selectedRowNumber - 1]);
+			}		
+		}
+		data.rows = rows;
 	}
-	data.rows = rows;
 } else {
 	if (details.multiSelect) {
 		var rows = getGridMutiSelectedRows(id, ev);
