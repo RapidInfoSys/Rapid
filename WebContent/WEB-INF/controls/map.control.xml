@@ -114,7 +114,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <setConstructValueFunction>return true;</setConstructValueFunction>
 	            <changeValueJavaScript>checkbox</changeValueJavaScript>
 	            <refreshHtml>true</refreshHtml>
-	            <helpHtml>Allows users to swap between satellite and road map views at will.</helpHtml>
+	            <helpHtml>Allows users to swap between satellite and road map type.</helpHtml>
 	        </property>
 	        
 	        <property>
@@ -147,7 +147,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	        <property>
 	            <key>heatmap</key>
 	            <name>Heatmap</name>
-	            <setConstructValueFunction>return true;</setConstructValueFunction>
+	            <setConstructValueFunction>return false;</setConstructValueFunction>
 	            <changeValueJavaScript>checkbox</changeValueJavaScript>
 	            <refreshProperties>true</refreshProperties>
 	            <helpHtml>Whether to show a heatmap instead of conventional markers.</helpHtml>
