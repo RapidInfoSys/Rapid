@@ -528,23 +528,23 @@ function addMapMarker(map, pos, details, data, rowIndex, zoomMarkers) {
 				// single marker, check getPosition is present
 				if (map.markers[0].getPosition) {
 					// get the latlng position
-					var pos = map.markers[0];
+					var llPos = map.markers[0];
 					// if getPosition is present use that
-					if (pos.getPosition) pos = pos.getPosition();
+					if (llPos.getPosition) llPos = llPos.getPosition();
 					// only if valid values
-					if (pos.lat && pos.lng && pos.lat() != 0 && pos.lng() != 0) map.panTo(pos);
+					if (llPos.lat && llPos.lng && llPos.lat() != 0 && llPos.lng() != 0) map.panTo(llPos);
 				}
 			} else {
 				// multiple markers, use bounds
 				var bounds = new google.maps.LatLngBounds();
 				// loop the map markers
 				for (var i in map.markers) {
-					// get position as marker
-					var pos = map.markers[i];
+					// get latlng position from marker
+					var llPos = map.markers[i];
 					// if getPosition is present use that
-					if (pos.getPosition) pos = pos.getPosition();
+					if (llPos.getPosition) llPos = llPos.getPosition();
 					// only if valid object and values
-					if (pos.lat && pos.lng && pos.lat() != 0 && pos.lng() != 0) bounds.extend(pos);
+					if (llPos.lat && llPos.lng && llPos.lat() != 0 && llPos.lng() != 0) bounds.extend(llPos);
 				}
 				// fit to the bounds
 				map.fitBounds(bounds);
