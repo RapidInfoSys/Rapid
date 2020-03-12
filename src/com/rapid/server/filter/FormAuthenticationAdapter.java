@@ -515,8 +515,25 @@ public class FormAuthenticationAdapter extends RapidAuthenticationAdapter {
 						// log that authentication was granted
 						_logger.debug("FormAuthenticationAdapter authenticated " + userName + " from " + deviceDetails);
 
-						// make the sessionRequest path the root just in case it was null (or login.jsp itself)
-						if (sessionRequestPath == null || loginPath.equals(sessionRequestPath)) {
+						// check and clean up some easy sessionRequestPath
+						if (sessionRequestPath != null) {
+							// applications/.../rapid.js or applications/.../rapid.js
+							if (sessionRequestPath.startsWith("applications/") && (sessionRequestPath.endsWith("/rapid.js") || sessionRequestPath.endsWith("/rapid.css"))) {
+								// split parts
+								String[] requestParts = sessionRequestPath.split("/");
+								// if we have enough parts
+								if (requestParts.length >= 3) {
+									// create request for app and version
+									sessionRequestPath = "~?a=" + requestParts[1] + "&v=" + requestParts[2];
+								} else if (requestParts.length >= 2) {
+									// create request for app
+									sessionRequestPath = "~?a=" + requestParts[1];
+								}
+							}
+						}
+
+						// make the sessionRequest path the root, in case it was null, or login.jsp itself, or other resources that don't make sense
+						if (sessionRequestPath == null || loginPath.equals(sessionRequestPath) || sessionRequestPath.endsWith(".js") || sessionRequestPath.endsWith(".css")) {
 							// if index path is the default (usually index.jsp)
 							if (INDEX_PATH.equals(indexPath)) {
 								// convert to . to hide index.jsp from url
