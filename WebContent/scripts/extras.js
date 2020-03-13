@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2020 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -995,7 +995,7 @@ function formatDatetime(format, date) {
 function formatTime(timeFormat, date) {
 	var timePart = "";
 	if(timeFormat == "24") {
-		timePart = date.getTime() + ":" + date.getMinutes();
+		timePart = padNumberWithZeros(date.getHours()) + ":" + padNumberWithZeros(date.getMinutes(), 2);
 		
 	} else {
 		timePart = format12hour(date);

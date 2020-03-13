@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2020 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -293,8 +293,9 @@ public class Datacopy extends Action {
 						format = getProperty("dateFormat") + " " + getProperty("timeFormat");
 					}
 
+					String formatter = "current date and time".equals(idParts[1]) ? "formatDatetime" : "formatTime";
 					// make the js!
-					js = "var data = formatDatetime('" + format + "', new Date());\n";
+					js = "var data = " + formatter + "('" + format + "', new Date());\n";
 
 				} else {
 
