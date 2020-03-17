@@ -3,7 +3,7 @@
 
 <!-- 
 
-Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2020 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -80,6 +80,15 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
 	            <refreshHtml>true</refreshHtml>
 	            <helpHtml>Selects one of the score values as its initial value.</helpHtml>
 	        </property>
+	        
+	        <property>
+	            <key>multiple</key>
+	            <name>Multiple values</name>
+	            <setConstructValueFunction>return false;</setConstructValueFunction>
+	            <changeValueJavaScript>checkbox</changeValueJavaScript>
+	            <refreshHtml>true</refreshHtml>
+	            <helpHtml>Allow the user to select multiple scores at once.</helpHtml>
+	        </property>
 	         	        
 	    </properties>
 	    
@@ -136,8 +145,9 @@ if (this.options || this.valueList) {
 		}
 	}
 }
+
 // place into the span
-var html = "<span id='" + this.id + "' name='" + this.id + "' class='score" + getStyleClasses(this) + "'>" + html + "</span>";
+var html = "<span id='" + this.id + "' name='" + this.id + "' class='score" + getStyleClasses(this) + "' multiple-selection='" + this.multiple + "'>" + html + "</span>";
 // return
 return html;
 	        ]]>
@@ -147,8 +157,13 @@ return html;
 	    
 	    <getDataFunction>
 	        <![CDATA[
-	        // return the data-value of span with .selectedScore class
-return $("#" + id).children(".selectedScore").attr("data-value");
+// return the data-value of span with .selectedScore class
+var values = "";
+$("#" + id).children(".selectedScore").each(function(i, option) {
+    if (i > 0) values += ",";
+    values += $(option).attr("data-value");
+});
+return values;
 			]]>
 	    </getDataFunction>
 	    
@@ -172,10 +187,13 @@ if (data !== undefined) {
 				}
 			}
 		}
-		if (!value && !field) value =data.rows[0][0];
-		if (value) {			
-			//  apply selectedScore to score item with data-value = value
-			control.children("[data-value='" + value + "']").addClass("selectedScore");
+		if (!value && !field) value = data.rows[0][0];
+		if (value) {
+			var values = value.split(",");
+			for (value of values) {
+				//  apply selectedScore to score item with data-value = value
+				control.children("[data-value='" + value + "']").addClass("selectedScore");
+			}
 			// fire any change event if requested
 			if (changeEvents && window["Event_change_" + id]) window["Event_change_" + id](ev);
 		}
@@ -226,8 +244,9 @@ $("#" + id).children().click( function(ev) {
 	var control = option.parent();
 	var id = control.attr("id");
 	var value = control.children(".selectedScore").attr("data-value");
-	control.children().removeClass("selectedScore");
-	option.addClass("selectedScore");
+	var multiple = control.attr("multiple-selection") === "true";
+	if (!multiple) control.children().removeClass("selectedScore");
+	option.toggleClass("selectedScore");
 	if (value != option.attr("data-value") && window["Event_change_" + id]) window["Event_change_" + id](ev);
 });	        
 	        ]]>	        	       	        
