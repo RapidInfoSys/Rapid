@@ -439,15 +439,15 @@ pageCover.click({width: slidePanelPane.css("width"),left: slidePanelPane.css("ma
 	var width = ev.data.width
 	// get any existing left margin
 	var left = ev.data.left;
-	// animate off-screen
+	// animate off-screen	
+	// hide the page cover
+	pageCover.hide();	
 	slidePanelPane.animate({"margin-left": "-" + width}, 500, function() {
 		// hide when complete
 		slidePanelPane.hide();
 		// toggle open closed
 		slidePanel.removeClass("slidePanelOpen");
 		slidePanel.addClass("slidePanelClosed");	
-		// hide the page cover
-		pageCover.hide();		
 	});
 });
 	        ]]>	        	       	        
