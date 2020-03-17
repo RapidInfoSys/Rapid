@@ -2,7 +2,7 @@
 
 <!-- 
 
-Copyright (C) 2018 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2020 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -411,25 +411,25 @@ slidePanel.click({width: slidePanelPane.css("width"),left: slidePanelPane.css("m
 	// check visibility
 	if (slidePanelPane.is(":visible")) {
 		// animate off-screen
-		slidePanelPane.animate({"margin-left": "-" + width}, 500, function() {
+		// hide the page cover
+		pageCover.fadeOut();
+		slidePanelPane.animate({"margin-left": "-" + width}, 400, function() {
 			// hide when complete
 			slidePanelPane.hide();
 			// toggle open closed
 			slidePanel.removeClass("slidePanelOpen");
-			slidePanel.addClass("slidePanelClosed");	
-			// hide the page cover
-			pageCover.hide();		
+			slidePanel.addClass("slidePanelClosed");
 		});		
 	} else {
 		// set off screen
 		slidePanelPane.css({"margin-left": "-" + width}).show();
 		// animate to full width
-		slidePanelPane.animate({"margin-left": 0}, 500);		
+		slidePanelPane.animate({"margin-left": 0}, 400);		
 		// toggle open closed
 		slidePanel.removeClass("slidePanelClosed");
 		slidePanel.addClass("slidePanelOpen");
 		// show the page cover	
-		pageCover.show();
+		pageCover.fadeIn();
 	}
 });	        
 
