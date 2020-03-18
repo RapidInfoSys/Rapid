@@ -741,7 +741,7 @@ function mergeDataObjects(data1, data2, mergeType, field, maxRows, details) {
 					for (var i in data2.fields) {
 						var gotField = false;
 						for (var j in fields) {
-							if (data2.fields[i] && fields[j] && data2.fields[i].toLowerCase() == fields[j].toLowerCase()) {
+							if (data2.fields[i] !== undefined && fields[j] !== undefined && data2.fields[i].toLowerCase() == fields[j].toLowerCase()) {
 								gotField = true;
 								break;
 							}
@@ -760,7 +760,7 @@ function mergeDataObjects(data1, data2, mergeType, field, maxRows, details) {
 								for (var j in fields) {
 									var value = null;
 									for (var k in data2.fields) {
-										if (fields[j] && data2.fields[k] && fields[j].toLowerCase() == data2.fields[k].toLowerCase()) {
+										if (fields[j] !== undefined && data2.fields[k] !== undefined && fields[j].toLowerCase() == data2.fields[k].toLowerCase()) {
 											value = data2.rows[i][k];
 											break;
 										}
@@ -780,7 +780,7 @@ function mergeDataObjects(data1, data2, mergeType, field, maxRows, details) {
 								var value = null;
 								if (i < data2.rows.length) {
 									for (var k in data2.fields) {
-										if (fields[j] && data2.fields[k] && fields[j].toLowerCase() == data2.fields[k].toLowerCase()) {
+										if (fields[j] !== undefined && data2.fields[k] !== undefined && fields[j].toLowerCase() == data2.fields[k].toLowerCase()) {
 											value = data2.rows[i][k];
 											break;
 										}
@@ -788,7 +788,7 @@ function mergeDataObjects(data1, data2, mergeType, field, maxRows, details) {
 								}
 								if (i < data1.rows.length && value == null) {
 									for (var k in data1.fields) {
-										if (fields[j] && data1.fields[k] && fields[j].toLowerCase() == data1.fields[k].toLowerCase()) {
+										if (fields[j] !== undefined && data1.fields[k] !== undefined && fields[j].toLowerCase() == data1.fields[k].toLowerCase()) {
 											value = data1.rows[i][k];
 											break;
 										}
@@ -807,7 +807,7 @@ function mergeDataObjects(data1, data2, mergeType, field, maxRows, details) {
 					// make a map of positions for fields common to parent and child data objects
 					for (var i in data1.fields) {
 						for (var j in data2.fields) {
-							if (data1.fields[i] && data2.fields[j] && data1.fields[i].toLowerCase() == data2.fields[j].toLowerCase()) {
+							if (data1.fields[i] !== undefined && data2.fields[j] !== undefined && data1.fields[i].toLowerCase() == data2.fields[j].toLowerCase()) {
 								fieldMap[i] = j;
 								fieldCount ++;
 							}
@@ -866,10 +866,10 @@ function mergeDataObjects(data1, data2, mergeType, field, maxRows, details) {
 					if (field) {
 						var fields = field.split(",");
 						for (var i in fields) {
-							if (fields[i]) {
+							if (fields[i] !== undefined) {
 								var f = fields[i].trim().toLowerCase();
 								for (var i in data2.fields) {
-									if (data2.fields[i] && data2.fields[i].toLowerCase() ==  f) {
+									if (data2.fields[i] !== undefined && data2.fields[i].toLowerCase() ==  f) {
 										fieldIndexes.push(i);
 									}
 								}
