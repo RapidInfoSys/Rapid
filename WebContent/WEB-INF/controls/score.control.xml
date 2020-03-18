@@ -190,9 +190,9 @@ if (data !== undefined) {
 		if (!value && !field) value = data.rows[0][0];
 		if (value) {
 			var values = value.split(",");
-			for (value of values) {
+			for (var i in values) {
 				//  apply selectedScore to score item with data-value = value
-				control.children("[data-value='" + value + "']").addClass("selectedScore");
+				control.children("[data-value='" + values[i] + "']").addClass("selectedScore");
 			}
 			// fire any change event if requested
 			if (changeEvents && window["Event_change_" + id]) window["Event_change_" + id](ev);
