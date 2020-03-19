@@ -454,6 +454,12 @@ public class Rapid extends RapidHttpServlet {
 							// put whether latest version
 							jsonResponse.put("latest", app.getVersion().equals(rapidRequest.getRapidServlet().getApplications().get(app.getId()).getVersion()));
 
+							// add rapid.js for app
+							jsonResources.put("applications/" + app.getId() + "/" + app.getVersion() + "/rapid.js");
+
+							// add rapid.css for app
+							jsonResources.put("applications/" + app.getId() + "/" + app.getVersion() + "/rapid.css");
+
 							// get pages
 							Pages pages = app.getPages();
 
