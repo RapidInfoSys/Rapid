@@ -29,7 +29,7 @@ in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
   <display-name>Rapid Desktop</display-name>
   
   <welcome-file-list>
-    <welcome-file>/index.jsp</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>
   
   <error-page>
