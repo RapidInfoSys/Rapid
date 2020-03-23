@@ -991,7 +991,7 @@ public class Rapid extends RapidHttpServlet {
 						// if we got some data, look for a test = true entry - this is sent from Rapid Mobile
 						if (jsonData != null) isRapidMobile = jsonData.optBoolean("test");
 
-						// loop the apps
+						// loop the apps - this is the latest live version for normal users
 						for (Application app : apps) {
 
 							// avoid hidden apps
@@ -1024,6 +1024,7 @@ public class Rapid extends RapidHttpServlet {
 												}
 
 												if (canAdd) {
+
 													// create a json object for the details of this application
 													JSONObject jsonApp = new JSONObject();
 													// add details
@@ -1037,11 +1038,17 @@ public class Rapid extends RapidHttpServlet {
 													// check if we are from Rapid Mobile
 													if (isRapidMobile) {
 
-														// if the user has Rapid Design for this application, (or Rapid Super if this is the rapid app)
-														if (security.checkUserRole(getAppsRequest, Rapid.DESIGN_ROLE) && (!app.getId().equals("rapid") || security.checkUserRole(rapidRequest, Rapid.SUPER_ROLE))) {
+														// loop the versions
+														for (Application version :	getApplications().getVersions(app.getId()).sort()) {
 
-															// loop the versions
-															for (Application version :	getApplications().getVersions(app.getId()).sort()) {
+															// remake the security for the version
+															security = version.getSecurityAdapter();
+
+															// make a rapidRequest for this version
+															RapidRequest getAppsVersionRequest = new RapidRequest(this, request, version);
+
+															// if the user has Rapid Design for this application, (or Rapid Super if this is the rapid app)
+															if (security.checkUserPassword(getAppsRequest, getAppsVersionRequest.getUserName(), getAppsVersionRequest.getUserPassword()) && security.checkUserRole(getAppsVersionRequest, Rapid.DESIGN_ROLE) && (!app.getId().equals("rapid") || security.checkUserRole(getAppsVersionRequest, Rapid.SUPER_ROLE))) {
 
 																// create a json object for the details of this version
 																jsonApp = new JSONObject();
@@ -1054,7 +1061,8 @@ public class Rapid extends RapidHttpServlet {
 																jsonApp.put("test", true);
 																// add app to our main array
 																jsonApps.put(jsonApp);
-															}
+
+															} // version password and role check
 
 														} // got design role
 
