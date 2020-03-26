@@ -293,7 +293,7 @@ public class Datacopy extends Action {
 						format = getProperty("dateFormat") + " " + getProperty("timeFormat");
 					}
 
-					String formatter = "current date and time".equals(idParts[1]) ? "formatDatetime" : "formatTime";
+					String formatter = "current date and time".startsWith(idParts[1]) ? "formatDatetime" : "formatTime";
 					// make the js!
 					js = "var data = " + formatter + "('" + format + "', new Date());\n";
 
