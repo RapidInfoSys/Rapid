@@ -1007,7 +1007,7 @@ function format12hour(date) {
 	  var ampmString = hours >= 12 ? 'PM' : 'AM';
 	  hours = hours % 12;
 	  hours = hours ? hours : 12; // the hour '0' should be '12'
-	  minutes = minutes < 10 ? '0'+minutes : minutes;
+	  minutes = minutes < 10 ? '0' + minutes : minutes;
 	  var strTime = hours + ':' + minutes + ' ' + ampmString;
 	  return strTime;
 }
@@ -1027,24 +1027,4 @@ function checkOnline() {
 		alert("Sorry. That can't be done at the moment because you're offline.")
 		return false;
 	}
-}
-
-function showRowAndSiblings(row, chunkSize) {
-	if (chunkSize) {
-		if (row.length) {
-			row.removeAttr("style");
-			showRowAndSiblings(row.next(), chunkSize - 1);
-		}
-	} else {
-		return row;
-	}
-}
-
-function showRowAndSiblingsAsync(row) {
-	setTimeout(function() {
-		if (row) {
-			var nextRow = showRowAndSiblings(row.next(), 50);
-			showRowAndSiblingsAsync(nextRow);
-		}
-	});
 }
