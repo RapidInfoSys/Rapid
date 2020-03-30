@@ -914,6 +914,37 @@ if (data !== undefined) {
 									}
 								}
 							}
+	 
+							// if we click on a row that isn't the first one
+							rowObject.click( function(ev) {
+								// get the row 
+								var row = $(this);
+								// if this grid has multiselect thhings are more confusing
+								if (details.multiSelect) {
+									// get the target
+									var target = $(ev.target);
+									// get the grid id
+									var id = row.closest("[id]").attr("id");
+									// get any table row click handler
+									var handler = window["Event_click_" + id];
+									// if we're here because we clicked the gridMultiSelect checkbox - in this case row selection is done in the input click listener, above, also do nothing is cell around the multiselect clicked
+									if (!target.is("input.gridMultiSelect") && !target.children("input.gridMultiSelect")[0]) {
+										// remove rowSelect class from all rows in the table
+										row.parent().find("tr.rowSelect").removeClass("rowSelect");
+										// add rowSelect to this row
+										row.addClass("rowSelect");
+										// if there is a hanlder uncheck all inputs, what happens next is the handler fires and the select row is just this one
+										if (handler) $("#" + id).find("input.gridMultiSelectHeader, input.gridMultiSelect").prop("checked",false);
+									}
+								} else {
+									// remove rowSelect class from all rows in the table
+									row.parent().find("tr.rowSelect").removeClass("rowSelect");
+									// add rowSelect to this row
+									//row.addClass("rowSelect");
+									var e = row.get(0);
+									e.className = e.className + " rowSelect";
+								}
+							});
 							
 							// if there is a selected row
 							if (data.selectedRowNumber && rowIndex === selectedRowNumber) rowObject.addClass("rowSelect");
@@ -955,6 +986,40 @@ if (data !== undefined) {
 		                tr.appendChild(td);
 		            }
 		            grid.appendChild(tr);
+	 
+					// if we click on a row that isn't the first one
+					$(tr).click( function(ev) {
+						// get the row 
+						var row = $(this);
+						// if this grid has multiselect thhings are more confusing
+						if (details.multiSelect) {
+							// get the target
+							var target = $(ev.target);
+							// get the grid id
+							var id = row.closest("[id]").attr("id");
+							// get any table row click handler
+							var handler = window["Event_click_" + id];
+							// if we're here because we clicked the gridMultiSelect checkbox - in this case row selection is done in the input click listener, above, also do nothing is cell around the multiselect clicked
+							if (!target.is("input.gridMultiSelect") && !target.children("input.gridMultiSelect")[0]) {
+								// remove rowSelect class from all rows in the table
+								row.parent().find("tr.rowSelect").removeClass("rowSelect");
+								// add rowSelect to this row
+								row.addClass("rowSelect");
+								// if there is a hanlder uncheck all inputs, what happens next is the handler fires and the select row is just this one
+								if (handler) $("#" + id).find("input.gridMultiSelectHeader, input.gridMultiSelect").prop("checked",false);
+							}
+						} else {
+							// remove rowSelect class from all rows in the table
+							row.parent().find("tr.rowSelect").removeClass("rowSelect");
+							// add rowSelect to this row
+							//row.addClass("rowSelect");
+							var e = row.get(0);
+							e.className = e.className + " rowSelect";
+						}
+					});
+					
+					// if there is a selected row
+					if (data.selectedRowNumber && rowIndex === selectedRowNumber) rowObject.addClass("rowSelect");
 		        }
 		        if (rows[rowIndex]) {
 		        	var timeoutId = setTimeout(function() { addRowsSimple(grid, rows, rowIndex + 1); });
@@ -1155,35 +1220,6 @@ if (data !== undefined) {
 			if (grid.find("tr.rowStyle1,tr.rowStyle2").not("[data-ignore]").not(".rowSelect").length > 0) $("#" + id).find("input.gridMultiSelectHeader").prop("checked",false);
 		});
 	}
-	 
-	// if we click on a row that isn't the first one
-	grid.children().last().children("tr:not(:first)").click( function(ev) {
-		// get the row 
-		var row = $(this);
-		// if this grid has multiselect thhings are more confusing
-		if (details.multiSelect) {
-			// get the target
-			var target = $(ev.target);
-			// get the grid id
-			var id = row.closest("[id]").attr("id");
-			// get any table row click handler
-			var handler = window["Event_click_" + id];
-			// if we're here because we clicked the gridMultiSelect checkbox - in this case row selection is done in the input click listener, above, also do nothing is cell around the multiselect clicked
-			if (!target.is("input.gridMultiSelect") && !target.children("input.gridMultiSelect")[0]) {
-				// remove rowSelect class from all rows in the table
-				row.parent().find("tr.rowSelect").removeClass("rowSelect");
-				// add rowSelect to this row
-				row.addClass("rowSelect");
-				// if there is a hanlder uncheck all inputs, what happens next is the handler fires and the select row is just this one
-				if (handler) $("#" + id).find("input.gridMultiSelectHeader, input.gridMultiSelect").prop("checked",false);
-			}
-		} else {
-			// remove rowSelect class from all rows in the table
-			row.parent().find("tr.rowSelect").removeClass("rowSelect");
-			// add rowSelect to this row
-			row.addClass("rowSelect");
-		}
-	});
 	
 	// apply the resizing	
 	$(window).resize();
