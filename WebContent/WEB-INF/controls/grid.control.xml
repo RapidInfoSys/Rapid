@@ -1,166 +1,177 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<controls xmlVersion="2"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="../schemas/control.xsd">
+<controls xmlVersion="2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../schemas/control.xsd">
 
-	<!-- Copyright (C) 2020 - Gareth Edwards / Rapid Information Systems gareth.edwards@rapid-is.co.uk 
-		This file is part of the Rapid Application Platform Rapid is free software: 
-		you can redistribute it and/or modify it under the terms of the GNU General 
-		Public License as published by the Free Software Foundation, either version 
-		3 of the License, or (at your option) any later version. The terms require 
-		you to include the original copyright, and the license notice in all redistributions. 
-		This program is distributed in the hope that it will be useful, but WITHOUT 
-		ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
-		FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. 
-		You should have received a copy of the GNU General Public License in a file 
-		named "COPYING". If not, see <http://www.gnu.org/licenses/>. -->
+<!-- 
 
+Copyright (C) 2020 - Gareth Edwards / Rapid Information Systems
+
+gareth.edwards@rapid-is.co.uk
+
+
+This file is part of the Rapid Application Platform
+
+Rapid is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version. The terms require you to include
+the original copyright, and the license notice in all redistributions.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+in a file named "COPYING".  If not, see <http://www.gnu.org/licenses/>.
+
+ -->
+ 
 	<control>
-
-		<type>grid</type>
-		<name>Grid</name>
-		<image>images/grid.svg</image>
-		<helpHtml>A structure for the layout of controls according to rows and columns.</helpHtml>
-
-		<addToNewApplications>true</addToNewApplications>
-
-		<canUserAdd>true</canUserAdd>
-		<canUserMove>true</canUserMove>
-		<canUserAddPeers>true</canUserAddPeers>
-
-		<properties>
-
-			<property>
-				<key>name</key>
-				<name>Name</name>
-				<changeValueJavaScript>text</changeValueJavaScript>
-				<helpHtml>Name that can be given to the control. Names are used to help identify controls uniquely.</helpHtml>
-			</property>
-
-			<property>
-				<key>label</key>
-				<name>Form summary label</name>
-				<setConstructValueFunction>return "";</setConstructValueFunction>
-				<changeValueJavaScript>formText</changeValueJavaScript>
-				<helpHtml>Summary label to appear at the end of the form. Leave blank to have the control and its value hidden.</helpHtml>
-			</property>
-
-			<property>
-				<key>columnHeadings</key>
-				<name>Column headings</name>
-				<setConstructValueFunction>return true;</setConstructValueFunction>
-				<changeValueJavaScript>checkbox</changeValueJavaScript>
-				<refreshHtml>true</refreshHtml>
-				<helpHtml>Sets whether the grid will use headings or not.</helpHtml>
-			</property>
-
-			<property>
-				<key>columns</key>
-				<name>Columns</name>
-				<setConstructValueFunction>return [];</setConstructValueFunction>
-				<changeValueJavaScript>gridColumns</changeValueJavaScript>
-				<refreshHtml>true</refreshHtml>
-				<helpHtml>Sets the different columns to be used by the grid. Multiple can be set or removed here and each can be customised.</helpHtml>
-			</property>
-
-			<property>
-				<key>multiSelect</key>
-				<name>Multi-select?</name>
-				<setConstructValueFunction>return false;</setConstructValueFunction>
-				<changeValueJavaScript>checkbox</changeValueJavaScript>
-				<refreshHtml>true</refreshHtml>
-				<helpHtml>Whether to show a first column of checkboxes to allow multiple rows in the grid to be selected.</helpHtml>
-			</property>
-
-			<property>
-				<key>dataStorageType</key>
-				<name>Data store type</name>
-				<setConstructValueFunction>return "";</setConstructValueFunction>
-				<changeValueJavaScript>select</changeValueJavaScript>
-				<getValuesFunction>
+	
+	    <type>grid</type>
+	    <name>Grid</name>
+	    <image>images/grid.svg</image>
+	    <helpHtml>A structure for the layout of controls according to rows and columns.</helpHtml>
+	    
+	    <addToNewApplications>true</addToNewApplications>
+	          
+	    <canUserAdd>true</canUserAdd>
+	    <canUserMove>true</canUserMove>
+	    <canUserAddPeers>true</canUserAddPeers>
+	    
+	    <properties>
+	        
+	        <property>
+	            <key>name</key>
+	            <name>Name</name>
+	            <changeValueJavaScript>text</changeValueJavaScript>
+	            <helpHtml>Name that can be given to the control. Names are used to help identify controls uniquely.</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>label</key>
+	            <name>Form summary label</name>
+	            <setConstructValueFunction>return "";</setConstructValueFunction>
+	            <changeValueJavaScript>formText</changeValueJavaScript>
+	            <helpHtml>Summary label to appear at the end of the form. Leave blank to have the control and its value hidden.</helpHtml>
+	        </property>
+	                    
+	        <property>
+	            <key>columnHeadings</key>
+	            <name>Column headings</name>
+	            <setConstructValueFunction>return true;</setConstructValueFunction>
+	            <changeValueJavaScript>checkbox</changeValueJavaScript>
+	            <refreshHtml>true</refreshHtml>
+	            <helpHtml>Sets whether the grid will use headings or not.</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>columns</key>
+	            <name>Columns</name>
+	            <setConstructValueFunction>return [];</setConstructValueFunction>
+	            <changeValueJavaScript>gridColumns</changeValueJavaScript>
+	            <refreshHtml>true</refreshHtml>
+	            <helpHtml>Sets the different columns to be used by the grid. Multiple can be set or removed here and each can be customised.</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>multiSelect</key>
+	            <name>Multi-select?</name>
+	            <setConstructValueFunction>return false;</setConstructValueFunction>
+	            <changeValueJavaScript>checkbox</changeValueJavaScript>
+	            <refreshHtml>true</refreshHtml>
+	            <helpHtml>Whether to show a first column of checkboxes to allow multiple rows in the grid to be selected.</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>dataStorageType</key>
+	            <name>Data store type</name>
+	            <setConstructValueFunction>return "";</setConstructValueFunction>
+	            <changeValueJavaScript>select</changeValueJavaScript>
+	            <getValuesFunction>
 	                <![CDATA[
 return [["","None"],["L","Local storage"],["S","Session storage"],["P","Page storage"]];
 					]]>
 	            </getValuesFunction>
-				<helpHtml>Sets the method of data storage. Page storage is for as long as the page is open, session is for as long as the tab/window is open and local is for files to be stored locally on devices.</helpHtml>
-			</property>
-
-			<property>
-				<key>scrollH</key>
-				<name>Scroll horizontal</name>
-				<setConstructValueFunction>return "";</setConstructValueFunction>
-				<changeValueJavaScript>select</changeValueJavaScript>
-				<getValuesFunction>
+	            <helpHtml>Sets the method of data storage. Page storage is for as long as the page is open, session is for as long as the tab/window is open and local is for files to be stored locally on devices.</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>scrollH</key>
+	            <name>Scroll horizontal</name>
+	            <setConstructValueFunction>return "";</setConstructValueFunction>
+	            <changeValueJavaScript>select</changeValueJavaScript>
+	            <getValuesFunction>
 	                <![CDATA[
 return [["","No"],["scroll","Yes"],["auto","Auto"]];
 					]]>
 	            </getValuesFunction>
-				<refreshHtml>true</refreshHtml>
-				<refreshProperties>true</refreshProperties>
-				<helpHtml>Sets the horizontal scrollbar.</helpHtml>
-			</property>
-
-			<property>
-				<key>scrollWidth</key>
-				<name>Width</name>
-				<changeValueJavaScript>gridScrollWidth</changeValueJavaScript>
-				<refreshHtml>true</refreshHtml>
-			</property>
-
-			<property>
-				<key>scrollV</key>
-				<name>Scroll vertical</name>
-				<setConstructValueFunction>return "";</setConstructValueFunction>
-				<changeValueJavaScript>select</changeValueJavaScript>
-				<getValuesFunction>
+	            <refreshHtml>true</refreshHtml>
+	            <refreshProperties>true</refreshProperties>
+	            <helpHtml>Sets the horizontal scrollbar.</helpHtml>
+	        </property> 
+	        
+	        <property>
+	            <key>scrollWidth</key>
+	            <name>Width</name>
+	            <changeValueJavaScript>gridScrollWidth</changeValueJavaScript>
+	             <refreshHtml>true</refreshHtml>
+	        </property>
+	        
+	        <property>
+	            <key>scrollV</key>
+	            <name>Scroll vertical</name>
+	            <setConstructValueFunction>return "";</setConstructValueFunction>
+	            <changeValueJavaScript>select</changeValueJavaScript>
+	            <getValuesFunction>
 	                <![CDATA[
 return [["","No"],["scroll","Yes"],["auto","Auto"]];
 					]]>
 	            </getValuesFunction>
-				<refreshHtml>true</refreshHtml>
-				<refreshProperties>true</refreshProperties>
-				<helpHtml>Sets the vertical scrollbar.</helpHtml>
-			</property>
-
-			<property>
-				<key>scrollHeight</key>
-				<name>Height</name>
-				<changeValueJavaScript>gridScrollHeight</changeValueJavaScript>
-				<refreshHtml>true</refreshHtml>
-				<helpHtml>The total height that the table will be fixed to. Can be just a number in which case px will be added.</helpHtml>
-			</property>
-
-			<property>
-				<key>fixedHeader</key>
-				<name>Fixed header</name>
-				<changeValueJavaScript>gridScrollFixedHeader</changeValueJavaScript>
-				<refreshHtml>true</refreshHtml>
-				<helpHtml>Whether the header row will not scroll with the other rows.</helpHtml>
-			</property>
-
-		</properties>
-
-		<resources>
-
-			<resource>
-				<type>cssFile</type>
-				<contents>styles/fonts/fontawesome/css/font-awesome.css</contents>
-			</resource>
-
-			<!-- Some browsers choose the tff instead of the woff so both are included -->
-			<resource>
-				<type>file</type>
-				<contents>styles/fonts/fontawesome/fonts/fontawesome-webfont.woff</contents>
-			</resource>
-
-			<resource>
-				<type>file</type>
-				<contents>styles/fonts/fontawesome/fonts/fontawesome-webfont.ttf</contents>
-			</resource>
-
-			<resource>
-				<type>css</type>
-				<contents>
+	            <refreshHtml>true</refreshHtml>
+	            <refreshProperties>true</refreshProperties>
+	            <helpHtml>Sets the vertical scrollbar.</helpHtml>
+	        </property>
+	        
+	        <property>
+	            <key>scrollHeight</key>
+	            <name>Height</name>
+	            <changeValueJavaScript>gridScrollHeight</changeValueJavaScript>	         
+	            <refreshHtml>true</refreshHtml>
+	            <helpHtml>The total height that the table will be fixed to. Can be just a number in which case px will be added.</helpHtml>
+	        </property>	
+	        
+	        <property>
+	            <key>fixedHeader</key>
+	            <name>Fixed header</name>
+	            <changeValueJavaScript>gridScrollFixedHeader</changeValueJavaScript>	           
+	            <refreshHtml>true</refreshHtml>
+	            <helpHtml>Whether the header row will not scroll with the other rows.</helpHtml>
+	        </property>	
+	         
+	    </properties>
+	    
+	    <resources>
+	        
+	        <resource>	            
+	            <type>cssFile</type>
+	            <contents>styles/fonts/fontawesome/css/font-awesome.css</contents>
+	        </resource>
+	        
+	        <!-- Some browsers choose the tff instead of the woff so both are included -->
+	        <resource>	            
+	            <type>file</type>
+	            <contents>styles/fonts/fontawesome/fonts/fontawesome-webfont.woff</contents>
+	        </resource>
+	        
+	        <resource>
+	            <type>file</type>
+	            <contents>styles/fonts/fontawesome/fonts/fontawesome-webfont.ttf</contents>
+	        </resource>
+	        
+	        <resource>
+	            <type>css</type>
+	            <contents>
 	                <![CDATA[	                
 table.grid {
 	border-collapse:collapse;
@@ -201,11 +212,11 @@ div.gridScrollBody table.grid tr:first-child {
 }
 	                ]]>
 				</contents>
-			</resource>
-
-			<resource>
-				<type>javascript</type>
-				<contents>
+	        </resource>
+	        
+	        <resource>
+	            <type>javascript</type>
+	            <contents>
 	                <![CDATA[
 	                
 function getGridDataStoreData(id, details) {
@@ -536,10 +547,10 @@ function getGridUnescapedValue(value) {
            	
 	                ]]>
 	            </contents>
-			</resource>
-		</resources>
-
-		<getHtmlFunction>
+	        </resource>
+	    </resources>
+	    
+	    <getHtmlFunction>
 	        <![CDATA[ 
 var headerHtml = "<tr" + (this.columnHeadings ? "" : " style='display:none'") + ">";
 var rowHtml = "<tr><td>No columns</td></tr>";
@@ -587,8 +598,8 @@ if (this.scrollH || this.scrollV) {
 }
 	        ]]>
 	    </getHtmlFunction>
-
-		<initDesignJavaScript>
+ 	    
+	   <initDesignJavaScript>
 	   		<![CDATA[
 // upgrade any previous version styles to this version to include the header
 if (this.styles && this.styles.length > 0) {
@@ -605,8 +616,8 @@ if (this.styles && this.styles.length > 0) {
 }
 	   		]]>
 	   </initDesignJavaScript>
-
-		<saveJavaScript>
+	   
+	    <saveJavaScript>
 	        <![CDATA[
 // get our object
 var table = this.object;
@@ -623,8 +634,8 @@ if (this.columns && this.columns.length > 0) {
 if (this.dataStorageType == "P") this.canBeUsedFromOtherPages = false;  
 	        ]]>
 	    </saveJavaScript>
-
-		<getDetailsFunction>	        
+	    
+	    <getDetailsFunction>	        
 	        <![CDATA[
 var details = {type: this.type, columnHeadings:this.columnHeadings};
 if (this.columns && this.columns.length > 0) {
@@ -673,8 +684,8 @@ if (this.scrollV) {
 return details;
 			]]>	        	        
 	    </getDetailsFunction>
-
-		<getDataFunction>
+	    
+	    <getDataFunction>
 	        <![CDATA[
 var data = null;
 if (details) {
@@ -787,13 +798,10 @@ if (details) {
 }
 return data;
 			]]>
-	    </getDataFunction>
-
-		<setDataJavaScript>
+	    </getDataFunction>	   
+	    	    	   
+	    <setDataJavaScript>
 	        <![CDATA[
-clearTimeout(window[id + "timeout"]);
-window[id + "timeout"] = undefined;
-
 // get the grid control	        
 var grid = $("#" + id);
 // make sure it's the tables
@@ -848,62 +856,50 @@ if (data !== undefined) {
 					if (!details.columns[i].f) details.columns[i].f = new Function(["id", "data", "field", "details", "value"], details.columns[i].cellFunction);
 				}
 			}
+			
+			// loop the rows in the data object
+			for (var i in data.rows) {
+			
+				// get a reference to the current row
+				var row = data.rows[i];
+				
+				// add the html for this row
+				rowsHtml += "<tr class='rowStyle" + (i % 2 + 1) + (data.rowValidation && i < data.rowValidation.length && !data.rowValidation[i] ? " validation" : "") + "'>";
+				
+				// add multiselect
+				if (details.multiSelect) rowsHtml += "<td><input type='checkbox' class='gridMultiSelect' /></td>";
+				
+				// loop colummns
+				for (var j in details.columns) {
+					
+					// assume the cell has no style rules from the grid details
+					var style = "";
+					// if column is not visable add display:none
+					if (!details.columns[j].visible) style += "display:none;";
+					// if column has a style add it
+					if (details.columns[j].style) style += details.columns[j].style;
+					// if there is a style rule make html attribute for it
+					if (style) style = " style='" + style + "'";
+					
+					// assume the cell has no value
+					var value = "";				
+					// get the position of this column in the data object
+					var mappedCol = columnMap[j];
+					// if we can find the column and it has data use it as the value
+					if (mappedCol && row[mappedCol] !== null) value = row[columnMap[j]];
+					
+					// add the cell with the value
+					rowsHtml += "<td" + style + ">" + value + "</td>";
 
-                    // append all of the new rows in bulk - much faster!
-                    grid.append(rowsHtml);
+				}		
+				
+				// close the row
+				rowsHtml += "</tr>";
 
-                    var addRows = function(grid, data, rowIndex) {
-                        for (var chunkIndex = 0; chunkIndex < 40 && data.rows[rowIndex]; chunkIndex++, rowIndex++) {
-                            // start the row object with the styling
-                            var tr = document.createElement("tr");
-                            tr.className = "rowStyle" + (rowIndex % 2 + 1) + (data.rowValidation && i < data.rowValidation.length && !data.rowValidation[i] ? " validation" : "");
-                            // get the row
-                            var row = data.rows[rowIndex];
-
-                            // add multiselect
-                            if (details.multiSelect) {
-                                var td = document.createElement("td");
-                                var input = document.createElement("input");
-                                input.setAttribute("type", "checkbox")
-                                input.className = "gridMultiSelect"
-                                td.appendChild(input);
-                                tr.appendChild(td);
-                            }
-                            // loop the row cells
-                            for (var cellIndex in details.columns) {
-                                // add cell with value to row
-                                var td = document.createElement("td");
-
-                                // assume the cell has no style rules from the grid details
-                                var style = "";
-                                // if column is not visable add display:none
-                                if (details.columns[cellIndex] && !details.columns[cellIndex].visible) style += "display:none;";
-                                // if column has a style add it
-                                if (details.columns[cellIndex] && details.columns[cellIndex].style) style += details.columns[cellIndex].style;
-                                // if there is a style rule make html attribute for it
-                                if (style) tr.setAttribute("style", style);
-
-                                // assume the cell has no value
-                                var value = "";
-                                // get the position of this column in the data object
-                                var mappedCol = columnMap[cellIndex];
-                                // if we can find the column and it has data use it as the value
-                                if (mappedCol && row[mappedCol] !== null) value = row[columnMap[cellIndex]];
-                                // add the cell with the value
-                                td.appendChild(document.createTextNode(value));
-                                tr.appendChild(td);
-                            }
-                            grid.appendChild(tr);
-                        }
-                        if (data.rows[rowIndex]) {
-                        	var timeoutId = setTimeout(function() { addRows(grid, data, rowIndex + 1); });
-                        	window[id + "timeout"] = timeoutId;
-                        } else {
-                        	 if (window["Event_gridLoaded_" + id]) window["Event_gridLoaded_" + id](ev);
-                        }
-                    }
-
-                    addRows(grid.get(0), data, 0);
+			}
+			
+			// append all of the new rows in bulk - much faster!
+			grid.append(rowsHtml);
 			
 			// if there is a selected row
 			if (data.selectedRowNumber) grid.find("tr:nth(" + data.selectedRowNumber + ")").addClass("rowSelect");
@@ -945,35 +941,24 @@ if (data !== undefined) {
 			}
 			// close the row
 			rowsHtml += "</tr>";
-			
-			var addRowsSimple = function(grid, rows, rowIndex) {
-		        for (var chunkIndex = 0; chunkIndex < 40 && rows[rowIndex]; chunkIndex++, rowIndex++) {
-		            // start the row object with the styling
-		            var tr = document.createElement("tr");
-		            tr.className = "rowStyle" + (rowIndex % 2 + 1);
-		            // get the row
-		            var row = rows[rowIndex];
-		            // loop the row cells
-		            for (var cellIndex in row) {
-		                // add cell with value to row
-		                var td = document.createElement("td");
-		                td.appendChild(document.createTextNode(row[cellIndex]));
-		                tr.appendChild(td);
-		            }
-		            grid.appendChild(tr);
-		        }
-		        if (rows[rowIndex]) {
-		        	var timeoutId = setTimeout(function() { addRowsSimple(grid, rows, rowIndex + 1); });
-		        	window[id + "timeout"] = timeoutId;
-		        } else {
-                    if (window["Event_gridLoaded_" + id]) window["Event_gridLoaded_" + id](ev);
-                }
+
+			for (var i in data.rows) {
+				// start the row object with the styling
+				rowsHtml += "<tr class='rowStyle" + (i % 2 + 1) + "'>";
+				// get the row
+				var row = data.rows[i];
+				// loop the row cells				
+				for (var j in row) {
+					// add cell with value to row
+					rowsHtml += "<td>" + row[j] + "</td>";
+				}
+				// close the row
+				rowsHtml += "</tr>";
+
 			}
 			
 			// append all of the new rows in bulk - much faster!
 			grid.append(rowsHtml);
-			
-			addRowsSimple(grid.get(0), data.rows, 0);
 			
 		} // got details and columns and data fields							
 	} // got data
@@ -1192,17 +1177,17 @@ if (data !== undefined) {
 	});
 	
 	// apply the resizing	
-	$(window).resize();
+	$(window).resize(); 
 	
 }
 			]]>
 	    </setDataJavaScript>
-
-		<events>
-			<event>
-				<type>click</type>
-				<name>Row click</name>
-				<filterFunction>
+	    
+	    <events>
+	        <event>
+	            <type>click</type>
+	            <name>Row click</name>
+	            <filterFunction>
 <![CDATA[
 var target = $(ev.target);
 // don't fire if any ancestor is disabled
@@ -1213,86 +1198,77 @@ if ((target.closest("tr").index() == 0 || target.is("tbody")) && !target.is("inp
 if (target.is("td:first-child") && target.children("input.gridMultiSelect")[0]) return true;
 ]]>	                
 	            </filterFunction>
-			</event>
-			<event>
-				<type>gridLoaded</type>
-				<name>Loaded</name>
-				<filterFunction>
-<![CDATA[
-
-]]>	                
-	            </filterFunction>
-			</event>
-		</events>
-
-		<styles>
-			<style>
-				<name>Grid</name>
-				<getAppliesToFunction>
+	        </event>
+	    </events> 
+	    
+	    <styles>
+	        <style>
+	            <name>Grid</name>  
+	            <getAppliesToFunction>
 					<![CDATA[	      
 return "#" + this.id + ", #" + this.id + "header";
 	       			 ]]>	                
 	            </getAppliesToFunction>
-			</style>
-			<style>
-				<name>Title row</name>
-				<getAppliesToFunction>
+	        </style>
+	        <style>
+	            <name>Title row</name>
+	            <getAppliesToFunction>
 					<![CDATA[	      
 return "#" + this.id + " tr:first-child, #" + this.id + "header tr:first-child";
 	       			 ]]>	                
 	            </getAppliesToFunction>
-			</style>
-			<style>
-				<name>Title cells</name>
-				<getAppliesToFunction>
+	        </style>
+	        <style>
+	            <name>Title cells</name>
+	            <getAppliesToFunction>
 					<![CDATA[	      
 return "#" + this.id + " tr:first-child td, #" + this.id + "header tr:first-child td";
 	       			 ]]>	                
 	            </getAppliesToFunction>
-			</style>
-			<style>
-				<name>Row cells</name>
-				<getAppliesToFunction>
+	        </style>
+	        <style>
+	            <name>Row cells</name>
+	            <getAppliesToFunction>
 					<![CDATA[	      
 return "#" + this.id + " tr:not(:first-child) td";
 	       			 ]]>	                
 	            </getAppliesToFunction>
-			</style>
-			<style>
-				<name>Row style 1</name>
-				<getAppliesToFunction>
+	        </style>
+	        <style>
+	            <name>Row style 1</name>
+	            <getAppliesToFunction>
 					<![CDATA[	      
 return "#" + this.id + " .rowStyle1";
 	       			 ]]>	                
 	            </getAppliesToFunction>
-			</style>
-			<style>
-				<name>Row style 2</name>
-				<getAppliesToFunction>
+	        </style>
+	        <style>
+	            <name>Row style 2</name>
+	            <getAppliesToFunction>
 					<![CDATA[	      
 return "#" + this.id + " .rowStyle2";
 	       			 ]]>	                
 	            </getAppliesToFunction>
-			</style>
-			<style>
-				<name>Row hover</name>
-				<getAppliesToFunction>
+	        </style>
+	        <style>
+	            <name>Row hover</name>
+	            <getAppliesToFunction>
 					<![CDATA[	      
 return "#" + this.id + " tr:hover:not(:first-child)";
 	       			 ]]>	                
 	            </getAppliesToFunction>
-			</style>
-			<style>
-				<name>Row select</name>
-				<getAppliesToFunction>
+	        </style>	 
+	        <style>
+	            <name>Row select</name>
+	            <getAppliesToFunction>
 					<![CDATA[	      
 return "#" + this.id + " .rowSelect";
 	       			 ]]>	                
 	            </getAppliesToFunction>
-			</style>
-		</styles>
-
-		<initJavaScript>
+	        </style>       
+	    </styles>
+	    
+	    <initJavaScript>
 	        <![CDATA[
 // get the grid
 var grid = $("#" + id);
@@ -1379,13 +1355,13 @@ if (details) {
 } 
 	        ]]>	        
 	    </initJavaScript>
-
-		<runtimeProperties>
-
-			<runtimeProperty>
-				<type>selectedRowData</type>
-				<name>Selected row data</name>
-				<getPropertyFunction>
+	    
+	    <runtimeProperties>
+	        
+	        <runtimeProperty>
+	   	        <type>selectedRowData</type>
+	   	        <name>Selected row data</name>
+	   	        <getPropertyFunction>
 			        <![CDATA[
 var data = null;
 var columns = details.columns || details.dynamicColumns || [];
@@ -1501,7 +1477,7 @@ if (field && data && data.fields && data.rows && data.rows.length > 0) {
 return data;
 			        ]]>      
 	   	        </getPropertyFunction>
-				<setPropertyJavaScript>
+	   	        <setPropertyJavaScript>
 	   	            <![CDATA[
 // assume no grid data
 var gridData = null;
@@ -1663,13 +1639,13 @@ if (gridData && gridData.selectedRowNumber && gridData.selectedRowNumber > 0) {
 	}	
 }	   	            
 	   	            ]]>
-	   	        </setPropertyJavaScript>
-			</runtimeProperty>
-
-			<runtimeProperty>
-				<type>selectedRowValidation</type>
-				<name>Selected row validation</name>
-				<getPropertyFunction>
+	   	        </setPropertyJavaScript>	        
+	   	    </runtimeProperty>
+	   	    
+	   	    <runtimeProperty>
+	   	        <type>selectedRowValidation</type>
+	   	        <name>Selected row validation</name>
+	   	        <getPropertyFunction>
 			        <![CDATA[
 if (details && details.dataStorageType) {
 	var gridData = getGridDataStoreData(id, details);
@@ -1681,8 +1657,8 @@ if (details && details.dataStorageType) {
 }
 return null;
 			        ]]>	  	   	            
-	   	        </getPropertyFunction>
-				<setPropertyJavaScript>
+	   	        </getPropertyFunction>	   	
+	   	        <setPropertyJavaScript>
 	   	            <![CDATA[
 	   	            
 var data = makeDataObject(data, field);
@@ -1726,13 +1702,13 @@ if (details && details.dataStorageType) {
 	}
 } 
 	   	            ]]>
-	   	        </setPropertyJavaScript>
-			</runtimeProperty>
-
-			<runtimeProperty>
-				<type>selectedRowNumber</type>
-				<name>Selected row number</name>
-				<getPropertyFunction>
+	   	        </setPropertyJavaScript>		   	                
+	   	    </runtimeProperty>
+	   	    
+	   	    <runtimeProperty>
+	   	        <type>selectedRowNumber</type>
+	   	        <name>Selected row number</name>
+	   	        <getPropertyFunction>
 			        <![CDATA[
 if (details && details.dataStorageType) {
 	var gridData = getGridDataStoreData(id, details);
@@ -1745,8 +1721,8 @@ if (details && details.dataStorageType) {
 	return getGridSelectedRowNumber(id, ev, details);
 }
 			        ]]>	  	   	            
-	   	        </getPropertyFunction>
-				<setPropertyJavaScript>
+	   	        </getPropertyFunction>	   	
+	   	        <setPropertyJavaScript>
 	   	            <![CDATA[
 gridData = getGridDataStoreData(id, details);
 if (!gridData) gridData = {fields:[],rows:[]};
@@ -1763,13 +1739,13 @@ if (data) {
 gridData.selectedRowNumber = selectedRowNumber;	
 saveGridDataStoreData(id, details, gridData);	            
 	   	            ]]>
-	   	        </setPropertyJavaScript>
-			</runtimeProperty>
-
-			<runtimeProperty>
-				<type>rowCount</type>
-				<name>Row count</name>
-				<getPropertyFunction>
+	   	        </setPropertyJavaScript>		   	                
+	   	    </runtimeProperty>
+	   	    
+	   	    <runtimeProperty>
+	   	        <type>rowCount</type>
+	   	        <name>Row count</name>
+	   	        <getPropertyFunction>
 			        <![CDATA[
 if (details && details.dataStorageType) {
 	var gridData = getGridDataStoreData(id, details);
@@ -1787,12 +1763,12 @@ if (details && details.dataStorageType) {
 	return grid.find("tr").length - 1;
 }
 			        ]]>	  	   	            
-	   	        </getPropertyFunction>
-			</runtimeProperty>
-
-		</runtimeProperties>
-
-		<designLinkJQuery>
+	   	        </getPropertyFunction>	   	        
+	   	    </runtimeProperty>
+	   	    
+	   	</runtimeProperties>
+	   	
+	    <designLinkJQuery>
 	        <![CDATA[
 .filter( function() {
 	var link = $(this);
@@ -1808,6 +1784,6 @@ if (details && details.dataStorageType) {
 });	        	        
 	        ]]>
 	    </designLinkJQuery>
-
+	   		    
 	</control>
 </controls>
