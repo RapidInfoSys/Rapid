@@ -1,0 +1,32 @@
+{
+  "name": "Rapid progressive web appliction",
+  "short_name": "Rapid",
+  "icons": [{
+    "src": "images/RapidLogo_128x128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    }, {
+      "src": "images/RapidLogo_144x144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    }, {
+      "src": "images/RapidLogo_152x152.png",
+      "sizes": "152x152",
+      "type": "image/png"
+    }, {
+      "src": "images/RapidLogo_192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "images/RapidLogo_512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/RapidCustom/index.jsp",
+  "scope": "/RapidCustom/",
+  "display": "browser",
+  "background_color": "#FF9800",
+  "theme_color": "#FF9800"
+}

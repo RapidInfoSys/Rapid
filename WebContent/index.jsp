@@ -43,7 +43,19 @@ RapidRequest rapidRequest = new RapidRequest(request, rapid);
 		<link rel='stylesheet' type='text/css' href='styles/fonts/fontawesome/css/font-awesome.css'></link>
 		<script type='text/javascript' src='scripts/<%=com.rapid.server.Rapid.JQUERY%>'></script>
 		<script type="text/javascript">
-	
+
+if ('serviceWorker' in navigator) {
+  console.log('CLIENT: service worker registration in progress.');
+  navigator.serviceWorker.register('/RapidCustom/sw.js')
+  .then(function() {
+    console.log('CLIENT: service worker registration complete.');
+  }).catch(function() {
+    console.log('CLIENT: service worker registration failure.');
+  });
+} else {
+  console.log('CLIENT: service worker is not supported.');
+}
+
 // JQuery is ready! 
 $(document).ready( function() {	
 	
@@ -76,10 +88,18 @@ $(document).ready( function() {
         	}   		       	
         }
 	});
-		
-});
 	
-		</script>	
+	if (!navigator.onLine) $(document.body).addClass("offline");
+});
+
+$(window).on("offline", function() {
+	$(document.body).addClass("offline");
+});
+
+$(window).on("online", function() {
+	$(document.body).removeClass("offline");
+});
+		</script>
 	</head>
 	<body>
 		<div class="image">  <!-- RapidLogo_60x40.png -->
@@ -92,8 +112,8 @@ $(document).ready( function() {
 			<span style="">Rapid</span>
 		</div>
 		<div class="subBar">
-			<span class="link"><a href="logout.jsp">LOG OUT</a></span><% if (com.rapid.security.SecurityAdapter.hasPasswordUpdate(getServletContext())) { %>			
-			<span class="link"><a href="update.jsp">CHANGE PASSWORD</a></span><%} %>
+			<span class="link requiresOnline"><a href="logout.jsp">LOG OUT</a></span><% if (com.rapid.security.SecurityAdapter.hasPasswordUpdate(getServletContext())) { %>			
+			<span class="link requiresOnline"><a href="update.jsp">CHANGE PASSWORD</a></span><%} %>
 			<span class="versionColumn"><%=com.rapid.server.Rapid.VERSION %></span>
 		</div>
 
@@ -109,7 +129,7 @@ $(document).ready( function() {
 				// check for any of the offical roles
 				if (securityAdapter.checkUserRole(rapidRequest, com.rapid.server.Rapid.ADMIN_ROLE) || securityAdapter.checkUserRole(rapidRequest, com.rapid.server.Rapid.DESIGN_ROLE) || securityAdapter.checkUserRole(rapidRequest, com.rapid.server.Rapid.USERS_ROLE) || securityAdapter.checkUserRole(rapidRequest, com.rapid.server.Rapid.SUPER_ROLE)) {
 %>
-				<section>
+				<section class="requiresOnline">
 					<a href="~?a=rapid">
 					 	<div class="fa-stack fa-lg">
 							<i class="fa fa-circle fa-stack-2x"></i>
@@ -124,7 +144,7 @@ $(document).ready( function() {
 				// check for the design role
 				if (securityAdapter.checkUserRole(rapidRequest, com.rapid.server.Rapid.DESIGN_ROLE)) {
 %>
-				<section>
+				<section class="requiresOnline">
 					<a href="design.jsp">
 						<div class="fa-stack fa-lg">
 							<i class="fa fa-circle fa-stack-2x"></i>

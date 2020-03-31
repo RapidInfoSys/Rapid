@@ -1019,12 +1019,3 @@ function padNumberWithZeros(number,length) {
 	}
 	return number;
 }
-
-function checkOnline() {
-	if (navigator.onLine) {
-		return true;
-	} else {
-		alert("Sorry. That can't be done at the moment because you're offline.")
-		return false;
-	}
-}

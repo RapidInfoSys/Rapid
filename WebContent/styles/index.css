@@ -306,3 +306,6 @@ div.fa-stack i.fa-stack-1x {
 	
 }
 
+.offline .requiresOnline {
+	display: none;
+}

@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2020 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -396,6 +396,15 @@ function checkDirty() {
 		return confirm("You will lose your unsaved changes. Are you sure?");
 	} else {
 		return true;
+	}
+}
+
+function checkOnline() {
+	if (navigator.onLine) {
+		return true;
+	} else {
+		alert("Sorry. That can't be done at the moment because you're offline.")
+		return false;
 	}
 }
 
@@ -2698,6 +2707,9 @@ $(document).ready( function() {
 	
 	// administration
 	$("#appAdmin").click( function(ev) {
+		
+		if (!checkOnline()) return;
+		
 		if (_version && _version.id) {
 			window.location = "~?a=rapid&appId=" + _version.id + "&version=" + _version.version;
 		} else {
@@ -2707,6 +2719,9 @@ $(document).ready( function() {
 	
 	// administration, new tab
 	$("#appAdminNewTab").click( function(ev) {
+		
+		if (!checkOnline()) return;
+		
 		if (_version && _version.id) {
 			window.open("~?a=rapid&appId=" + _version.id + "&version=" + _version.version,"_blank");
 		} else {
@@ -2715,7 +2730,9 @@ $(document).ready( function() {
 	});
 	
 	// load app
-	$("#appSelect").change( function() {
+	$("#appSelect").click(checkOnline);
+	
+	$("#appSelect").change(function() {
     	// load the selected app and its pages in the drop down 
     	if (checkDirty()) {
     		// update the url, removing the version so the last one will be loaded for us
@@ -2732,7 +2749,9 @@ $(document).ready( function() {
 	$("#applicationsHeader").click( toggleHeader );
 	
 	// load version
-	$("#versionSelect").change( function() {
+	$("#versionSelect").click(checkOnline);
+	
+	$("#versionSelect").change(function() {
     	// load the selected app and its pages in the drop down 
     	if (checkDirty()) {
     		// update the url, removing the version so the right one is loaded to it's own start page
@@ -2746,6 +2765,8 @@ $(document).ready( function() {
 	});
 			
 	// load page
+	$("#pageSelect").click(checkOnline);
+	
 	$("#pageSelect").change( function() {
 		// load the selected page
 		if (checkDirty()) {
@@ -2758,6 +2779,9 @@ $(document).ready( function() {
 	
 	// previous page
 	$("#pagePrev").click( function(ev) {
+		
+		if (!checkOnline()) return;
+		
 		// if not disabled
 		if (!$(this).is(".pageNavDisabled")) {
 			// get the page select
@@ -2773,6 +2797,9 @@ $(document).ready( function() {
 	
 	// next page
 	$("#pageNext").click( function(ev) {
+		
+		if (!checkOnline()) return;
+		
 		// if not disabled
 		if (!$(this).is(".pageNavDisabled")) {
 			// get the page select
@@ -2799,11 +2826,16 @@ $(document).ready( function() {
 	
 	// new page
 	$("#pageNew").click( function(ev) {
+		
+		if (!checkOnline()) return;
+		
 		if (checkDirty()) showDialogue('~?action=page&a=rapid&p=P3'); 
 	});
 	
 	// save page
 	$("#pageSave").click( function() {
+		
+		if (!checkOnline()) return;
 		
 		// get a reference to the button
 		var button = $(this);

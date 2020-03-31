@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2019 - Gareth Edwards / Rapid Information Systems
+Copyright (C) 2020 - Gareth Edwards / Rapid Information Systems
 
 gareth.edwards@rapid-is.co.uk
 
@@ -514,7 +514,7 @@ public class Database extends Action {
 			if (_showLoading) js += "    " + getLoadingJS(page, outputs, false);
 
 			// this avoids doing the errors if the page is unloading or the back button was pressed
-			js += "    if (server.readyState > 0) {\n";
+			js += "    if (server.readyState > 0 || !navigator.onLine) {\n";
 
 			// retain if error actions
 			boolean errorActions = false;
