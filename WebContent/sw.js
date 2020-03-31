@@ -92,20 +92,20 @@ self.addEventListener("fetch", function(event) {
 	
 	// get the url from the event request
 	var url = event.request.url;
-	
-	if (url.endsWith("sw.js")) event.respondWith(fetch(event.request));
-	
-	// set the standard fetch options
-	var fetchOptions = { redirect: "manual" };
-	
-	// special fetch options for getApps
-	if (url.endsWith("~?action=getApps")) {
-		fetchOptions.method = "POST";
-		fetchOptions.redirect = "follow";
-	}
-	
+		
 	// We only check the cache for GET requests to the Rapid server, unless it's part of what we want to refresh each time
 	if (url && url.startsWith(_contextPath) && (event.request.method === "GET" || url.endsWith("~?action=getApps"))) {
+		
+		if (url.endsWith("sw.js")) event.respondWith(fetch(event.request));
+		
+		// set the standard fetch options
+		var fetchOptions = { redirect: "manual" };
+		
+		// special fetch options for getApps
+		if (url.endsWith("~?action=getApps")) {
+			fetchOptions.method = "POST";
+			fetchOptions.redirect = "follow";
+		}
 		
 		var urlParts = url.split("?");
 		var urlParameters = urlParts[1] || ""; // end of the url with parameter assignments
@@ -151,12 +151,9 @@ self.addEventListener("fetch", function(event) {
 			.catch(reason => console.log("WORKER: failed getting app resources: " + reason));
 		}
 		
-		// remove all url options but page option ($1)
+		// remove all url parameters, except for the page ($1)
 		var url = url.replace(/(p=P\d+).*$/, "$1");
-		
-		// cheeky for now
-		url = url.replace("&action=dialogue", "");
-		
+				
 		console.debug('WORKER: fetch event in progress for ' + event.request.method, event.request.url);
 		/*   Similar to event.waitUntil in that it blocks the fetch event on a promise.
 			 Fulfilment result will be used as the response, and rejection will end in a
@@ -219,7 +216,7 @@ self.addEventListener("fetch", function(event) {
 	} else {
 		
 		// If we don't block the event as shown above, then the request will go to the network as usual.
-		console.debug('WORKER: non-GET fetch event ignored.' + event.request.method, event.request.url);
+		console.debug('WORKER: non-GET fetch event ignored. ' + event.request.method, event.request.url);
 		
 	} // GET check
 		
