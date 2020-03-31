@@ -881,7 +881,7 @@ if (data !== undefined) {
                                 // if column has a style add it
                                 if (details.columns[cellIndex] && details.columns[cellIndex].style) style += details.columns[cellIndex].style;
                                 // if there is a style rule make html attribute for it
-                                if (style) tr.setAttribute("style", style);
+                                if (style) td.setAttribute("style", style);
 
                                 // assume the cell has no value
                                 var value = "";
