@@ -46,11 +46,11 @@ RapidRequest rapidRequest = new RapidRequest(request, rapid);
 
 if ('serviceWorker' in navigator) {
   console.log('CLIENT: service worker registration in progress.');
-  navigator.serviceWorker.register('/RapidCustom/sw.js')
+  navigator.serviceWorker.register('sw.js')
   .then(function() {
     console.log('CLIENT: service worker registration complete.');
-  }).catch(function() {
-    console.log('CLIENT: service worker registration failure.');
+  }).catch(function(error) {
+    console.log('CLIENT: service worker registration failure : ' + error);
   });
 } else {
   console.log('CLIENT: service worker is not supported.');

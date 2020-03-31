@@ -93,16 +93,19 @@ self.addEventListener("fetch", function(event) {
 	// get the url from the event request
 	var url = event.request.url;
 	
-	var fetchOptions = { redirect: "manual" };
-	
 	if (url.endsWith("sw.js")) event.respondWith(fetch(event.request));
 	
+	// set the standard fetch options
+	var fetchOptions = { redirect: "manual" };
+	
+	// special fetch options for getApps
 	if (url.endsWith("~?action=getApps")) {
 		fetchOptions.method = "POST";
 		fetchOptions.redirect = "follow";
 	}
-	// We only check the cache for GET requests, unless it's part of what we want to refresh each time
-	if (url && (event.request.method === "GET" || url.endsWith("~?action=getApps"))) {
+	
+	// We only check the cache for GET requests to the Rapid server, unless it's part of what we want to refresh each time
+	if (url && url.startsWith(_contextPath) && (event.request.method === "GET" || url.endsWith("~?action=getApps"))) {
 		
 		var urlParts = url.split("?");
 		var urlParameters = urlParts[1] || ""; // end of the url with parameter assignments
